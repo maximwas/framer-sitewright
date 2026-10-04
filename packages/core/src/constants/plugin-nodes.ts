@@ -25,6 +25,9 @@ export const PIN_ATTRIBUTES: ReadonlySet<string> = new Set([
   "centerAnchorY",
 ]);
 
+/** A breakpoint frame's own placement: addBreakpoint sets its width and puts it beside the others. */
+export const BREAKPOINT_PLACEMENT_ATTRIBUTES: ReadonlySet<string> = new Set(["width", "position", ...PIN_ATTRIBUTES]);
+
 /**
  * Plugin API values left out when reading, as the DSL leaves them out: the defaults (visible, fully opaque, not
  * rotated, not wrapping).

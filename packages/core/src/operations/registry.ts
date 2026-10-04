@@ -14,6 +14,7 @@ import { designApply } from "./design/apply.ts";
 import { fontsSearch } from "./fonts/search.ts";
 import { historyRevert } from "./history/revert.ts";
 import { layoutAudit } from "./nodes/audit.ts";
+import { breakpointsAdd } from "./nodes/breakpoints.ts";
 import { nodesRead } from "./nodes/read.ts";
 import { selectionGet } from "./nodes/selection.ts";
 import { projectCapabilities } from "./project/capabilities.ts";
@@ -39,6 +40,7 @@ const OPERATIONS: readonly AnyOperation[] = [
   layoutAudit,
   selectionGet,
   designApply,
+  breakpointsAdd,
   historyRevert,
   projectInfo,
   projectCapabilities,

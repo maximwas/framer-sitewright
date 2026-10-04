@@ -38,6 +38,7 @@ async function describe(
     id,
     ...(name === null ? {} : { name }),
     ...(parentId === null ? {} : { $parentId: parentId }),
+    ...variantMeta(node),
     attributes:
       text === null
         ? attributes
@@ -73,4 +74,21 @@ async function describe(
     ...described,
     children: read.filter((child) => child !== null),
   };
+}
+
+/**
+ * Breakpoints as serialize() marks them: the primary breakpoint, and replicas with the node each copies. A replica's
+ * layers have compound ids, `<breakpoint id><original id>`, and take overrides by them.
+ */
+function variantMeta(node: PluginNodeRecord): Pick<SerializedNode, "$isPrimary" | "$isReplica" | "$originalId"> {
+  if (node.isPrimaryBreakpoint) {
+    return { $isPrimary: true };
+  }
+
+  return node.isReplica && typeof node.originalId === "string"
+    ? {
+        $isReplica: true,
+        $originalId: node.originalId,
+      }
+    : {};
 }

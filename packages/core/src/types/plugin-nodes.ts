@@ -1,4 +1,5 @@
 import type { ColorStyleHandle, TextStyleHandle } from "./framer-port.ts";
+import type { DslAttributeMap, NodeSnapshot } from "./history.ts";
 import type { XmlElementNode } from "./xml.ts";
 
 /**
@@ -85,3 +86,27 @@ export type NodePlan =
       readonly text: string | null;
     }
   | { readonly kind: "delete"; readonly element: XmlElementNode; readonly id: string };
+
+/** A page breakpoint to add: the frame's name ("Tablet") and the window width it starts at, in px. */
+export interface BreakpointSpec {
+  readonly name: string;
+  readonly width: number;
+}
+
+/**
+ * A web page that adds breakpoints: WebPageNode.addBreakpoint, `@alpha` in @framer/plugin 5.1 and framer-api 5.1 but
+ * present on both. The new frame replicates `basedOn` (the primary breakpoint).
+ */
+export interface BreakpointPage {
+  readonly id: string;
+  addBreakpoint(basedOn: string, breakpoint: { name: string; width: number }): Promise<unknown>;
+}
+
+/**
+ * A deleted subtree as undo keeps it. A replica (a breakpoint other than the primary) is one node that says what it
+ * replicates, plus the overrides its layers held: Framer recreates the layers with the breakpoint.
+ */
+export interface PluginDeletion {
+  readonly nodes: NodeSnapshot[];
+  readonly overrides: Record<string, Record<string, DslAttributeMap>>;
+}

@@ -68,6 +68,7 @@ function style(name: string, tag: string, alignment: string, fontSize: number): 
     family: "Inter",
     balance: false,
     fontSize,
+    narrowFontSize: fontSize,
     letterSpacing: 0,
     lineHeight: 1.2,
   };
@@ -347,5 +348,134 @@ describe("layout audit", () => {
     );
 
     expect(issues.filter((found) => found.severity === "defect")).toEqual([]);
+  });
+
+  it("finds layouts a phone breakpoint copies from desktop unchanged, and template habits once per page", () => {
+    /** The page at one width; `adapt` overrides layers by name, as a breakpoint's copies do. */
+    const breakpoint = (name: string, width: number, adapt: Record<string, Record<string, string>> = {}) => {
+      const own = (layer: string, attributes: Record<string, string>) => ({
+        ...attributes,
+        ...adapt[layer],
+      });
+      const section = (title: string, style: string, children: SerializedNode[]) =>
+        node(
+          "FrameNode",
+          title,
+          own(title, {
+            layout: "stack",
+            stackDirection: "vertical",
+            stackAlignment: "start",
+            width: "1fr",
+            padding: "128px 64px 128px 64px",
+          }),
+          [text("Label", "Label", title), text("Title", style, `${title} heading`), ...children],
+        );
+
+      return node(
+        "FrameNode",
+        name,
+        {
+          layout: "stack",
+          stackDirection: "vertical",
+          width: `${width}px`,
+        },
+        [
+          section("Work", "Heading 1", [
+            node(
+              "FrameNode",
+              "Grid",
+              own("Grid", {
+                layout: "grid",
+                gridColumnCount: "3",
+                gridRowHeightType: "auto",
+                width: "1fr",
+              }),
+              [text("One", "Body", "One"), text("Two", "Body", "Two"), text("Three", "Body", "Three")],
+            ),
+          ]),
+          section("Studio", "Heading 2", [
+            node(
+              "FrameNode",
+              "Row",
+              own("Row", {
+                layout: "stack",
+                stackDirection: "horizontal",
+                stackAlignment: "start",
+                stackDistribution: "start",
+                gap: "48px",
+                width: "1fr",
+              }),
+              [
+                node("FrameNode", "Photo", {
+                  width: "1fr",
+                  aspectRatio: "1.2",
+                  backgroundImage: "https://framerusercontent.com/a.jpg",
+                }),
+                text("Copy", "Body", "Two makers and a drawing table."),
+              ],
+            ),
+          ]),
+          section("Process", "Heading 2", []),
+        ],
+      );
+    };
+    const page = (phone: SerializedNode) =>
+      node("WebPageNode", "Home", {}, [
+        {
+          ...breakpoint("Desktop", 1440),
+          $isPrimary: true,
+        },
+        {
+          ...phone,
+          $isReplica: true,
+        },
+      ]);
+    const desktopType = context({ "Heading 1": { narrowFontSize: 96 } });
+    const unadapted = auditTree(page(breakpoint("Phone", 390)), desktopType);
+    const rules = unadapted.map((found) => found.rule);
+
+    for (const rule of ["narrow-grid", "narrow-row", "narrow-padding", "narrow-type"]) {
+      expect(rules, rule).toContain(rule);
+    }
+
+    expect(rules.filter((rule) => rule === "eyebrow-labels")).toHaveLength(1);
+
+    const sidePadding = { padding: "64px 20px 64px 20px" };
+    const adapted = auditTree(
+      page(
+        breakpoint("Phone", 390, {
+          Work: sidePadding,
+          Studio: sidePadding,
+          Process: sidePadding,
+          Grid: {
+            layout: "stack",
+            gridColumnCount: "1",
+          },
+          Row: { stackDirection: "vertical" },
+        }),
+      ),
+      context({
+        "Heading 1": { narrowFontSize: 44 },
+        "Heading 2": { narrowFontSize: 36 },
+      }),
+    );
+
+    expect(adapted.map((found) => found.rule).filter((rule) => rule.startsWith("narrow-"))).toEqual([]);
+  });
+
+  it("regression: a large paragraph style (a quote) is not the body size of the hierarchy check", () => {
+    const issues = auditTree(
+      node("WebPageNode", "Home", {}, [node("FrameNode", "Desktop", { width: "1440px" })]),
+      context({
+        "Heading 1": { fontSize: 96 },
+        Body: { fontSize: 18 },
+        Label: {
+          name: "Quote",
+          fontSize: 36,
+        },
+      }),
+    );
+
+    expect(issues.map((found) => found.rule)).not.toContain("flat-hierarchy");
   });
 });

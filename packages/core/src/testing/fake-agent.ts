@@ -159,7 +159,7 @@ function createNode(
       newTextStyle("", name),
       attributes,
       tokenLookup(session),
-      state.breakpointWidths,
+      breakpointWidths(state),
     );
     const style = {
       ...created,
@@ -245,7 +245,7 @@ function setNode({ id, attributes }: DslCommand, session: FakeAgentSession): voi
   Object.assign(
     style,
     withAvailableWeight(
-      withTextStyleAttributes(style, attributes, tokenLookup(session), session.state.breakpointWidths),
+      withTextStyleAttributes(style, attributes, tokenLookup(session), breakpointWidths(session.state)),
       session.state,
     ),
   );
@@ -308,4 +308,9 @@ function dslNode(style: { readonly id: string; readonly path: string }) {
       name: style.path.replace(/^\/+/, ""),
     },
   };
+}
+
+/** The home page's breakpoint widths, widest first. */
+function breakpointWidths(state: FakeFramerState): number[] {
+  return state.breakpoints.map((breakpoint) => breakpoint.width).sort((a, b) => b - a);
 }

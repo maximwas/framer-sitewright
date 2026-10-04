@@ -1,5 +1,7 @@
 import {
   AUTO_TEXT_CHARS,
+  BODY_SIZE_MAX_PX,
+  BODY_SIZE_MIN_PX,
   CENTERED_MIN_HEADINGS,
   CENTERED_SHARE_MAX,
   DEFAULT_STACK_GAP,
@@ -9,15 +11,22 @@ import {
   FIXED_WIDTH_LIMIT_PX,
   HEADING_TAGS,
   HIERARCHY_RATIO_MIN,
+  PHONE_GRID_MAX_COLUMNS,
+  PHONE_HEADING_MAX_PX,
+  PHONE_MAX_WIDTH_PX,
+  PHONE_SIDE_PADDING_MAX_PX,
   PILL_RADIUS_PX,
   RAW_COLOR,
+  ROW_COLUMN_MIN_PX,
   SECTION_RHYTHM_MAX,
   SEQUENCE_NUMBER,
   SPACED_DISTRIBUTIONS,
+  TABLET_GRID_MAX_COLUMNS,
+  TABLET_MAX_WIDTH_PX,
   TEMPLATE_REPEAT,
 } from "../constants/layout-audit.ts";
 import type { SerializedNode } from "../types/dsl.ts";
-import type { AuditContext, AuditIssue, NodeRule, PageRule } from "../types/layout-audit.ts";
+import type { AuditContext, AuditIssue, AuditTextStyle, NodeRule, PageRule } from "../types/layout-audit.ts";
 import {
   attr,
   childrenOf,
@@ -684,14 +693,146 @@ const centeredEverything: PageRule = (breakpoint, context) => {
     : [];
 };
 
-export const PAGE_RULES: readonly PageRule[] = [
+/** A breakpoint's width when it is a tablet or phone one, else null. */
+function narrowWidthOf(breakpoint: SerializedNode): number | null {
+  const width = px(attr(breakpoint, "width"));
+
+  return width !== null && width <= TABLET_MAX_WIDTH_PX ? width : null;
+}
+
+/** A grid keeps its desktop columns on a narrower breakpoint unless its copy there says otherwise. */
+const narrowGrid: PageRule = (breakpoint) => {
+  const width = narrowWidthOf(breakpoint);
+
+  if (width === null) {
+    return [];
+  }
+
+  const phone = width <= PHONE_MAX_WIDTH_PX;
+  const most = phone ? PHONE_GRID_MAX_COLUMNS : TABLET_GRID_MAX_COLUMNS;
+
+  return walk(breakpoint).flatMap((node) => {
+    const columns = Number(attr(node, "gridColumnCount"));
+
+    return layoutOf(node) === "grid" && Number.isInteger(columns) && columns > most
+      ? [
+          issue(
+            "narrow-grid",
+            phone ? "defect" : "likely",
+            node,
+            `${label(node)} keeps ${columns} columns at ${width}px, so each gets a sliver of the screen.`,
+            phone
+              ? `Override its copy on ${label(breakpoint)}: layout="stack" stackDirection="vertical" for cards with text, gridColumnCount="2" for small tiles.`
+              : `Override its copy on ${label(breakpoint)} with gridColumnCount="${most}" or fewer.`,
+          ),
+        ]
+      : [];
+  });
+};
+
+/** Columns side by side in a horizontal stack get squeezed to slivers on a phone. */
+const narrowRow: PageRule = (breakpoint) => {
+  const width = narrowWidthOf(breakpoint);
+
+  if (width === null || width > PHONE_MAX_WIDTH_PX) {
+    return [];
+  }
+
+  return walk(breakpoint).flatMap((node) => {
+    if (layoutOf(node) !== "stack" || directionOf(node) !== "horizontal" || attr(node, "stackWrapEnabled") === "true") {
+      return [];
+    }
+
+    const columns = childrenOf(node).filter(
+      (child) =>
+        inFlow(child) &&
+        (sizeKind(attr(child, "width")) === "fill" || (px(attr(child, "width")) ?? 0) >= ROW_COLUMN_MIN_PX),
+    );
+
+    return columns.length >= 2
+      ? [
+          issue(
+            "narrow-row",
+            "likely",
+            node,
+            `${label(node)} puts ${columns.length} columns side by side at ${width}px.`,
+            `Override its copy on ${label(breakpoint)}: stackDirection="vertical" with the columns at width="1fr", or stackWrapEnabled="true" when the items are small.`,
+          ),
+        ]
+      : [];
+  });
+};
+
+/** Desktop side padding on a phone leaves the content a strip. */
+const narrowPadding: PageRule = (breakpoint) => {
+  const width = narrowWidthOf(breakpoint);
+
+  if (width === null || width > PHONE_MAX_WIDTH_PX) {
+    return [];
+  }
+
+  const sections = sectionsOf(breakpoint);
+
+  return [...sections, ...sections.flatMap(childrenOf)].filter(isFrame).flatMap((node) => {
+    const [, right, , left] = paddingOf(node);
+
+    return Math.max(left, right) > PHONE_SIDE_PADDING_MAX_PX
+      ? [
+          issue(
+            "narrow-padding",
+            "likely",
+            node,
+            `${label(node)} keeps ${left}px and ${right}px of side padding at ${width}px: the content gets ${width - left - right}px.`,
+            `Override its copy on ${label(breakpoint)} with 16–24px at the sides, e.g. padding="64px 20px 64px 20px".`,
+          ),
+        ]
+      : [];
+  });
+};
+
+/** Text styles keep their desktop size on a phone unless they have a size for narrow widths. */
+const narrowType: PageRule = (breakpoint, context) => {
+  const width = narrowWidthOf(breakpoint);
+
+  if (width === null || width > PHONE_MAX_WIDTH_PX) {
+    return [];
+  }
+
+  const large = new Map<string, AuditTextStyle>();
+
+  for (const node of walk(breakpoint).filter(isText)) {
+    const style = context.textStyle(node.attributes?.["textStylePreset"]);
+
+    if (style !== null && (style.narrowFontSize ?? 0) > PHONE_HEADING_MAX_PX) {
+      large.set(style.name, style);
+    }
+  }
+
+  return large.size === 0
+    ? []
+    : [
+        issue(
+          "narrow-type",
+          "likely",
+          breakpoint,
+          `${[...large.values()].map((style) => `"${style.name}" (${style.narrowFontSize}px)`).join(", ")} keep their desktop size at ${width}px: long words break and a headline fills the screen.`,
+          `Give these text styles a phone size with text_styles_upsert breakpoints, about half the desktop size and at most ${PHONE_HEADING_MAX_PX}px, once the page has its breakpoints.`,
+        ),
+      ];
+};
+
+/** Checks of each breakpoint's own layout: copies of the primary breakpoint get their own. */
+export const BREAKPOINT_RULES: readonly PageRule[] = [
   containerWidths,
   sectionRhythm,
-  headings,
-  templateHabits,
-  noImagery,
-  centeredEverything,
+  narrowGrid,
+  narrowRow,
+  narrowPadding,
+  narrowType,
 ];
+
+/** Checks of the page's content, once on the primary breakpoint: the others show the same content. */
+export const CONTENT_RULES: readonly PageRule[] = [headings, templateHabits, noImagery, centeredEverything];
 
 /** Checks on the project's text styles as a whole. */
 export function projectIssues(page: SerializedNode, context: AuditContext): AuditIssue[] {
@@ -716,9 +857,14 @@ export function projectIssues(page: SerializedNode, context: AuditContext): Audi
   const headingSizes = context.textStyles
     .filter((style) => /^h[1-2]$/.test(style.tag))
     .flatMap((style) => (style.fontSize === null ? [] : [style.fontSize]));
+  // A paragraph style above body size is a quote or a lead: measuring against it would hide a strong hierarchy.
   const bodySizes = context.textStyles
     .filter((style) => style.tag === "p")
-    .flatMap((style) => (style.fontSize === null || style.fontSize < 14 ? [] : [style.fontSize]));
+    .flatMap((style) =>
+      style.fontSize === null || style.fontSize < BODY_SIZE_MIN_PX || style.fontSize > BODY_SIZE_MAX_PX
+        ? []
+        : [style.fontSize],
+    );
 
   if (headingSizes.length > 0 && bodySizes.length > 0) {
     const ratio = Math.max(...headingSizes) / Math.max(...bodySizes);

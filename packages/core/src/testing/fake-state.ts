@@ -53,7 +53,23 @@ export function defaultState(): FakeFramerState {
     components: [],
     collections: [],
     branching: true,
-    breakpointWidths: [1200, 810, 390],
+    breakpoints: [
+      {
+        id: "breakpoint-desktop",
+        name: "Desktop",
+        width: 1200,
+      },
+      {
+        id: "breakpoint-tablet",
+        name: "Tablet",
+        width: 810,
+      },
+      {
+        id: "breakpoint-phone",
+        name: "Phone",
+        width: 390,
+      },
+    ],
     appliedDsl: [],
     serializedNodes: {},
     systemPrompt: "# Overview\n\nFake prompt.\n",

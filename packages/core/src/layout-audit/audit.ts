@@ -2,13 +2,14 @@ import { AUDIT_MAX_ISSUES, AUDIT_SEVERITIES } from "../constants/layout-audit.ts
 import type { SerializedNode } from "../types/dsl.ts";
 import type { FramerPort, TextStyleData } from "../types/framer-port.ts";
 import type { AuditContext, AuditIssue, AuditTextStyle } from "../types/layout-audit.ts";
-import { NODE_RULES, PAGE_RULES, projectIssues } from "./rules.ts";
+import { BREAKPOINT_RULES, CONTENT_RULES, NODE_RULES, projectIssues } from "./rules.ts";
 import { childrenOf, isNode, walk } from "./tree.ts";
 
 /**
  * Finds classes of layout defects in a node tree, as nodes_read reads it (the same through the plugin and the Server
- * API): mixed alignment, ragged cards, text links, widths that do not line up, template habits. Read-only and
- * deterministic. A page node also gets the checks across its breakpoints and the project's text styles.
+ * API): mixed alignment, ragged cards, text links, widths that do not line up, layouts a narrow breakpoint keeps from
+ * desktop, template habits. Read-only and deterministic. A page node also gets the checks of each breakpoint, the
+ * content checks once (on its primary breakpoint: the others copy its content), and the project's text styles.
  */
 export function auditTree(root: SerializedNode, context: AuditContext): AuditIssue[] {
   if (!isNode(root)) {
@@ -16,10 +17,13 @@ export function auditTree(root: SerializedNode, context: AuditContext): AuditIss
   }
 
   const nodeIssues = walk(root).flatMap((node) => NODE_RULES.flatMap((rule) => rule(node, context)));
+  const breakpoints = childrenOf(root);
+  const primary = breakpoints.find((breakpoint) => breakpoint.$isPrimary) ?? breakpoints[0];
   const pageIssues =
     root.type === "WebPageNode"
       ? [
-          ...childrenOf(root).flatMap((breakpoint) => PAGE_RULES.flatMap((rule) => rule(breakpoint, context))),
+          ...breakpoints.flatMap((breakpoint) => BREAKPOINT_RULES.flatMap((rule) => rule(breakpoint, context))),
+          ...(primary === undefined ? [] : CONTENT_RULES.flatMap((rule) => rule(primary, context))),
           ...projectIssues(root, context),
         ]
       : [];
@@ -50,6 +54,9 @@ export async function auditContext(port: FramerPort): Promise<AuditContext> {
 function summarize(style: TextStyleData): AuditTextStyle {
   const size = cssPx(style.fontSize);
 
+  // Breakpoint slots run widest to narrowest: the last one is what phones get.
+  const narrowest = style.breakpoints.at(-1)?.fontSize ?? style.fontSize;
+
   return {
     name: style.name,
     tag: style.tag,
@@ -58,6 +65,7 @@ function summarize(style: TextStyleData): AuditTextStyle {
     family: style.font.family,
     balance: style.balance,
     fontSize: size,
+    narrowFontSize: cssPx(narrowest),
     letterSpacing: relative(style.letterSpacing, size),
     lineHeight: relative(style.lineHeight, size),
   };

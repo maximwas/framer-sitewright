@@ -40,8 +40,17 @@ Then read `direction` ("Looks that read as generated") and change every part tha
 
 ## 5. Breakpoints
 
-- Tablet 810 and Phone 390 replicas (needs a Server API key: `CREATE_VARIANT`). Halve section padding on phone, side
-  padding 16–24px, display sizes ×0.4–0.67, grids of 3+ columns become one column or a vertical stack.
+- Add Tablet 810 and Phone 390 with `breakpoints_add` (no key needed). Then give the display text styles their
+  tablet and phone sizes (`text_styles_upsert` breakpoints): the slots follow the page's breakpoints, so add those
+  first.
+- Adapt each breakpoint by overriding its copies with `design_apply` xml, by compound id
+  `<breakpoint id><node id>` (`nodes_read` on the breakpoint lists them): section padding ×0.5 on phone, side padding
+  16–24px, grids of 3+ columns become one column (`layout="stack" stackDirection="vertical"`), columns side by side
+  stack vertically, images keep their `aspectRatio`, the header keeps the wordmark and one action (the other links get
+  `visible="false"` on their copies) unless there is a menu component.
+- New layers go into the primary breakpoint; a copy takes overrides, not children.
+- `layout_audit` lists what a narrow breakpoint kept from desktop (`narrow-grid`, `narrow-row`, `narrow-padding`,
+  `narrow-type`): fix them all.
 
 ## 6. Verify before saying it is done
 

@@ -58,6 +58,30 @@ export const DISPLAY_LINE_HEIGHT_MAX = 1.25;
 /** The largest heading over the body size below which nothing dominates (top sites: median about 6.5). */
 export const HIERARCHY_RATIO_MIN = 3.5;
 
+/** Paragraph styles from this size to BODY_SIZE_MAX_PX are body text; larger ones are a quote or a lead, not body. */
+export const BODY_SIZE_MIN_PX = 14;
+
+export const BODY_SIZE_MAX_PX = 24;
+
+/** A breakpoint at most this wide is a phone; at most TABLET_MAX_WIDTH_PX, a tablet. */
+export const PHONE_MAX_WIDTH_PX = 600;
+
+export const TABLET_MAX_WIDTH_PX = 1024;
+
+/** Grid columns that still fit: on a phone two (logos, thumbnails), on a tablet three. */
+export const PHONE_GRID_MAX_COLUMNS = 2;
+
+export const TABLET_GRID_MAX_COLUMNS = 3;
+
+/** A child of a horizontal stack this wide (or filling) is a column, which a phone has no room for beside another. */
+export const ROW_COLUMN_MIN_PX = 120;
+
+/** Side padding a phone section can afford (top sites: 16–24px). */
+export const PHONE_SIDE_PADDING_MAX_PX = 32;
+
+/** The largest heading a 390px screen holds without breaking words (top sites: 40–56px). */
+export const PHONE_HEADING_MAX_PX = 56;
+
 /** Above this share of centered headings a page reads as centered everything (top sites: about 16%). */
 export const CENTERED_SHARE_MAX = 0.5;
 

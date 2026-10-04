@@ -9,7 +9,7 @@ import type {
   TextStyleWrite,
   WebPageData,
 } from "../types/framer-port.ts";
-import type { FakeColorStyle, FakeFramerState, FakeTextStyle } from "../types/testing.ts";
+import type { FakeBreakpoint, FakeColorStyle, FakeFramerState, FakeTextStyle } from "../types/testing.ts";
 import { normalizeColor } from "../utils/color.ts";
 import { newTextStyle, stylePath } from "./fake-state.ts";
 
@@ -83,6 +83,23 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
     }
   }
 
+  /** A breakpoint frame as the Plugin API reads it: the first is the primary, the others its copies. */
+  function breakpointFrame(breakpoint: FakeBreakpoint) {
+    const primary = state.breakpoints[0];
+    const isPrimary = primary?.id === breakpoint.id;
+
+    return {
+      id: breakpoint.id,
+      __class: "FrameNode",
+      name: breakpoint.name,
+      width: `${breakpoint.width}px`,
+      isBreakpoint: true,
+      isPrimaryBreakpoint: isPrimary,
+      isReplica: !isPrimary,
+      originalId: isPrimary ? null : (primary?.id ?? null),
+    };
+  }
+
   function codeFileHandle(file: FakeFramerState["codeFiles"][number]): CodeFileHandle {
     return {
       ...file,
@@ -133,15 +150,10 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
     getNodesWithType,
     getCollections: async () => [...state.collections],
     getChildren: async (nodeId) =>
-      state.webPages.find((page) => page.id === nodeId)?.path === "/"
-        ? state.breakpointWidths.map((width, index) => ({
-            id: `breakpoint-${index}`,
-            isBreakpoint: true,
-            width: `${width}px`,
-          }))
-        : [],
+      state.webPages.find((page) => page.id === nodeId)?.path === "/" ? state.breakpoints.map(breakpointFrame) : [],
     removeNodes: async (nodeIds) => {
       state.webPages = state.webPages.filter((page) => !nodeIds.includes(page.id));
+      state.breakpoints = state.breakpoints.filter((breakpoint) => !nodeIds.includes(breakpoint.id));
     },
     uploadImage: async ({ image, name }) => {
       const id = nextId("image");
@@ -183,7 +195,36 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
       };
     },
     getNode: async (nodeId) => {
+      const page = state.webPages.find((candidate) => candidate.id === nodeId);
+      const breakpoint = state.breakpoints.find((candidate) => candidate.id === nodeId);
       const controls = state.instanceControls[nodeId];
+
+      if (page !== undefined) {
+        return {
+          ...page,
+          __class: "WebPageNode",
+          addBreakpoint: async (basedOn: string, { name, width }: { name: string; width: number }) => {
+            const added = {
+              id: nextId("breakpoint"),
+              name,
+              width,
+            };
+
+            // Like Framer: a copy of the breakpoint it is based on.
+            if (!state.breakpoints.some((candidate) => candidate.id === basedOn)) {
+              throw new Error(`No breakpoint ${basedOn} to copy.`);
+            }
+
+            state.breakpoints.push(added);
+
+            return breakpointFrame(added);
+          },
+        };
+      }
+
+      if (breakpoint !== undefined) {
+        return breakpointFrame(breakpoint);
+      }
 
       return controls === undefined
         ? null
@@ -195,8 +236,11 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
             },
           };
     },
-    // The fake project has no canvas nodes to write: node work goes through the fake framer.agent instead.
-    getParent: async () => null,
+    // The fake project's canvas is the home page's breakpoints; other node work goes through the fake framer.agent.
+    getParent: async (nodeId) =>
+      state.breakpoints.some((breakpoint) => breakpoint.id === nodeId)
+        ? (state.webPages.find((page) => page.path === "/") ?? null)
+        : null,
     createFrameNode: async () => {
       throw new Error("The fake project has no Plugin API canvas nodes.");
     },

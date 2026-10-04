@@ -46,8 +46,8 @@ export interface FakeFramerState {
   collections: CollectionData[];
   /** false plays a project without branches, i.e. on a plan below Pro. */
   branching: boolean;
-  /** Widths of the home page's breakpoints, widest first. */
-  breakpointWidths: number[];
+  /** The home page's breakpoints, the primary first; the rest copy it. */
+  breakpoints: FakeBreakpoint[];
   /** Every applyChanges call, in order. */
   appliedDsl: string[];
   serializedNodes: Record<string, unknown>;
@@ -73,6 +73,12 @@ export interface FakeFramerState {
   publishes: number;
   /** Component instances' control values, by node id (getNode, setAttributes). */
   instanceControls: Record<string, Record<string, unknown>>;
+}
+
+export interface FakeBreakpoint {
+  id: string;
+  name: string;
+  width: number;
 }
 
 export interface FakeIconSet {

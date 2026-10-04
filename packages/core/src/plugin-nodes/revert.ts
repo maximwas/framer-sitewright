@@ -1,5 +1,10 @@
 import { SNAPSHOT_DEPTH } from "../constants/history.ts";
-import { PLUGIN_CREATABLE_TYPES, PLUGIN_DEFAULT_VALUES } from "../constants/plugin-nodes.ts";
+import {
+  BREAKPOINT_PLACEMENT_ATTRIBUTES,
+  PLUGIN_CREATABLE_TYPES,
+  PLUGIN_DEFAULT_VALUES,
+} from "../constants/plugin-nodes.ts";
+import { PIXEL_WIDTH } from "../constants/text-styles.ts";
 import { labelOf } from "../history/activity.ts";
 import { applyAliases } from "../history/aliases.ts";
 import type { FramerRuntime } from "../types/framer.ts";
@@ -12,10 +17,11 @@ import type {
   RevertResult,
 } from "../types/history.ts";
 import type { PluginNodeRecord, StyleLookup } from "../types/plugin-nodes.ts";
+import { errorMessage } from "../utils/errors.ts";
 import { fromPluginNode, toPluginAttributes } from "./attributes.ts";
+import { addBreakpoint, deletionSnapshot } from "./breakpoints.ts";
 import { dslValueOf, layoutOf, nodeRecord, setTextOf, textOf } from "./node-record.ts";
 import { readPluginTree } from "./read.ts";
-import { snapshotsOf } from "./snapshots.ts";
 
 /**
  * Reverts node steps through the Plugin API, without framer.agent: created nodes are removed, changed attributes and
@@ -89,10 +95,12 @@ export class PluginNodeRevert {
   async #remove(step: NodeStep): Promise<{ outcome: RevertOutcome; note: string | null }> {
     if (!this.#options.dryRun) {
       const tree = await readPluginTree(this.#port, step.id, SNAPSHOT_DEPTH);
+      const deletion =
+        tree === null ? null : await deletionSnapshot(this.#port, tree, tree.$parentId ?? "", step.after?.index ?? 0);
 
       await this.#port.removeNodes([step.id]);
 
-      if (tree !== null) {
+      if (tree !== null && deletion !== null) {
         this.#options.history?.record({
           ...step,
           change: "deleted",
@@ -100,8 +108,8 @@ export class PluginNodeRevert {
             parentId: step.after?.parentId ?? tree.$parentId ?? null,
             index: step.after?.index ?? null,
             attributes: step.after?.attributes ?? {},
-            nodes: snapshotsOf(tree, tree.$parentId ?? "", step.after?.index ?? 0),
-            overrides: {},
+            nodes: deletion.nodes,
+            overrides: deletion.overrides,
           },
           after: null,
         });
@@ -163,10 +171,21 @@ export class PluginNodeRevert {
       return outcome("conflict", "No snapshot of the deleted node to recreate it from.");
     }
 
+    if (root.replicaOf !== null) {
+      return this.#recreateBreakpoint(step, root);
+    }
+
     const skipped = nodes.filter((node) => !PLUGIN_CREATABLE_TYPES.has(node.type));
+    const notes: string[] = [];
 
     if (!PLUGIN_CREATABLE_TYPES.has(root.type)) {
       return outcome("conflict", `A ${root.type} can be recreated only with a Server API key.`);
+    }
+
+    if (skipped.length > 0) {
+      notes.push(
+        `${skipped.length} node(s) inside (${[...new Set(skipped.map((node) => node.type))].join(", ")}) need a Server API key to come back.`,
+      );
     }
 
     if (!this.#options.dryRun) {
@@ -189,14 +208,120 @@ export class PluginNodeRevert {
       if (newRoot !== undefined && step.before?.index !== null && step.before?.index !== undefined) {
         await this.#port.setParent(newRoot, parentId, step.before.index);
       }
+
+      // The other breakpoints' overrides for these nodes went with them: their copies get them back.
+      const copies = Object.entries(step.before?.overrides ?? {}).flatMap(([breakpoint, byNode]) =>
+        Object.entries(byNode).map(
+          ([nodeId, attributes]) => [`${breakpoint}${this.#remap.get(nodeId) ?? nodeId}`, attributes] as const,
+        ),
+      );
+      const lost = await this.#override(copies);
+
+      if (lost.length > 0) {
+        notes.push(`Overrides that need a Server API key did not come back: ${lost.join(", ")}.`);
+      }
     }
+
+    return outcome("recreated", notes.length === 0 ? null : notes.join(" "));
+  }
+
+  /**
+   * Brings a deleted breakpoint back: Framer copies the primary breakpoint again, then the breakpoint's own values and
+   * its layers' overrides are set on the new copies.
+   */
+  async #recreateBreakpoint(
+    step: NodeStep,
+    root: NodeSnapshot,
+  ): Promise<{ outcome: RevertOutcome; note: string | null }> {
+    const width = PIXEL_WIDTH.exec(String(root.attributes.width ?? ""));
+    const parentId = step.before?.parentId ?? root.parentId;
+
+    if (width === null || root.replicaOf === null) {
+      return outcome("conflict", "The snapshot does not say the breakpoint's width.");
+    }
+
+    if (this.#options.dryRun) {
+      return outcome("recreated");
+    }
+
+    let id: string;
+
+    try {
+      id = await addBreakpoint(this.#port, parentId, this.#remap.get(root.replicaOf) ?? root.replicaOf, {
+        name: root.name ?? "Breakpoint",
+        width: Number(width[1]),
+      });
+    } catch (error) {
+      // A component's variant, for one: the Plugin API adds breakpoints to web pages only.
+      return outcome("conflict", `${errorMessage(error)} It needs a Server API key to come back.`);
+    }
+
+    this.#remap.set(root.id, id);
+    this.#options.history?.recordRemap(root.id, id);
+    this.#options.history?.record({
+      kind: "node",
+      id,
+      type: root.type,
+      name: root.name,
+      pagePath: step.pagePath,
+      change: "created",
+      before: null,
+      after: {
+        parentId,
+        index: null,
+        attributes: { width: `${width[1]}px` },
+        nodes: [],
+        overrides: {},
+      },
+    });
+
+    const overrides = step.before?.overrides ?? {};
+    const layers = overrides[root.id] ?? Object.values(overrides)[0] ?? {};
+    const own = Object.fromEntries(
+      Object.entries(root.attributes).filter(([name]) => !BREAKPOINT_PLACEMENT_ATTRIBUTES.has(name)),
+    );
+    const lost = await this.#override([
+      [id, own],
+      ...Object.entries(layers).map(([originalId, attributes]) => [`${id}${originalId}`, attributes] as const),
+    ]);
 
     return outcome(
       "recreated",
-      skipped.length === 0
-        ? null
-        : `${skipped.length} node(s) inside (${[...new Set(skipped.map((node) => node.type))].join(", ")}) need a Server API key to come back.`,
+      lost.length === 0 ? null : `Overrides that need a Server API key did not come back: ${lost.join(", ")}.`,
     );
+  }
+
+  /** Sets attributes on breakpoint copies by id; what the Plugin API cannot set (or a copy that is gone) comes back. */
+  async #override(targets: readonly (readonly [string, DslAttributeMap])[]): Promise<string[]> {
+    const lost: string[] = [];
+
+    for (const [id, attributes] of targets) {
+      if (Object.keys(attributes).length === 0) {
+        continue;
+      }
+
+      const node = nodeRecord(await this.#port.getNode(id));
+
+      if (node === null) {
+        lost.push(id);
+        continue;
+      }
+
+      const { text, ...rest } = attributes;
+      const converted = toPluginAttributes(fromPluginNode(node, null).type, stringify(rest), await this.#lookup());
+
+      lost.push(...converted.unsupported, ...converted.invalid);
+
+      if (Object.keys(converted.attributes).length > 0) {
+        await this.#port.setAttributes(id, converted.attributes);
+      }
+
+      if (typeof text === "string") {
+        await setTextOf(node, text);
+      }
+    }
+
+    return lost;
   }
 
   async #create(snapshot: NodeSnapshot, parentId: string, pagePath: string): Promise<void> {

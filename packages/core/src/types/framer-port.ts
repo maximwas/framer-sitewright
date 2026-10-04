@@ -150,7 +150,10 @@ export interface ImageAssetInfo {
 /** A node on the canvas. A page's breakpoints are frames that say so, with their width ("1440px"). */
 export interface CanvasNodeData {
   readonly id: string;
+  readonly name?: string | null;
   readonly isBreakpoint?: boolean;
+  /** The breakpoint the others replicate (Desktop); the rest are replicas of it. */
+  readonly isPrimaryBreakpoint?: boolean;
   readonly width?: string | null;
 }
 

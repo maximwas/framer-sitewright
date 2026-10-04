@@ -1,4 +1,5 @@
 import {
+  breakpointsAdd,
   designApply,
   type FramerRuntime,
   HistoryRecorder,
@@ -138,5 +139,83 @@ describe.skipIf(config === null)("pages without a Server API key (the Plugin API
     // Undoing the creation removes the card.
     await undo(created.steps.filter((step) => step.id === card));
     expect(await runtime.port.getNode(card ?? "")).toBeNull();
+  });
+
+  it("adds a breakpoint, overrides its copies, keeps them through an undone deletion, and undoes the breakpoint", async () => {
+    const framer = runtime.port as unknown as { createWebPage(path: string): Promise<{ id: string }> };
+    const pagePath = `/${TEST_PREFIX}-breakpoints`;
+    const page = (await framer.createWebPage(pagePath)).id;
+
+    try {
+      const [primary] = (await runtime.port.getChildren(page)).filter((child) => child.isBreakpoint);
+
+      expect(primary).toBeDefined();
+
+      const built = await apply(
+        `<FrameNode parent="${primary?.id}" key="row" name="Row" layout="stack" stackDirection="horizontal" stackAlignment="start" stackDistribution="start" width="1fr" height="auto" padding="64px">
+          <FrameNode key="left" name="Left" width="1fr" height="100px" fill="#eeeeee" />
+          <FrameNode key="right" name="Right" width="1fr" height="100px" fill="#dddddd" />
+        </FrameNode>`,
+      );
+      const row = built.output.keys?.row ?? "";
+      const added = new HistoryRecorder();
+      const { breakpoints } = await runOperation(
+        breakpointsAdd,
+        {
+          runtime,
+          history: added,
+        },
+        {
+          pagePath,
+          breakpoints: [
+            {
+              name: "Phone",
+              width: 390,
+            },
+          ],
+        },
+      );
+      const phone = breakpoints.find((breakpoint) => breakpoint.added)?.id ?? "";
+
+      expect(phone).not.toBe("");
+
+      // The phone's copy of the row takes overrides by its compound id; the desktop row keeps its own values.
+      const adapted = await apply(`<FrameNode id="${phone}${row}" stackDirection="vertical" padding="20px" />`);
+
+      expect(adapted.output.ok).toBe(true);
+      expect(await read(`${phone}${row}`)).toMatch(
+        /\$isReplica="true"[^>]*stackDirection="vertical"|stackDirection="vertical"[^>]*\$isReplica/,
+      );
+      expect(await read(row)).toContain('stackDirection="horizontal"');
+
+      // A copy takes no new layers: refused before any change.
+      const refused = await apply(`<FrameNode parent="${phone}${row}" name="Extra" width="10px" height="10px" />`);
+
+      expect(refused.output.ok).toBe(false);
+      expect(refused.output.errors[0]?.message).toContain("primary breakpoint");
+
+      // Deleting the row takes the phone's overrides with it; undo brings both back.
+      const deleted = await apply(`<FrameNode id="${row}" $delete="true" />`);
+      const recreated = await undo(deleted.steps);
+      const newRow = recreated.results[0]?.newId ?? "";
+
+      expect(recreated.results).toMatchObject([{ outcome: "recreated" }]);
+      expect(await read(`${phone}${newRow}`)).toContain('stackDirection="vertical"');
+
+      // Undo removes the breakpoint, redo brings it back as a copy of the primary one.
+      const removed = await runOperation(
+        historyRevert,
+        {
+          runtime,
+          history: new HistoryRecorder(),
+        },
+        { steps: [...added.steps] },
+      );
+
+      expect(removed.results).toMatchObject([{ outcome: "deleted" }]);
+      expect((await runtime.port.getChildren(page)).filter((child) => child.isBreakpoint)).toHaveLength(1);
+    } finally {
+      await runtime.port.removeNodes([page]);
+    }
   });
 });

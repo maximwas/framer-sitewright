@@ -17,6 +17,8 @@ export interface AuditTextStyle {
   readonly balance: boolean;
   /** The base size in px, or null when it is not in px. */
   readonly fontSize: number | null;
+  /** The size in px at the narrowest breakpoint slot (phones), the base size without slots; null when not in px. */
+  readonly narrowFontSize: number | null;
   /** Tracking in em, or null when unknown. */
   readonly letterSpacing: number | null;
   /** Line height as a multiple of the size, or null when unknown. */

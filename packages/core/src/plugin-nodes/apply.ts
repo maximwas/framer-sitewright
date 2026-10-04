@@ -14,9 +14,10 @@ import { attributesOfElement, ownProp } from "../xml/xml-attributes.ts";
 import { invalidXml } from "../xml/xml-errors.ts";
 import { textAttribute } from "../xml/xml-text.ts";
 import { fromPluginNode, toPluginAttributes } from "./attributes.ts";
+import { deletionSnapshot } from "./breakpoints.ts";
 import { dslValueOf, layoutOf, nameOf, nodeRecord, setTextOf, textOf } from "./node-record.ts";
 import { readPluginTree } from "./read.ts";
-import { dslAttributes, snapshotsOf } from "./snapshots.ts";
+import { dslAttributes } from "./snapshots.ts";
 
 /**
  * design_apply without framer.agent (no Server API key): the XML through Plugin API calls. The whole batch is checked
@@ -63,6 +64,12 @@ export async function applyXmlWithPluginApi(
       ],
       {},
     );
+  }
+
+  const copies = await breakpointCopyIssues(port, planner.plan);
+
+  if (copies.length > 0) {
+    return result(false, "Nothing was changed: a breakpoint's copy takes overrides only.", copies, {});
   }
 
   const runner = new Runner(port, styles, pagePath, history);
@@ -403,7 +410,7 @@ class Runner {
     const parentId = tree.$parentId ?? null;
     const siblings = parentId === null ? [] : await this.#port.getChildren(parentId);
     const index = siblings.findIndex((sibling) => sibling.id === item.id);
-    const nodes = snapshotsOf(tree, parentId ?? "", Math.max(index, 0));
+    const { nodes, overrides } = await deletionSnapshot(this.#port, tree, parentId ?? "", Math.max(index, 0));
 
     if (nodes.some((node) => !PLUGIN_CREATABLE_TYPES.has(node.type))) {
       this.#history?.markIncomplete(
@@ -422,6 +429,7 @@ class Runner {
       before: {
         ...state(parentId, index === -1 ? null : index, dslAttributes(tree.attributes)),
         nodes,
+        overrides,
       },
       after: null,
     });
@@ -474,6 +482,50 @@ class Runner {
       ]),
     );
   }
+}
+
+/**
+ * What Framer does not take in a breakpoint's copy (a replica), found before any change: new layers go into the
+ * primary breakpoint, which every copy shows, and a copy's layers are hidden there rather than deleted.
+ */
+async function breakpointCopyIssues(port: FramerPort, plan: readonly NodePlan[]): Promise<DslIssue[]> {
+  const read = new Map<string, Promise<unknown>>();
+  const issues: DslIssue[] = [];
+
+  for (const item of plan) {
+    const id =
+      item.kind === "update" ? null : item.kind === "delete" ? item.id : "id" in item.parent ? item.parent.id : null;
+
+    if (id === null) {
+      continue;
+    }
+
+    if (!read.has(id)) {
+      read.set(id, port.getNode(id));
+    }
+
+    const node = nodeRecord(await read.get(id));
+
+    if (node === null || !node.isReplica) {
+      continue;
+    }
+
+    const original = String(node.originalId);
+
+    if (item.kind === "create") {
+      issues.push({
+        message: `line ${item.element.line}: ${id} is a breakpoint's copy of ${original}: add new layers to the primary breakpoint (every breakpoint shows them), and set visible="false" on the copies where one should not show.`,
+        targets: [targetOf(item)],
+      });
+    } else if (!node.isBreakpoint) {
+      issues.push({
+        message: `line ${item.element.line}: ${id} is a breakpoint's copy of ${original} and cannot be deleted alone: set visible="false" on it, or delete ${original} from every breakpoint.`,
+        targets: [id],
+      });
+    }
+  }
+
+  return issues;
 }
 
 function result(ok: boolean, message: string, errors: DslIssue[], keys: Record<string, string>): DesignApplyResult {

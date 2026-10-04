@@ -33,6 +33,7 @@ const EXPECTED_TOOLS = [
   "activity_redo",
   "activity_restore",
   "activity_undo",
+  "breakpoints_add",
   "code_file_delete",
   "code_file_read",
   "code_file_write",

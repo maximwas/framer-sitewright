@@ -12,14 +12,15 @@ how to get the same result anyway.
   `rotation`, `opacity`, `visible`, `overflow`.
 - Look: `fill` (a color, a token, or an image URL: uploaded to the project and set as the frame's image), `radius`,
   `border`, `link` (on frames), `textStylePreset`.
-- Tokens and text styles (`color_tokens_upsert`, `text_styles_upsert`, including alignment and `balance`), SVG
-  (`svg_add`), image upload (`image_upload`), component controls, code files when allowed.
+- Tokens and text styles (`color_tokens_upsert`, `text_styles_upsert`, including alignment, `balance` and breakpoint
+  sizes), SVG (`svg_add`), image upload (`image_upload`), component controls, code files when allowed.
+- Breakpoints: `breakpoints_add`, then overrides on their copies by compound id `<breakpoint id><node id>`; undo
+  brings a deleted breakpoint back with its overrides.
 
 ## Needs a key (the DSL)
 
 - Effects and motion (hover, appear, loop, scroll), variants and components, rich text blocks and runs, `textColor`
-  and `type` on a text node, shadows, gradient fills, link styles, breakpoint replicas,
-  screenshots, stock photo and icon catalogs.
+  and `type` on a text node, shadows, gradient fills, link styles, screenshots, stock photo and icon catalogs.
 
 ## Same result anyway
 
@@ -30,7 +31,8 @@ how to get the same result anyway.
 - **Equal heights, alignment, containers:** all layout attributes work; follow `layout`.
 - **Images:** `fill="https://…"` on a frame with a size (`width="1fr"`, `aspectRatio`, any px height) uploads the image
   and fills the frame. Stock search needs a key, so use the client's images or direct image URLs; never icons instead.
-- **Breakpoints:** build the desktop layout so it holds at every width (fill widths, `maxWidth`, wrapping stacks,
-  `gridColumnCount="auto-fill"`), and tell the user that tablet and phone tuning needs a key.
+- **Breakpoints:** build the desktop layout so it holds at every width (fill widths, `maxWidth`, wrapping stacks),
+  then add Tablet and Phone with `breakpoints_add` and override their copies (`workflow`, step 5). A phone menu that
+  opens needs a component, so a key: without one, keep the wordmark and one link in the phone header.
 
 When a batch asks for something on the key-only list, it is refused whole before any change; the message says what.
