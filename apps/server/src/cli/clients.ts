@@ -62,8 +62,11 @@ export async function addToCursor(server: Invocation, homeDir: string): Promise<
   let current: unknown = null;
 
   if (existsSync(file)) {
+    const text = await readFile(file, "utf8");
+
     try {
-      current = JSON.parse(await readFile(file, "utf8"));
+      // Cursor can leave an empty file behind: no config yet, not a broken one.
+      current = text.trim() === "" ? null : JSON.parse(text);
     } catch {
       throw new Error(`${file} is not valid JSON, so it was left as it is.`);
     }

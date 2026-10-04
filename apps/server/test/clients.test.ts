@@ -1,4 +1,8 @@
+import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { expect, it } from "vitest";
+import { addToCursor } from "../src/cli/clients.ts";
 import { mergeMcpServer } from "../src/utils/mcp-config.ts";
 import { parseCliArgs } from "../src/utils/parse-cli.ts";
 import { selfInvocation } from "../src/utils/self-invocation.ts";
@@ -27,6 +31,21 @@ it("adds the server to an MCP client's config once, keeping its other servers", 
   expect(mergeMcpServer(first.config, "sitewright", entry).changed).toBe(false);
   expect(mergeMcpServer(null, "sitewright", entry).config).toEqual({ mcpServers: { sitewright: entry } });
   expect(() => mergeMcpServer([], "sitewright", entry)).toThrow();
+});
+
+it("regression: fills an empty Cursor config instead of calling it broken JSON", async () => {
+  const home = await mkdtemp(join(tmpdir(), "sitewright-home-"));
+  const file = join(home, ".cursor", "mcp.json");
+  const server = {
+    command: "/usr/local/bin/node",
+    args: ["/opt/sitewright/dist/bin.mjs"],
+  };
+
+  await mkdir(join(home, ".cursor"));
+  await writeFile(file, "");
+  await addToCursor(server, home);
+
+  expect(JSON.parse(await readFile(file, "utf8"))).toEqual({ mcpServers: { sitewright: server } });
 });
 
 it("runs itself the way it was started: through npx from npx's cache, otherwise from its own files", () => {

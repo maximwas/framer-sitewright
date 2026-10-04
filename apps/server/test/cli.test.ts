@@ -1,3 +1,8 @@
+import { execFileSync } from "node:child_process";
+import { mkdtemp } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { hookCommand } from "../src/utils/hook-command.ts";
 import { nodeVersionProblem } from "../src/utils/node-version.ts";
@@ -92,4 +97,24 @@ describe("nodeVersionProblem", () => {
     expect(nodeVersionProblem("20.18.0", "24.11.0")).toContain("Node.js 24.11.0 or newer");
     expect(nodeVersionProblem("24.10.9", "24.11.0")).toContain("you have 24.10.9");
   });
+});
+
+it("regression: lists the saved keys outside a terminal too, since the list asks nothing", async () => {
+  const home = await mkdtemp(join(tmpdir(), "sitewright-cli-"));
+  const output = execFileSync(
+    process.execPath,
+    [fileURLToPath(new URL("../src/bin.ts", import.meta.url)), "key", "list"],
+    {
+      cwd: home,
+      env: {
+        ...process.env,
+        HOME: home,
+        SITEWRIGHT_HOME: join(home, ".sitewright"),
+      },
+      stdio: ["pipe", "pipe", "pipe"],
+      encoding: "utf8",
+    },
+  );
+
+  expect(output).toMatch(/No keys saved yet/);
 });

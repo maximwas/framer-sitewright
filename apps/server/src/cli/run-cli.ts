@@ -54,8 +54,9 @@ export async function runCli(argv: readonly string[]): Promise<void> {
       return;
     }
     case "key": {
-      if (!inTerminal()) {
-        process.stderr.write("`key` asks questions: run it in a terminal.\n");
+      // Adding and removing ask questions; the list does not, so scripts and agents can read it.
+      if (command.action !== "list" && !inTerminal()) {
+        process.stderr.write("`key` asks questions: run it in a terminal (`key list` works anywhere).\n");
         process.exitCode = 1;
 
         return;
