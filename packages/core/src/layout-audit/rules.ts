@@ -743,11 +743,7 @@ const narrowRow: PageRule = (breakpoint) => {
       return [];
     }
 
-    const columns = childrenOf(node).filter(
-      (child) =>
-        inFlow(child) &&
-        (sizeKind(attr(child, "width")) === "fill" || (px(attr(child, "width")) ?? 0) >= ROW_COLUMN_MIN_PX),
-    );
+    const columns = childrenOf(node).filter(isColumn);
 
     return columns.length >= 2
       ? [
@@ -762,6 +758,18 @@ const narrowRow: PageRule = (breakpoint) => {
       : [];
   });
 };
+
+/**
+ * A child of a row that takes width as content does: wide or filling, shown, and not a wrapper that only places
+ * fit-width items (a wordmark, a button), which stays as small as they are wherever the row puts it.
+ */
+function isColumn(child: SerializedNode): boolean {
+  const wide = sizeKind(attr(child, "width")) === "fill" || (px(attr(child, "width")) ?? 0) >= ROW_COLUMN_MIN_PX;
+  const inner = childrenOf(child).filter(inFlow);
+  const wrapper = inner.length > 0 && inner.every((item) => sizeKind(attr(item, "width")) === "fit");
+
+  return inFlow(child) && attr(child, "visible") !== "false" && wide && !wrapper;
+}
 
 /** Desktop side padding on a phone leaves the content a strip. */
 const narrowPadding: PageRule = (breakpoint) => {

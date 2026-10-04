@@ -478,4 +478,42 @@ describe("layout audit", () => {
 
     expect(issues.map((found) => found.rule)).not.toContain("flat-hierarchy");
   });
+
+  it("regression: a phone header of a wordmark, hidden links and a button is not columns side by side", () => {
+    const column = (name: string, child: SerializedNode, attributes: Record<string, string> = {}) =>
+      node(
+        "FrameNode",
+        name,
+        {
+          layout: "stack",
+          stackDirection: "horizontal",
+          width: "1fr",
+          ...attributes,
+        },
+        [child],
+      );
+    const header = node(
+      "FrameNode",
+      "Container",
+      {
+        layout: "stack",
+        stackDirection: "horizontal",
+        stackAlignment: "center",
+        stackDistribution: "start",
+        width: "1fr",
+        padding: "12px 20px 12px 20px",
+      },
+      [
+        column("Brand", text("Wordmark", "Label", "Kamin", { width: "auto" })),
+        column("Links", node("FrameNode", "Link", { width: "auto" }), { visible: "false" }),
+        column("Actions", node("FrameNode", "Button", { width: "auto" })),
+      ],
+    );
+    const phone = node("FrameNode", "Phone", { width: "390px" }, [
+      node("FrameNode", "Header", { width: "1fr" }, [header]),
+    ]);
+    const issues = auditTree(node("WebPageNode", "Home", {}, [phone]), context());
+
+    expect(issues.map((found) => found.rule)).not.toContain("narrow-row");
+  });
 });
