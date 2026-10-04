@@ -2,10 +2,49 @@
 import { framer, type ProtectedMethod } from "@framer/plugin";
 import type { FramerPort, FramerRuntime, PluginInfo, PluginPermission } from "@sitewright/core";
 import { version as pluginVersion } from "../../package.json";
-import { PLUGIN_WINDOW, REVEAL_MAX_ZOOM } from "../constants/ui.ts";
+import { NEW_TEXT_PLACEHOLDER, PLUGIN_WINDOW, REVEAL_MAX_ZOOM } from "../constants/ui.ts";
 
 // Compile-time conformance: if @framer/plugin drifts from the structural port, this line stops compiling.
-const port: FramerPort = framer;
+const framerPort: FramerPort = framer;
+
+/**
+ * The plugin's `framer`, plus text creation: @framer/plugin 5.1 declares createTextNode but ships it only on a class
+ * it never instantiates, so `framer` has none. Methods stay bound to `framer`: its private fields do not pass a proxy.
+ */
+const port: FramerPort = new Proxy(framerPort, {
+  get(target, key) {
+    if (key === "createTextNode") {
+      return target.createTextNode?.bind(target) ?? createTextNode;
+    }
+
+    const value: unknown = Reflect.get(target, key);
+
+    return typeof value === "function" ? value.bind(target) : value;
+  },
+});
+
+/**
+ * A text node through the public API: addText puts one on the canvas without naming it, so the text nodes before and
+ * after tell which it is; then it moves under its parent and takes its attributes.
+ */
+async function createTextNode(attributes: Record<string, unknown>, parentId?: string): Promise<unknown> {
+  const before = new Set((await framer.getNodesWithType("TextNode")).map((node) => node.id));
+
+  await framer.addText(NEW_TEXT_PLACEHOLDER);
+
+  const added = (await framer.getNodesWithType("TextNode")).filter((node) => !before.has(node.id));
+  const node = added[0];
+
+  if (node === undefined || added.length > 1) {
+    throw new Error(`Framer added ${added.length} text nodes for one: undo this call and apply the batch again.`);
+  }
+
+  if (parentId !== undefined) {
+    await framer.setParent(node.id, parentId);
+  }
+
+  return (await framerPort.setAttributes(node.id, attributes)) ?? node;
+}
 
 /** Operations run on the plugin's own `framer`, which has no framer.agent (DSL) and no screenshots. */
 export const pluginRuntime: FramerRuntime = {

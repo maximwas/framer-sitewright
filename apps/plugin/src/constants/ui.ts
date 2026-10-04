@@ -27,6 +27,9 @@ export const WINDOW_SILENT_MS = 3_500;
 /** The closest the canvas zooms when the journal opens a node: 1 is 100%. */
 export const REVEAL_MAX_ZOOM = 1;
 
+/** What a new text node holds until the batch sets its text: addText needs some. */
+export const NEW_TEXT_PLACEHOLDER = "Text";
+
 /** How long a copy button says "Copied". */
 export const COPIED_MS = 1_500;
 

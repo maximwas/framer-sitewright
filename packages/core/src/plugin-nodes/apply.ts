@@ -52,6 +52,23 @@ export async function applyXmlWithPluginApi(
     return result(false, NEEDS_KEY_MESSAGE, planner.issues, {});
   }
 
+  // Without text creation a batch with text would stop halfway: refuse it whole, before any change.
+  const text = planner.plan.find((item) => item.kind === "create" && item.type === "RichTextNode");
+
+  if (text !== undefined && port.createTextNode === undefined) {
+    return result(
+      false,
+      "This Framer runtime cannot create text nodes: nothing was changed.",
+      [
+        {
+          message: "This Framer runtime cannot create text nodes.",
+          targets: [targetOf(text)],
+        },
+      ],
+      {},
+    );
+  }
+
   const runner = new Runner(port, styles, pagePath, history);
 
   for (const item of planner.plan) {
@@ -60,7 +77,7 @@ export async function applyXmlWithPluginApi(
     } catch (error) {
       return result(
         false,
-        `Stopped at <${item.element.type}> (line ${item.element.line}): ${errorMessage(error)}. What ran before it is in the journal.`,
+        `Stopped at <${item.element.type}> (line ${item.element.line}): ${errorMessage(error).replace(/\.$/, "")}. What ran before it is in the journal.`,
         [
           {
             message: errorMessage(error),
