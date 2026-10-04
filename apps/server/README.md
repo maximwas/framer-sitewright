@@ -88,8 +88,8 @@ sitewright --help
 
 - **Design system:** `color_tokens_list`, `color_tokens_upsert`, `color_tokens_delete`, `text_styles_list`,
   `text_styles_upsert`, `text_styles_delete`, `fonts_search`.
-- **Pages and nodes:** `project_overview`, `nodes_read`, `design_apply`, `selection_get`, `node_screenshot`,
-  `framer_docs`.
+- **Pages and nodes:** `project_overview`, `nodes_read`, `design_apply`, `layout_audit`, `selection_get`,
+  `node_screenshot`, `framer_docs`.
 - **Components and assets:** `components_read`, `component_controls_set`, `icons_search`, `images_search`,
   `image_upload`, `svg_add`.
 - **Code** (off until you allow it): `custom_code_get`, `custom_code_set`, `code_files_list`, `code_file_read`,

@@ -2,28 +2,12 @@ import * as z from "zod";
 import { NODE_FORMATS, NODES_READ_MAX_CHARS } from "../../constants/nodes.ts";
 import { OperationError } from "../../errors.ts";
 import { parseSerializedNode } from "../../history/dsl/serialized.ts";
-import { readPluginTree } from "../../plugin-nodes/read.ts";
-import type { SerializedNode } from "../../types/dsl.ts";
-import type { FramerRuntime } from "../../types/framer.ts";
 import type { XmlChild, XmlElementNode } from "../../types/xml.ts";
 import { countOf } from "../../utils/text.ts";
 import { nodeToXml } from "../../xml/node-to-xml.ts";
 import { parseXml } from "../../xml/parse-xml.ts";
 import { defineOperation } from "../define.ts";
-
-async function pageRootId(runtime: FramerRuntime, pagePath: string): Promise<string> {
-  const page = (await runtime.port.getNodesWithType("WebPageNode")).find((candidate) => candidate.path === pagePath);
-
-  if (page === undefined) {
-    throw new OperationError(
-      "NOT_FOUND",
-      `No web page with path "${pagePath}".`,
-      "Call project_overview to list pages.",
-    );
-  }
-
-  return page.id;
-}
+import { pageRootId, readNodeTree } from "./read-tree.ts";
 
 export const nodesRead = defineOperation({
   name: "nodes.read",
@@ -53,18 +37,7 @@ export const nodesRead = defineOperation({
   }),
   async run({ runtime }, { nodeId, pagePath, depth, attributes, format }) {
     const id = nodeId ?? (await pageRootId(runtime, pagePath));
-    // Without framer.agent (no Server API key) the Plugin API reads the tree: the same shape, fewer attributes.
-    const node =
-      runtime.agent === null
-        ? filterAttributes(await readPluginTree(runtime.port, id, depth), attributes)
-        : await runtime.agent.serialize(
-            {
-              id,
-              depth,
-              ...(attributes === undefined ? {} : { attributeFilter: attributes }),
-            },
-            { pagePath },
-          );
+    const node = await readNodeTree(runtime, id, depth, pagePath, attributes);
 
     if (node === null || node === undefined) {
       throw new OperationError(
@@ -112,22 +85,6 @@ export const nodesRead = defineOperation({
     };
   },
 });
-
-/** The tree with only the attributes asked for, as serialize()'s attributeFilter gives it; all of them without a filter. */
-function filterAttributes(node: SerializedNode | null, names: readonly string[] | undefined): SerializedNode | null {
-  if (node === null || names === undefined) {
-    return node;
-  }
-
-  const attributes = Object.fromEntries(Object.entries(node.attributes ?? {}).filter(([name]) => names.includes(name)));
-  const children = (node.children ?? []).map((child) => filterAttributes(child as SerializedNode, names));
-
-  return {
-    ...node,
-    attributes,
-    ...(node.children === undefined ? {} : { children }),
-  };
-}
 
 function isElement(child: XmlChild): child is XmlElementNode {
   return child.kind === "element";

@@ -1,10 +1,8 @@
-import type * as z from "zod";
 import { SNAPSHOT_DEPTH } from "../constants/history.ts";
 import { PLUGIN_CREATABLE_TYPES } from "../constants/plugin-nodes.ts";
 import { XML_TEXT_ATTRIBUTE_TYPES } from "../constants/xml.ts";
 import { OperationError } from "../errors.ts";
-import type { DesignApplyResultSchema } from "../schemas/dsl.ts";
-import type { DslIssue } from "../types/dsl.ts";
+import type { DesignApplyResult, DslIssue } from "../types/dsl.ts";
 import type { FramerPort } from "../types/framer-port.ts";
 import type { DslAttributeMap } from "../types/history.ts";
 import type { OperationContext } from "../types/operations.ts";
@@ -20,8 +18,6 @@ import { dslValueOf, layoutOf, nameOf, nodeRecord, setTextOf, textOf } from "./n
 import { readPluginTree } from "./read.ts";
 import { dslAttributes, snapshotsOf } from "./snapshots.ts";
 
-type ApplyResult = z.input<typeof DesignApplyResultSchema>;
-
 /**
  * design_apply without framer.agent (no Server API key): the XML through Plugin API calls. The whole batch is checked
  * first: an element type the Plugin API cannot create, or an attribute only the DSL has, refuses the batch before
@@ -32,7 +28,7 @@ export async function applyXmlWithPluginApi(
   { runtime, history }: OperationContext,
   xml: string,
   pagePath: string,
-): Promise<ApplyResult> {
+): Promise<DesignApplyResult> {
   const port = runtime.port;
   const styles: StyleLookup = {
     colors: await port.getColorStyles(),
@@ -465,7 +461,7 @@ class Runner {
   }
 }
 
-function result(ok: boolean, message: string, errors: DslIssue[], keys: Record<string, string>): ApplyResult {
+function result(ok: boolean, message: string, errors: DslIssue[], keys: Record<string, string>): DesignApplyResult {
   return {
     ok,
     message,

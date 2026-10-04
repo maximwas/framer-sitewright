@@ -79,6 +79,7 @@ function styleAttributes({ plain, font, color, breakpoints }: TextStyleChanges):
     textTransform: plain.transform,
     textAlignment: plain.alignment,
     textDecoration: plain.decoration,
+    textWrap: plain.balance === undefined ? undefined : plain.balance ? "balance" : null,
     ...fontAttributes(font),
     textColor: color === undefined ? undefined : colorValue(color),
     ...dslBreakpointAttributes(breakpoints, ["medium", "small", "extraSmall"]),

@@ -13,6 +13,7 @@ import { componentControlsSet } from "./components/controls-set.ts";
 import { designApply } from "./design/apply.ts";
 import { fontsSearch } from "./fonts/search.ts";
 import { historyRevert } from "./history/revert.ts";
+import { layoutAudit } from "./nodes/audit.ts";
 import { nodesRead } from "./nodes/read.ts";
 import { selectionGet } from "./nodes/selection.ts";
 import { projectCapabilities } from "./project/capabilities.ts";
@@ -35,6 +36,7 @@ const OPERATIONS: readonly AnyOperation[] = [
   textStylesDelete,
   fontsSearch,
   nodesRead,
+  layoutAudit,
   selectionGet,
   designApply,
   historyRevert,

@@ -52,6 +52,7 @@ const EXPECTED_TOOLS = [
   "icons_search",
   "image_upload",
   "images_search",
+  "layout_audit",
   "node_screenshot",
   "nodes_read",
   "project_overview",

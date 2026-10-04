@@ -1,6 +1,12 @@
 import type * as z from "zod";
 import type { DSL_VERBS } from "../constants/dsl.ts";
-import type { DslIssueSchema, DslLintIssueSchema, DslResultSchema, SerializedNodeSchema } from "../schemas/dsl.ts";
+import type {
+  DesignApplyResultSchema,
+  DslIssueSchema,
+  DslLintIssueSchema,
+  DslResultSchema,
+  SerializedNodeSchema,
+} from "../schemas/dsl.ts";
 
 export type DslValue = string | number | boolean | null;
 
@@ -11,6 +17,9 @@ export type DslIssue = z.infer<typeof DslIssueSchema>;
 export type DslLintIssue = z.infer<typeof DslLintIssueSchema>;
 
 export type DslResult = z.infer<typeof DslResultSchema>;
+
+/** What design_apply answers, as operations build it. */
+export type DesignApplyResult = z.input<typeof DesignApplyResultSchema>;
 
 /** ADD for `+Type`; UNKNOWN for a command the grammar does not have, or text that is not `key="value"`. */
 export type DslVerb = "ADD" | (typeof DSL_VERBS)[number] | "UNKNOWN";

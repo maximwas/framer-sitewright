@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { AUDIT_AFTER_APPLY_MS } from "../../constants/layout-audit.ts";
 import { deferAbsoluteCentering } from "../../dsl/absolute-centering.ts";
 import { joinCommands } from "../../dsl/commands.ts";
 import { deferIconInitialValues } from "../../dsl/icon-variables.ts";
@@ -9,14 +10,18 @@ import { OperationError } from "../../errors.ts";
 import { withDslHistory } from "../../history/dsl/dsl-history.ts";
 import { applyXmlWithPluginApi } from "../../plugin-nodes/apply.ts";
 import { DesignApplyResultSchema } from "../../schemas/dsl.ts";
-import type { DslIssue, DslResult } from "../../types/dsl.ts";
+import type { DesignApplyResult, DslIssue, DslResult } from "../../types/dsl.ts";
 import type { AgentPort } from "../../types/framer.ts";
+import type { AuditIssue } from "../../types/layout-audit.ts";
+import type { OperationContext } from "../../types/operations.ts";
 import type { XmlCompiled } from "../../types/xml.ts";
 import { errorMessage } from "../../utils/errors.ts";
 import { previewImagesIn } from "../../utils/text.ts";
+import { withinTime } from "../../utils/time.ts";
 import { resolveKeyReferences } from "../../xml/xml-keys.ts";
 import { xmlToDsl } from "../../xml/xml-to-dsl.ts";
 import { defineOperation } from "../define.ts";
+import { auditTouched } from "./audit-touched.ts";
 import { fractionalPxWarnings } from "./fractional-px.ts";
 import { projectIconControlWarnings } from "./icon-controls.ts";
 import { resolveVariableIds } from "./variable-ids.ts";
@@ -49,63 +54,20 @@ export const designApply = defineOperation({
     pagePath: z.string().startsWith("/").default("/").describe("Page the commands apply to."),
   }),
   output: DesignApplyResultSchema,
-  async run(context, { xml, dsl, pagePath }) {
-    const { runtime, history } = context;
+  async run(context, input) {
+    const result = await applyBatch(context, input);
 
-    // Without framer.agent (no Server API key) the XML goes through the Plugin API: frames, text and their layout.
-    if (runtime.agent === null) {
-      if (dsl !== undefined) {
-        throw new OperationError(
-          "UNSUPPORTED_TRANSPORT",
-          "Raw DSL needs framer.agent, which comes with a Server API key.",
-          "Use xml: without a key it creates frames and plain text and sets their layout, size, fill, radius, border and text style.",
-        );
-      }
-
-      if (xml === undefined) {
-        throw new OperationError("INVALID_INPUT", "Nothing to apply.", "Pass xml.");
-      }
-
-      return applyXmlWithPluginApi(context, xml, pagePath);
-    }
-
-    const agent = runtime.agent;
-    const compiled = xml === undefined ? null : xmlToDsl(xml, (base) => nextTempId(runtime, base));
-    const commands = deferAbsoluteCentering(
-      deferIconInitialValues(
-        joinCommands([
-          ...(compiled?.commands ?? []),
-          ...(dsl === undefined ? [] : [resolveKeyReferences(dsl, compiled?.keys ?? {})]),
-        ]),
-      ),
-    );
-
-    if (commands.trim() === "") {
-      throw new OperationError("INVALID_INPUT", "Nothing to apply.", "Pass xml, dsl or both.");
-    }
-
-    const parsed = parseDsl(commands);
-    // The reads around applyChanges only help: none may fail the batch. After it, a failure would make the model retry a
-    // batch Framer applied already, and design_apply is not idempotent.
-    const variables = await loadVariableTargets(agent, pagePath, parsed).catch(() => new Set<string>());
-    const apply = async () => normalizeDslResult(await agent.applyChanges(commands, { pagePath }));
-    const applied =
-      history === undefined
-        ? await apply()
-        : await withDslHistory(
-            {
-              history,
-              agent,
-              pagePath,
-              dsl: commands,
-              variables,
-            },
-            apply,
-          );
-    const iconWarnings = await projectIconControlWarnings(agent, pagePath, parsed, applied.renamedIds).catch(() => []);
-    const result = withWarnings(applied, [...iconWarnings, ...fractionalPxWarnings(parsed, applied.renamedIds)]);
-
-    return compiled === null ? result : withKeys(result, compiled, commands, agent, pagePath);
+    // A failed or slow audit only loses its findings: the batch is applied.
+    return result.ok && input.xml !== undefined
+      ? withAudit(
+          result,
+          await withinTime(
+            auditTouched(context.runtime, input.xml, input.pagePath, result.keys ?? {}),
+            AUDIT_AFTER_APPLY_MS,
+            [],
+          ).catch(() => []),
+        )
+      : result;
   },
   refused(output) {
     return output.ok ? null : output.message;
@@ -118,6 +80,77 @@ export const designApply = defineOperation({
     };
   },
 });
+
+async function applyBatch(
+  context: OperationContext,
+  { xml, dsl, pagePath }: { readonly xml?: string; readonly dsl?: string; readonly pagePath: string },
+): Promise<DesignApplyResult> {
+  const { runtime, history } = context;
+
+  // Without framer.agent (no Server API key) the XML goes through the Plugin API: frames, text and their layout.
+  if (runtime.agent === null) {
+    if (dsl !== undefined) {
+      throw new OperationError(
+        "UNSUPPORTED_TRANSPORT",
+        "Raw DSL needs framer.agent, which comes with a Server API key.",
+        "Use xml: without a key it creates frames and plain text and sets their layout, size, fill, radius, border and text style.",
+      );
+    }
+
+    if (xml === undefined) {
+      throw new OperationError("INVALID_INPUT", "Nothing to apply.", "Pass xml.");
+    }
+
+    return applyXmlWithPluginApi(context, xml, pagePath);
+  }
+
+  const agent = runtime.agent;
+  const compiled = xml === undefined ? null : xmlToDsl(xml, (base) => nextTempId(runtime, base));
+  const commands = deferAbsoluteCentering(
+    deferIconInitialValues(
+      joinCommands([
+        ...(compiled?.commands ?? []),
+        ...(dsl === undefined ? [] : [resolveKeyReferences(dsl, compiled?.keys ?? {})]),
+      ]),
+    ),
+  );
+
+  if (commands.trim() === "") {
+    throw new OperationError("INVALID_INPUT", "Nothing to apply.", "Pass xml, dsl or both.");
+  }
+
+  const parsed = parseDsl(commands);
+  // The reads around applyChanges only help: none may fail the batch. After it, a failure would make the model retry a
+  // batch Framer applied already, and design_apply is not idempotent.
+  const variables = await loadVariableTargets(agent, pagePath, parsed).catch(() => new Set<string>());
+  const apply = async () => normalizeDslResult(await agent.applyChanges(commands, { pagePath }));
+  const applied =
+    history === undefined
+      ? await apply()
+      : await withDslHistory(
+          {
+            history,
+            agent,
+            pagePath,
+            dsl: commands,
+            variables,
+          },
+          apply,
+        );
+  const iconWarnings = await projectIconControlWarnings(agent, pagePath, parsed, applied.renamedIds).catch(() => []);
+  const result = withWarnings(applied, [...iconWarnings, ...fractionalPxWarnings(parsed, applied.renamedIds)]);
+
+  return compiled === null ? result : withKeys(result, compiled, commands, agent, pagePath);
+}
+
+function withAudit(result: DesignApplyResult, audit: readonly AuditIssue[]): DesignApplyResult {
+  return audit.length === 0
+    ? result
+    : {
+        ...result,
+        audit: [...audit],
+      };
+}
 
 function withWarnings(result: DslResult, warnings: readonly DslIssue[]): DslResult {
   return warnings.length === 0

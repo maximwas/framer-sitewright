@@ -59,6 +59,7 @@ export { needsAgent, runOperation } from "./operations/define.ts";
 export { designApply } from "./operations/design/apply.ts";
 export { fontsSearch } from "./operations/fonts/search.ts";
 export { historyRevert } from "./operations/history/revert.ts";
+export { layoutAudit } from "./operations/nodes/audit.ts";
 export { nodesRead } from "./operations/nodes/read.ts";
 export { selectionGet } from "./operations/nodes/selection.ts";
 export { projectCapabilities } from "./operations/project/capabilities.ts";

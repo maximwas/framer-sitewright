@@ -35,6 +35,9 @@ When both are available, calls go to the plugin first and the DSL work goes to t
 
 - **Design system:** color tokens with light and dark values, text styles with breakpoint sizes, font search.
 - **Pages:** read a page or a node as XML, change it with XML or raw DSL and get Framer's diagnostics back.
+- **Layout audit:** after every change and on request, checks for what looks broken on the published site: children
+  lined up on different edges, cards of uneven height, text links in the default link color, sections wider than the
+  rest, fixed sizes that break on phones, missing headings, uneven spacing and template habits.
 - **Components:** variants, controls, hover and pressed states, interactions.
 - **Assets:** stock photos, uploads, SVG, icon sets.
 - **Journal with undo:** every call is recorded; undo the last change, a change and everything after it, or restore

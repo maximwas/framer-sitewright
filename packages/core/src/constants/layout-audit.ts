@@ -1,0 +1,53 @@
+/** How sure an audit finding is: a visible defect, a likely one, or a design habit worth a second look. */
+export const AUDIT_SEVERITIES = ["defect", "likely", "taste"] as const;
+
+/** Findings a single audit returns at most, most severe first. */
+export const AUDIT_MAX_ISSUES = 40;
+
+/** How deep the audit reads: deep enough for section > container > card > text. */
+export const LAYOUT_AUDIT_DEPTH = 8;
+
+/**
+ * How long design_apply waits for the audit of what it touched. The batch is applied already; a slow read (a big page
+ * through the plugin) must not push the call past the bridge's timeout, so the audit is skipped instead.
+ */
+export const AUDIT_AFTER_APPLY_MS = 8_000;
+
+/** A content width above this in px breaks on narrower screens unless it is media. */
+export const FIXED_WIDTH_LIMIT_PX = 400;
+
+/** How many repeats make a habit (uppercase labels over headings, numbered cards). */
+export const TEMPLATE_REPEAT = 3;
+
+/** A frame no taller than this with no children is a divider line, not a section. */
+export const DIVIDER_MAX_PX = 2;
+
+/** Distinct vertical section paddings a page can have before its rhythm reads as accidental. */
+export const SECTION_RHYTHM_MAX = 2;
+
+/** The gap Framer gives every new stack; with space-between it is Framer's, not a choice. */
+export const DEFAULT_STACK_GAP = "10px";
+
+/** A radius this large makes a pill: round on purpose, not a nested corner. */
+export const PILL_RADIUS_PX = 100;
+
+/** Stack distributions that place children themselves, so `gap` has no effect. */
+export const SPACED_DISTRIBUTIONS: ReadonlySet<string> = new Set(["space-between", "space-around", "space-evenly"]);
+
+/** Widths that span the parent. */
+export const FILL_SIZES: ReadonlySet<string> = new Set(["100%"]);
+
+/** Widths that hug the content. */
+export const FIT_SIZES: ReadonlySet<string> = new Set(["auto", "fit-content", "min-content", "max-content"]);
+
+/** Heading tags, in order. */
+export const HEADING_TAGS = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
+
+/** A card's first text that only counts it: "01", "2", "03.". */
+export const SEQUENCE_NUMBER = /^\s*0?\d{1,2}\.?\s*$/;
+
+/** A color written out rather than taken from a token. */
+export const RAW_COLOR = /#[\da-f]{3,8}\b|\brgba?\(|\bhsla?\(|\boklch\(/i;
+
+/** The family every generated page reaches for. */
+export const DEFAULT_FONT_FAMILY = "Inter";

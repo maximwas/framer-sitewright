@@ -47,6 +47,10 @@ export const TextStyleInputSchema = z.strictObject({
   transform: z.enum(["none", "capitalize", "uppercase", "lowercase"]).exactOptional(),
   alignment: z.enum(["start", "center", "end", "left", "right", "justify"]).exactOptional(),
   decoration: z.enum(["none", "underline", "line-through"]).exactOptional(),
+  balance: z
+    .boolean()
+    .exactOptional()
+    .describe("Even out line lengths, so a headline never ends with one word alone. Turn it on for headings."),
   breakpoints: z
     .strictObject({
       large: BreakpointOverrideSchema.exactOptional(),
@@ -83,6 +87,7 @@ export const TextStyleOutputSchema = z.object({
   transform: z.string(),
   alignment: z.string(),
   decoration: z.string(),
+  balance: z.boolean(),
   /** Where the base style starts; each breakpoint lists its label and where it starts, narrower ones after. */
   minWidth: z.number(),
   breakpoints: z.array(

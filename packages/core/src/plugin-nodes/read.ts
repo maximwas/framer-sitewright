@@ -62,7 +62,8 @@ async function describe(
   const layout = layoutOf(node);
   const read = await Promise.all(
     children.map(async (child) => {
-      const record = nodeRecord(await port.getNode(child.id)) ?? nodeRecord(child);
+      // getChildren gives the nodes themselves: a second getNode per child only doubled the round trips.
+      const record = nodeRecord(child) ?? nodeRecord(await port.getNode(child.id));
 
       return record === null ? null : describe(port, record, id, layout, depth - 1);
     }),

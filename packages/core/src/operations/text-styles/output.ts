@@ -38,6 +38,7 @@ export function toTextStyleOutput(style: TextStyleData): z.input<typeof TextStyl
     transform: style.transform,
     alignment: style.alignment,
     decoration: style.decoration,
+    balance: style.balance,
     minWidth: base?.minWidth ?? style.minWidth,
     breakpoints: breakpoints.map((slot, index) => ({
       label: labels[index] ?? null,

@@ -126,6 +126,7 @@ export interface TextStyleFields {
   transform?: TextTransform;
   alignment?: TextAlignment;
   decoration?: TextDecoration;
+  balance?: boolean;
   fontSize?: string;
   lineHeight?: string;
   letterSpacing?: string;

@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { AuditIssueSchema } from "./layout-audit.ts";
 
 const IssueMapSchema = z.record(z.string(), z.array(z.unknown()));
 
@@ -40,6 +41,8 @@ export const DslResultSchema = z.object({
 export const DesignApplyResultSchema = DslResultSchema.extend({
   keys: z.record(z.string(), z.string()).exactOptional(),
   dsl: z.string().exactOptional(),
+  /** Layout issues in what the batch touched (layout_audit's checks); the batch is applied either way. */
+  audit: z.array(AuditIssueSchema).exactOptional(),
 });
 
 /**
