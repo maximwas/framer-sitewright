@@ -17,6 +17,37 @@ const BRAND_TEXT = {
 };
 
 describe("textStyles.upsert", () => {
+  it("regression: keeps a style's name when an update repeats or changes its tag, which Framer renames on", async () => {
+    const { runtime, state } = createFakeRuntime({
+      textStyles: [newTextStyle("s1", "/Small"), newTextStyle("s2", "/Lead")],
+    });
+
+    await runOperation(
+      textStylesUpsert,
+      { runtime },
+      {
+        via: "plugin-api",
+        styles: [
+          {
+            path: "Small",
+            tag: "p",
+            fontSize: "16px",
+          },
+          {
+            path: "Lead",
+            tag: "h3",
+            fontSize: "20px",
+          },
+        ],
+      },
+    );
+
+    expect(state.textStyles.map(({ path, tag }) => [path, tag])).toEqual([
+      ["/Small", "p"],
+      ["/Lead", "h3"],
+    ]);
+  });
+
   it("maps font, token color and breakpoint overrides to Framer DSL attributes", async () => {
     const { runtime, state } = createFakeRuntime({ colorStyles: [BRAND_TEXT] });
     const result = await runOperation(

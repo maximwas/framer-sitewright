@@ -1,3 +1,4 @@
+import { FRAMER_TAG_STYLE_NAMES } from "../constants/text-styles.ts";
 import type {
   CodeFileHandle,
   ColorStyleHandle,
@@ -242,7 +243,8 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
 
 /** Like Framer: attributes merge, except `breakpoints`, which replaces the whole list. */
 function applyTextWrite(style: FakeTextStyle, { path, name, breakpoints, ...attributes }: TextStyleWrite): void {
-  const newPath = path ?? name;
+  // Framer renames a style to its tag's default name when the tag is set (FRAMER_TAG_STYLE_NAMES).
+  const newPath = path ?? name ?? (attributes.tag === undefined ? undefined : FRAMER_TAG_STYLE_NAMES[attributes.tag]);
 
   if (newPath !== undefined) {
     Object.assign(style, stylePath(newPath));

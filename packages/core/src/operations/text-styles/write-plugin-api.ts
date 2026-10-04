@@ -65,7 +65,12 @@ export async function writeTextStylesWithPluginApi(
       ({ path, style, fields }): PluginApiWrite => ({
         action: "update",
         path,
-        run: () => style.setAttributes(fields),
+        run: async () => {
+          const updated = await style.setAttributes(fields);
+
+          // Framer renames a style to its tag's default name ("Body", "Heading 2") when the tag is set: name it back.
+          return fields.tag === undefined || updated === null ? updated : updated.setAttributes({ name: path });
+        },
       }),
     ),
   ];
@@ -86,12 +91,14 @@ async function prepareFields(
   siteWidths: readonly number[],
   current?: TextStyleData,
 ): Promise<TextStyleFields> {
-  const { alignment, ...plain } = changes.plain;
+  const { alignment, tag, ...plain } = changes.plain;
   const baseFontSize = plain.fontSize ?? current?.fontSize;
   const slots = pluginApiBreakpoints(path, changes.breakpoints, current, siteWidths, baseFontSize);
 
   return {
     ...plain,
+    // An unchanged tag is left out: setting it renames the style (see the update write).
+    ...(tag === undefined || tag === current?.tag ? {} : { tag }),
     ...(alignment === undefined ? {} : { alignment: PLUGIN_API_ALIGNMENTS[alignment] }),
     ...(changes.font === undefined ? {} : { font: await fontHandle(port, changes.font) }),
     ...(changes.color === undefined ? {} : { color: colorField(changes.color) }),

@@ -16,6 +16,20 @@ export const BREAKPOINT_LABELS = ["large", "medium", "small", "extraSmall"] as c
 /** The Plugin API throws above this many breakpoints per text style. */
 export const MAX_BREAKPOINTS = 4;
 
+/**
+ * What Framer renames a text style to when `tag` is set on it through the Plugin API (TextStyle.setAttributes), whatever
+ * its name was: seen live on 04.10.2026 (p → "Body", h2 → "Heading 2"). The fake port does the same.
+ */
+export const FRAMER_TAG_STYLE_NAMES: Readonly<Record<string, string>> = {
+  p: "Body",
+  h1: "Heading 1",
+  h2: "Heading 2",
+  h3: "Heading 3",
+  h4: "Heading 4",
+  h5: "Heading 5",
+  h6: "Heading 6",
+};
+
 /** The Plugin API knows only physical alignments. */
 export const PLUGIN_API_ALIGNMENTS: Record<NonNullable<PlainAttributes["alignment"]>, TextAlignment> = {
   start: "left",
