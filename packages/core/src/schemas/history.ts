@@ -249,6 +249,8 @@ export const ActivityCallSchema = z.discriminatedUnion("method", [
     params: z.object({
       limit: z.number().int().min(1).max(200).default(50),
       show: z.enum(ACTIVITY_VIEWS).default("changes"),
+      /** Another project's journal, by id, to look at; omitted: the project the plugin is open in. */
+      project: z.string().min(1).exactOptional(),
     }),
   }),
   z.object({
@@ -320,4 +322,23 @@ export const RevertReportSchema = z.object({
   entry: EntryRefSchema.nullable(),
   results: z.array(RevertResultSchema),
   conflicts: z.number().int(),
+});
+
+/** A project that has a journal on this computer, for the page's project switch. */
+export const JournalProjectSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  /** When its journal last changed, ISO. */
+  updatedAt: z.string(),
+});
+
+/** `projects.list`: the projects with a journal, newest first, and the one the plugin is open in. */
+export const JournalProjectsSchema = z.object({
+  projects: z.array(JournalProjectSchema),
+  shown: z
+    .object({
+      id: z.string(),
+      name: z.string(),
+    })
+    .nullable(),
 });

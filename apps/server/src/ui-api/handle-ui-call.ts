@@ -31,6 +31,11 @@ export async function handleUiCall(method: string, params: unknown, services: Ui
       return saveKey(services, parseCall(KeySetParamsSchema, method, params ?? {}));
     case "keys.remove":
       return removeKey(services);
+    case "projects.list":
+      return {
+        projects: await services.journal.projects(),
+        shown: services.shownProject?.() ?? (await services.journal.currentProject()),
+      };
     default:
       return handleActivityCall(
         parseCall(ActivityCallSchema, method, {

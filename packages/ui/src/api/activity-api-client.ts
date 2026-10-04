@@ -3,6 +3,8 @@ import {
   type ActivityView,
   type Capabilities,
   CapabilitiesSchema,
+  type JournalProjects,
+  JournalProjectsSchema,
   type McpSettings,
   type McpSettingsPatch,
   McpSettingsSchema,
@@ -28,14 +30,20 @@ export class ActivityApiClient {
     return this.#transport;
   }
 
-  /** The newest `limit` entries of one view: the changes, the reads, or all of them. */
-  async list(limit: number, show: ActivityView): Promise<ActivityList> {
+  /** The newest `limit` entries of one view: the changes, the reads, or all of them; of another project by id. */
+  async list(limit: number, show: ActivityView, project: string | null = null): Promise<ActivityList> {
     return ActivityListSchema.parse(
       await this.#transport.call("activity.list", {
         limit,
         show,
+        ...(project === null ? {} : { project }),
       }),
     );
+  }
+
+  /** The projects with a journal on this computer, and the one the plugin is open in. */
+  async projects(): Promise<JournalProjects> {
+    return JournalProjectsSchema.parse(await this.#transport.call("projects.list", {}));
   }
 
   /** Undoes `entry` and every change after it (the project goes back to before it), or the newest change. */

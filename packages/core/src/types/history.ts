@@ -16,6 +16,8 @@ import type {
   ColorStyleStateSchema,
   DslAttributeMapSchema,
   EntryRefSchema,
+  JournalProjectSchema,
+  JournalProjectsSchema,
   JournalSchema,
   NodeSnapshotSchema,
   NodeStateSchema,
@@ -41,6 +43,10 @@ export type ActivityEntry = z.infer<typeof ActivityEntrySchema>;
 export type ActivitySummary = z.infer<typeof ActivitySummarySchema>;
 
 export type ActivityCall = z.infer<typeof ActivityCallSchema>;
+
+export type JournalProject = z.infer<typeof JournalProjectSchema>;
+
+export type JournalProjects = z.infer<typeof JournalProjectsSchema>;
 
 export type RevertReport = z.infer<typeof RevertReportSchema>;
 

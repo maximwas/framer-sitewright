@@ -69,6 +69,7 @@ export async function createApp(projectDir: string): Promise<App> {
     pluginInfo: () => transports.pluginUi.pluginInfo(),
     shownProject: () =>
       transports.status().transports.find((transport) => transport.transport === "plugin")?.project ?? null,
+    journalDir: config.historyDir,
   });
 
   const server = createMcpServer(

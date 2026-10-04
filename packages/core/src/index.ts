@@ -85,6 +85,7 @@ export {
   ActivityNoteSchema,
   ActivitySummarySchema,
   EntryRefSchema,
+  JournalProjectsSchema,
   RevertReportSchema,
 } from "./schemas/history.ts";
 export { KeySetParamsSchema, ProjectKeyStatusSchema } from "./schemas/keys.ts";
@@ -112,6 +113,8 @@ export type {
   ActivitySummary,
   ActivityView,
   ChangeCategory,
+  JournalProject,
+  JournalProjects,
   RevertReport,
   UndoStep,
 } from "./types/history.ts";

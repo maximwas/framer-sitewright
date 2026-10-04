@@ -11,3 +11,9 @@ export const JOURNAL_LOCK_RETRY_MS = 15;
 export const JOURNAL_LOCK_WAIT_MS = 5000;
 
 export const JOURNAL_LOCK_STALE_MS = 10_000;
+
+/** How much of a journal's end the project list reads for the project's name: a few entries. */
+export const JOURNAL_TAIL_BYTES = 64 * 1024;
+
+/** The journal page reloads once per burst of writes to the journal folder, after this pause. */
+export const JOURNAL_WATCH_DEBOUNCE_MS = 150;

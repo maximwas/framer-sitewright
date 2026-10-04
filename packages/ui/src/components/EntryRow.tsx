@@ -15,7 +15,7 @@ import { LayerBadge } from "./LayerBadge.tsx";
  * A read or a skill is quieter: an eye or a book instead of the outcome dot (unless it failed), a plain title, no
  * actions.
  */
-export function EntryRow({ entry, actions }: EntryRowProps) {
+export function EntryRow({ entry, actions, readOnly }: EntryRowProps) {
   const quiet = isQuiet(entry);
 
   return (
@@ -39,7 +39,7 @@ export function EntryRow({ entry, actions }: EntryRowProps) {
         <EntryDetail entry={entry} />
         <EntryNotes entry={entry} />
         {entry.items.length > 0 && <ItemChips items={entry.items} />}
-        {!quiet && <EntryActions entry={entry} actions={actions} />}
+        {!quiet && !readOnly && <EntryActions entry={entry} actions={actions} />}
       </div>
     </article>
   );

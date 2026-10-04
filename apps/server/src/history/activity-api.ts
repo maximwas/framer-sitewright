@@ -20,11 +20,20 @@ import type { ActivityUndo } from "./activity-undo.ts";
  */
 export async function listActivity(
   journal: ActivityJournal,
-  { limit, show }: { readonly limit: number; readonly show: ActivityView },
+  { limit, show, project: picked }: { readonly limit: number; readonly show: ActivityView; readonly project?: string },
   shown?: ProjectRef,
 ) {
-  const project = shown ?? (await journal.currentProject());
-  const entries = project === null ? [] : await journal.entries(project.id);
+  const current = shown ?? (await journal.currentProject());
+  // Another project's journal (the page's project switch) names itself through its entries.
+  const pickedEntries = picked === undefined ? null : await journal.entries(picked);
+  const entries = pickedEntries ?? (current === null ? [] : await journal.entries(current.id));
+  const project =
+    picked === undefined
+      ? current
+      : {
+          id: picked,
+          name: entries.findLast((entry) => entry.project !== null)?.project?.name ?? picked,
+        };
   const state = revertState(entries);
 
   return {

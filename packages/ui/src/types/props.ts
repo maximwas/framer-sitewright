@@ -27,6 +27,8 @@ export interface ImagePreviewsProps {
 }
 
 export interface ActivityToolbarProps {
+  /** Another project's journal: its changes cannot be undone from here. */
+  readonly readOnly: boolean;
   readonly canUndo: boolean;
   readonly canRedo: boolean;
   readonly canClear: boolean;
@@ -62,11 +64,14 @@ export interface ActivityFeedProps {
   readonly onRestore: (checkpoint: ActivitySummary) => void;
   /** What the list says while it is empty, for the view it shows. */
   readonly emptyText: string;
+  /** Another project's journal: no undo, redo or restore. */
+  readonly readOnly: boolean;
 }
 
 export interface EntryRowProps {
   readonly entry: ActivitySummary;
   readonly actions: ActivityActions;
+  readonly readOnly: boolean;
 }
 
 export interface EntryIconProps {
@@ -108,6 +113,7 @@ export interface ItemChipProps {
 export interface CheckpointRowProps {
   readonly entry: ActivitySummary;
   readonly busy: boolean;
+  readonly readOnly: boolean;
   readonly onRestore: (checkpoint: ActivitySummary) => void;
 }
 

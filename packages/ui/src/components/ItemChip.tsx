@@ -43,7 +43,11 @@ export function ItemChip({ item, read = false }: ItemChipProps) {
       ) : (
         <Icon aria-hidden className="size-3 shrink-0" />
       )}
-      <span className={`truncate ${BADGE_TEXT} ${deleted ? "line-through" : ""}`}>{item.path}</span>
+      <span
+        className={`overflow-x-clip text-ellipsis whitespace-nowrap ${BADGE_TEXT} ${deleted ? "line-through" : ""}`}
+      >
+        {item.path}
+      </span>
       {!deleted &&
         !read &&
         more.map((category) => {

@@ -1,4 +1,4 @@
-import type { ActivitySummary, ActivityView, RevertReport } from "@sitewright/core";
+import type { ActivitySummary, ActivityView, JournalProject, RevertReport } from "@sitewright/core";
 import type * as z from "zod";
 import type { ActivityListSchema } from "../schemas/activity.ts";
 
@@ -11,7 +11,21 @@ export type ActivityItem = ActivitySummary["items"][number];
 /** The view the page shows, remembered in this browser. */
 export interface FeedViewState {
   readonly view: ActivityView;
+  /** The project whose journal the page shows, by id; null follows the project the plugin is open in. */
+  readonly project: string | null;
   setView(view: ActivityView): void;
+  setProject(project: string | null): void;
+}
+
+/** Whose journal the page shows, and whether it can act on it. */
+export interface ViewedProject {
+  readonly projects: readonly JournalProject[];
+  /** The project the plugin is open in (or this session's), whose journal undo works on. */
+  readonly shown: { readonly id: string; readonly name: string } | null;
+  /** The project picked in the switch, when it is another one; null: the shown project. */
+  readonly picked: string | null;
+  /** Another project's journal: look, do not undo. */
+  readonly readOnly: boolean;
 }
 
 export interface RestoreOptions {

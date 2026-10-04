@@ -3,7 +3,7 @@ import type { CheckpointRowProps } from "../types/props.ts";
 import { formatTime } from "../utils/format-time.ts";
 
 /** A checkpoint: where a task started. Restore undoes every change made after it. */
-export function CheckpointRow({ entry, busy, onRestore }: CheckpointRowProps) {
+export function CheckpointRow({ entry, busy, readOnly, onRestore }: CheckpointRowProps) {
   return (
     <article className="flex items-center gap-2">
       <span aria-hidden className="w-2 shrink-0 text-center text-framer-tint">
@@ -15,15 +15,17 @@ export function CheckpointRow({ entry, busy, onRestore }: CheckpointRowProps) {
       <time className="shrink-0 text-framer-text-tertiary" dateTime={entry.at}>
         {formatTime(entry.at)}
       </time>
-      <button
-        type="button"
-        className={SMALL_BUTTON}
-        disabled={busy}
-        title="Undo every change made after this checkpoint"
-        onClick={() => onRestore(entry)}
-      >
-        Restore
-      </button>
+      {!readOnly && (
+        <button
+          type="button"
+          className={SMALL_BUTTON}
+          disabled={busy}
+          title="Undo every change made after this checkpoint"
+          onClick={() => onRestore(entry)}
+        >
+          Restore
+        </button>
+      )}
     </article>
   );
 }

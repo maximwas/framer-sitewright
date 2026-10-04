@@ -1,6 +1,7 @@
-import { appendFile, mkdir, open, rename } from "node:fs/promises";
+import { appendFile, mkdir, open, readdir, rename } from "node:fs/promises";
 import { join } from "node:path";
-import { type ActivityEntry, ActivityEntrySchema } from "@sitewright/core";
+import { type ActivityEntry, ActivityEntrySchema, type JournalProject } from "@sitewright/core";
+import { JOURNAL_TAIL_BYTES } from "../constants/history.ts";
 import type { JournalChunk } from "../types/history.ts";
 import { withFileLock } from "./file-lock.ts";
 
@@ -57,6 +58,52 @@ export class JournalStore {
         fromStart: start !== offset,
         file: identity,
       };
+    } finally {
+      await handle.close();
+    }
+  }
+
+  /**
+   * The projects with a journal here, the newest change first. The file name is a sanitized id, so the id and the name
+   * come from the journal's last entry; a journal without a readable entry is left out.
+   */
+  async projects(): Promise<JournalProject[]> {
+    const files = await readdir(this.#dir).catch(() => []);
+    const found = await Promise.all(
+      files.filter((file) => file.endsWith(".jsonl")).map((file) => this.#projectOf(join(this.#dir, file))),
+    );
+
+    return found.filter((project) => project !== null).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  }
+
+  async #projectOf(path: string): Promise<JournalProject | null> {
+    const handle = await open(path, "r").catch(() => null);
+
+    if (handle === null) {
+      return null;
+    }
+
+    try {
+      const { size, mtime } = await handle.stat();
+      const length = Math.min(size, JOURNAL_TAIL_BYTES);
+      const buffer = Buffer.alloc(length);
+
+      await handle.read(buffer, 0, length, size - length);
+
+      const project = buffer
+        .toString("utf8")
+        .split("\n")
+        .reverse()
+        .flatMap(parseLine)
+        .find((entry) => entry.project !== null)?.project;
+
+      return project === undefined || project === null
+        ? null
+        : {
+            id: project.id,
+            name: project.name,
+            updatedAt: mtime.toISOString(),
+          };
     } finally {
       await handle.close();
     }

@@ -10,6 +10,7 @@ import {
   describeOperation,
   errorMessage,
   HistoryRecorder,
+  type JournalProject,
   type Operation,
   refOf,
   trimDetail,
@@ -311,6 +312,11 @@ export class ActivityJournal extends EventEmitter<{ appended: [ActivityEntry]; c
     const store = this.#options.store;
 
     return store === null ? [] : this.#log(store, projectId).entries();
+  }
+
+  /** The projects with a journal on this computer, the newest change first. */
+  async projects(): Promise<JournalProject[]> {
+    return (await this.#options.store?.projects()) ?? [];
   }
 
   currentProject(): Promise<ProjectRef | null> {

@@ -4,6 +4,7 @@ import { GearIcon } from "./GearIcon.tsx";
 
 /** Undo the newest change, redo the newest undo, mark a checkpoint, clear the journal, and open the settings. */
 export function ActivityToolbar({
+  readOnly,
   canUndo,
   canRedo,
   canClear,
@@ -19,19 +20,19 @@ export function ActivityToolbar({
       <button
         type="button"
         className={ROW_BUTTON}
-        disabled={busy || !canUndo}
+        disabled={busy || readOnly || !canUndo}
         title="Undo the newest change"
         onClick={onUndo}
       >
         Undo
       </button>
-      <button type="button" className={ROW_BUTTON} disabled={busy || !canRedo} onClick={onRedo}>
+      <button type="button" className={ROW_BUTTON} disabled={busy || readOnly || !canRedo} onClick={onRedo}>
         Redo
       </button>
       <button
         type="button"
         className={ROW_BUTTON}
-        disabled={busy}
+        disabled={busy || readOnly}
         title="Mark a checkpoint to restore to later"
         onClick={onMark}
       >
@@ -40,7 +41,7 @@ export function ActivityToolbar({
       <button
         type="button"
         className={ROW_BUTTON}
-        disabled={busy || !canClear}
+        disabled={busy || readOnly || !canClear}
         title="Start the journal over: the changes stay in Framer"
         onClick={onClear}
       >

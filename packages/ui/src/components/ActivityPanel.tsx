@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useStore } from "zustand";
-import { EMPTY_FEED_TEXT } from "../constants/activity.ts";
+import { EMPTY_FEED_TEXT, OTHER_PROJECT_NOTE } from "../constants/activity.ts";
 import { useActivityActions } from "../hooks/useActivityActions.ts";
 import { useCapabilities } from "../hooks/useCapabilities.ts";
 import { useRestore } from "../hooks/useRestore.ts";
+import { useViewedProject } from "../hooks/useViewedProject.ts";
 import { feedViewStore } from "../store/feed-view-store.ts";
 import type { ActivityPanelProps } from "../types/props.ts";
 import { ActivityFeed } from "./ActivityFeed.tsx";
@@ -11,6 +12,7 @@ import { ActivityToolbar } from "./ActivityToolbar.tsx";
 import { CapabilityBanner } from "./CapabilityBanner.tsx";
 import { CheckpointForm } from "./CheckpointForm.tsx";
 import { ClearConfirm } from "./ClearConfirm.tsx";
+import { ProjectSwitch } from "./ProjectSwitch.tsx";
 import { RestoreDialog } from "./RestoreDialog.tsx";
 import { SettingsPanel } from "./SettingsPanel.tsx";
 import { ViewSwitch } from "./ViewSwitch.tsx";
@@ -26,6 +28,7 @@ export function ActivityPanel({ feed }: ActivityPanelProps) {
   const [prompt, setPrompt] = useState<"mark" | "clear" | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const view = useStore(feedViewStore, (state) => state.view);
+  const { readOnly } = useViewedProject();
   const list = feed.status === "ready" ? feed.value : null;
   const entries = list?.entries ?? [];
 
@@ -35,6 +38,8 @@ export function ActivityPanel({ feed }: ActivityPanelProps) {
 
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-2.5">
+      <ProjectSwitch />
+      {readOnly && <p className="text-framer-text-secondary">{OTHER_PROJECT_NOTE}</p>}
       <CapabilityBanner capabilities={capabilities} />
       {prompt === "mark" && (
         <CheckpointForm
@@ -60,6 +65,7 @@ export function ActivityPanel({ feed }: ActivityPanelProps) {
       )}
       {prompt === null && (
         <ActivityToolbar
+          readOnly={readOnly}
           canUndo={list?.canUndo ?? entries.some((entry) => entry.undoable)}
           canRedo={list?.canRedo ?? entries.some((entry) => entry.redoable)}
           canClear={(list?.total ?? entries.length) > 0}
@@ -72,7 +78,13 @@ export function ActivityPanel({ feed }: ActivityPanelProps) {
         />
       )}
       <ViewSwitch />
-      <ActivityFeed feed={feed} actions={actions} onRestore={restore.open} emptyText={EMPTY_FEED_TEXT[view]} />
+      <ActivityFeed
+        feed={feed}
+        actions={actions}
+        onRestore={restore.open}
+        emptyText={EMPTY_FEED_TEXT[view]}
+        readOnly={readOnly}
+      />
       {restore.state !== null && <RestoreDialog flow={restore} state={restore.state} />}
     </section>
   );

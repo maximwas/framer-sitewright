@@ -4,7 +4,7 @@ import { CheckpointRow } from "./CheckpointRow.tsx";
 import { EntryRow } from "./EntryRow.tsx";
 
 /** The journal, newest first: Claude's changes, reads and skills, undos and redos, and checkpoints. */
-export function ActivityFeed({ feed, actions, onRestore, emptyText }: ActivityFeedProps) {
+export function ActivityFeed({ feed, actions, onRestore, emptyText, readOnly }: ActivityFeedProps) {
   if (feed.status === "idle" || feed.status === "loading") {
     return (
       <div className="flex flex-1 items-center justify-center">
@@ -28,9 +28,9 @@ export function ActivityFeed({ feed, actions, onRestore, emptyText }: ActivityFe
       {entries.map((entry) => (
         <li key={entry.id} className={`border-framer-divider border-b px-[15px] ${isQuiet(entry) ? "py-2" : "py-2.5"}`}>
           {entry.kind === "checkpoint" ? (
-            <CheckpointRow entry={entry} busy={actions.busy} onRestore={onRestore} />
+            <CheckpointRow entry={entry} busy={actions.busy} readOnly={readOnly} onRestore={onRestore} />
           ) : (
-            <EntryRow entry={entry} actions={actions} />
+            <EntryRow entry={entry} actions={actions} readOnly={readOnly} />
           )}
         </li>
       ))}

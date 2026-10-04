@@ -22,6 +22,8 @@ export interface UiServices {
   readonly verifyKey?: (url: string, key: string) => Promise<ProjectRef>;
   /** The project the plugin is open in, whose journal the panels show; without one, this session's project. */
   readonly shownProject?: () => ProjectRef | null;
+  /** The journal folder, watched so the panels reload on every session's entries; null with the journal off. */
+  readonly journalDir?: string | null;
 }
 
 export interface EditorLinksOptions {

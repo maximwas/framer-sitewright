@@ -219,3 +219,43 @@ it("regression: a design_apply whose commands Framer refused is journaled as fai
     error: "Commands: 1 error.",
   });
 });
+
+it("lists every project with a journal, and opens another project's journal by id", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "sitewright-journal-"));
+  const journal = new ActivityJournal({
+    store: new JournalStore(directory),
+    transports,
+    logger: createLogger("silent"),
+  });
+  const client = {
+    id: "project-2",
+    name: "Client site",
+  };
+
+  await journal.checkpoint("Sandbox start", "ai");
+  await journal.checkpoint("Client start", "user", client);
+
+  const projects = await journal.projects();
+
+  expect(
+    projects
+      .map(({ id, name }) => ({
+        id,
+        name,
+      }))
+      .sort((a, b) => a.id.localeCompare(b.id)),
+  ).toEqual([project, client]);
+
+  const other = await listActivity(
+    journal,
+    {
+      limit: 10,
+      show: "changes",
+      project: client.id,
+    },
+    project,
+  );
+
+  expect(other.project).toEqual(client);
+  expect(other.entries.map((entry) => entry.label)).toEqual(["Client start"]);
+});

@@ -1,7 +1,11 @@
 import type { ActivityView, RevertReport } from "@sitewright/core";
 
 /** Server events after which the panel reloads the journal. */
-export const JOURNAL_EVENTS: ReadonlySet<string> = new Set(["activity.appended", "activity.cleared"]);
+export const JOURNAL_EVENTS: ReadonlySet<string> = new Set([
+  "activity.appended",
+  "activity.cleared",
+  "activity.changed",
+]);
 
 /** How many journal entries the window loads; older ones stay in the journal. */
 export const FEED_LIMIT = 100;
@@ -14,6 +18,10 @@ export const FEED_VIEW_STORAGE_KEY = "sitewright:feed-view";
 
 /** The width image previews are loaded at: twice their size in the panel, for dense screens. */
 export const THUMBNAIL_PX = 160;
+
+/** What the page says over another project's journal: undo needs the project open in the editor. */
+export const OTHER_PROJECT_NOTE =
+  "Another project's journal, to look at: undo, redo and restore work in the project the plugin is open in.";
 
 /** What the empty journal says, per view. */
 export const EMPTY_FEED_TEXT: Readonly<Record<ActivityView, string>> = {
