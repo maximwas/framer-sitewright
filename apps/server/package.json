@@ -1,0 +1,59 @@
+{
+  "name": "sitewright",
+  "version": "0.1.0",
+  "description": "MCP server and CLI that let AI agents (Claude Code, Cursor, Codex) build and edit Framer sites, with an undo journal. Unofficial, not affiliated with Framer.",
+  "license": "MIT",
+  "homepage": "https://github.com/maximwas/framer-sitewright#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maximwas/framer-sitewright.git",
+    "directory": "apps/server"
+  },
+  "bugs": {
+    "url": "https://github.com/maximwas/framer-sitewright/issues"
+  },
+  "type": "module",
+  "bin": {
+    "sitewright": "./dist/bin.mjs"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=24.11.0"
+  },
+  "keywords": [
+    "mcp",
+    "framer",
+    "claude",
+    "claude-code",
+    "cursor",
+    "ai",
+    "website-builder"
+  ],
+  "scripts": {
+    "build": "tsdown && node scripts/copy-web.mjs",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@clack/prompts": "1.8.1",
+    "@modelcontextprotocol/server": "2.2.0",
+    "culori": "4.0.2",
+    "framer-api": "5.1.0",
+    "pino": "10.3.1",
+    "ws": "8.22.0",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "2.2.0",
+    "@sitewright/core": "workspace:*",
+    "@sitewright/web": "workspace:*",
+    "@types/node": "catalog:",
+    "@types/ws": "8.18.2",
+    "@typescript/native": "catalog:",
+    "tsdown": "0.23.0",
+    "vitest": "catalog:"
+  }
+}

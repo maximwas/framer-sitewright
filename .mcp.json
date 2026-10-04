@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "framer": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["apps/server/dist/bin.mjs"],
+      "env": {
+        "FRAMER_PROJECT_URL": "${FRAMER_PROJECT_URL:-}",
+        "FRAMER_API_KEY": "${FRAMER_API_KEY:-}"
+      }
+    }
+  }
+}

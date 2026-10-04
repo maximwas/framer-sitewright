@@ -1,0 +1,23 @@
+{
+  "name": "@sitewright/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./testing": "./src/testing/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "culori": "4.0.2",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/culori": "4.0.1",
+    "@typescript/native": "catalog:",
+    "vitest": "catalog:"
+  }
+}

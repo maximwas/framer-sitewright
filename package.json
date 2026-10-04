@@ -1,0 +1,30 @@
+{
+  "name": "sitewright-workspace",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.32.1",
+  "engines": {
+    "node": ">=24.11.0"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev:plugin": "pnpm --filter @sitewright/plugin dev",
+    "test": "vitest run --project core --project server --project plugin --project web",
+    "test:integration": "vitest run --project integration",
+    "lint": "biome check . && eslint .",
+    "lint:fix": "biome lint --write --unsafe --only=style/useBlockStatements --only=correctness/noUnusedImports . && biome check --write . && eslint --fix . && biome format --write .",
+    "typecheck": "pnpm -r typecheck",
+    "logs": "node apps/server/dist/bin.mjs logs",
+    "check:pack": "pnpm build && node scripts/check-pack.mjs"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.14",
+    "@stylistic/eslint-plugin": "5.10.0",
+    "@typescript-eslint/parser": "8.71.0",
+    "@typescript/native": "catalog:",
+    "eslint": "9.39.5",
+    "typescript": "npm:@typescript/typescript6@6.0.2",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  }
+}

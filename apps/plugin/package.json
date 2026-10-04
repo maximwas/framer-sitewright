@@ -1,0 +1,32 @@
+{
+  "name": "@sitewright/plugin",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@framer/plugin": "5.1.0",
+    "@sitewright/core": "workspace:*",
+    "@sitewright/ui": "workspace:*",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "zustand": "catalog:"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "4.3.3",
+    "@types/node": "catalog:",
+    "@types/react": "18.3.31",
+    "@types/react-dom": "18.3.7",
+    "@typescript/native": "catalog:",
+    "@vitejs/plugin-react": "6.1.1",
+    "tailwindcss": "4.3.3",
+    "vite": "catalog:",
+    "vite-plugin-framer": "1.1.1",
+    "vite-plugin-mkcert": "2.1.0",
+    "vitest": "catalog:"
+  }
+}

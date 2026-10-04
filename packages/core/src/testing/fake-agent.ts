@@ -1,0 +1,311 @@
+import { DSL_VARIABLE_TYPE } from "../constants/dsl.ts";
+import { parseDsl } from "../dsl/parse.ts";
+import type { DslCommand } from "../types/dsl.ts";
+import type { AgentPort } from "../types/framer.ts";
+import type { FakeAgentSession, FakeColorStyle, FakeFramerState, FakeTextStyle } from "../types/testing.ts";
+import { FakeCommandError, tokenColors, withTextStyleAttributes } from "./fake-node-attributes.ts";
+import { newTextStyle, stylePath } from "./fake-state.ts";
+
+/** framer.agent over the fake state. Models color tokens and text styles; anything else is an error. */
+export function createFakeAgent(state: FakeFramerState, nextId: (prefix: string) => string): AgentPort {
+  const session: FakeAgentSession = {
+    state,
+    nextId,
+    tempIds: new Map(),
+  };
+
+  return {
+    getSystemPrompt: async () => state.systemPrompt,
+    applyChanges: async (dsl) => {
+      state.appliedDsl.push(dsl);
+
+      if (state.nextApplyResult === undefined) {
+        return applyDsl(dsl, session);
+      }
+
+      const result = state.nextApplyResult;
+
+      state.nextApplyResult = undefined;
+
+      return result;
+    },
+    serialize: async (input) => state.serializedNodes[input.id] ?? null,
+    serializeNodes: async ({ ids }) => {
+      // Reading a scope loads it into the session: its variables become targets.
+      state.unloadedScopes = state.unloadedScopes.filter((id) => !ids.includes(id));
+
+      return ids.flatMap((id) => state.serializedNodes[id] ?? []);
+    },
+    // The DSL's view of styles: token and preset nodes named by their path without the leading slash.
+    getNodesOfTypes: async ({ types }) => [
+      ...(types.includes("ColorStyleTokenNode") ? state.colorStyles.map(dslNode) : []),
+      ...(types.includes("TextStylePresetNode") ? state.textStyles.map(dslNode) : []),
+    ],
+    queryImages: async () => state.stockImages,
+    listIconSets: async () =>
+      Object.fromEntries(
+        (["project", "external", "additional"] as const).map((group) => [
+          group,
+          state.iconSets
+            .filter((set) => set.group === group)
+            .map(({ id, displayName }) => ({
+              id,
+              displayName,
+            })),
+        ]),
+      ),
+    readIcons: async ({ iconSetId }) => state.iconSets.find((set) => set.id === iconSetId)?.icons ?? [],
+    readIconSetControls: async ({ iconSetIds }) =>
+      Object.fromEntries(iconSetIds.map((id) => [id, state.iconSets.find((set) => set.id === id)?.controls ?? null])),
+    listComponents: async () => ({
+      project: {
+        canvas: state.components.map(({ id, name }) => ({
+          id,
+          displayName: name,
+        })),
+        code: {},
+      },
+    }),
+    readComponentControls: async ({ componentIds }) =>
+      Object.fromEntries(componentIds.map((id) => [id, state.componentControls[id] ?? { error: `Unknown ${id}` }])),
+    readProject: async (queries) => ({ results: queries.map(() => ({ error: "The fake has no project queries." })) }),
+  };
+}
+
+/** Runs each command on its own and reports failures in `errors`, keyed by message, like Framer. */
+function applyDsl(dsl: string, session: FakeAgentSession): unknown {
+  const errors: Record<string, string[]> = {};
+  const renamedIds: Record<string, string> = {};
+  const fail = (message: string, target: string) => {
+    errors[message] = [...(errors[message] ?? []), target];
+  };
+
+  for (const command of parseDsl(dsl)) {
+    try {
+      if (command.verb === "ADD" && DSL_VARIABLE_TYPE.test(command.type ?? "")) {
+        // Framer creates variables but leaves them out of renamedIds.
+        addVariable(command, session);
+      } else if (command.verb === "ADD") {
+        renamedIds[command.id] = addNode(command, session);
+      } else if (command.verb === "SET") {
+        setNode(command, session);
+      } else if (command.verb === "DEL") {
+        deleteNode(command, session);
+      } else {
+        fail(`The fake does not model this command (only +Node, SET and DEL): ${command.verb}.`, command.raw);
+      }
+    } catch (error) {
+      if (!(error instanceof FakeCommandError)) {
+        throw error;
+      }
+
+      fail(error.message, command.id);
+    }
+  }
+
+  const count = Object.values(errors).flat().length;
+
+  if (count === 0) {
+    return {
+      message: "Commands applied cleanly.",
+      renamedIds,
+    };
+  }
+
+  return {
+    message: `Commands: ${count} errors.`,
+    errors,
+    renamedIds,
+  };
+}
+
+function addNode({ type, id, attributes }: DslCommand, session: FakeAgentSession): string {
+  if (session.tempIds.has(id)) {
+    throw new FakeCommandError(`Cannot complete \`+${type}\`: The requested id already exists. Choose a new id.`);
+  }
+
+  const { name = id, ...rest } = attributes;
+  const created = createNode(type, name, rest, session);
+
+  session.tempIds.set(id, created);
+
+  return created;
+}
+
+function createNode(
+  type: string | null,
+  name: string,
+  attributes: Record<string, string>,
+  session: FakeAgentSession,
+): string {
+  const { state, nextId } = session;
+
+  if (type === "ColorStyleTokenNode") {
+    const { light = "rgb(0, 0, 0)", dark = null } = tokenColors(attributes);
+    const token: FakeColorStyle = {
+      id: nextId("color"),
+      ...stylePath(name),
+      light,
+      dark,
+    };
+
+    state.colorStyles.push(token);
+
+    return token.id;
+  }
+
+  if (type === "TextStylePresetNode") {
+    const created = withTextStyleAttributes(
+      newTextStyle("", name),
+      attributes,
+      tokenLookup(session),
+      state.breakpointWidths,
+    );
+    const style = {
+      ...created,
+      id: nextId("text"),
+    };
+
+    state.textStyles.push(withAvailableWeight(style, state));
+
+    return style.id;
+  }
+
+  throw new FakeCommandError(`The fake does not model +${type} nodes.`);
+}
+
+/** A variable in its scope's serialized `variables`, as serialize() lists them. */
+function addVariable({ type, id, attributes }: DslCommand, session: FakeAgentSession): void {
+  const { scope, name = id, initialValue, ...rest } = attributes;
+  const node = session.state.serializedNodes[targetOf(scope ?? "", session)] as { variables?: unknown[] } | undefined;
+
+  if (node === undefined) {
+    throw new FakeCommandError(`Cannot complete \`+${type}\`: scope ${scope} does not exist.`);
+  }
+
+  if (type === "IconVariable" && initialValue !== undefined) {
+    throw new FakeCommandError(
+      `Cannot apply \`initialValue="${initialValue}"\`: Assertion Error: Icon "${initialValue}" could not be prepared as a variable from set "${rest.set}".`,
+    );
+  }
+
+  const variable = {
+    id: session.nextId("var"),
+    name,
+    node: type,
+    ...rest,
+    ...(initialValue === undefined ? {} : { initialValue }),
+  };
+
+  node.variables = [...(node.variables ?? []), variable];
+  session.tempIds.set(id, variable.id);
+}
+
+function findVariable(id: string, state: FakeFramerState): Record<string, unknown> | undefined {
+  for (const [scopeId, node] of Object.entries(state.serializedNodes)) {
+    if (state.unloadedScopes.includes(scopeId)) {
+      continue;
+    }
+
+    const variables = (node as { variables?: Record<string, unknown>[] }).variables ?? [];
+    const variable = variables.find((candidate) => candidate.id === id);
+
+    if (variable !== undefined) {
+      return variable;
+    }
+  }
+
+  return undefined;
+}
+
+function setNode({ id, attributes }: DslCommand, session: FakeAgentSession): void {
+  const target = targetOf(id, session);
+  const variable = findVariable(target, session.state);
+
+  if (variable !== undefined) {
+    Object.assign(variable, attributes);
+
+    return;
+  }
+
+  const token = session.state.colorStyles.find((candidate) => candidate.id === target);
+
+  if (token !== undefined) {
+    Object.assign(token, tokenColors(attributes));
+
+    return;
+  }
+
+  const style = session.state.textStyles.find((candidate) => candidate.id === target);
+
+  if (style === undefined) {
+    throw new FakeCommandError(missingTarget("SET"));
+  }
+
+  Object.assign(
+    style,
+    withAvailableWeight(
+      withTextStyleAttributes(style, attributes, tokenLookup(session), session.state.breakpointWidths),
+      session.state,
+    ),
+  );
+}
+
+/** Like Framer: a weight an uploaded family lacks becomes the nearest one it has, without an error. */
+function withAvailableWeight<T extends Pick<FakeTextStyle, "font">>(style: T, state: FakeFramerState): T {
+  const { family, weight, style: fontStyle } = style.font;
+  const weights = state.projectFonts
+    .filter((font) => font.family === family && font.style === fontStyle)
+    .flatMap((font) => (font.weight === null ? [] : [font.weight]));
+
+  if (weight === null || weights.length === 0 || weights.includes(weight)) {
+    return style;
+  }
+
+  const nearest = weights.reduce((best, candidate) =>
+    Math.abs(candidate - weight) < Math.abs(best - weight) ? candidate : best,
+  );
+
+  return {
+    ...style,
+    font: {
+      ...style.font,
+      weight: nearest,
+    },
+  };
+}
+
+function deleteNode({ id }: DslCommand, session: FakeAgentSession): void {
+  const { state } = session;
+  const target = targetOf(id, session);
+  const count = state.colorStyles.length + state.textStyles.length;
+
+  state.colorStyles = state.colorStyles.filter((token) => token.id !== target);
+  state.textStyles = state.textStyles.filter((style) => style.id !== target);
+
+  if (state.colorStyles.length + state.textStyles.length === count) {
+    throw new FakeCommandError(missingTarget("DEL"));
+  }
+}
+
+/** Earlier commands' temp ids stand for the nodes they created, in this call and later ones. */
+function targetOf(id: string, { tempIds }: FakeAgentSession): string {
+  return tempIds.get(id) ?? id;
+}
+
+function tokenLookup(session: FakeAgentSession): (id: string) => FakeColorStyle | undefined {
+  return (id) => session.state.colorStyles.find((token) => token.id === targetOf(id, session));
+}
+
+function missingTarget(verb: string): string {
+  return `Cannot complete \`${verb}\`: The target does not exist. Re-read the project and retry with a current target id.`;
+}
+
+function dslNode(style: { readonly id: string; readonly path: string }) {
+  return {
+    id: style.id,
+    attributes: {
+      name: style.path.replace(/^\/+/, ""),
+    },
+  };
+}

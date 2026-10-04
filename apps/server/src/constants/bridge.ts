@@ -1,0 +1,54 @@
+import { BRIDGE_PATH, LOCAL_APP_PORT, WEB_SOCKET_PATH } from "@sitewright/core";
+import type { UpgradeRole } from "../types/bridge.ts";
+
+/** The bridge port written to a new bridge.json when SITEWRIGHT_BRIDGE_PORT is not set: the local app's port. */
+export const DEFAULT_BRIDGE_PORT = LOCAL_APP_PORT;
+
+/**
+ * Another sitewright process joining the owner sends bridge.json's token in this header. Browsers cannot set custom
+ * WebSocket headers, so no page can send it.
+ */
+export const BRIDGE_TOKEN_HEADER = "x-sitewright-token";
+
+/** How often the server pings the plugin; a socket that missed the previous ping is dropped. */
+export const HEARTBEAT_MS = 15_000;
+
+/** How long the plugin has to answer one request. */
+export const REQUEST_TIMEOUT_MS = 30_000;
+
+/** How long close() lets clients answer the 1001 goodbye before cutting them off. */
+export const CLOSE_GRACE_MS = 1_000;
+
+/** How long a new socket has to say hello before it is closed. */
+export const HELLO_TIMEOUT_MS = 5_000;
+
+/**
+ * Where other sitewright processes (other Claude Code sessions) join the process that owns the bridge port: the owner
+ * hands their operations to the plugin and their events to its window.
+ */
+export const PEER_PATH = "/sitewright/v1/peer";
+
+/** Bumped on every breaking change of the peer messages; the owner closes a peer of another version (4426). */
+export const PEER_PROTOCOL_VERSION = 1;
+
+/** How soon a process without the bridge tries again, to take the port over or to join its owner (jittered). */
+export const PEER_RETRY_MS = 1_000;
+
+/**
+ * How long joining the bridge's owner may take, from the connect to its first answer. A process that holds the port but
+ * never answers (stopped, or not sitewright) must not stall this server's start: the join then counts as failed.
+ */
+export const PEER_JOIN_TIMEOUT_MS = 3_000;
+
+/** A peer waits this much longer than the owner waits for the plugin, so the owner's TIMEOUT arrives first. */
+export const PEER_TIMEOUT_MARGIN_MS = 5_000;
+
+/**
+ * Who may upgrade on which path: the plugin's frames relayed by the bridge window, another sitewright process, or the
+ * journal panel of the local app.
+ */
+export const UPGRADE_ROLES: Readonly<Record<string, UpgradeRole>> = {
+  [BRIDGE_PATH]: "plugin",
+  [PEER_PATH]: "peer",
+  [WEB_SOCKET_PATH]: "panel",
+};

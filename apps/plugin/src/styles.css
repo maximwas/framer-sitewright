@@ -1,0 +1,11 @@
+@import "tailwindcss";
+/* Inter at the top level: framer.css's own import of it cannot work inside a layer, so framerCss() drops that one. */
+@import "@framer/plugin/inter.css";
+/* Framer's plugin base styles (buttons, inputs, light/dark variables) sit in the base layer, so utilities override them. */
+@import "@framer/plugin/framer.css" layer(base);
+
+/* The activity panel (packages/ui) and Framer's theme variables as Tailwind colors. */
+@import "@sitewright/ui/theme.css";
+
+/* Framer switches its theme with an attribute, not the system's color scheme: dark: must follow the editor. */
+@custom-variant dark (&:where([data-framer-theme="dark"], [data-framer-theme="dark"] *));

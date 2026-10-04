@@ -1,0 +1,32 @@
+{
+  "name": "@sitewright/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./theme.css": "./src/theme.css",
+    "./vite": "./src/build/framer-css.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@sitewright/core": "workspace:*",
+    "lucide-react": "1.49.0",
+    "zod": "catalog:",
+    "zustand": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.31",
+    "@typescript/native": "catalog:",
+    "react": "18.3.1",
+    "vite": "catalog:"
+  }
+}

@@ -1,0 +1,20 @@
+# Local-only agent workspace: project context, docs, plans, specs for AI agents
+/agent/
+/CLAUDE.md
+/CLAUDE.local.md
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies and build output
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.vite/
+
+# OS / editor / tool scratch
+.DS_Store
+.playwright-mcp/
