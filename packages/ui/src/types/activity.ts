@@ -24,7 +24,7 @@ export interface ViewedProject {
   readonly shown: { readonly id: string; readonly name: string } | null;
   /** The project picked in the switch, when it is another one; null: the shown project. */
   readonly picked: string | null;
-  /** Another project's journal: look, do not undo. */
+  /** Another project's journal, or no project open in the plugin: look, do not undo. */
   readonly readOnly: boolean;
 }
 

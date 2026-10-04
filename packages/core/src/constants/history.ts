@@ -14,7 +14,7 @@ export const OPERATION_LABELS: Readonly<Record<string, string>> = {
   "project.publish": "Publish",
   "nodes.read": "Read nodes",
   "selection.get": "Editor selection",
-  "design.apply": "Design (DSL)",
+  "design.apply": "Design",
   "history.revert": "Revert",
   "images.search": "Photo search",
   "images.upload": "Image upload",

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useStore } from "zustand";
-import { EMPTY_FEED_TEXT, OTHER_PROJECT_NOTE } from "../constants/activity.ts";
+import { EMPTY_FEED_TEXT, NO_PLUGIN_NOTE, OTHER_PROJECT_NOTE } from "../constants/activity.ts";
 import { useActivityActions } from "../hooks/useActivityActions.ts";
 import { useCapabilities } from "../hooks/useCapabilities.ts";
 import { useRestore } from "../hooks/useRestore.ts";
@@ -28,7 +28,7 @@ export function ActivityPanel({ feed }: ActivityPanelProps) {
   const [prompt, setPrompt] = useState<"mark" | "clear" | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const view = useStore(feedViewStore, (state) => state.view);
-  const { readOnly } = useViewedProject();
+  const { readOnly, shown } = useViewedProject();
   const list = feed.status === "ready" ? feed.value : null;
   const entries = list?.entries ?? [];
 
@@ -39,7 +39,7 @@ export function ActivityPanel({ feed }: ActivityPanelProps) {
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-2.5">
       <ProjectSwitch />
-      {readOnly && <p className="text-framer-text-secondary">{OTHER_PROJECT_NOTE}</p>}
+      {readOnly && <p className="text-framer-text-secondary">{shown === null ? NO_PLUGIN_NOTE : OTHER_PROJECT_NOTE}</p>}
       <CapabilityBanner capabilities={capabilities} />
       {prompt === "mark" && (
         <CheckpointForm

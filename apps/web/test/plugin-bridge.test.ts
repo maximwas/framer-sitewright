@@ -15,7 +15,7 @@ const PLUGIN_INFO = {
 };
 
 /** A plain ws server plays the MCP server; an EventTarget plays this window, a fake window the plugin that opened it. */
-async function startBridge() {
+async function startBridge(silentMs?: number) {
   const server = new WebSocketServer({
     host: "127.0.0.1",
     port: 0,
@@ -45,6 +45,7 @@ async function startBridge() {
     pluginOrigins: [PLUGIN_ORIGIN],
     events,
     opener: null,
+    ...(silentMs === undefined ? {} : { silentMs }),
   });
   const fromPlugin = (data: unknown, origin = PLUGIN_ORIGIN, source: unknown = plugin) =>
     events.dispatchEvent(
@@ -210,4 +211,27 @@ it("hears only an allowed plugin origin, and lets the server know when the plugi
 
   plugin.closed = true;
   await closed;
+});
+
+it("regression: lets a plugin that stopped saying hello go, so calls fail fast, and takes it back when it returns", async () => {
+  const { sockets, fromPlugin } = await startBridge(300);
+  const hello = () =>
+    fromPlugin(
+      relayMessage({
+        kind: "hello",
+        plugin: PLUGIN_INFO,
+      }),
+    );
+
+  hello();
+  await vi.waitFor(() => expect(sockets).toHaveLength(1));
+
+  // The plugin's page reloaded and broke: no hello for longer than the silence limit.
+  const closed = new Promise<void>((resolve) => sockets[0]?.once("close", () => resolve()));
+
+  await closed;
+
+  // It comes back from the same window: a new session.
+  hello();
+  await vi.waitFor(() => expect(sockets).toHaveLength(2));
 });

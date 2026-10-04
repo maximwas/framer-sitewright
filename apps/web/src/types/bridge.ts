@@ -30,6 +30,8 @@ export interface PluginBridgeOptions {
   readonly events?: EventTarget;
   /** The plugin that opened this window, told `ready` at once; null when the page was opened otherwise. */
   readonly opener?: Window | null;
+  /** How long the plugin may go without a hello before the window lets it go (PLUGIN_SILENT_MS); shorter in tests. */
+  readonly silentMs?: number;
 }
 
 /** The plugin this window works for: the window that said hello, at its exact origin. */

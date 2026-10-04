@@ -7,7 +7,7 @@ import {
   relayMessage,
   type WindowToPlugin,
 } from "@sitewright/core";
-import { PLUGIN_CLOSED_POLL_MS } from "../constants/bridge.ts";
+import { PLUGIN_CLOSED_POLL_MS, PLUGIN_SILENT_MS } from "../constants/bridge.ts";
 import { relayStore } from "../store/relay-store.ts";
 import type { BridgeStatus, LinkedPlugin, PendingRun, PluginBridgeOptions } from "../types/bridge.ts";
 import { BridgeClient } from "./bridge-client.ts";
@@ -28,6 +28,8 @@ export class PluginBridge {
   #client: BridgeClient | null = null;
   #unsubscribe: (() => void) | null = null;
   #watch: ReturnType<typeof setInterval> | undefined;
+  /** When the linked plugin last said hello. */
+  #heardAt = 0;
   #sequence = 0;
 
   constructor(options: PluginBridgeOptions) {
@@ -79,6 +81,8 @@ export class PluginBridge {
 
   /** A plugin introduces itself. The same one again (its hello repeats until answered) only hears the status again. */
   #onHello(source: Window, origin: string, info: PluginInfo): void {
+    this.#heardAt = Date.now();
+
     if (this.#plugin?.source === source && this.#client !== null) {
       this.#tellStatus(this.#client.connection.getState());
 
@@ -116,12 +120,21 @@ export class PluginBridge {
         }),
       ),
     );
-    this.#watch = setInterval(() => {
-      if (source.closed) {
-        this.#unlink("plugin closed");
-        relayStore.setState({ state: "closed" });
-      }
-    }, PLUGIN_CLOSED_POLL_MS);
+
+    const silentMs = this.#options.silentMs ?? PLUGIN_SILENT_MS;
+
+    this.#watch = setInterval(
+      () => {
+        if (source.closed) {
+          this.#unlink("plugin closed");
+          relayStore.setState({ state: "closed" });
+        } else if (Date.now() - this.#heardAt > silentMs) {
+          this.#unlink("plugin stopped answering");
+          relayStore.setState({ state: "waiting" });
+        }
+      },
+      Math.min(PLUGIN_CLOSED_POLL_MS, silentMs),
+    );
     client.start();
     this.#tellStatus(client.connection.getState());
   }

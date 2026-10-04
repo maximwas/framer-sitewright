@@ -23,6 +23,9 @@ export const THUMBNAIL_PX = 160;
 export const OTHER_PROJECT_NOTE =
   "Another project's journal, to look at: undo, redo and restore work in the project the plugin is open in.";
 
+/** What the page says while no project is open in the plugin: the journal shows, undo waits for the editor. */
+export const NO_PLUGIN_NOTE = "Open the plugin in this project to undo, redo or restore from here.";
+
 /** What the empty journal says, per view. */
 export const EMPTY_FEED_TEXT: Readonly<Record<ActivityView, string>> = {
   all: "Nothing yet. What Claude reads and changes in this project will show up here.",

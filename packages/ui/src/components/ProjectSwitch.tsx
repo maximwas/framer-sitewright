@@ -15,12 +15,9 @@ export function ProjectSwitch() {
     ...projects,
   ];
 
-  if (options.length === 0) {
+  // One project needs no switch: the page header names it already.
+  if (options.length < 2) {
     return null;
-  }
-
-  if (options.length === 1) {
-    return <p className="truncate font-semibold text-framer-text">{options[0]?.name}</p>;
   }
 
   return (
