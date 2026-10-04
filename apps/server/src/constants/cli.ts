@@ -17,7 +17,7 @@ export const CLI_ARGUMENTS: Readonly<Record<string, NamedCommand>> = {
 };
 
 /** The options `setup` takes. */
-export const SETUP_OPTIONS: ReadonlySet<string> = new Set(["--hooks", "--yes", "-y", "--print"]);
+export const SETUP_OPTIONS: ReadonlySet<string> = new Set(["--hooks", "--skill", "--yes", "-y", "--print"]);
 
 /** `settings name=on|off`: a switch set from a script. */
 export const SETTING_CHANGE = /^(\w+)=(on|off)$/;
@@ -39,3 +39,6 @@ export const DEFAULT_BROWSER_OPENER: readonly string[] = ["xdg-open"];
 
 /** How long `open` waits for the local app to answer before it says no server runs. */
 export const OPEN_PROBE_TIMEOUT_MS = 1_000;
+
+/** Where Claude Code finds the Sitewright skill, under the home folder. */
+export const SKILL_INSTALL_PATH = [".claude", "skills", "sitewright", "SKILL.md"] as const;

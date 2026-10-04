@@ -8,6 +8,7 @@ import type { McpClient } from "../types/cli.ts";
 import type { WizardContext } from "../types/wizard.ts";
 import { answered } from "./cancel.ts";
 import { addToClaudeCode, addToCursor, clientConfigBlock, codexBlock, detectClients } from "./clients.ts";
+import { installSkill } from "./install-skill.ts";
 import { addKeyFlow } from "./key-flow.ts";
 import { chooseSettings } from "./settings-flow.ts";
 import { setupHooks } from "./setup-hooks.ts";
@@ -29,6 +30,7 @@ export async function runWizard(context: WizardContext): Promise<void> {
   await chooseSettings(context.settings);
 
   if (clients.includes("claude-code")) {
+    await offerSkill(context);
     await offerHooks(context);
   }
 
@@ -124,6 +126,26 @@ async function addKeys(keys: KeyStore, bridgeFile: string): Promise<void> {
         initialValue: false,
       }),
     );
+  }
+}
+
+async function offerSkill({ homeDir }: WizardContext): Promise<void> {
+  const wanted = answered(
+    await confirm({
+      message:
+        "Add the Sitewright skill to Claude Code? (how to build sites that look designed: layout rules and checks)",
+      initialValue: true,
+    }),
+  );
+
+  if (!wanted) {
+    return;
+  }
+
+  try {
+    log.success(await installSkill(homeDir));
+  } catch (error) {
+    log.error(errorMessage(error));
   }
 }
 

@@ -31,6 +31,19 @@ export async function runCli(argv: readonly string[]): Promise<void> {
       return;
     }
     case "setup": {
+      if (command.skill) {
+        const { installSkill } = await import("./install-skill.ts");
+
+        try {
+          print(await installSkill(homedir()));
+        } catch (error) {
+          process.stderr.write(`${errorMessage(error)}\n`);
+          process.exitCode = 1;
+        }
+
+        return;
+      }
+
       if (!command.hooks) {
         if (command.print || !inTerminal()) {
           print(setupInstructions(PRODUCT.packageName));

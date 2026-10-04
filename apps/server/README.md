@@ -76,6 +76,7 @@ skill's files, for the conversation that uses Sitewright.
 sitewright                    in a terminal: the setup wizard; for MCP clients: the MCP server on stdio
 sitewright setup              the setup wizard (setup --print: the commands and config blocks instead)
 sitewright setup --hooks      show the Claude Code hooks for skills in the journal (--yes adds them)
+sitewright setup --skill      add the Sitewright skill to Claude Code
 sitewright key                add a project's Server API key (key list, key remove)
 sitewright settings           what the agent may do (settings --print, settings customCode=on)
 sitewright open               open the journal page of the running server
@@ -90,6 +91,8 @@ sitewright --help
   `text_styles_upsert`, `text_styles_delete`, `fonts_search`.
 - **Pages and nodes:** `project_overview`, `nodes_read`, `design_apply`, `layout_audit`, `selection_get`,
   `node_screenshot`, `framer_docs`.
+- **Design guide:** `design_guide` — the order of work, layout and typography rules, direction from top Framer sites,
+  and the checklist before handing a page over. The Claude Code skill (`setup --skill`) points the agent at it.
 - **Components and assets:** `components_read`, `component_controls_set`, `icons_search`, `images_search`,
   `image_upload`, `svg_add`.
 - **Code** (off until you allow it): `custom_code_get`, `custom_code_set`, `code_files_list`, `code_file_read`,

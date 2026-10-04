@@ -45,6 +45,7 @@ const EXPECTED_TOOLS = [
   "custom_code_get",
   "custom_code_set",
   "design_apply",
+  "design_guide",
   "fonts_search",
   "framer_connect",
   "framer_docs",

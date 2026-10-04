@@ -43,8 +43,8 @@ When both are available, calls go to the plugin first and the DSL work goes to t
 - **Journal with undo:** every call is recorded; undo the last change, a change and everything after it, or restore
   to a checkpoint. A local page (`sitewright open`) shows the journal, how each call reached Framer (Plugin API,
   Server API or Framer's agent layer), the skills Claude used, the settings (custom code, code components) and the project's Server API key.
-- **Knowledge:** the server's instructions carry rules learned from building real sites: layout, motion, and changes
-  Framer accepts without an error that still render wrong.
+- **Knowledge:** `design_guide` and the Claude Code skill: the order of work, layout and typography rules, direction
+  measured on top Framer sites, the habits of generated pages to avoid, and the checklist before handing a page over.
 
 ## Privacy
 
@@ -78,6 +78,7 @@ ln -s "$(pwd)/skills/framer-craft" ~/.claude/skills/framer-craft
 sitewright                    in a terminal: the setup wizard; for MCP clients: the MCP server on stdio
 sitewright setup              the setup wizard (setup --print: the commands and config blocks instead)
 sitewright setup --hooks      show the Claude Code hooks for skills in the journal (--yes adds them)
+sitewright setup --skill      add the Sitewright skill to Claude Code
 sitewright key                add a project's Server API key (key list, key remove)
 sitewright settings           what the agent may do (settings --print, settings customCode=on)
 sitewright open               open the journal page of the running server

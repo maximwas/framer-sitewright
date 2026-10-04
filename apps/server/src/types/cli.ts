@@ -1,7 +1,7 @@
 /** What the command line asks for. */
 export type CliCommand =
   | { kind: "mcp" }
-  | { kind: "setup"; hooks: boolean; yes: boolean; print: boolean }
+  | { kind: "setup"; hooks: boolean; skill: boolean; yes: boolean; print: boolean }
   | { kind: "key"; action: KeyAction }
   | { kind: "settings"; print: boolean; changes: Readonly<Record<string, boolean>> }
   | { kind: "hook" }

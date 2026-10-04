@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { mkdtemp } from "node:fs/promises";
+import { mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -18,12 +18,14 @@ describe("parseCliArgs", () => {
     expect(parseCliArgs(["setup"])).toEqual({
       kind: "setup",
       hooks: false,
+      skill: false,
       yes: false,
       print: false,
     });
     expect(parseCliArgs(["setup", "--hooks", "--yes"])).toEqual({
       kind: "setup",
       hooks: true,
+      skill: false,
       yes: true,
       print: false,
     });
@@ -117,4 +119,15 @@ it("regression: lists the saved keys outside a terminal too, since the list asks
   );
 
   expect(output).toMatch(/No keys saved yet/);
+});
+
+it("installs the Sitewright skill for Claude Code once, and updates an older copy", async () => {
+  const home = await mkdtemp(join(tmpdir(), "sitewright-skill-"));
+  const { installSkill } = await import("../src/cli/install-skill.ts");
+
+  expect(await installSkill(home)).toMatch(/^Installed/);
+  expect(await installSkill(home)).toMatch(/installed already/);
+  await writeFile(join(home, ".claude", "skills", "sitewright", "SKILL.md"), "old");
+  expect(await installSkill(home)).toMatch(/^Updated/);
+  expect(await readFile(join(home, ".claude", "skills", "sitewright", "SKILL.md.bak"), "utf8")).toBe("old");
 });

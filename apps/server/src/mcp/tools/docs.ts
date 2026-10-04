@@ -7,12 +7,57 @@ import {
   searchSections,
   sliceContent,
 } from "@sitewright/core";
+import * as z from "zod";
+import { GUIDE_TOPICS } from "../../constants/knowledge.ts";
 import { guideNames, readGuide, resolveGuideName } from "../../docs/guides.ts";
+import { readGuideTopic } from "../../knowledge/guide.ts";
 import { DocsInputSchema, DocsOutputSchema } from "../../schemas/mcp.ts";
+import type { GuideTopic } from "../../types/knowledge.ts";
 import type { DocsOutput, ToolContext } from "../../types/mcp.ts";
 import { addTool } from "../add-tool.ts";
 
 export function registerDocsTools(server: McpServer, { transports, docs, journal }: ToolContext): void {
+  const topics = Object.keys(GUIDE_TOPICS) as [GuideTopic, ...GuideTopic[]];
+
+  addTool(server, {
+    name: "design_guide",
+    title: "Design guide",
+    description: `How to build Framer sites that look designed and hold together, from measuring top Framer sites and from live builds. Read "workflow" before building or restyling any page, then the topic for the task. Topics: ${Object.entries(
+      GUIDE_TOPICS,
+    )
+      .map(([name, about]) => `${name} (${about})`)
+      .join("; ")}.`,
+    input: z.strictObject({
+      topic: z.enum(topics).default("workflow").describe("Which part of the guide to read."),
+    }),
+    output: z.object({
+      topic: z.string(),
+      text: z.string(),
+      topics: z.array(z.string()),
+    }),
+    annotations: {
+      readOnlyHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+    run: async ({ topic }) => {
+      const text = await readGuideTopic(topic);
+
+      // The journal's skills view shows that the agent followed the guide, and which part.
+      await journal.noteSkill({
+        at: new Date().toISOString(),
+        skill: "sitewright-design-guide",
+        reference: topic,
+      });
+
+      return {
+        topic,
+        text,
+        topics,
+      };
+    },
+  });
+
   addTool(server, {
     name: "framer_docs",
     title: "Framer DSL reference",

@@ -18,6 +18,7 @@
   },
   "files": [
     "dist",
+    "knowledge",
     "README.md",
     "LICENSE"
   ],

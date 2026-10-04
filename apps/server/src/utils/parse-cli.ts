@@ -45,6 +45,7 @@ export function parseCliArgs(argv: readonly string[]): CliCommand {
   return {
     kind: "setup",
     hooks: rest.includes("--hooks"),
+    skill: rest.includes("--skill"),
     yes: rest.includes("--yes") || rest.includes("-y"),
     print: rest.includes("--print"),
   };

@@ -41,7 +41,7 @@ try {
   }
 
   const tools = await countTools(bin, work);
-  console.log(`ok: ${tarball}, version ${version}, ${tools} tools, web app included`);
+  console.log(`ok: ${tarball}, version ${version}, ${tools} tools, web app and design guide included`);
 } finally {
   rmSync(work, { recursive: true, force: true });
 }
@@ -65,6 +65,7 @@ function countTools(command, cwd) {
     }, 30_000);
     const send = (message) => child.stdin.write(`${JSON.stringify(message)}\n`);
     let buffer = "";
+    let tools = 0;
 
     child.stdout.setEncoding("utf8");
     child.stdout.on("data", (chunk) => {
@@ -79,9 +80,27 @@ function countTools(command, cwd) {
           send({ jsonrpc: "2.0", method: "notifications/initialized" });
           send({ jsonrpc: "2.0", id: 2, method: "tools/list" });
         } else if (message.id === 2) {
+          tools = message.result.tools.length;
+          // The design guide ships as files next to dist/: read one through the packaged server.
+          send({
+            jsonrpc: "2.0",
+            id: 3,
+            method: "tools/call",
+            params: { name: "design_guide", arguments: { topic: "layout" } },
+          });
+        } else if (message.id === 3) {
           clearTimeout(timer);
           child.kill();
-          resolve(message.result.tools.length);
+
+          if (!message.result?.structuredContent?.text?.startsWith("# Layout rules")) {
+            reject(
+              new Error(
+                `design_guide did not read the packaged guide: ${JSON.stringify(message.result ?? message.error)}`,
+              ),
+            );
+          } else {
+            resolve(tools);
+          }
         }
       }
     });
