@@ -38,8 +38,8 @@ export const PLUGIN_DEFAULT_VALUES: Readonly<Record<string, string>> = {
 
 /**
  * The DSL attributes the Plugin API can set as well (spike 16, 04.10.2026), and how their values convert. Everything
- * else (effects, transitions, text color and type on the node, rich text blocks, shadows, image and gradient fills)
- * needs framer.agent.
+ * else (effects, transitions, text color and type on the node, rich text blocks, shadows, gradient fills) needs
+ * framer.agent. An image fill by URL is uploaded and set as backgroundImage.
  */
 export const PLUGIN_ATTRIBUTE_RULES: readonly AttributeRule[] = [
   {

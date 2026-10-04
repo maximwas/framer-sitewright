@@ -1,9 +1,14 @@
 import {
-  DEFAULT_FONT_FAMILY,
+  AUTO_TEXT_CHARS,
+  CENTERED_MIN_HEADINGS,
+  CENTERED_SHARE_MAX,
   DEFAULT_STACK_GAP,
+  DISPLAY_LINE_HEIGHT_MAX,
+  DISPLAY_SIZE_PX,
   DIVIDER_MAX_PX,
   FIXED_WIDTH_LIMIT_PX,
   HEADING_TAGS,
+  HIERARCHY_RATIO_MIN,
   PILL_RADIUS_PX,
   RAW_COLOR,
   SECTION_RHYTHM_MAX,
@@ -138,7 +143,7 @@ const unevenRowCards: NodeRule = (node) => {
 
 /** A link on a text node gets Framer's link style (blue by default), over the text style's color. */
 const textLink: NodeRule = (node) =>
-  isText(node) && attr(node, "link") !== null
+  isText(node) && attr(node, "link") !== null && attr(node, "linkStylePreset") === null
     ? [
         issue(
           "text-link",
@@ -283,6 +288,147 @@ const nestedRadius: NodeRule = (node) => {
     });
 };
 
+/** A parent that hugs its content with a child that fills it: neither has a size, and Framer silently fixes one. */
+const fitParentFillChild: NodeRule = (node) =>
+  (["width", "height"] as const).flatMap((axis) => {
+    if (sizeKind(attr(node, axis)) !== "fit") {
+      return [];
+    }
+
+    const filling = childrenOf(node).filter(
+      (child) => inFlow(child) && attr(child, axis)?.endsWith("fr") && !(axis === "width" && isText(child)),
+    );
+
+    return filling.length === 0
+      ? []
+      : [
+          issue(
+            "fit-parent-fill-child",
+            "defect",
+            node,
+            `${label(node)} hugs its content (${axis}="${attr(node, axis)}") while ${filling.map(label).join(", ")} fill it (${axis}="1fr"): neither gives the other a size, so Framer switches it to fixed and it breaks at other widths.`,
+            `Give ${label(node)} a size on ${axis} (1fr or px) or make the children ${axis}="auto".`,
+          ),
+        ];
+  });
+
+/** Text inside a visible surface needs room from its edges. */
+const edgeFlushText: NodeRule = (node) => {
+  const [, right, , left] = paddingOf(node);
+
+  return isFrame(node) && hasSurface(node) && childrenOf(node).some(isText) && (left === 0 || right === 0)
+    ? [
+        issue(
+          "edge-flush-text",
+          "defect",
+          node,
+          `Text in ${label(node)} touches its ${left === 0 ? "left" : "right"} edge: the surface has no horizontal padding.`,
+          "Give the frame horizontal padding (cards 24–40px, buttons 16–24px).",
+        ),
+      ]
+    : [];
+};
+
+/** An image frame without children and without a size collapses to nothing. */
+const imageCollapse: NodeRule = (node) => {
+  const image = attr(node, "backgroundImage") !== null || /^https?:|url\(/i.test(attr(node, "fill") ?? "");
+  const height = sizeKind(attr(node, "height"));
+
+  return isFrame(node) &&
+    image &&
+    childrenOf(node).length === 0 &&
+    (height === "fit" || height === "unset") &&
+    attr(node, "aspectRatio") === null
+    ? [
+        issue(
+          "image-collapse",
+          "defect",
+          node,
+          `${label(node)} holds an image but has no height of its own (no children, height auto, no aspectRatio): it collapses to nothing.`,
+          'Give it width="1fr" with an aspectRatio and any px height, or a fixed height.',
+        ),
+      ]
+    : [];
+};
+
+/** A card stretched to its row with centered content: neighbouring titles sit at different heights. */
+const cardContentFloats: NodeRule = (node) => {
+  const floating = childrenOf(node).filter(
+    (card) =>
+      isFrame(card) &&
+      hasSurface(card) &&
+      attr(card, "height") === "1fr" &&
+      layoutOf(card) === "stack" &&
+      directionOf(card) === "vertical" &&
+      ["center", "end"].includes(attr(card, "stackDistribution") ?? "center"),
+  );
+
+  return floating.length < 2
+    ? []
+    : [
+        issue(
+          "card-content-floats",
+          "likely",
+          node,
+          `${floating.length} cards in ${label(node)} stretch to their row but center their content, so their titles and buttons sit at different heights.`,
+          'Set stackDistribution="start" on the cards; to put a button at the bottom, add a spacer with height="1fr" above it.',
+        ),
+      ];
+};
+
+/** Long text with width auto in a column does not wrap to the column's width. */
+const autoWidthText: NodeRule = (node) =>
+  layoutOf(node) === "stack" && directionOf(node) === "vertical"
+    ? childrenOf(node)
+        .filter(
+          (child) =>
+            isText(child) &&
+            inFlow(child) &&
+            sizeKind(attr(child, "width")) === "fit" &&
+            (textContent(child)?.length ?? 0) >= AUTO_TEXT_CHARS,
+        )
+        .map((child) =>
+          issue(
+            "auto-width-text",
+            "likely",
+            child,
+            `${label(child)} is a long text with width="auto" in a column: it does not wrap to the column and runs as wide as its longest line.`,
+            'Use width="1fr" (with maxWidth for a reading measure).',
+          ),
+        )
+    : [];
+
+/** A fixed viewport height cuts content on short screens and long text. */
+const fixedViewportHeight: NodeRule = (node) =>
+  isFrame(node) && /vh$/.test(attr(node, "height") ?? "")
+    ? [
+        issue(
+          "fixed-vh",
+          "likely",
+          node,
+          `${label(node)} is exactly ${attr(node, "height")} high: on short screens or with longer text its content is cut.`,
+          `Use height="auto" with minHeight="${attr(node, "height")}".`,
+        ),
+      ]
+    : [];
+
+/** A button's padding is symmetric, or its label sits off-centre. */
+const buttonPadding: NodeRule = (node) => {
+  const [top, right, bottom, left] = paddingOf(node);
+
+  return isFrame(node) && attr(node, "link") !== null && hasSurface(node) && (top !== bottom || left !== right)
+    ? [
+        issue(
+          "button-padding",
+          "likely",
+          node,
+          `${label(node)} looks like a button but its padding is uneven (${attr(node, "padding")}), so the label sits off-centre.`,
+          "Use symmetric padding (e.g. 12px 20px).",
+        ),
+      ]
+    : [];
+};
+
 export const NODE_RULES: readonly NodeRule[] = [
   mixedAlignment,
   unevenGridCells,
@@ -294,6 +440,13 @@ export const NODE_RULES: readonly NodeRule[] = [
   fixedHeightContainer,
   gapWithSpacedDistribution,
   nestedRadius,
+  fitParentFillChild,
+  edgeFlushText,
+  imageCollapse,
+  cardContentFloats,
+  autoWidthText,
+  fixedViewportHeight,
+  buttonPadding,
 ];
 
 /** The page's sections: what sits in the flow of the breakpoint frame, dividers aside. */
@@ -511,23 +664,76 @@ const noImagery: PageRule = (breakpoint) => {
     : [];
 };
 
-export const PAGE_RULES: readonly PageRule[] = [containerWidths, sectionRhythm, headings, templateHabits, noImagery];
+/** Top sites center about one heading in six; centering most of them reads as a template. */
+const centeredEverything: PageRule = (breakpoint, context) => {
+  const headingTexts = walk(breakpoint).filter(
+    (node) => isText(node) && /^h[1-3]$/.test(context.textStyle(node.attributes?.["textStylePreset"])?.tag ?? ""),
+  );
+  const centered = headingTexts.filter((node) => textAnchorOf(node, context) === "center");
+
+  return headingTexts.length >= CENTERED_MIN_HEADINGS && centered.length / headingTexts.length > CENTERED_SHARE_MAX
+    ? [
+        issue(
+          "centered-everything",
+          "taste",
+          breakpoint,
+          `${centered.length} of ${headingTexts.length} headings on ${label(breakpoint)} are centered; on top Framer sites about one in six is.`,
+          "Left-align the sections and keep centered text for one or two moments (a manifesto line, the closing call to action).",
+        ),
+      ]
+    : [];
+};
+
+export const PAGE_RULES: readonly PageRule[] = [
+  containerWidths,
+  sectionRhythm,
+  headings,
+  templateHabits,
+  noImagery,
+  centeredEverything,
+];
 
 /** Checks on the project's text styles as a whole. */
 export function projectIssues(page: SerializedNode, context: AuditContext): AuditIssue[] {
-  const families = new Set(context.textStyles.map((style) => style.family));
   const issues: AuditIssue[] = [];
+  const display = context.textStyles.filter((style) => (style.fontSize ?? 0) >= DISPLAY_SIZE_PX);
+  const loose = display.filter(
+    (style) => (style.letterSpacing ?? 0) >= 0 || (style.lineHeight ?? 0) > DISPLAY_LINE_HEIGHT_MAX,
+  );
 
-  if (context.textStyles.length > 0 && families.size === 1 && families.has(DEFAULT_FONT_FAMILY)) {
+  if (loose.length > 0) {
     issues.push(
       issue(
-        "default-font",
+        "display-type",
         "taste",
         page,
-        `Every text style uses ${DEFAULT_FONT_FAMILY}, the automatic choice of generated pages.`,
-        "Choose a family for the brief with fonts_search (a characterful sans or a serif for headings) and keep Inter only if the brief calls for it.",
+        `${loose.map((style) => `"${style.name}"`).join(", ")} set display type with default tracking or loose lines: the generated look (Inter itself is fine; Inter at tracking 0 and line height 1.2 is not).`,
+        "Display sizes (40px and up) get tracking −0.02…−0.06em and line height 0.9–1.1.",
       ),
     );
+  }
+
+  const headingSizes = context.textStyles
+    .filter((style) => /^h[1-2]$/.test(style.tag))
+    .flatMap((style) => (style.fontSize === null ? [] : [style.fontSize]));
+  const bodySizes = context.textStyles
+    .filter((style) => style.tag === "p")
+    .flatMap((style) => (style.fontSize === null || style.fontSize < 14 ? [] : [style.fontSize]));
+
+  if (headingSizes.length > 0 && bodySizes.length > 0) {
+    const ratio = Math.max(...headingSizes) / Math.max(...bodySizes);
+
+    if (ratio < HIERARCHY_RATIO_MIN) {
+      issues.push(
+        issue(
+          "flat-hierarchy",
+          "taste",
+          page,
+          `The largest heading is ${ratio.toFixed(1)}× the body size: nothing dominates (top Framer sites: about 6.5×).`,
+          "Make the display heading at least 4× the body size, with fewer sizes in between.",
+        ),
+      );
+    }
   }
 
   const unbalanced = context.textStyles.filter((style) => /^h[1-3]$/.test(style.tag) && !style.balance);

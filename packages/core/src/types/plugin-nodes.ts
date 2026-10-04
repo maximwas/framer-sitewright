@@ -14,6 +14,11 @@ import type { XmlElementNode } from "./xml.ts";
  * - `border`: "1px solid #000" ↔ { width, style, color };
  * - `textStyle`: a text style's name or id ↔ the TextStyle.
  */
+/** An image fill by URL: uploaded and set as the frame's backgroundImage when the batch runs. */
+export interface PendingImage {
+  readonly imageUrl: string;
+}
+
 export type AttributeValueKind =
   | "text"
   | "boolean"

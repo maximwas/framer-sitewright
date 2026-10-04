@@ -49,5 +49,20 @@ export const SEQUENCE_NUMBER = /^\s*0?\d{1,2}\.?\s*$/;
 /** A color written out rather than taken from a token. */
 export const RAW_COLOR = /#[\da-f]{3,8}\b|\brgba?\(|\bhsla?\(|\boklch\(/i;
 
-/** The family every generated page reaches for. */
-export const DEFAULT_FONT_FAMILY = "Inter";
+/** From this size up a text style is display type: tracking goes negative and lines get tight. */
+export const DISPLAY_SIZE_PX = 40;
+
+/** The loosest line height display type gets on top Framer sites. */
+export const DISPLAY_LINE_HEIGHT_MAX = 1.25;
+
+/** The largest heading over the body size below which nothing dominates (top sites: median about 6.5). */
+export const HIERARCHY_RATIO_MIN = 3.5;
+
+/** Above this share of centered headings a page reads as centered everything (top sites: about 16%). */
+export const CENTERED_SHARE_MAX = 0.5;
+
+/** Headings a page needs before the centered share means anything. */
+export const CENTERED_MIN_HEADINGS = 4;
+
+/** A text at least this long with width auto in a column does not wrap to the column. */
+export const AUTO_TEXT_CHARS = 30;

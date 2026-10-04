@@ -48,13 +48,45 @@ export async function auditContext(port: FramerPort): Promise<AuditContext> {
 }
 
 function summarize(style: TextStyleData): AuditTextStyle {
+  const size = cssPx(style.fontSize);
+
   return {
+    name: style.name,
     tag: style.tag,
     alignment: style.alignment,
     transform: style.transform,
     family: style.font.family,
     balance: style.balance,
+    fontSize: size,
+    letterSpacing: relative(style.letterSpacing, size),
+    lineHeight: relative(style.lineHeight, size),
   };
+}
+
+function cssPx(value: string): number | null {
+  const match = /^(-?\d+(?:\.\d+)?)px$/.exec(value.trim());
+
+  return match?.[1] === undefined ? null : Number(match[1]);
+}
+
+/** A length relative to the font size: "-0.03em" → -0.03, "110%" → 1.1, "-2px" at 64px → -0.03125. */
+function relative(value: string, size: number | null): number | null {
+  const match = /^(-?\d+(?:\.\d+)?)(em|%|px)?$/.exec(value.trim());
+
+  if (match?.[1] === undefined) {
+    return null;
+  }
+
+  const number = Number(match[1]);
+
+  switch (match[2]) {
+    case "%":
+      return number / 100;
+    case "px":
+      return size === null || size === 0 ? null : number / size;
+    default:
+      return number;
+  }
 }
 
 /**

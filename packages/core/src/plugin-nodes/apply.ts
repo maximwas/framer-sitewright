@@ -289,7 +289,7 @@ class Runner {
         ? await this.#port.createFrameNode(
             {
               backgroundColor: null,
-              ...converted.attributes,
+              ...(await this.#withImages(converted.attributes)),
             },
             parentId,
           )
@@ -372,7 +372,7 @@ class Runner {
     }
 
     if (Object.keys(converted.attributes).length > 0) {
-      await this.#port.setAttributes(item.id, converted.attributes);
+      await this.#port.setAttributes(item.id, await this.#withImages(converted.attributes));
     }
 
     if (item.text !== null && !(await setTextOf(node, item.text))) {
@@ -425,6 +425,21 @@ class Runner {
       },
       after: null,
     });
+  }
+
+  /** An image fill by URL is uploaded to the project and set as the frame's backgroundImage instead of a color. */
+  async #withImages(attributes: Record<string, unknown>): Promise<Record<string, unknown>> {
+    const fill = attributes["backgroundColor"];
+
+    if (typeof fill !== "object" || fill === null || !("imageUrl" in fill) || typeof fill.imageUrl !== "string") {
+      return attributes;
+    }
+
+    return {
+      ...attributes,
+      backgroundColor: null,
+      backgroundImage: await this.#port.uploadImage({ image: fill.imageUrl }),
+    };
   }
 
   async #createText(attributes: Record<string, unknown>, parentId: string): Promise<unknown> {

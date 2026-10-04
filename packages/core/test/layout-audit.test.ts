@@ -32,14 +32,14 @@ const text = (name: string, style: string, content: string, attributes: Record<s
 
 function context(overrides: Partial<Record<string, Partial<AuditTextStyle>>> = {}, hasTokens = true): AuditContext {
   const base: Record<string, AuditTextStyle> = {
-    "Heading 1": style("h1", "center"),
-    "Heading 2": style("h2", "center"),
-    "Heading 3": style("h3", "left"),
+    "Heading 1": style("Heading 1", "h1", "center", 48),
+    "Heading 2": style("Heading 2", "h2", "center", 40),
+    "Heading 3": style("Heading 3", "h3", "left", 20),
     Label: {
-      ...style("p", "left"),
+      ...style("Label", "p", "left", 14),
       transform: "uppercase",
     },
-    Body: style("p", "left"),
+    Body: style("Body", "p", "left", 16),
   };
   const styles = Object.fromEntries(
     Object.entries(base).map(([name, value]) => [
@@ -58,13 +58,18 @@ function context(overrides: Partial<Record<string, Partial<AuditTextStyle>>> = {
   };
 }
 
-function style(tag: string, alignment: string): AuditTextStyle {
+/** A style as generated pages set it: Inter, tracking 0, line height 1.2, no balance. */
+function style(name: string, tag: string, alignment: string, fontSize: number): AuditTextStyle {
   return {
+    name,
     tag,
     alignment,
     transform: "none",
     family: "Inter",
     balance: false,
+    fontSize,
+    letterSpacing: 0,
+    lineHeight: 1.2,
   };
 }
 
@@ -190,6 +195,25 @@ describe("layout audit", () => {
                 width: "1fr",
                 maxWidth: "1120px",
               }),
+              node("FrameNode", "Photo", {
+                width: "1fr",
+                height: "auto",
+                backgroundImage: "https://framerusercontent.com/a.png",
+              }),
+              node(
+                "FrameNode",
+                "Pill",
+                {
+                  layout: "stack",
+                  width: "auto",
+                },
+                [
+                  node("FrameNode", "Fill", {
+                    layout: "stack",
+                    width: "1fr",
+                  }),
+                ],
+              ),
             ],
           ),
           node(
@@ -214,9 +238,12 @@ describe("layout audit", () => {
       "container-width",
       "section-rhythm",
       "numbered-cards",
-      "no-imagery",
-      "default-font",
       "heading-balance",
+      "edge-flush-text",
+      "image-collapse",
+      "fit-parent-fill-child",
+      "display-type",
+      "flat-hierarchy",
     ]) {
       expect(rules, rule).toContain(rule);
     }
@@ -231,7 +258,9 @@ describe("layout audit", () => {
           layout: "stack",
           stackDirection: "vertical",
           stackAlignment: "start",
+          stackDistribution: "start",
           height: "1fr",
+          padding: "32px 32px 32px 32px",
           fill: "var(--token-a)",
         },
         [text("Title", "Heading 3", title), text("Body", "Body", "Short and real.")],

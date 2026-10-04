@@ -111,6 +111,25 @@ describe("DSL attributes for the Plugin API", () => {
     // A frame has no text style, a text no fill.
     expect(toPluginAttributes("RichTextNode", { fill: "#fff" }, styles).unsupported).toEqual(["fill"]);
   });
+
+  it("takes an image fill by URL to upload, and reads an image fill back as the DSL writes it", () => {
+    const url = "https://framerusercontent.com/images/photo.jpg";
+
+    expect(toPluginAttributes("FrameNode", { fill: url }, styles).attributes).toEqual({
+      backgroundColor: { imageUrl: url },
+    });
+    expect(
+      fromPluginNode(
+        {
+          __class: "FrameNode",
+          id: "f1",
+          backgroundColor: null,
+          backgroundImage: { url },
+        },
+        null,
+      ).attributes.fill,
+    ).toBe(url);
+  });
 });
 
 describe("Plugin API nodes as the DSL prints them", () => {

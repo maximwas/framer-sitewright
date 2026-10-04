@@ -8,7 +8,13 @@ import {
   TOKEN_VALUE,
 } from "../constants/plugin-nodes.ts";
 import type { ColorStyleHandle, TextStyleHandle } from "../types/framer-port.ts";
-import type { AttributeRule, PluginAttributes, PluginNodeRecord, StyleLookup } from "../types/plugin-nodes.ts";
+import type {
+  AttributeRule,
+  PendingImage,
+  PluginAttributes,
+  PluginNodeRecord,
+  StyleLookup,
+} from "../types/plugin-nodes.ts";
 
 /** Attributes the XML writer reads itself rather than setting them. */
 const STRUCTURE = new Set(["text"]);
@@ -90,6 +96,13 @@ export function fromPluginNode(
     attributes.position = "relative";
   }
 
+  // An image fill reads as the DSL writes it: fill="<url>".
+  const image = node["backgroundImage"];
+
+  if (typeof image === "object" && image !== null && "url" in image && typeof image.url === "string") {
+    attributes.fill = image.url;
+  }
+
   return {
     type,
     attributes,
@@ -158,7 +171,10 @@ function fromPluginValue(rule: AttributeRule, value: unknown): string | null {
   }
 }
 
-/** A color as written, or a token as the project's ColorStyle. Image and gradient fills need the DSL. */
+/**
+ * A color as written, a token as the project's ColorStyle, or an image URL to upload when the batch runs (it becomes
+ * the frame's backgroundImage). Gradient fills need the DSL: the Plugin API takes only its own gradient objects.
+ */
 function colorValue(value: string, colors: readonly ColorStyleHandle[]): Converted {
   const token = TOKEN_VALUE.exec(value)?.[1];
 
@@ -168,8 +184,14 @@ function colorValue(value: string, colors: readonly ColorStyleHandle[]): Convert
     return style === undefined ? fail(`no color token with id ${token}`) : ok(style);
   }
 
-  if (/^(https?:|linear-gradient|radial-gradient|conic-gradient)/.test(value)) {
-    return fail("image and gradient fills need a Server API key (the DSL)");
+  if (/^https?:\/\//.test(value)) {
+    const image: PendingImage = { imageUrl: value };
+
+    return ok(image);
+  }
+
+  if (/^(linear-gradient|radial-gradient|conic-gradient)/.test(value)) {
+    return fail("gradient fills need a Server API key (the DSL)");
   }
 
   return ok(value);

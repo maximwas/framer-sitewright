@@ -9,11 +9,18 @@ export type AuditIssue = z.infer<typeof AuditIssueSchema>;
 
 /** What the audit needs of a text style: how it aligns, cases and wraps text, and which heading it is. */
 export interface AuditTextStyle {
+  readonly name: string;
   readonly tag: string;
   readonly alignment: string;
   readonly transform: string;
   readonly family: string | null;
   readonly balance: boolean;
+  /** The base size in px, or null when it is not in px. */
+  readonly fontSize: number | null;
+  /** Tracking in em, or null when unknown. */
+  readonly letterSpacing: number | null;
+  /** Line height as a multiple of the size, or null when unknown. */
+  readonly lineHeight: number | null;
 }
 
 /** The project facts the audit checks nodes against. */

@@ -10,14 +10,15 @@ how to get the same result anyway.
   `padding`, grid columns, rows and item placement.
 - Size and position: `width`, `height`, min/max, `aspectRatio`, `position`, pins, `centerAnchorX/Y`, `zIndex`,
   `rotation`, `opacity`, `visible`, `overflow`.
-- Look: `fill` (a color or a token), `radius`, `border`, `link` (on frames), `textStylePreset`.
+- Look: `fill` (a color, a token, or an image URL: uploaded to the project and set as the frame's image), `radius`,
+  `border`, `link` (on frames), `textStylePreset`.
 - Tokens and text styles (`color_tokens_upsert`, `text_styles_upsert`, including alignment and `balance`), SVG
   (`svg_add`), image upload (`image_upload`), component controls, code files when allowed.
 
 ## Needs a key (the DSL)
 
 - Effects and motion (hover, appear, loop, scroll), variants and components, rich text blocks and runs, `textColor`
-  and `type` on a text node, shadows, gradient and image fills on nodes, link styles, breakpoint replicas,
+  and `type` on a text node, shadows, gradient fills, link styles, breakpoint replicas,
   screenshots, stock photo and icon catalogs.
 
 ## Same result anyway
@@ -27,8 +28,8 @@ how to get the same result anyway.
   text instead: a nav item or button frame with `layout="stack"` and padding.
 - **Headline wrapping:** `balance: true` on the heading styles.
 - **Equal heights, alignment, containers:** all layout attributes work; follow `layout`.
-- **Images:** upload with `image_upload` and tell the user where each image goes until image fills are available
-  without a key; never replace them with icons.
+- **Images:** `fill="https://…"` on a frame with a size (`width="1fr"`, `aspectRatio`, any px height) uploads the image
+  and fills the frame. Stock search needs a key, so use the client's images or direct image URLs; never icons instead.
 - **Breakpoints:** build the desktop layout so it holds at every width (fill widths, `maxWidth`, wrapping stacks,
   `gridColumnCount="auto-fill"`), and tell the user that tablet and phone tuning needs a key.
 
