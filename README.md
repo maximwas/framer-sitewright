@@ -89,6 +89,7 @@ sitewright --help
 pnpm install && pnpm build
 pnpm lint && pnpm typecheck && pnpm test
 pnpm check:pack          # pack like npm publish, install into an empty folder, run it there
+pnpm local:link          # the sitewright command from this clone, in any folder (pnpm local:unlink removes it)
 pnpm dev:plugin          # the companion plugin; in Framer: Plugins → Open Development Plugin
 ```
 

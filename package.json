@@ -15,7 +15,9 @@
     "lint:fix": "biome lint --write --unsafe --only=style/useBlockStatements --only=correctness/noUnusedImports . && biome check --write . && eslint --fix . && biome format --write .",
     "typecheck": "pnpm -r typecheck",
     "logs": "node apps/server/dist/bin.mjs logs",
-    "check:pack": "pnpm build && node scripts/check-pack.mjs"
+    "check:pack": "pnpm build && node scripts/check-pack.mjs",
+    "local:link": "pnpm build && node scripts/local-link.mjs",
+    "local:unlink": "node scripts/local-link.mjs unlink"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",
