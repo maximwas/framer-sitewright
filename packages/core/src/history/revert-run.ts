@@ -131,7 +131,12 @@ export class RevertRun {
     } else if (decision.outcome === "restored" && step.before !== null) {
       const state = step.before;
 
-      await this.#write(async () => decision.target.handle?.setAttributes(await this.#textAttributes(state)));
+      await this.#write(async () => {
+        const restored = await decision.target.handle?.setAttributes(await this.#textAttributes(state));
+
+        // Setting the tag renames the style to the tag's default name (FRAMER_TAG_STYLE_NAMES): name it back.
+        return restored?.setAttributes({ name: state.path });
+      });
       decision.target.state = state;
     } else if (decision.outcome === "recreated" && step.before !== null) {
       const state = step.before;
