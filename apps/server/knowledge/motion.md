@@ -39,12 +39,16 @@ Pitfalls:
 
 - An item with an active and an inactive look is a component with `Active` and `Inactive` variants; its link is a
   property (see Links below).
-- **What should grow, use a size, not pins.** A bar that grows from the top: pinned `top="0px"` only, with a fixed
-  `height` in both states (e.g. 34px active, `0px` inactive). A layer pinned top and bottom in one state and sized in the
-  other jumps instead of animating.
-- **One item leaves, then the next arrives:** a variant's `transition` applies when switching to that variant. Give
-  `Inactive` no delay (`tween 0.22,0.61,0.36,1 0.45s 0s`) and `Active` a delay as long as that
-  (`tween 0.22,0.61,0.36,1 0.45s 0.45s`): the old one shrinks first, then the new one grows.
+- **A bar that grows from the top: move it, do not size it.** Framer snaps a height that goes to 0 instead of animating
+  it (seen on a live site). Put the bar in a `Track`: absolute, pinned `top` and `bottom`, the bar's width,
+  `overflow="clip"`. The bar keeps its height in both states: `top="0px"` when active, `top="-<height>"` when
+  inactive, so it slides up out of the track and back down, which reads as shrinking and growing.
+- **Who sets the transition.** A nested instance whose variant the parent's variant sets animates with the parent's
+  transition; its own variants' transitions, delays included, are ignored. Set `transition` on the nested instances
+  in each parent variant instead (any layer inside a component can carry one, and its children inherit it).
+- **One item leaves, then the next arrives:** in each parent variant, the instance that becomes active gets a delay
+  as long as the duration (`tween 0.22,0.61,0.36,1 0.45s 0.45s`), the others none (`… 0.45s 0s`). Scrolling back
+  works the same way, since each variant carries its own.
 - Hover variants copy the base variant's transition: set theirs back to a quick one without delay.
 
 ## Links on components
