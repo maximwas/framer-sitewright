@@ -3,6 +3,16 @@
 Checked on live sites. Effects never run on the canvas or in screenshots: check them in Preview or on the published
 site, and tell the user so.
 
+## Transitions: spring physics
+
+- Every transition is a spring with physics (`spring-physics <stiffness> <damping> <mass> <delay>`), never `tween` or a
+  bezier, even when a reference copies CSS easing. Typical: `400 40 1` for buttons and tabs, `200 40 1` for larger
+  moves, `120 22 1` for slow scroll motion.
+- Scroll transforms (`styleTransformEffect.transition`) keep `spring-physics` as written. **Variant transitions do not:**
+  Framer stores a `spring-physics` written through the DSL as a time-based spring, and the Plugin API has no variant
+  transition. Write the nearest time spring without bounce (`spring-duration 0.4s 0 <delay>` for `400 40 1`), read it
+  back, and tell the user which variants and layers to switch to Physics in the editor.
+
 ## A pinned step section (scroll scene)
 
 The section stays on screen while the page scrolls, and its content changes step by step: a list whose active item
@@ -14,7 +24,7 @@ follows the scroll, images that swap, a counter. Build it this way, not with sep
      `scale 1`, its normal position; the others `opacity 0`, `scale 0.96` and 24px lower (`top="24px"`,
      `bottom="-24px"` on a layer pinned to all sides), so the next one rises into place;
    - a list's active item is a nested component (see Tabs below) whose variant each step sets;
-   - the variants' `transition` is the scene's motion, e.g. `tween 0.22,0.61,0.36,1 0.8s 0s`.
+   - the variants' `transition` is the scene's motion: a spring (see Transitions above).
 2. **The section:** `overflow="visible"` (a clipping parent stops sticky). Bottom padding where the background fades
    into the next section, so the pinned stage stops above the fade.
 3. **The stage:** the section's first child, `position="sticky"`, `positionStickyTop="0px"`, `height="100vh"`. In it,
@@ -47,9 +57,9 @@ Pitfalls:
   transition; its own variants' transitions, delays included, are ignored. Set `transition` on the nested instances
   in each parent variant instead (any layer inside a component can carry one, and its children inherit it).
 - **One item leaves, then the next arrives:** in each parent variant, the instance that becomes active gets a delay
-  as long as the duration (`tween 0.22,0.61,0.36,1 0.45s 0.45s`), the others none (`… 0.45s 0s`). Scrolling back
-  works the same way, since each variant carries its own.
-- Hover variants copy the base variant's transition: set theirs back to a quick one without delay.
+  about as long as the spring takes to settle (0.3s for `400 40 1`), the others none. Scrolling back works the same
+  way, since each variant carries its own.
+- Hover variants copy the base variant's transition: set theirs back to a quick spring without delay.
 
 ## Links on components
 
