@@ -64,35 +64,41 @@ const FEED = [
   function hero() {
     animate(
       "[data-hero]",
-      { opacity: [0, 1], y: [24, 0], filter: ["blur(8px)", "blur(0px)"] },
+      { opacity: [0, 1], y: [24, 0] },
       { delay: stagger(0.09, { startDelay: 0.1 }), duration: 0.9, ease },
     );
     typeCommand(document.getElementById("install"), 0.75);
 
     const area = document.querySelector(".hero");
     const glow = document.querySelector(".hero-glow");
-    let target = { x: 70, y: 30 };
+    const box = area.getBoundingClientRect();
+    let target = { x: box.width * 0.7, y: box.height * 0.3 };
     const current = { ...target };
+    let frame = null;
 
-    area.addEventListener("pointermove", (event) => {
-      const box = area.getBoundingClientRect();
-
-      target = {
-        x: ((event.clientX - box.left) / box.width) * 100,
-        y: ((event.clientY - box.top) / box.height) * 100,
-      };
-    });
-
-    // The glow trails the pointer a little, like the canvas cursor of an editor.
-    const follow = () => {
-      current.x += (target.x - current.x) * 0.08;
-      current.y += (target.y - current.y) * 0.08;
-      glow.style.setProperty("--x", `${current.x}%`);
-      glow.style.setProperty("--y", `${current.y}%`);
-      requestAnimationFrame(follow);
+    // The glow trails the pointer a little, like a cursor on the canvas. It moves by transform, so nothing repaints,
+    // and the loop stops once it has caught up.
+    const step = () => {
+      current.x += (target.x - current.x) * 0.12;
+      current.y += (target.y - current.y) * 0.12;
+      glow.style.transform = `translate3d(${current.x}px, ${current.y}px, 0)`;
+      frame =
+        Math.abs(target.x - current.x) + Math.abs(target.y - current.y) > 0.5 ? requestAnimationFrame(step) : null;
     };
 
-    requestAnimationFrame(follow);
+    step();
+    area.addEventListener("pointermove", (event) => {
+      const bounds = area.getBoundingClientRect();
+
+      target = {
+        x: event.clientX - bounds.left,
+        y: event.clientY - bounds.top,
+      };
+
+      if (frame === null) {
+        frame = requestAnimationFrame(step);
+      }
+    });
   }
 
   /** Types the command out once, then leaves a caret blinking for a while. */
@@ -100,6 +106,8 @@ const FEED = [
     const full = code.textContent;
 
     code.dataset.text = full;
+    // The whole command's width from the start, so nothing beside it moves while it types.
+    code.style.minWidth = `calc(${code.getBoundingClientRect().width}px + 0.55em + 2px)`;
     code.textContent = "";
     code.classList.add("typing");
     animate(0, full.length, {
@@ -116,6 +124,7 @@ const FEED = [
   function journal() {
     const window_ = document.querySelector(".window");
     const list = window_.querySelector(".entries");
+    const viewport = window_.querySelector(".feed");
     const toast = window_.querySelector(".toast");
     const pool = FEED.map((item) => ({ ...item }));
     let next = 0;
@@ -140,9 +149,9 @@ const FEED = [
       { duration: 1.6, repeat: Infinity, ease: "easeOut" },
     );
 
-    // The list keeps its height: new rows push the old ones out at the bottom.
-    list.style.height = `${list.offsetHeight}px`;
-    list.classList.add("live");
+    // The viewport keeps its height: new rows push the old ones out at the bottom.
+    viewport.style.height = `${viewport.offsetHeight}px`;
+    viewport.classList.add("live");
 
     inView(window_, () => {
       running = true;
@@ -198,8 +207,9 @@ const FEED = [
       const row = entry(item, clock(minutes));
 
       promote(row);
+      row.style.opacity = "0";
       list.prepend(row);
-      await grow(row);
+      await slide(-row.offsetHeight, row);
       prune();
       busy = false;
       schedule(3200);
@@ -215,8 +225,11 @@ const FEED = [
 
       const title = row.querySelector(".name").textContent;
 
-      await animate(row, { opacity: 0, x: 48, height: 0, paddingTop: 0, paddingBottom: 0 }, { duration: 0.45, ease });
+      const height = row.offsetHeight;
+
+      await animate(row, { opacity: 0, x: 48 }, { duration: 0.35, ease });
       row.remove();
+      await slide(height, null);
 
       const newest = list.querySelector(".entry");
 
@@ -233,23 +246,23 @@ const FEED = [
       schedule(1400);
     }
 
-    async function grow(row) {
-      const height = row.offsetHeight;
+    /**
+     * The rows below a change glide into place: the list jumps by `offset` and moves back by transform, so the layout
+     * never animates; a new row fades in as the others make room.
+     */
+    async function slide(offset, row) {
+      const moving = animate(list, { y: [offset, 0] }, { duration: 0.55, ease });
 
-      row.style.overflow = "hidden";
-      await animate(
-        row,
-        { height: [0, height], paddingTop: [0, 10], paddingBottom: [0, 10], opacity: [0, 1], y: [-10, 0] },
-        { duration: 0.55, ease },
-      );
-      row.style.overflow = "";
-      row.style.height = "";
+      if (row !== null) {
+        animate(row, { opacity: [0, 1], x: [-10, 0] }, { duration: 0.45, delay: 0.15, ease });
+      }
+
+      await moving;
     }
 
     function prune() {
       for (const row of [...list.children]) {
-        // offsetTop counts from the window, the list's offset parent too.
-        if (row.offsetTop - list.offsetTop > list.clientHeight) {
+        if (row.offsetTop > viewport.clientHeight) {
           row.remove();
         }
       }
@@ -347,11 +360,7 @@ const FEED = [
       inView(
         wrap,
         () => {
-          animate(
-            items,
-            { opacity: [0, 1], y: [28, 0], filter: ["blur(6px)", "blur(0px)"] },
-            { delay: stagger(0.06), duration: 0.75, ease },
-          );
+          animate(items, { opacity: [0, 1], y: [24, 0] }, { delay: stagger(0.06), duration: 0.75, ease });
 
           if (chips.length > 0) {
             animate(
@@ -405,7 +414,9 @@ const FEED = [
     const grid = document.querySelector(".features");
 
     grid.addEventListener("pointermove", (event) => {
-      for (const card of grid.children) {
+      const card = event.target.closest(".feature");
+
+      if (card !== null) {
         const box = card.getBoundingClientRect();
 
         card.style.setProperty("--mx", `${event.clientX - box.left}px`);

@@ -234,10 +234,18 @@
 
       .hero-glow {
         position: absolute;
-        inset: 0;
-        background: radial-gradient(420px circle at var(--x, 70%) var(--y, 30%), var(--accent-soft), transparent 70%);
-        opacity: 0.9;
+        top: -300px;
+        left: -300px;
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        background: radial-gradient(closest-side, var(--accent-soft), transparent);
         pointer-events: none;
+        will-change: transform;
+      }
+
+      html:not(.js) .hero-glow {
+        display: none;
       }
 
       .hero .wrap {
@@ -600,9 +608,13 @@
         border-color: var(--ink-3);
       }
 
-      .entries.live {
+      .feed.live {
         overflow: hidden;
         mask-image: linear-gradient(#000 78%, transparent);
+      }
+
+      .entries {
+        will-change: transform;
       }
 
       .toast {
@@ -1268,6 +1280,7 @@
             <div class="tabs" aria-hidden="true">
               <span class="on">All</span><span>Changes</span><span>Reads</span><span>Skills</span>
             </div>
+            <div class="feed">
             <ol class="entries">
               <li class="entry hl" data-time="12:04">
                 <span class="icon" aria-hidden="true">
@@ -1334,6 +1347,7 @@
                 <span class="side"><time>11:52</time></span>
               </li>
             </ol>
+            </div>
             <div class="toast" role="status" aria-live="polite"></div>
           </figure>
           </div>
