@@ -15,7 +15,7 @@ const PLUGIN_INFO = {
 };
 
 /** A plain ws server plays the MCP server; an EventTarget plays this window, a fake window the plugin that opened it. */
-async function startBridge(silentMs?: number) {
+async function startBridge(silentMs?: number, readyMs?: number) {
   const server = new WebSocketServer({
     host: "127.0.0.1",
     port: 0,
@@ -44,8 +44,9 @@ async function startBridge(silentMs?: number) {
     socketUrl: `ws://127.0.0.1:${(server.address() as AddressInfo).port}`,
     pluginOrigins: [PLUGIN_ORIGIN],
     events,
-    opener: null,
+    opener: readyMs === undefined ? null : (plugin as unknown as Window),
     ...(silentMs === undefined ? {} : { silentMs }),
+    ...(readyMs === undefined ? {} : { readyMs }),
   });
   const fromPlugin = (data: unknown, origin = PLUGIN_ORIGIN, source: unknown = plugin) =>
     events.dispatchEvent(
@@ -234,4 +235,26 @@ it("regression: lets a plugin that stopped saying hello go, so calls fail fast, 
   // It comes back from the same window: a new session.
   hello();
   await vi.waitFor(() => expect(sockets).toHaveLength(2));
+});
+
+it("regression: keeps saying ready to the plugin that opened it, so a reloaded plugin links again without Connect", async () => {
+  const { sockets, toPlugin, fromPlugin } = await startBridge(undefined, 40);
+  const readies = () => toPlugin.filter((message) => (message as { kind?: string }).kind === "ready").length;
+
+  // The plugin's page reloads (Vite): its new page knows no window, so the window keeps announcing itself.
+  await vi.waitFor(() => expect(readies()).toBeGreaterThanOrEqual(3));
+
+  fromPlugin(
+    relayMessage({
+      kind: "hello",
+      plugin: PLUGIN_INFO,
+    }),
+  );
+  await vi.waitFor(() => expect(sockets).toHaveLength(1));
+
+  // Linked: no more announcements.
+  const linked = readies();
+
+  await new Promise((resolve) => setTimeout(resolve, 200));
+  expect(readies()).toBe(linked);
 });

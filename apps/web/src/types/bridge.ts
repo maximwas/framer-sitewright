@@ -32,6 +32,8 @@ export interface PluginBridgeOptions {
   readonly opener?: Window | null;
   /** How long the plugin may go without a hello before the window lets it go (PLUGIN_SILENT_MS); shorter in tests. */
   readonly silentMs?: number;
+  /** READY_INTERVAL_MS in tests. */
+  readonly readyMs?: number;
 }
 
 /** The plugin this window works for: the window that said hello, at its exact origin. */

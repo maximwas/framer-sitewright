@@ -7,3 +7,10 @@ export const PLUGIN_CLOSED_POLL_MS = 1_000;
  * starts a new session with its next hello.
  */
 export const PLUGIN_SILENT_MS = 6_000;
+
+/**
+ * How often the window says `ready` to the plugin that opened it while no plugin is linked. A plugin reloaded in place
+ * (Vite in development, Framer refreshing it) has a new page that knows no window: the announcement lets it link again
+ * without Connect.
+ */
+export const READY_INTERVAL_MS = 1_500;

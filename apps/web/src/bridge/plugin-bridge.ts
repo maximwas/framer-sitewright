@@ -7,7 +7,7 @@ import {
   relayMessage,
   type WindowToPlugin,
 } from "@sitewright/core";
-import { PLUGIN_CLOSED_POLL_MS, PLUGIN_SILENT_MS } from "../constants/bridge.ts";
+import { PLUGIN_CLOSED_POLL_MS, PLUGIN_SILENT_MS, READY_INTERVAL_MS } from "../constants/bridge.ts";
 import { relayStore } from "../store/relay-store.ts";
 import type { BridgeStatus, LinkedPlugin, PendingRun, PluginBridgeOptions } from "../types/bridge.ts";
 import { BridgeClient } from "./bridge-client.ts";
@@ -28,6 +28,7 @@ export class PluginBridge {
   #client: BridgeClient | null = null;
   #unsubscribe: (() => void) | null = null;
   #watch: ReturnType<typeof setInterval> | undefined;
+  #announce: ReturnType<typeof setInterval> | undefined;
   /** When the linked plugin last said hello. */
   #heardAt = 0;
   #sequence = 0;
@@ -45,14 +46,29 @@ export class PluginBridge {
     this.#events.addEventListener("message", this.#onMessage);
     relayStore.setState({ state: opener === null ? "no-plugin" : "waiting" });
 
+    this.#sayReady(opener);
+    // Until a plugin links, and again after one goes: a plugin reloaded in place has a page that knows no window.
+    this.#announce = setInterval(() => {
+      if (this.#plugin === null) {
+        this.#sayReady(opener);
+      }
+    }, this.#options.readyMs ?? READY_INTERVAL_MS);
+  }
+
+  #sayReady(opener: Window | null): void {
+    if (opener === null || opener.closed) {
+      return;
+    }
+
     // Only the opener's own origin takes it; the browser drops the copies sent to the other allowed origins.
     for (const origin of this.#allowed) {
-      opener?.postMessage(relayMessage({ kind: "ready" }), origin);
+      opener.postMessage(relayMessage({ kind: "ready" }), origin);
     }
   }
 
   /** Ends the session: the server sees the plugin go. */
   close(): void {
+    clearInterval(this.#announce);
     this.#events.removeEventListener("message", this.#onMessage);
     this.#unlink("window closed");
   }
