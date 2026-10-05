@@ -13,6 +13,7 @@ import type {
   ActivityEntrySchema,
   ActivityNoteSchema,
   ActivitySummarySchema,
+  CmsItemStateSchema,
   ColorStyleStateSchema,
   DslAttributeMapSchema,
   EntryRefSchema,
@@ -31,6 +32,8 @@ import type { AgentPort, FramerRuntime } from "./framer.ts";
 import type { ColorStyleHandle, TextStyleHandle } from "./framer-port.ts";
 
 export type ColorStyleState = z.infer<typeof ColorStyleStateSchema>;
+
+export type CmsItemState = z.infer<typeof CmsItemStateSchema>;
 
 export type TextStyleState = z.infer<typeof TextStyleStateSchema>;
 
@@ -70,8 +73,10 @@ export type NodeState = z.infer<typeof NodeStateSchema>;
 
 export type NodeStep = Extract<UndoStep, { kind: "node" }>;
 
-/** Style steps; the Plugin API reverts them, one at a time. */
+/** Style and CMS item steps; the Plugin API reverts them, one at a time. */
 export type StyleStep = Exclude<UndoStep, { kind: "node" }>;
+
+export type CmsItemStep = Extract<UndoStep, { kind: "cms-item" }>;
 
 /** An item as the revert currently sees it; `handle` is null for items a dry run only pretends to create. */
 export interface WorkingEntry<State, Handle> {

@@ -30,6 +30,13 @@ export class CmsItemIndex {
     return found.id;
   }
 
+  /** A referenced item's id from its id or slug; null when the collection has no such item. */
+  async idOrNull(field: CmsFieldData, reference: string): Promise<string | null> {
+    const items = await this.#itemsOf(field.collectionId);
+
+    return (items.find(({ id }) => id === reference) ?? items.find(({ slug }) => slug === reference))?.id ?? null;
+  }
+
   async slugOf(field: CmsFieldData, id: string): Promise<string> {
     const items = await this.#itemsOf(field.collectionId);
 

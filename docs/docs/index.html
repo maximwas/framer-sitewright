@@ -999,14 +999,14 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="cms_collection_create" data-tool="cms_collection_create Create a CMS collection creates a cms collection with its fields. every collection already has a title and a slug. undo does not restore cms changes yet: the journal cannot take this back.">
+  <article class="tool" id="cms_collection_create" data-tool="cms_collection_create Create a CMS collection creates a cms collection with its fields. every collection already has a title and a slug. undo does not restore cms collections, fields or the order of items yet: the journal cannot take this back.">
     <header>
       <h4><a href="#cms_collection_create">cms_collection_create</a></h4>
       <span class="badge write">Changes</span>
       <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
     </header>
     <p class="tool-title">Create a CMS collection</p>
-    <p>Creates a CMS collection with its fields. Every collection already has a title and a slug. Undo does not restore CMS changes yet: the journal cannot take this back.</p>
+    <p>Creates a CMS collection with its fields. Every collection already has a title and a slug. Undo does not restore CMS collections, fields or the order of items yet: the journal cannot take this back.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
@@ -1015,14 +1015,14 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="cms_collection_delete" data-tool="cms_collection_delete Delete a CMS collection deletes a cms collection with all its items and returns its fields and items. only when the user asked for it, or for a collection you created yourself in this task. needs a server api key. undo does not restore cms changes yet: the journal cannot take this back.">
+  <article class="tool" id="cms_collection_delete" data-tool="cms_collection_delete Delete a CMS collection deletes a cms collection with all its items and returns its fields and items. only when the user asked for it, or for a collection you created yourself in this task. needs a server api key. undo does not restore cms collections, fields or the order of items yet: the journal cannot take this back.">
     <header>
       <h4><a href="#cms_collection_delete">cms_collection_delete</a></h4>
       <span class="badge destructive">Destructive</span>
       <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
     </header>
     <p class="tool-title">Delete a CMS collection</p>
-    <p>Deletes a CMS collection with all its items and returns its fields and items. Only when the user asked for it, or for a collection you created yourself in this task. Needs a Server API key. Undo does not restore CMS changes yet: the journal cannot take this back.</p>
+    <p>Deletes a CMS collection with all its items and returns its fields and items. Only when the user asked for it, or for a collection you created yourself in this task. Needs a Server API key. Undo does not restore CMS collections, fields or the order of items yet: the journal cannot take this back.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
@@ -1030,14 +1030,14 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="cms_fields_set" data-tool="cms_fields_set Change CMS fields adds, removes and orders a collection's fields. removing a field drops its value in every item: do it only when the user asked. undo does not restore cms changes yet: the journal cannot take this back.">
+  <article class="tool" id="cms_fields_set" data-tool="cms_fields_set Change CMS fields adds, removes and orders a collection's fields. removing a field drops its value in every item: do it only when the user asked. undo does not restore cms collections, fields or the order of items yet: the journal cannot take this back.">
     <header>
       <h4><a href="#cms_fields_set">cms_fields_set</a></h4>
       <span class="badge destructive">Destructive</span>
       <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
     </header>
     <p class="tool-title">Change CMS fields</p>
-    <p>Adds, removes and orders a collection's fields. Removing a field drops its value in every item: do it only when the user asked. Undo does not restore CMS changes yet: the journal cannot take this back.</p>
+    <p>Adds, removes and orders a collection's fields. Removing a field drops its value in every item: do it only when the user asked. Undo does not restore CMS collections, fields or the order of items yet: the journal cannot take this back.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
@@ -1065,14 +1065,14 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="cms_items_upsert" data-tool="cms_items_upsert Write CMS items creates or updates items by slug, with values by field name. values: text and formattedtext as strings (markdown or html), numbers, true/false, dates as iso strings, link, file and color as strings, an image as its url or { &quot;url&quot;, &quot;alt&quot; }, an enum by its case name, a reference by the referenced item's slug (a list of slugs for multi-references); null clears a value. undo does not restore cms changes yet: the journal cannot take this back.">
+  <article class="tool" id="cms_items_upsert" data-tool="cms_items_upsert Write CMS items creates or updates items by slug, with values by field name; the journal can undo it. values: text and formattedtext as strings (markdown or html), numbers, true/false, dates as iso strings, link, file and color as strings, an image as its url or { &quot;url&quot;, &quot;alt&quot; }, an enum by its case name, a reference by the referenced item's slug (a list of slugs for multi-references); null clears a value.">
     <header>
       <h4><a href="#cms_items_upsert">cms_items_upsert</a></h4>
       <span class="badge write">Changes</span>
       <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
     </header>
     <p class="tool-title">Write CMS items</p>
-    <p>Creates or updates items by slug, with values by field name. Values: text and formattedText as strings (markdown or HTML), numbers, true/false, dates as ISO strings, link, file and color as strings, an image as its URL or { &quot;url&quot;, &quot;alt&quot; }, an enum by its case name, a reference by the referenced item's slug (a list of slugs for multi-references); null clears a value. Undo does not restore CMS changes yet: the journal cannot take this back.</p>
+    <p>Creates or updates items by slug, with values by field name; the journal can undo it. Values: text and formattedText as strings (markdown or HTML), numbers, true/false, dates as ISO strings, link, file and color as strings, an image as its URL or { &quot;url&quot;, &quot;alt&quot; }, an enum by its case name, a reference by the referenced item's slug (a list of slugs for multi-references); null clears a value.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
@@ -1081,14 +1081,14 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="cms_items_delete" data-tool="cms_items_delete Delete CMS items deletes items by slug and returns their values, which cms_items_upsert takes back. delete only items you created or the user asked to remove. undo does not restore cms changes yet: the journal cannot take this back.">
+  <article class="tool" id="cms_items_delete" data-tool="cms_items_delete Delete CMS items deletes items by slug; the journal can undo it, and their values come back in the result too. delete only items you created or the user asked to remove.">
     <header>
       <h4><a href="#cms_items_delete">cms_items_delete</a></h4>
       <span class="badge destructive">Destructive</span>
       <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
     </header>
     <p class="tool-title">Delete CMS items</p>
-    <p>Deletes items by slug and returns their values, which <a href="#cms_items_upsert"><code>cms_items_upsert</code></a> takes back. Delete only items you created or the user asked to remove. Undo does not restore CMS changes yet: the journal cannot take this back.</p>
+    <p>Deletes items by slug; the journal can undo it, and their values come back in the result too. Delete only items you created or the user asked to remove.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>

@@ -90,7 +90,25 @@ export const NodeStateSchema = z.object({
  * One change the AI made, as the state before and after it: `before: null` means the item was created,
  * `after: null` that it was deleted. Undo restores `before`, but only where the item still matches `after`.
  */
+/**
+ * A CMS item as undo writes it back: its slug, draft state and field values by field id in the shape addItems takes
+ * (images and files by URL, enums by case id, references by item id). `path` names it in lists: "Blog/hello".
+ */
+export const CmsItemStateSchema = z.object({
+  path: z.string(),
+  collectionId: z.string(),
+  slug: z.string(),
+  draft: z.boolean(),
+  fieldData: z.record(z.string(), z.unknown()),
+});
+
 export const UndoStepSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("cms-item"),
+    id: z.string(),
+    before: CmsItemStateSchema.nullable(),
+    after: CmsItemStateSchema.nullable(),
+  }),
   z.object({
     kind: z.literal("color-style"),
     id: z.string(),

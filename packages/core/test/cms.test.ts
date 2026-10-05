@@ -1,9 +1,12 @@
 import { expect, it } from "vitest";
 import { OperationError } from "../src/errors.ts";
+import { HistoryRecorder } from "../src/history/recorder.ts";
 import { cmsCollectionCreate } from "../src/operations/cms/collections.ts";
 import { cmsItemsDelete, cmsItemsList, cmsItemsOrder, cmsItemsUpsert } from "../src/operations/cms/items.ts";
 import { runOperation } from "../src/operations/define.ts";
+import { historyRevert } from "../src/operations/history/revert.ts";
 import { createFakeRuntime } from "../src/testing/index.ts";
+import type { UndoStep } from "../src/types/history.ts";
 
 it("writes CMS items by slug with values by field name, and reads them back in the same shape", async () => {
   const { runtime, state } = createFakeRuntime(
@@ -210,4 +213,118 @@ it("refuses a value its field cannot take and names what it can", async () => {
 
   await expect(write).rejects.toBeInstanceOf(OperationError);
   await expect(write).rejects.toThrow(/News, Guide/);
+});
+
+it("undoes item writes and deletions, and redoes them", async () => {
+  const { runtime, state } = createFakeRuntime(
+    {},
+    {
+      transport: "plugin",
+      withAgent: false,
+    },
+  );
+
+  await runOperation(
+    cmsCollectionCreate,
+    { runtime },
+    {
+      name: "Posts",
+      fields: [
+        {
+          name: "Title",
+          type: "string",
+        },
+        {
+          name: "Kind",
+          type: "enum",
+          cases: ["News", "Guide"],
+        },
+      ],
+    },
+  );
+  await runOperation(
+    cmsItemsUpsert,
+    { runtime },
+    {
+      collection: "Posts",
+      items: [
+        {
+          slug: "hello",
+          values: {
+            Title: "Hello",
+            Kind: "News",
+          },
+        },
+      ],
+    },
+  );
+
+  const titles = () => {
+    const posts = state.collections[0];
+    const title = posts?.fields.find(({ name }) => name === "Title")?.id ?? "";
+
+    return posts?.items.map((item) => `${item.slug}: ${String(item.fieldData[title]?.value)}`) ?? [];
+  };
+  const revert = async (steps: readonly UndoStep[]) => {
+    const history = new HistoryRecorder();
+
+    await runOperation(
+      historyRevert,
+      {
+        runtime,
+        history,
+      },
+      { steps: [...steps] },
+    );
+
+    return [...history.steps];
+  };
+
+  const update = new HistoryRecorder();
+
+  await runOperation(
+    cmsItemsUpsert,
+    {
+      runtime,
+      history: update,
+    },
+    {
+      collection: "Posts",
+      items: [
+        {
+          slug: "hello",
+          values: { Title: "Hello again" },
+        },
+      ],
+    },
+  );
+  expect(update.incomplete).toBeNull();
+
+  const undoUpdate = await revert(update.steps);
+
+  expect(titles()).toEqual(["hello: Hello"]);
+
+  await revert(undoUpdate);
+  expect(titles()).toEqual(["hello: Hello again"]);
+
+  const deletion = new HistoryRecorder();
+
+  await runOperation(
+    cmsItemsDelete,
+    {
+      runtime,
+      history: deletion,
+    },
+    {
+      collection: "Posts",
+      slugs: ["hello"],
+    },
+  );
+  expect(titles()).toEqual([]);
+
+  // Undo adds it back with its values; the enum keeps its case.
+  await revert(deletion.steps);
+
+  expect(titles()).toEqual(["hello: Hello again"]);
+  expect((await runOperation(cmsItemsList, { runtime }, { collection: "Posts" })).items[0]?.values.Kind).toBe("News");
 });

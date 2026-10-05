@@ -1,9 +1,13 @@
 import * as z from "zod";
 import { editableCollection, findCollection, findField } from "../../cms/collections.ts";
+import { cmsItemState, cmsItemStep } from "../../cms/item-state.ts";
 import { CmsItemIndex, itemOf, toFieldInput } from "../../cms/values.ts";
 import { CMS_ITEMS_PAGE, CMS_ITEMS_PAGE_MAX, CMS_UNDO_NOTE, CMS_UPSERT_MAX } from "../../constants/cms.ts";
+import type { HistoryRecorder } from "../../history/recorder.ts";
+import { sameState } from "../../history/style-states.ts";
 import { CmsItemSchema } from "../../schemas/cms.ts";
-import type { CmsFieldInput, CmsItemWrite } from "../../types/framer-port.ts";
+import type { CmsFieldData, CmsFieldInput, CmsItemWrite, CollectionHandle } from "../../types/framer-port.ts";
+import type { CmsItemState } from "../../types/history.ts";
 import { countOf } from "../../utils/text.ts";
 import { defineOperation } from "../define.ts";
 
@@ -96,9 +100,18 @@ export const cmsItemsUpsert = defineOperation({
       });
     }
 
-    history?.markIncomplete(CMS_UNDO_NOTE);
+    const before = new Map(
+      await Promise.all(
+        existing.map(async (item) => [item.id, await cmsItemState(collection, fields, item, index)] as const),
+      ),
+    );
+
     // One call: an entry with an id updates that item, one with a slug adds a new one.
     await collection.addItems(writes);
+
+    if (history !== undefined) {
+      await recordWritten(history, collection, fields, items, before, index);
+    }
 
     const known = new Set(existing.map(({ slug }) => slug));
 
@@ -121,7 +134,7 @@ export const cmsItemsUpsert = defineOperation({
   },
 });
 
-/** Removes items by slug; their values come back in the result, since undo cannot bring them back yet. */
+/** Removes items by slug; undo adds them back, and their values come back in the result too. */
 export const cmsItemsDelete = defineOperation({
   name: "cms.items.delete",
   effect: "destructive",
@@ -146,9 +159,18 @@ export const cmsItemsDelete = defineOperation({
     const index = new CmsItemIndex(collections);
     const deleted = await Promise.all(targets.map((item) => itemOf(item, fields, index)));
 
+    // Read before the deletion: a reference to an item of this same collection resolves only while it is there.
+    const states = await Promise.all(targets.map((item) => cmsItemState(collection, fields, item, index)));
+
     if (targets.length > 0) {
-      history?.markIncomplete(CMS_UNDO_NOTE);
       await collection.removeItems(targets.map(({ id }) => id));
+      targets.forEach((item, position) => {
+        const state = states[position];
+
+        if (state !== undefined) {
+          history?.record(cmsItemStep(item.id, state, null));
+        }
+      });
     }
 
     return {
@@ -202,3 +224,30 @@ export const cmsItemsOrder = defineOperation({
     };
   },
 });
+
+/** Records each written item as it was and as it is now; a failed re-read only leaves the journal incomplete. */
+async function recordWritten(
+  history: HistoryRecorder,
+  collection: CollectionHandle,
+  fields: readonly CmsFieldData[],
+  written: readonly { readonly slug: string }[],
+  before: ReadonlyMap<string, CmsItemState>,
+  index: CmsItemIndex,
+): Promise<void> {
+  try {
+    const slugs = new Set(written.map(({ slug }) => slug));
+
+    for (const item of await collection.getItems()) {
+      if (slugs.has(item.slug)) {
+        const after = await cmsItemState(collection, fields, item, index);
+        const was = before.get(item.id) ?? null;
+
+        if (was === null || !sameState(was, after)) {
+          history.record(cmsItemStep(item.id, was, after));
+        }
+      }
+    }
+  } catch (error) {
+    history.markIncomplete(`The CMS items could not be re-read after the write: ${String(error)}`);
+  }
+}

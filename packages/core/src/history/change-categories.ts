@@ -47,6 +47,10 @@ function stepCategories(step: UndoStep): Set<ChangeCategory> {
 }
 
 function styleCategories(step: UndoStep): Set<ChangeCategory> {
+  if (step.kind === "cms-item") {
+    return new Set(["content"]);
+  }
+
   return new Set([step.kind === "color-style" ? "colors" : "styles"]);
 }
 

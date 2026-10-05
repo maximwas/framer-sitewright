@@ -72,7 +72,8 @@ export const CMS_VALUES_RULE =
   'Values: text and formattedText as strings (markdown or HTML), numbers, true/false, dates as ISO strings, link, file and color as strings, an image as its URL or { "url", "alt" }, an enum by its case name, a reference by the referenced item\'s slug (a list of slugs for multi-references); null clears a value.';
 
 /** CMS writes have no undo yet: the journal marks them, and the agent must know before it acts. */
-export const CMS_UNDO_RULE = "Undo does not restore CMS changes yet: the journal cannot take this back.";
+export const CMS_UNDO_RULE =
+  "Undo does not restore CMS collections, fields or the order of items yet: the journal cannot take this back.";
 
 /** Why a code tool refused: its switch on the journal page is off, and only the user turns it on. */
 export const CODE_SWITCH_OFF: Readonly<Record<"customCode" | "codeComponents", string>> = {

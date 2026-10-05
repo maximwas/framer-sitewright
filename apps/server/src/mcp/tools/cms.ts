@@ -48,13 +48,14 @@ export function registerCmsTools(server: McpServer, context: ToolContext): void 
   addOperationTool(server, context, cmsItemsUpsert, {
     name: "cms_items_upsert",
     title: "Write CMS items",
-    description: `Creates or updates items by slug, with values by field name. ${CMS_VALUES_RULE} ${CMS_UNDO_RULE}`,
+    description: `Creates or updates items by slug, with values by field name; the journal can undo it. ${CMS_VALUES_RULE}`,
   });
 
   addOperationTool(server, context, cmsItemsDelete, {
     name: "cms_items_delete",
     title: "Delete CMS items",
-    description: `Deletes items by slug and returns their values, which cms_items_upsert takes back. Delete only items you created or the user asked to remove. ${CMS_UNDO_RULE}`,
+    description:
+      "Deletes items by slug; the journal can undo it, and their values come back in the result too. Delete only items you created or the user asked to remove.",
   });
 
   addOperationTool(server, context, cmsItemsOrder, {

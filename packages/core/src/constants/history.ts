@@ -90,7 +90,7 @@ export const ACTIVITY_LAYERS = ["plugin-api", "server-api", "framer-agent"] as c
 export const ACTIVITY_ACTORS = ["ai", "user"] as const;
 
 /** What an undo step is about: a color token, a text style, or a canvas node changed through the DSL. */
-export const UNDO_STEP_KINDS = ["color-style", "text-style", "node"] as const;
+export const UNDO_STEP_KINDS = ["color-style", "text-style", "node", "cms-item"] as const;
 
 /** How a DSL command changed a canvas node. */
 export const NODE_CHANGES = ["created", "updated", "moved", "deleted"] as const;
@@ -168,6 +168,7 @@ export const CHANGE_CATEGORIES = [
   "layout",
   "settings",
   "styles",
+  "content",
 ] as const;
 
 /** Attribute roots that animate: effects and transitions. */

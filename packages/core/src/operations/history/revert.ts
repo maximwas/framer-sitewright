@@ -23,6 +23,8 @@ export const historyRevert = defineOperation({
     "createTextStyle",
     "TextStyle.setAttributes",
     "TextStyle.remove",
+    "Collection.addItems",
+    "Collection.removeItems",
   ],
   // Node steps are undone through the DSL; styles through the Plugin API.
   needsAgent: ({ steps }) => steps.some((step) => step.kind === "node"),

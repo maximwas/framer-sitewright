@@ -9,6 +9,7 @@ import {
   BookOpen,
   CaseSensitive,
   Component,
+  Database,
   Eye,
   LayoutGrid,
   type LucideIcon,
@@ -37,8 +38,9 @@ export const OUTCOME_DOTS: Readonly<Record<ActivitySummary["outcome"], Tone | nu
 export const BADGE_TEXT = "leading-none [text-box:trim-both_cap_alphabetic]";
 
 /** An item's icon when it went through no kind of change the panel knows: a text style, or a plain node. */
-export const ITEM_ICONS: Readonly<Record<"text-style" | "node", LucideIcon>> = {
+export const ITEM_ICONS: Readonly<Record<"text-style" | "node" | "cms-item", LucideIcon>> = {
   "text-style": CaseSensitive,
+  "cms-item": Database,
   node: Square,
 };
 
@@ -83,6 +85,11 @@ export const CATEGORY_BADGES: Readonly<
     label: "Styles",
     icon: CaseSensitive,
     className: "bg-indigo-500/20 text-indigo-800 dark:bg-indigo-400/25 dark:text-indigo-200",
+  },
+  content: {
+    label: "Content",
+    icon: Database,
+    className: "bg-teal-500/20 text-teal-800 dark:bg-teal-400/25 dark:text-teal-200",
   },
 };
 

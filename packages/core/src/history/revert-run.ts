@@ -19,6 +19,7 @@ import type {
 } from "../types/history.ts";
 import { labelOf } from "./activity.ts";
 import { applyAliases } from "./aliases.ts";
+import { CmsItemRevert } from "./cms-revert.ts";
 import { NodeRevertRun } from "./dsl/node-revert-run.ts";
 import { decide } from "./revert-decision.ts";
 import { colorStyleState, textStyleState } from "./style-states.ts";
@@ -36,6 +37,7 @@ export class RevertRun {
   readonly #texts: TextEntry[];
   readonly #remap = new Map<string, string>();
   readonly #nodes: NodeRevertRun | PluginNodeRevert;
+  readonly #cms: CmsItemRevert;
   /** Font handles by family, weight and style: many text styles share a font, and each lookup is a Framer call. */
   readonly #fonts = new Map<string, Promise<FontData | null>>();
 
@@ -48,6 +50,7 @@ export class RevertRun {
     this.#options = options;
     this.#colors = current.colors.map((handle) => entry(handle, colorStyleState(handle)));
     this.#texts = current.texts.map((handle) => entry(handle, textStyleState(handle)));
+    this.#cms = new CmsItemRevert(runtime, options, this.#remap);
     // Without framer.agent (no Server API key) node steps go back through the Plugin API.
     this.#nodes =
       runtime.agent === null
@@ -74,7 +77,13 @@ export class RevertRun {
 
   async #revert(original: StyleStep): Promise<RevertResult> {
     const [step = original] = applyAliases([original], this.#remap) as StyleStep[];
-    const outcome = step.kind === "color-style" ? await this.#revertColor(step) : await this.#revertText(step);
+    let outcome: RevertOutcome;
+
+    if (step.kind === "cms-item") {
+      outcome = await this.#cms.revert(step);
+    } else {
+      outcome = step.kind === "color-style" ? await this.#revertColor(step) : await this.#revertText(step);
+    }
 
     return {
       kind: original.kind,

@@ -7,6 +7,8 @@ import {
   cmsItemsList,
   cmsItemsOrder,
   cmsItemsUpsert,
+  HistoryRecorder,
+  historyRevert,
 } from "@sitewright/core";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { TransportRouter } from "../../src/transports/router.ts";
@@ -124,20 +126,33 @@ describe.skipIf(config === null)("CMS on the sandbox project", () => {
       updated: [],
     });
 
-    const again = await transports.run(cmsItemsUpsert, {
-      collection: posts,
-      items: [
-        {
-          slug: "hello",
-          values: { Title: "Hello again" },
-        },
-      ],
-    });
+    const update = new HistoryRecorder();
+    const again = await transports.run(
+      cmsItemsUpsert,
+      {
+        collection: posts,
+        items: [
+          {
+            slug: "hello",
+            values: { Title: "Hello again" },
+          },
+        ],
+      },
+      { history: update },
+    );
 
     expect(again).toMatchObject({
       created: [],
       updated: ["hello"],
     });
+
+    // Undo through the journal puts the title back; redo (the undo of the undo) brings the new one again.
+    const redo = new HistoryRecorder();
+
+    await transports.run(historyRevert, { steps: [...update.steps] }, { history: redo });
+    expect(await titleOf(transports, posts, "hello")).toBe("Hello");
+    await transports.run(historyRevert, { steps: [...redo.steps] });
+    expect(await titleOf(transports, posts, "hello")).toBe("Hello again");
 
     await transports.run(cmsItemsOrder, {
       collection: posts,
@@ -179,4 +194,10 @@ async function removeTestCollections(transports: TransportRouter): Promise<void>
   for (const { name } of collections.filter((collection) => collection.name.startsWith(TEST_PREFIX))) {
     await transports.run(cmsCollectionDelete, { collection: name });
   }
+}
+
+async function titleOf(transports: TransportRouter, collection: string, slug: string): Promise<unknown> {
+  const { items } = await transports.run(cmsItemsList, { collection });
+
+  return items.find((item) => item.slug === slug)?.values.Title;
 }

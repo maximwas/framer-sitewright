@@ -114,12 +114,16 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
   /** A collection as the Plugin API hands it out: fields and items read and written on the fake state. */
   function collectionHandle(collection: FakeCollection): CollectionHandle {
     const itemHandle = (item: FakeCollection["items"][number]): CmsItemHandle => ({
-      ...item,
+      id: item.id,
+      slug: item.slug,
+      draft: item.draft,
+      fieldData: readFieldData(collection, item.fieldData),
       setAttributes: async ({ slug, draft, fieldData }) => {
         Object.assign(item, {
           ...(slug === undefined ? {} : { slug }),
           ...(draft === undefined ? {} : { draft }),
         });
+        assertWritable(collection, fieldData);
         Object.assign(item.fieldData, storedFieldData(fieldData));
 
         return itemHandle(item);
@@ -162,6 +166,10 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
       getItems: async () => collection.items.map(itemHandle),
       addItems: async (items) => {
         // Like Framer: an entry with an id updates that item, one without adds a new one.
+        for (const { fieldData } of items) {
+          assertWritable(collection, fieldData);
+        }
+
         for (const { id, slug, draft, fieldData } of items) {
           const current = collection.items.find((item) => item.id === id);
 
@@ -217,6 +225,58 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
   }
 
   /** Field values as Framer keeps them: an image or file URL becomes an asset. */
+  /** Like Framer, writes take an enum only by its case id and a reference only by an item id. */
+  function assertWritable(collection: FakeCollection, fieldData: CmsItemWrite["fieldData"]): void {
+    const itemIds = new Set(state.collections.flatMap((candidate) => candidate.items.map(({ id }) => id)));
+
+    for (const [id, entry] of Object.entries(fieldData ?? {})) {
+      const field = collection.fields.find((candidate) => candidate.id === id);
+
+      if (entry.type === "enum" && !(field?.cases ?? []).some((option) => option.id === entry.value)) {
+        throw new Error(`Expected a valid enum case, got: ${String(entry.value)}, for field: ${field?.name}`);
+      }
+
+      if (entry.type === "collectionReference" && entry.value !== null && !itemIds.has(entry.value)) {
+        throw new Error(`Bad reference, ID: ${entry.value}, field: ${field?.name}`);
+      }
+    }
+  }
+
+  /**
+   * Field values as Framer reads them back: an enum by its case's name and a reference by the item's slug, though
+   * writes take ids (Server API, 05.10.2026).
+   */
+  function readFieldData(
+    collection: FakeCollection,
+    fieldData: FakeCollection["items"][number]["fieldData"],
+  ): FakeCollection["items"][number]["fieldData"] {
+    const slugOf = (id: unknown) =>
+      state.collections.flatMap((candidate) => candidate.items).find((item) => item.id === id)?.slug ?? id;
+
+    return Object.fromEntries(
+      Object.entries(fieldData).map(([id, entry]) => {
+        const field = collection.fields.find((candidate) => candidate.id === id);
+        let value = entry.value;
+
+        if (entry.type === "enum") {
+          value = field?.cases?.find((option) => option.id === entry.value)?.name ?? entry.value;
+        } else if (entry.type === "collectionReference") {
+          value = slugOf(entry.value);
+        } else if (entry.type === "multiCollectionReference" && Array.isArray(entry.value)) {
+          value = entry.value.map(slugOf);
+        }
+
+        return [
+          id,
+          {
+            type: entry.type,
+            value,
+          },
+        ];
+      }),
+    );
+  }
+
   function storedFieldData(fieldData: CmsItemWrite["fieldData"]): FakeCollection["items"][number]["fieldData"] {
     return Object.fromEntries(
       Object.entries(fieldData ?? {}).map(([id, entry]) => [

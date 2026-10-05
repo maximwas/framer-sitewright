@@ -24,4 +24,4 @@ export const CMS_UPSERT_MAX = 100;
 /** What a file field accepts when the call names no types. */
 export const CMS_DEFAULT_FILE_TYPES = ["*"];
 
-export const CMS_UNDO_NOTE = "Undo does not restore CMS collections, fields or items yet.";
+export const CMS_UNDO_NOTE = "Undo does not restore CMS collections, fields or the order of items yet.";
