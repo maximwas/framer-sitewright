@@ -39,6 +39,9 @@ export const OPERATION_LABELS: Readonly<Record<string, string>> = {
   "cms.items.upsert": "CMS items",
   "cms.items.delete": "Delete CMS items",
   "cms.items.order": "Order CMS items",
+  "localization.locales": "Locales",
+  "localization.get": "Read translations",
+  "localization.set": "Translations",
 };
 
 /**

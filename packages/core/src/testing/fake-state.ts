@@ -52,6 +52,14 @@ export function defaultState(): FakeFramerState {
     designPages: [],
     components: [],
     collections: [],
+    defaultLocale: {
+      id: "default",
+      code: "en-US",
+      name: "English",
+      slug: "",
+    },
+    locales: [],
+    localizationGroups: [],
     branching: true,
     breakpoints: [
       {

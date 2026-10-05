@@ -99,6 +99,8 @@ sitewright --help
 - **CMS:** `cms_collections_list`, `cms_collection_create`, `cms_collection_delete`, `cms_fields_set`,
   `cms_items_list`, `cms_items_upsert`, `cms_items_delete`, `cms_items_order`. Items are written by slug, values by
   field name. Undo does not restore CMS changes yet.
+- **Localization:** `locales_list`, `localization_get` (what still needs translating), `localization_set`. Locales
+  themselves are added in the Framer editor.
 - **Code** (off until you allow it): `custom_code_get`, `custom_code_set`, `code_files_list`, `code_file_read`,
   `code_file_write`, `code_file_delete`.
 - **Journal:** `activity_list`, `activity_get`, `activity_checkpoint`, `activity_undo`, `activity_redo`,

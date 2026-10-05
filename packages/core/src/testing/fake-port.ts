@@ -253,6 +253,49 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
       ) ?? null,
     getNodesWithType,
     getCollections: async () => state.collections.map(collectionHandle),
+    getLocales: async () => state.locales.map((locale) => ({ ...locale })),
+    getDefaultLocale: async () => ({ ...state.defaultLocale }),
+    getLocalizationGroups: async () =>
+      JSON.parse(JSON.stringify(state.localizationGroups)) as FakeFramerState["localizationGroups"],
+    setLocalizationData: async ({ valuesBySource = {}, statusByLocaleByGroup = {} }) => {
+      const errors: { sourceId: string; localeId: string | null; error: string }[] = [];
+      const sources = state.localizationGroups.flatMap((group) => group.sources);
+
+      for (const [sourceId, byLocale] of Object.entries(valuesBySource)) {
+        const source = sources.find(({ id }) => id === sourceId);
+
+        if (source === undefined) {
+          errors.push({
+            sourceId,
+            localeId: null,
+            error: "Unknown source",
+          });
+          continue;
+        }
+
+        for (const [localeId, update] of Object.entries(byLocale)) {
+          if (update.action === "clear") {
+            delete source.valueByLocale[localeId];
+          } else {
+            source.valueByLocale[localeId] = {
+              value: update.value,
+              status: update.needsReview ? "needsReview" : "done",
+            };
+          }
+        }
+      }
+
+      for (const [groupId, byLocale] of Object.entries(statusByLocaleByGroup)) {
+        const group = state.localizationGroups.find(({ id }) => id === groupId);
+
+        Object.assign(group?.statusByLocale ?? {}, byLocale);
+      }
+
+      return {
+        valuesBySource: { errors },
+        statusByLocaleByGroup: { errors: [] },
+      };
+    },
     createCollection: async (name) => {
       const collection: FakeCollection = {
         id: nextId("collection"),

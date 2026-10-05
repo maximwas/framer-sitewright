@@ -17,6 +17,7 @@ import { componentControlsSet } from "./components/controls-set.ts";
 import { designApply } from "./design/apply.ts";
 import { fontsSearch } from "./fonts/search.ts";
 import { historyRevert } from "./history/revert.ts";
+import { localesList, localizationGet, localizationSet } from "./localization/localization.ts";
 import { layoutAudit } from "./nodes/audit.ts";
 import { breakpointsAdd } from "./nodes/breakpoints.ts";
 import { nodesRead } from "./nodes/read.ts";
@@ -71,6 +72,9 @@ const OPERATIONS: readonly AnyOperation[] = [
   cmsItemsUpsert,
   cmsItemsDelete,
   cmsItemsOrder,
+  localesList,
+  localizationGet,
+  localizationSet,
 ];
 
 const byName = new Map(OPERATIONS.map((operation) => [operation.name, operation]));

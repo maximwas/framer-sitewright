@@ -7,6 +7,7 @@ import type {
   DesignPageData,
   FileBytes,
   FontData,
+  LocaleData,
   ProjectInfoData,
   TextStyleData,
   WebPageData,
@@ -45,6 +46,21 @@ export interface FakeFramerState {
   designPages: DesignPageData[];
   components: ComponentData[];
   collections: FakeCollection[];
+  /** The default locale: Framer's getLocales lists only the locales added to it. */
+  defaultLocale: LocaleData;
+  locales: LocaleData[];
+  localizationGroups: {
+    id: string;
+    name: string;
+    type: string;
+    statusByLocale: Record<string, "excluded" | "ready">;
+    sources: {
+      id: string;
+      type: string;
+      value: string;
+      valueByLocale: Record<string, { value: string | null; status: string }>;
+    }[];
+  }[];
   /** false plays a project without branches, i.e. on a plan below Pro. */
   branching: boolean;
   /** The home page's breakpoints, the primary first; the rest copy it. */

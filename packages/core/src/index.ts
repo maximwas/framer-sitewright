@@ -67,6 +67,7 @@ export { needsAgent, runOperation } from "./operations/define.ts";
 export { designApply } from "./operations/design/apply.ts";
 export { fontsSearch } from "./operations/fonts/search.ts";
 export { historyRevert } from "./operations/history/revert.ts";
+export { localesList, localizationGet, localizationSet } from "./operations/localization/localization.ts";
 export { layoutAudit } from "./operations/nodes/audit.ts";
 export { breakpointsAdd } from "./operations/nodes/breakpoints.ts";
 export { nodesRead } from "./operations/nodes/read.ts";

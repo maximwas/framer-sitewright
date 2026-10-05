@@ -148,6 +148,49 @@ export interface CollectionHandle extends CollectionData {
   setItemOrder(itemIds: string[]): Promise<void>;
 }
 
+export interface LocaleData {
+  readonly id: string;
+  /** BCP 47 code, e.g. "en-US" or "nl". */
+  readonly code: string;
+  readonly name: string;
+  /** The URL segment, e.g. "nl". */
+  readonly slug: string;
+  readonly fallbackLocaleId?: string;
+}
+
+/** A translatable value: the text in the default locale and its translations by locale id. */
+export interface LocalizationSourceData {
+  readonly id: string;
+  readonly type: string;
+  readonly value: string;
+  readonly valueByLocale: Readonly<Record<string, { readonly value: string | null; readonly status: string }>>;
+}
+
+/** The translatable values of one page, CMS item, component or the site settings. */
+export interface LocalizationGroupData {
+  readonly id: string;
+  readonly name: string;
+  readonly type: string;
+  readonly sources: readonly LocalizationSourceData[];
+  readonly statusByLocale: Readonly<Record<string, "excluded" | "ready">>;
+}
+
+export type LocalizedValueUpdate = { action: "set"; value: string; needsReview?: boolean } | { action: "clear" };
+
+export interface LocalizationUpdate {
+  valuesBySource?: Record<string, Record<string, LocalizedValueUpdate>>;
+  statusByLocaleByGroup?: Record<string, Record<string, "excluded" | "ready">>;
+}
+
+export interface LocalizationWriteResult {
+  readonly valuesBySource: {
+    readonly errors: readonly { readonly sourceId: string; readonly localeId: string | null; readonly error: string }[];
+  };
+  readonly statusByLocaleByGroup: {
+    readonly errors: readonly { readonly groupId: string; readonly error: string }[];
+  };
+}
+
 export interface BranchData {
   readonly id: string;
   readonly title: string;
@@ -278,6 +321,10 @@ export interface FramerPort {
   getNodesWithType(type: "ComponentNode"): Promise<readonly ComponentData[]>;
   getCollections(): Promise<readonly CollectionHandle[]>;
   createCollection(name: string): Promise<CollectionHandle>;
+  getLocales(): Promise<readonly LocaleData[]>;
+  getDefaultLocale(): Promise<LocaleData>;
+  getLocalizationGroups(): Promise<readonly LocalizationGroupData[]>;
+  setLocalizationData(update: LocalizationUpdate): Promise<LocalizationWriteResult>;
   getChildren(nodeId: string): Promise<readonly CanvasNodeData[]>;
   /** Any canvas node, or null; the caller narrows it (isControlledNode for a component instance). */
   getNode(nodeId: string): Promise<unknown>;

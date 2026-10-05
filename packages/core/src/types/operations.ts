@@ -35,6 +35,7 @@ export type PluginPermission =
   | "Collection.addItems"
   | "Collection.removeItems"
   | "Collection.setItemOrder"
+  | "setLocalizationData"
   | "publish";
 
 /** A unit of work with typed input and output that runs wherever the `framer` object lives. */
