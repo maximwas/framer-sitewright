@@ -12,3 +12,9 @@ export const ICON_SEARCH_MAX_NAMES = 60;
 
 /** A data URL prefix for inline SVG markup, which uploadImage takes like any image. */
 export const SVG_DATA_URL_PREFIX = "data:image/svg+xml;base64,";
+
+/**
+ * The longest data URL file_upload sends through the plugin bridge (MAX_MESSAGE_BYTES, 4 MiB per message, with room
+ * for the rest of the message); a longer one goes through the Server API.
+ */
+export const FILE_DATA_URL_BRIDGE_MAX = 3_500_000;

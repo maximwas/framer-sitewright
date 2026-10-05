@@ -4,3 +4,9 @@ export interface ImageSource {
   readonly path?: string | undefined;
   readonly svg?: string | undefined;
 }
+
+/** Where file_upload takes a file from: an https URL, or an absolute path on this computer. */
+export interface FileSource {
+  readonly url?: string | undefined;
+  readonly path?: string | undefined;
+}

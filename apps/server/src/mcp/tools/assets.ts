@@ -10,6 +10,7 @@ import {
   svgAdd,
 } from "@sitewright/core";
 import * as z from "zod";
+import { fileSourceOf } from "../../assets/file-source.ts";
 import { imageSourceOf } from "../../assets/image-source.ts";
 import type { ToolContext } from "../../types/mcp.ts";
 import { addOperationTool, addTool, operationAnnotations, runOperationTool } from "../add-tool.ts";
@@ -54,11 +55,26 @@ export function registerAssetTools(server: McpServer, context: ToolContext): voi
       }),
   });
 
-  addOperationTool(server, context, fileUpload, {
+  addTool(server, {
     name: "file_upload",
     title: "Upload a file",
     description:
-      "Puts a file that is not an image into the project's assets from an https URL — a video for a code component's File control, a PDF, a font — and returns its url. Images go through image_upload.",
+      "Puts a file that is not an image into the project's assets — a video for a code component's File control, a PDF, a font — and returns its url. Pass exactly one of: url (https, Framer downloads it) or path (absolute path to a local mp4, m4v, mov, webm, pdf, woff, woff2, ttf or otf). Images go through image_upload.",
+    input: z.strictObject({
+      url: z.string().min(1).exactOptional(),
+      path: z.string().min(1).exactOptional(),
+      name: z.string().min(1).exactOptional(),
+    }),
+    output: fileUpload.output.extend({ activity: ActivityNoteSchema }),
+    annotations: operationAnnotations(fileUpload),
+    run: async ({ url, path, name }): Promise<z.output<typeof fileUpload.output> & { activity: ActivityNote }> =>
+      runOperationTool(context, "file_upload", fileUpload, {
+        url: await fileSourceOf({
+          url,
+          path,
+        }),
+        ...(name === undefined ? {} : { name }),
+      }),
   });
 
   addOperationTool(server, context, svgAdd, {
