@@ -1,6 +1,9 @@
 import { FRAMER_TAG_STYLE_NAMES } from "../constants/text-styles.ts";
 import type {
+  CmsItemHandle,
+  CmsItemWrite,
   CodeFileHandle,
+  CollectionHandle,
   ColorStyleHandle,
   ComponentData,
   DesignPageData,
@@ -9,7 +12,13 @@ import type {
   TextStyleWrite,
   WebPageData,
 } from "../types/framer-port.ts";
-import type { FakeBreakpoint, FakeColorStyle, FakeFramerState, FakeTextStyle } from "../types/testing.ts";
+import type {
+  FakeBreakpoint,
+  FakeCollection,
+  FakeColorStyle,
+  FakeFramerState,
+  FakeTextStyle,
+} from "../types/testing.ts";
 import { normalizeColor } from "../utils/color.ts";
 import { newTextStyle, stylePath } from "./fake-state.ts";
 
@@ -100,6 +109,101 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
     };
   }
 
+  /** A collection as the Plugin API hands it out: fields and items read and written on the fake state. */
+  function collectionHandle(collection: FakeCollection): CollectionHandle {
+    const itemHandle = (item: FakeCollection["items"][number]): CmsItemHandle => ({
+      ...item,
+      setAttributes: async ({ slug, draft, fieldData }) => {
+        Object.assign(item, {
+          ...(slug === undefined ? {} : { slug }),
+          ...(draft === undefined ? {} : { draft }),
+        });
+        Object.assign(item.fieldData, storedFieldData(fieldData));
+
+        return itemHandle(item);
+      },
+      remove: async () => {
+        collection.items = collection.items.filter((candidate) => candidate.id !== item.id);
+      },
+    });
+
+    return {
+      id: collection.id,
+      name: collection.name,
+      readonly: collection.readonly,
+      managedBy: collection.managedBy,
+      getFields: async () => collection.fields.map((field) => ({ ...field })),
+      addFields: async (fields) => {
+        for (const field of fields) {
+          collection.fields.push({
+            id: nextId("field"),
+            name: field.name,
+            type: field.type,
+            ...("cases" in field
+              ? {
+                  cases: field.cases.map((entry) => ({
+                    id: nextId("case"),
+                    name: entry.name,
+                  })),
+                }
+              : {}),
+            ...("collectionId" in field ? { collectionId: field.collectionId } : {}),
+          });
+        }
+      },
+      removeFields: async (fieldIds) => {
+        collection.fields = collection.fields.filter((field) => !fieldIds.includes(field.id));
+      },
+      setFieldOrder: async (fieldIds) => {
+        collection.fields.sort((a, b) => fieldIds.indexOf(a.id) - fieldIds.indexOf(b.id));
+      },
+      getItems: async () => collection.items.map(itemHandle),
+      addItems: async (items) => {
+        // Like Framer: an entry with an id updates that item, one without adds a new one.
+        for (const { id, slug, draft, fieldData } of items) {
+          const current = collection.items.find((item) => item.id === id);
+
+          if (current !== undefined) {
+            Object.assign(current, draft === undefined ? {} : { draft });
+            Object.assign(current.fieldData, storedFieldData(fieldData));
+            continue;
+          }
+
+          collection.items.push({
+            id: nextId("item"),
+            slug: slug ?? "",
+            draft: draft ?? false,
+            fieldData: storedFieldData(fieldData),
+          });
+        }
+      },
+      removeItems: async (itemIds) => {
+        collection.items = collection.items.filter((item) => !itemIds.includes(item.id));
+      },
+      setItemOrder: async (itemIds) => {
+        collection.items.sort((a, b) => itemIds.indexOf(a.id) - itemIds.indexOf(b.id));
+      },
+    };
+  }
+
+  /** Field values as Framer keeps them: an image or file URL becomes an asset. */
+  function storedFieldData(fieldData: CmsItemWrite["fieldData"]): FakeCollection["items"][number]["fieldData"] {
+    return Object.fromEntries(
+      Object.entries(fieldData ?? {}).map(([id, entry]) => [
+        id,
+        (entry.type === "image" || entry.type === "file") && typeof entry.value === "string"
+          ? {
+              type: entry.type,
+              value: {
+                url: entry.value,
+                altText: "alt" in entry ? entry.alt : undefined,
+              },
+            }
+          : entry,
+      ]),
+    );
+  }
+
   function codeFileHandle(file: FakeFramerState["codeFiles"][number]): CodeFileHandle {
     return {
       ...file,
@@ -148,7 +252,21 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
           font.style === (attributes?.style ?? "normal"),
       ) ?? null,
     getNodesWithType,
-    getCollections: async () => [...state.collections],
+    getCollections: async () => state.collections.map(collectionHandle),
+    createCollection: async (name) => {
+      const collection: FakeCollection = {
+        id: nextId("collection"),
+        name,
+        readonly: false,
+        managedBy: "user",
+        fields: [],
+        items: [],
+      };
+
+      state.collections.push(collection);
+
+      return collectionHandle(collection);
+    },
     getChildren: async (nodeId) =>
       state.webPages.find((page) => page.id === nodeId)?.path === "/" ? state.breakpoints.map(breakpointFrame) : [],
     removeNodes: async (nodeIds) => {

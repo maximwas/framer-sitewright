@@ -49,6 +49,13 @@ export { iconsSearch } from "./operations/assets/icons-search.ts";
 export { imageUpload } from "./operations/assets/image-upload.ts";
 export { imagesSearch } from "./operations/assets/images-search.ts";
 export { svgAdd } from "./operations/assets/svg-add.ts";
+export {
+  cmsCollectionCreate,
+  cmsCollectionDelete,
+  cmsCollectionsList,
+} from "./operations/cms/collections.ts";
+export { cmsFieldsSet } from "./operations/cms/fields.ts";
+export { cmsItemsDelete, cmsItemsList, cmsItemsOrder, cmsItemsUpsert } from "./operations/cms/items.ts";
 export { codeFileDelete, codeFileRead, codeFilesList, codeFileWrite } from "./operations/code/code-files.ts";
 export { customCodeGet, customCodeSet } from "./operations/code/custom-code.ts";
 export { colorTokensDelete } from "./operations/color-tokens/delete.ts";

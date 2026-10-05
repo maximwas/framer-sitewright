@@ -96,6 +96,9 @@ sitewright --help
   and the checklist before handing a page over. The Claude Code skill (`setup --skill`) points the agent at it.
 - **Components and assets:** `components_read`, `component_controls_set`, `icons_search`, `images_search`,
   `image_upload`, `svg_add`.
+- **CMS:** `cms_collections_list`, `cms_collection_create`, `cms_collection_delete`, `cms_fields_set`,
+  `cms_items_list`, `cms_items_upsert`, `cms_items_delete`, `cms_items_order`. Items are written by slug, values by
+  field name. Undo does not restore CMS changes yet.
 - **Code** (off until you allow it): `custom_code_get`, `custom_code_set`, `code_files_list`, `code_file_read`,
   `code_file_write`, `code_file_delete`.
 - **Journal:** `activity_list`, `activity_get`, `activity_checkpoint`, `activity_undo`, `activity_redo`,

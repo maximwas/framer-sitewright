@@ -87,6 +87,67 @@ export interface CollectionData {
   readonly name: string;
 }
 
+/** A CMS field as getFields lists it: an enum has its cases, a reference field the collection it points at. */
+export interface CmsFieldData {
+  readonly id: string;
+  readonly name: string;
+  readonly type: string;
+  readonly cases?: readonly { readonly id: string; readonly name: string }[];
+  readonly collectionId?: string;
+}
+
+/** A field value as Framer takes it: its field's type and the value in that type's shape. */
+export type CmsFieldInput =
+  | { readonly type: "string" | "enum"; readonly value: string }
+  | { readonly type: "formattedText"; readonly value: string; readonly contentType?: "auto" | "markdown" | "html" }
+  | { readonly type: "number"; readonly value: number }
+  | { readonly type: "boolean"; readonly value: boolean }
+  | { readonly type: "date"; readonly value: string | null }
+  | { readonly type: "image"; readonly value: string | null; readonly alt?: string }
+  | { readonly type: "link" | "file" | "color" | "collectionReference"; readonly value: string | null }
+  | { readonly type: "multiCollectionReference"; readonly value: readonly string[] | null };
+
+/** What addItems and setAttributes take for an item: field values by field id. */
+export interface CmsItemWrite {
+  id?: string;
+  slug?: string;
+  draft?: boolean;
+  fieldData?: Record<string, CmsFieldInput>;
+}
+
+export interface CmsItemHandle {
+  readonly id: string;
+  readonly slug: string;
+  readonly draft: boolean;
+  readonly fieldData: Readonly<Record<string, { readonly type: string; readonly value: unknown }>>;
+  setAttributes(update: CmsItemWrite): Promise<CmsItemHandle | null>;
+  remove(): Promise<void>;
+}
+
+/** A field to add: an enum lists its cases, a reference names the collection it points at. */
+export type CmsFieldCreate =
+  | {
+      type: "string" | "formattedText" | "number" | "boolean" | "date" | "link" | "image" | "color";
+      name: string;
+    }
+  | { type: "file"; name: string; allowedFileTypes: string[] }
+  | { type: "enum"; name: string; cases: { name: string }[] }
+  | { type: "collectionReference" | "multiCollectionReference"; name: string; collectionId: string };
+
+/** A CMS collection with its fields and items; managed ones belong to a sync plugin and refuse edits. */
+export interface CollectionHandle extends CollectionData {
+  readonly readonly: boolean;
+  readonly managedBy: string;
+  getFields(): Promise<readonly CmsFieldData[]>;
+  addFields(fields: CmsFieldCreate[]): Promise<unknown>;
+  removeFields(fieldIds: string[]): Promise<void>;
+  setFieldOrder(fieldIds: string[]): Promise<void>;
+  getItems(): Promise<readonly CmsItemHandle[]>;
+  addItems(items: CmsItemWrite[]): Promise<void>;
+  removeItems(itemIds: string[]): Promise<void>;
+  setItemOrder(itemIds: string[]): Promise<void>;
+}
+
 export interface BranchData {
   readonly id: string;
   readonly title: string;
@@ -215,7 +276,8 @@ export interface FramerPort {
   getNodesWithType(type: "WebPageNode"): Promise<readonly WebPageData[]>;
   getNodesWithType(type: "DesignPageNode"): Promise<readonly DesignPageData[]>;
   getNodesWithType(type: "ComponentNode"): Promise<readonly ComponentData[]>;
-  getCollections(): Promise<readonly CollectionData[]>;
+  getCollections(): Promise<readonly CollectionHandle[]>;
+  createCollection(name: string): Promise<CollectionHandle>;
   getChildren(nodeId: string): Promise<readonly CanvasNodeData[]>;
   /** Any canvas node, or null; the caller narrows it (isControlledNode for a component instance). */
   getNode(nodeId: string): Promise<unknown>;

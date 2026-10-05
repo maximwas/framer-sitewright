@@ -31,6 +31,14 @@ export const OPERATION_LABELS: Readonly<Record<string, string>> = {
   "codeFiles.read": "Read code file",
   "codeFiles.write": "Code file",
   "codeFiles.delete": "Delete code file",
+  "cms.collections.list": "CMS collections",
+  "cms.collections.create": "CMS collection",
+  "cms.collections.delete": "Delete CMS collection",
+  "cms.fields.set": "CMS fields",
+  "cms.items.list": "CMS items",
+  "cms.items.upsert": "CMS items",
+  "cms.items.delete": "Delete CMS items",
+  "cms.items.order": "Order CMS items",
 };
 
 /**

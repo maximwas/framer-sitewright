@@ -4,6 +4,9 @@ import { iconsSearch } from "./assets/icons-search.ts";
 import { imageUpload } from "./assets/image-upload.ts";
 import { imagesSearch } from "./assets/images-search.ts";
 import { svgAdd } from "./assets/svg-add.ts";
+import { cmsCollectionCreate, cmsCollectionDelete, cmsCollectionsList } from "./cms/collections.ts";
+import { cmsFieldsSet } from "./cms/fields.ts";
+import { cmsItemsDelete, cmsItemsList, cmsItemsOrder, cmsItemsUpsert } from "./cms/items.ts";
 import { codeFileDelete, codeFileRead, codeFilesList, codeFileWrite } from "./code/code-files.ts";
 import { customCodeGet, customCodeSet } from "./code/custom-code.ts";
 import { colorTokensDelete } from "./color-tokens/delete.ts";
@@ -60,6 +63,14 @@ const OPERATIONS: readonly AnyOperation[] = [
   codeFileRead,
   codeFileWrite,
   codeFileDelete,
+  cmsCollectionsList,
+  cmsCollectionCreate,
+  cmsCollectionDelete,
+  cmsFieldsSet,
+  cmsItemsList,
+  cmsItemsUpsert,
+  cmsItemsDelete,
+  cmsItemsOrder,
 ];
 
 const byName = new Map(OPERATIONS.map((operation) => [operation.name, operation]));

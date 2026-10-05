@@ -28,6 +28,13 @@ export type PluginPermission =
   | "CodeFile.setFileContent"
   | "CodeFile.remove"
   | "Node.setAttributes"
+  | "createCollection"
+  | "Collection.addFields"
+  | "Collection.removeFields"
+  | "Collection.setFieldOrder"
+  | "Collection.addItems"
+  | "Collection.removeItems"
+  | "Collection.setItemOrder"
   | "publish";
 
 /** A unit of work with typed input and output that runs wherever the `framer` object lives. */

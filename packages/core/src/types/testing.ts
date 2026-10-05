@@ -44,7 +44,7 @@ export interface FakeFramerState {
   webPages: WebPageData[];
   designPages: DesignPageData[];
   components: ComponentData[];
-  collections: CollectionData[];
+  collections: FakeCollection[];
   /** false plays a project without branches, i.e. on a plan below Pro. */
   branching: boolean;
   /** The home page's breakpoints, the primary first; the rest copy it. */
@@ -76,6 +76,14 @@ export interface FakeFramerState {
   publishes: number;
   /** Component instances' control values, by node id (getNode, setAttributes). */
   instanceControls: Record<string, Record<string, unknown>>;
+}
+
+/** A CMS collection of the fake project: its fields and items change as the Plugin API calls run. */
+export interface FakeCollection extends CollectionData {
+  readonly: boolean;
+  managedBy: string;
+  fields: { id: string; name: string; type: string; cases?: { id: string; name: string }[]; collectionId?: string }[];
+  items: { id: string; slug: string; draft: boolean; fieldData: Record<string, { type: string; value: unknown }> }[];
 }
 
 export interface FakeBreakpoint {

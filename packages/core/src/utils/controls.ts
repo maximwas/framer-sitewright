@@ -1,4 +1,5 @@
 import type { ControlledNode } from "../types/framer-port.ts";
+import { isPlainObject } from "./guards.ts";
 
 /** A component instance whose control values setAttributes can change. */
 export function isControlledNode(node: unknown): node is ControlledNode {
@@ -36,8 +37,4 @@ export function mergeControls(
       ];
     }),
   ]);
-}
-
-function isPlainObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
