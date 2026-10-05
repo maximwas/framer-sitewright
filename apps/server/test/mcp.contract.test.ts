@@ -217,7 +217,7 @@ describe("unconfigured server", () => {
           project: null,
         },
       ],
-      hint: expect.stringContaining("FRAMER_API_KEY"),
+      hint: expect.stringContaining("sitewright key"),
     });
 
     const tokens = await client.callTool({
@@ -227,7 +227,7 @@ describe("unconfigured server", () => {
 
     expect(tokens.isError).toBe(true);
     expect(JSON.stringify(tokens.content)).toContain("SITEWRIGHT_PLUGIN_BRIDGE=off");
-    expect(JSON.stringify(tokens.content)).toContain("FRAMER_API_KEY");
+    expect(JSON.stringify(tokens.content)).toContain("sitewright key");
   });
 });
 

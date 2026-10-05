@@ -12,8 +12,6 @@ export function parseConfig(env: Record<string, string | undefined>, homeDir: st
 
   return {
     config: {
-      framerApiKey: parsed.FRAMER_API_KEY,
-      framerProjectUrl: parsed.FRAMER_PROJECT_URL,
       logLevel: parsed.LOG_LEVEL,
       cacheDir: parsed.SITEWRIGHT_CACHE_DIR ?? join(homeDir, ".cache", "sitewright"),
       transport: parsed.SITEWRIGHT_TRANSPORT,

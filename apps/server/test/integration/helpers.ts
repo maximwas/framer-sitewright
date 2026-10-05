@@ -1,37 +1,63 @@
-import { homedir } from "node:os";
+import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { colorTokensDelete, colorTokensList, requireAgent, textStylesDelete, textStylesList } from "@sitewright/core";
-import { parseConfig } from "../../src/config/config.ts";
-import { loadEnvFile } from "../../src/config/env-file.ts";
 import { createLogger } from "../../src/logging/logger.ts";
-import { createTransports } from "../../src/transports/create-transports.ts";
-import type { TransportRouter } from "../../src/transports/router.ts";
-import type { AppConfig } from "../../src/types/config.ts";
+import { PluginTransport } from "../../src/transports/plugin/transport.ts";
+import { TransportRouter } from "../../src/transports/router.ts";
+import { ServerApiPool } from "../../src/transports/server-api/pool.ts";
+import { ServerApiSession } from "../../src/transports/server-api/session.ts";
+import { ServerApiTransport } from "../../src/transports/server-api/transport.ts";
 
 export const TEST_PREFIX = "mcp-test";
 
-/** The sandbox config from the repo's .env, or null without Server API credentials (the tests then skip). */
-export function integrationConfig(): AppConfig | null {
-  const repoRoot = fileURLToPath(new URL("../../../../", import.meta.url));
-
-  loadEnvFile(repoRoot);
-
-  const { config } = parseConfig(process.env, homedir());
-
-  if (config.framerApiKey === undefined || config.framerProjectUrl === undefined) {
-    return null;
-  }
-
-  // The production composition, pinned to the Server API, without the plugin bridge (no port, no ~/.sitewright).
-  return {
-    ...config,
-    transport: "server-api",
-    pluginBridge: false,
-  };
+/** The sandbox project the integration tests change freely. */
+export interface Sandbox {
+  readonly projectUrl: string;
+  readonly apiKey: string;
 }
 
-export function createIntegrationTransports(config: AppConfig): Promise<TransportRouter> {
-  return createTransports(config, createLogger("warn"), "integration");
+/**
+ * The sandbox from the repo's .env (FRAMER_API_KEY, FRAMER_PROJECT_URL), or null without one (the tests then skip).
+ * Only these tests read .env: the server itself takes keys saved per project.
+ */
+export function integrationConfig(): Sandbox | null {
+  const envFile = fileURLToPath(new URL("../../../../.env", import.meta.url));
+
+  if (existsSync(envFile)) {
+    process.loadEnvFile(envFile);
+  }
+
+  const apiKey = process.env.FRAMER_API_KEY?.trim();
+  const projectUrl = process.env.FRAMER_PROJECT_URL?.trim();
+
+  return apiKey && projectUrl
+    ? {
+        projectUrl,
+        apiKey,
+      }
+    : null;
+}
+
+/** The production router pinned to the sandbox's Server API, without the plugin bridge (no port, no ~/.sitewright). */
+export async function createIntegrationTransports({ projectUrl, apiKey }: Sandbox): Promise<TransportRouter> {
+  const logger = createLogger("warn");
+  const serverApi = new ServerApiTransport(
+    new ServerApiSession({
+      projectUrl,
+      apiKey,
+      logger,
+    }),
+  );
+
+  return new TransportRouter(
+    ServerApiPool.fixed(serverApi),
+    PluginTransport.disabled({
+      serverApiConfigured: () => true,
+      logger,
+      localAppPort: null,
+    }),
+    "server-api",
+  );
 }
 
 export async function cleanupTestObjects(transports: TransportRouter): Promise<void> {

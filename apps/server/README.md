@@ -38,11 +38,12 @@ npx sitewright key list     # the projects with keys
 npx sitewright key remove   # forget one
 ```
 
-Without the plugin, tell your agent which project to work on ("now the Vela site"): `framer_status` lists the projects
-with a saved key and `framer_connect` switches to one by name. Opening the plugin in another project switches too.
+Everything runs through the connected plugin: the project is always the one the plugin is open in, and nothing runs
+while it is not connected. To work without the editor, choose the Server API on purpose
+(`SITEWRIGHT_TRANSPORT=server-api`) and tell your agent the project ("now the Vela site"): `framer_status` lists the
+projects with a saved key and `framer_connect` switches to one by name.
 
-The journal page has the same form (Settings → Server API key). For one fixed project, e.g. in CI,
-`FRAMER_API_KEY` and `FRAMER_PROJECT_URL` in the server's environment work too.
+The journal page has the same form (Settings → Server API key).
 
 With a key and the plugin, calls go to the plugin first and the layout work goes to the Server API of the same project.
 
@@ -105,8 +106,7 @@ sitewright --help
 
 | Variable | Default | What |
 | --- | --- | --- |
-| `FRAMER_API_KEY`, `FRAMER_PROJECT_URL` | — | One fixed project's key (CI); otherwise use `sitewright key` |
-| `SITEWRIGHT_TRANSPORT` | `auto` | `auto` (plugin first), `server-api` or `plugin` |
+| `SITEWRIGHT_TRANSPORT` | `auto` | `auto` (through the plugin, nothing without it), `server-api` or `plugin` |
 | `SITEWRIGHT_HOME` | `~/.sitewright` | The journal, project keys, settings, logs and the bridge's port |
 | `SITEWRIGHT_BRIDGE_PORT` | `18710` | The local journal page and the plugin's bridge |
 | `SITEWRIGHT_HISTORY` | `on` | `off`: no journal, nothing to undo |

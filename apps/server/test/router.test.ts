@@ -74,7 +74,38 @@ function serverApi() {
   return ServerApiPool.fixed(new ServerApiTransport(session, () => runtime));
 }
 
+/** The plugin bridge is on, but no plugin is connected (closed, or reloading). */
+function absentPlugin() {
+  const { plugin, ran } = fakePlugin("project-1");
+
+  return {
+    plugin: {
+      ...plugin,
+      status: () => ({
+        ...plugin.status(),
+        connected: false,
+        project: null,
+      }),
+      isConnected: () => false,
+    },
+    ran,
+  };
+}
+
 describe("TransportRouter auto", () => {
+  it("runs nothing while the plugin is away: the project is always the one the plugin is open in", async () => {
+    const { plugin, ran } = absentPlugin();
+    const router = new TransportRouter(serverApi(), plugin, "auto");
+
+    await expect(router.run(colorTokensList, {})).rejects.toThrow(/plugin is not connected/);
+    await expect(router.run(designApply, { dsl: 'SET node name="x";' })).rejects.toThrow(/plugin is not connected/);
+    expect(ran).toEqual([]);
+
+    // Chosen on purpose, the Server API alone still works.
+    router.setMode("server-api");
+    await expect(router.run(colorTokensList, {})).resolves.toBeDefined();
+  });
+
   it("puts the plugin first, and sends only what needs the DSL to the Server API", async () => {
     const { plugin, ran } = fakePlugin("project-1");
     const router = new TransportRouter(serverApi(), plugin, "auto");
@@ -157,11 +188,11 @@ describe("TransportRouter selection", () => {
 });
 
 /** A pool over a fresh keys.json whose Server APIs open fake projects; `opened` lists the links they connected to. */
-async function poolWithKeys(env: ServerApiTransport | null = null) {
+async function poolWithKeys(fixed: ServerApiTransport | null = null) {
   const keys = new KeyStore(join(await mkdtemp(join(tmpdir(), "sitewright-keys-")), "keys.json"));
   const opened: string[] = [];
   const pool = new ServerApiPool({
-    env,
+    fixed,
     keys,
     create: ({ id, name, url }) => {
       opened.push(url);
@@ -223,7 +254,7 @@ describe("TransportRouter with keys saved per project", () => {
     expect(unsaved.ran).toEqual(["design.apply"]);
   });
 
-  it("regression: keeps the session's project when the plugin drops, instead of the environment's other project", async () => {
+  it("regression: keeps the session's project when the plugin drops, instead of another fixed project", async () => {
     const environment = new ServerApiTransport(
       new ServerApiSession({
         projectUrl: "https://framer.com/projects/Sandbox--env",

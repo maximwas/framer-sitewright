@@ -5,7 +5,7 @@ import { ErrorCode } from "framer-api";
 export const ERROR_HINTS: Partial<Record<ErrorCode, string>> = {
   [ErrorCode.UNAUTHORIZED]:
     "The Server API key does not open this project: add it again from the project's Site Settings → General → API Keys (journal page Settings, or `npx sitewright key`).",
-  [ErrorCode.INVALID_REQUEST]: "Check FRAMER_PROJECT_URL and the tool arguments.",
+  [ErrorCode.INVALID_REQUEST]: "Check the tool arguments.",
   [ErrorCode.PROJECT_CLOSED]: "The Framer session closed; retry the call.",
   [ErrorCode.POOL_EXHAUSTED]: "Framer has no free headless editor right now; retry in a minute.",
   [ErrorCode.TOKEN_SESSION_LIMIT]: "Too many Server API sessions for this key; close other clients and retry.",
@@ -19,7 +19,7 @@ export const ERROR_HINTS: Partial<Record<ErrorCode, string>> = {
  * taught (agent/specs/2026-09-30-live-build-lessons.md), so every session knows what Framer can do and how.
  */
 export const SERVER_INSTRUCTIONS = [
-  `${PRODUCT.title} edits the Framer project open in its plugin, or the one in FRAMER_PROJECT_URL. Start with project_overview. Each project has its own Server API key; framer_status lists the projects with a saved key, and when the user names another project, switch with framer_connect { project } before anything else (opening the plugin in a project switches too). When the user points at something in the editor ("this", "the selected"), call selection_get for its ids.`,
+  `${PRODUCT.title} edits the Framer project open in its plugin, and nothing runs while the plugin is not connected (ask the user to open it and click Connect). Start with project_overview. Each project has its own Server API key; framer_status lists the projects with a saved key, and when the user names another project, switch with framer_connect { project } before anything else (opening the plugin in a project switches too). When the user points at something in the editor ("this", "the selected"), call selection_get for its ids.`,
   // Design quality.
   "Before building or restyling a page, read design_guide (workflow first, then the topic for the task) and write out the direction it asks for. Set stackAlignment and stackDistribution on every stack you create: a stack centers its children by default, so a label lands in the middle over left-aligned text. Keep one content width (maxWidth and side padding) for the header, every section and the footer; put links on frames around the text, not on text nodes (text links take Framer's default blue); turn on balance in heading text styles. design_apply returns audit findings for what it touched: fix every defect before the next section, and run layout_audit on the page before calling it done.",
   // Transports.

@@ -15,7 +15,7 @@ import { traceAgent } from "../../utils/trace-agent.ts";
 import { createServerApiRuntime } from "./runtime.ts";
 import type { ServerApiSession } from "./session.ts";
 
-/** Runs operations here, in Node, on the framer-api connection to the project in FRAMER_PROJECT_URL. */
+/** Runs operations here, in Node, on the framer-api connection to one project (its saved key). */
 export class ServerApiTransport implements FramerTransport {
   readonly kind = "server-api";
   readonly #session: ServerApiSession;
@@ -125,7 +125,7 @@ async function readProject(runtime: FramerRuntime): Promise<ProjectRef | null> {
   }
 }
 
-/** Stands in for the Server API when FRAMER_API_KEY or FRAMER_PROJECT_URL is missing. */
+/** Stands in for the Server API when the project has no saved key. */
 export const unconfiguredServerApi: FramerTransport = {
   kind: "server-api",
   status: () => ({

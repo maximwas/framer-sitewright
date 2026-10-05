@@ -4,7 +4,6 @@ import framerApiPackage from "framer-api/package.json" with { type: "json" };
 import serverPackage from "../package.json" with { type: "json" };
 import { CapabilityTracker } from "./capabilities/capability-tracker.ts";
 import { parseConfig } from "./config/config.ts";
-import { loadEnvFile } from "./config/env-file.ts";
 import { DocsCache } from "./docs/docs-cache.ts";
 import { ActivityJournal } from "./history/activity-journal.ts";
 import { ActivityUndo } from "./history/activity-undo.ts";
@@ -22,10 +21,8 @@ import type { Logger } from "./types/logging.ts";
 import { EditorLinks } from "./ui-api/editor-links.ts";
 import { servePanels } from "./ui-api/serve-panels.ts";
 
-/** Wires the server together from the environment and `<projectDir>/.env`. Nothing is connected yet. */
+/** Wires the server together from its environment. Nothing is connected yet. */
 export async function createApp(projectDir: string): Promise<App> {
-  loadEnvFile(projectDir);
-
   const { config, warnings } = parseConfig(process.env, homedir());
   const logger = createLogger(config.logLevel, config.logFile);
 

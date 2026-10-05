@@ -3,7 +3,6 @@ import { homedir } from "node:os";
 import { errorMessage, PRODUCT } from "@sitewright/core";
 import packageJson from "../../package.json" with { type: "json" };
 import { parseConfig } from "../config/config.ts";
-import { loadEnvFile } from "../config/env-file.ts";
 import type { AppConfig } from "../types/config.ts";
 import { cliHelp } from "../utils/cli-help.ts";
 import { hookCommand } from "../utils/hook-command.ts";
@@ -197,10 +196,8 @@ async function interactive(run: () => Promise<void>): Promise<void> {
   }
 }
 
-/** The same paths the MCP server uses: its environment, and `.env` of the project Claude Code runs in. */
+/** The same paths the MCP server uses, from its environment. */
 function localConfig(): AppConfig {
-  loadEnvFile(process.env.CLAUDE_PROJECT_DIR ?? process.cwd());
-
   return parseConfig(process.env, homedir()).config;
 }
 

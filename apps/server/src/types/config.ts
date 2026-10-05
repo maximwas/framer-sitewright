@@ -2,8 +2,6 @@ import type { LogLevel } from "./logging.ts";
 import type { TransportMode } from "./transports.ts";
 
 export interface AppConfig {
-  readonly framerApiKey: string | undefined;
-  readonly framerProjectUrl: string | undefined;
   readonly logLevel: LogLevel;
   readonly cacheDir: string;
   readonly transport: TransportMode;

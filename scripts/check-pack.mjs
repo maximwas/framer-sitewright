@@ -54,8 +54,6 @@ function countTools(command, cwd) {
       env: {
         ...process.env,
         CLAUDE_PROJECT_DIR: cwd,
-        FRAMER_API_KEY: "",
-        FRAMER_PROJECT_URL: "",
         SITEWRIGHT_PLUGIN_BRIDGE: "off",
       },
     });

@@ -26,8 +26,9 @@ computer), what the agent may do, and the skill hooks. Then open your project in
 | **Server API** | Your own key: Framer → Site Settings → General → API Keys | Everything above, plus the rest of Framer's agent DSL (effects, transitions, variants, components, rich text, shadows, image fills), screenshots, the DSL reference, icon, component and photo catalogs |
 
 Each project has its own key. `npx sitewright key` (or Settings on the journal page) saves one per project in
-`~/.sitewright/keys.json`, and Sitewright uses the key of the project the plugin is open in, or the one you name to your agent ("now the Vela site"). For one fixed project,
-e.g. in CI, `FRAMER_API_KEY` and `FRAMER_PROJECT_URL` in the server's environment work too.
+`~/.sitewright/keys.json`, and Sitewright uses the key of the project the plugin is open in. Nothing runs while the
+plugin is not connected, so a change never lands in another project; the Server API alone is a mode you choose on
+purpose (`SITEWRIGHT_TRANSPORT=server-api`, then name the project to your agent).
 
 When both are available, calls go to the plugin first and the DSL work goes to the Server API of the same project.
 

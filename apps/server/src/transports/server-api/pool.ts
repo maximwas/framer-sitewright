@@ -8,13 +8,13 @@ import type { ServerApiTransport } from "./transport.ts";
 
 /**
  * Which Server API a call uses: the saved project framer_connect chose, else the key saved for the project the plugin
- * is open in. Without the plugin (it reloads, the window closed): the saved project this session worked on, so the
- * session never slides into another project; else the one from the environment (FRAMER_API_KEY and
- * FRAMER_PROJECT_URL), else the project used last. A project's connection opens on first use and stays for the session; a new key for it replaces
+ * is open in. Without the plugin (only in server-api mode: auto needs the plugin): the saved project this session
+ * worked on, so the session never slides into another project, else the project used last. Keys come only from
+ * keys.json (`sitewright key`); a fixed pool (tests) has one Server API for everything. A project's connection opens on first use and stays for the session; a new key for it replaces
  * it. Without any key there is no Server API and the plugin does the work.
  */
 export class ServerApiPool {
-  readonly #env: ServerApiTransport | null;
+  readonly #fixed: ServerApiTransport | null;
   readonly #keys: KeyStore | null;
   readonly #create: (project: StoredProject) => ServerApiTransport;
   readonly #byProject = new Map<string, { readonly key: string; readonly transport: ServerApiTransport }>();
@@ -24,10 +24,10 @@ export class ServerApiPool {
   /** The saved project this session last worked on, chosen or through the plugin: kept while the plugin is away. */
   #session: string | null = null;
 
-  /** Only the Server API from the environment (or none): tests, CI, setups without saved keys. */
+  /** One Server API for every call (or none): tests and the integration sandbox. */
   static fixed(transport: ServerApiTransport | null): ServerApiPool {
     return new ServerApiPool({
-      env: transport,
+      fixed: transport,
       keys: null,
       create: () => {
         throw new Error("A fixed Server API has no saved keys.");
@@ -36,7 +36,7 @@ export class ServerApiPool {
   }
 
   constructor(options: ServerApiPoolOptions) {
-    this.#env = options.env;
+    this.#fixed = options.fixed;
     this.#keys = options.keys;
     this.#create = options.create;
   }
@@ -89,8 +89,8 @@ export class ServerApiPool {
     if (project !== null) {
       const saved = this.#keys?.get(project.id) ?? null;
 
-      // The environment's project may differ from the plugin's: the router's same-project checks catch that.
-      return saved === null ? this.#env : this.#for(saved);
+      // A fixed Server API may be on another project than the plugin: the router's same-project checks catch that.
+      return saved === null ? this.#fixed : this.#for(saved);
     }
 
     const session = this.#session === null ? null : (this.#keys?.get(this.#session) ?? null);
@@ -99,8 +99,8 @@ export class ServerApiPool {
       return this.#for(session);
     }
 
-    if (this.#env !== null) {
-      return this.#env;
+    if (this.#fixed !== null) {
+      return this.#fixed;
     }
 
     const last = this.#keys?.lastUsed() ?? null;
@@ -110,12 +110,12 @@ export class ServerApiPool {
 
   /** Whether any Server API key is set up, for the hints. */
   configured(): boolean {
-    return this.#env !== null || (this.#keys?.list().length ?? 0) > 0;
+    return this.#fixed !== null || (this.#keys?.list().length ?? 0) > 0;
   }
 
   async close(): Promise<void> {
     await Promise.allSettled([
-      this.#env?.close(),
+      this.#fixed?.close(),
       ...[...this.#byProject.values()].map(({ transport }) => transport.close()),
     ]);
   }

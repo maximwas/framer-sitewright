@@ -30,7 +30,7 @@ export function registerStatusTools(server: McpServer, { transports, capabilitie
   addTool(server, {
     name: "framer_connect",
     title: "Choose Framer transport or project",
-    description: `Switches how tools reach Framer, which project they edit, or both. transport: "server-api" (API key, headless, DSL + screenshots), "plugin" (the ${PRODUCT.pluginTitle} plugin open in the editor; Plugin API only) or "auto" (the plugin first: while it is connected every call it can run goes there, and only DSL work — design_apply, nodes_read, screenshots, catalogs — goes to the Server API on the same project; without the plugin, the Server API). project: when the user names another project, switch to it here, by name from framer_status's projects (only those have a saved key); the plugin follows only if it is open in that project. Returns the new status.`,
+    description: `Switches how tools reach Framer, which project they edit, or both. transport: "server-api" (API key, headless, DSL + screenshots), "plugin" (the ${PRODUCT.pluginTitle} plugin open in the editor; Plugin API only) or "auto" (everything through the connected plugin, the DSL through the Server API of its project; nothing runs while the plugin is not connected). project: when the user names another project, switch to it here, by name from framer_status's projects (only those have a saved key); the plugin follows only if it is open in that project. Returns the new status.`,
     input: z.strictObject({
       transport: TransportModeSchema.optional().describe("Leave out to keep the current one."),
       project: z

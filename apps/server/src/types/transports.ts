@@ -91,8 +91,8 @@ export interface ServerApiOptions {
 export type ConnectFn = (projectUrl: string, apiKey: string) => Promise<Framer>;
 
 export interface ServerApiPoolOptions {
-  /** The Server API of FRAMER_API_KEY and FRAMER_PROJECT_URL, or null. */
-  readonly env: ServerApiTransport | null;
+  /** One Server API for every call (tests, the sandbox of the integration tests), or null for saved keys only. */
+  readonly fixed: ServerApiTransport | null;
   /** The keys saved per project (keys.json), or null without them. */
   readonly keys: KeyStore | null;
   /** A Server API transport for a saved project. */

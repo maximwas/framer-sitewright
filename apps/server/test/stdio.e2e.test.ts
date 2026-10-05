@@ -22,8 +22,6 @@ describe("stdio server", () => {
         CLAUDE_PROJECT_DIR: projectDir,
         // Keys, journal and settings of this machine stay out: a saved project key would connect the Server API.
         SITEWRIGHT_HOME: projectDir,
-        FRAMER_API_KEY: "",
-        FRAMER_PROJECT_URL: "",
         LOG_LEVEL: "info",
         SITEWRIGHT_PLUGIN_BRIDGE: "off",
       },

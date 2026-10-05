@@ -67,12 +67,12 @@ describe("hookCommand", () => {
 });
 
 describe("setupInstructions", () => {
-  it("gives the Claude Code commands, with and without a Server API key", () => {
+  it("gives the Claude Code command and keys per project, never a key in the environment", () => {
     const text = setupInstructions("sitewright");
 
     expect(text).toContain("claude mcp add sitewright -- npx -y sitewright@latest");
-    expect(text).toContain("-e FRAMER_API_KEY=");
-    expect(text).toContain("-e FRAMER_PROJECT_URL=");
+    expect(text).toContain("npx -y sitewright@latest key");
+    expect(text).not.toContain("FRAMER_API_KEY");
   });
 
   it("gives a config block other clients accept as JSON", () => {

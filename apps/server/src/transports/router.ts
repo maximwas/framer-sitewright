@@ -123,6 +123,8 @@ export class TransportRouter {
     input: unknown,
     options?: OperationRunOptions,
   ): Promise<z.output<O>> {
+    this.#assertPluginPresent();
+
     if (this.#mode === "auto" && this.#readPluginFirst !== null) {
       this.#pluginFirst = await this.#readPluginFirst();
     }
@@ -154,6 +156,21 @@ export class TransportRouter {
     return serverApi.run(operation, input, options);
   }
 
+  /**
+   * auto works only through a connected plugin: the project is always the one the plugin is open in, so no call slides
+   * into another project while the plugin reloads. The Server API alone is a mode chosen on purpose (server-api), and
+   * with the bridge off or broken there is no plugin to wait for.
+   */
+  #assertPluginPresent(): void {
+    if (this.#mode === "auto" && this.#plugin.status().configured && !this.#plugin.isConnected()) {
+      throw new OperationError(
+        "UNSUPPORTED_TRANSPORT",
+        "The Sitewright plugin is not connected: nothing runs without it, so no change can go to another project.",
+        "Ask the user to open the Sitewright plugin in the Framer project and click Connect, then retry.",
+      );
+    }
+  }
+
   /** Which transport run() sends this call to, for the journal to record. */
   routeOf(operation: AnyOperation, input: unknown): TransportKind {
     if (operation.needsPlugin) {
@@ -165,6 +182,12 @@ export class TransportRouter {
 
   /** Runs a Server-API-only feature (DSL reference, screenshots) there, whichever transport is active. */
   withServerApi<T>(fn: (runtime: FramerRuntime) => Promise<T>, options: ServerApiOptions = {}): Promise<T> {
+    try {
+      this.#assertPluginPresent();
+    } catch (error) {
+      return Promise.reject(error);
+    }
+
     const serverApi = this.#serverApi;
 
     if (serverApi === null) {

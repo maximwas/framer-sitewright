@@ -18,7 +18,7 @@ import { ServerApiTransport } from "./server-api/transport.ts";
  */
 export async function createTransports(config: AppConfig, logger: Logger, version: string): Promise<TransportRouter> {
   const serverApis = new ServerApiPool({
-    env: createServerApiTransport(config, logger),
+    fixed: null,
     keys: new KeyStore(config.keysFile),
     create: ({ url, key }) => serverApiTransport(url, key, logger),
   });
@@ -35,20 +35,6 @@ export async function createTransports(config: AppConfig, logger: Logger, versio
   serverApis.followPlugin(() => plugin.status().project);
 
   return new TransportRouter(serverApis, plugin, config.transport);
-}
-
-/** The Server API of FRAMER_API_KEY and FRAMER_PROJECT_URL; keys saved per project (keys.json) come on top. */
-function createServerApiTransport(config: AppConfig, logger: Logger): ServerApiTransport | null {
-  const { framerApiKey: apiKey, framerProjectUrl: projectUrl } = config;
-
-  if (apiKey === undefined || projectUrl === undefined) {
-    // Working without a key is the normal mode (the plugin does the work), so this is no warning.
-    logger.info("No Server API key in the environment: saved project keys or the plugin do the work");
-
-    return null;
-  }
-
-  return serverApiTransport(projectUrl, apiKey, logger);
 }
 
 function serverApiTransport(projectUrl: string, apiKey: string, logger: Logger): ServerApiTransport {

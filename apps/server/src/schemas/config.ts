@@ -4,21 +4,15 @@ import { blankToUndefined } from "../utils/env.ts";
 import { TransportModeSchema } from "./transports.ts";
 
 /**
- * The server's environment: process variables plus `<projectDir>/.env` (.env.example documents each one).
- * A blank value counts as unset. SITEWRIGHT_HOME and SITEWRIGHT_BRIDGE_PORT are read by
+ * The server's settings from its process environment (no .env file: Framer keys are saved per project with
+ * `sitewright key`). A blank value counts as unset. SITEWRIGHT_HOME and SITEWRIGHT_BRIDGE_PORT are read by
  * bridge/bridge-config.ts.
  */
 export const EnvSchema = z.object({
-  FRAMER_API_KEY: z
-    .preprocess(blankToUndefined, z.string().optional())
-    .describe("Server API key: project Site Settings → General → API Keys."),
-  FRAMER_PROJECT_URL: z
-    .preprocess(blankToUndefined, z.string().optional())
-    .describe("The project the Server API opens."),
   LOG_LEVEL: z.preprocess(blankToUndefined, z.enum(LOG_LEVELS).default("info")).describe("Logs go to stderr."),
   SITEWRIGHT_TRANSPORT: z
     .preprocess(blankToUndefined, TransportModeSchema.default("auto"))
-    .describe("auto: the plugin first while it is connected, the Server API for the DSL and otherwise."),
+    .describe("auto: everything through the connected plugin, the Server API of its project for the DSL."),
   SITEWRIGHT_PLUGIN_BRIDGE: z
     .preprocess(blankToUndefined, z.enum(["on", "off"]).default("on"))
     .describe("off: no WebSocket bridge for the Framer plugin."),
