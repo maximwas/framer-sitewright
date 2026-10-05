@@ -11,8 +11,9 @@ import {
 } from "@sitewright/core";
 import { createFakeRuntime } from "@sitewright/core/testing";
 import type { Framer } from "framer-api";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type * as z from "zod";
+import { CODE_COMPILE_MS } from "../src/constants/transports.ts";
 import { KeyStore } from "../src/keys/key-store.ts";
 import { createLogger } from "../src/logging/logger.ts";
 import { TransportRouter } from "../src/transports/router.ts";
@@ -117,7 +118,7 @@ describe("TransportRouter auto", () => {
     expect(router.status().active).toBe("plugin");
   });
 
-  it("regression: opens a fresh Server API session after code changes, so its component list shows them", async () => {
+  it("regression: opens a fresh Server API session after code changes, once Framer has compiled them", async () => {
     const { plugin } = fakePlugin("project-1");
     let connections = 0;
     const session = new ServerApiSession({
@@ -137,14 +138,26 @@ describe("TransportRouter auto", () => {
       "auto",
     );
 
-    await router.run(designApply, { dsl: 'SET node name="x";' }).catch(() => undefined);
-    await router.run(codeFileWrite, {
-      name: "Ticker.tsx",
-      code: "export default function Ticker() { return null }",
-    });
-    await router.run(designApply, { dsl: 'SET node name="y";' }).catch(() => undefined);
+    vi.useFakeTimers({ toFake: ["setTimeout", "Date"] });
 
-    expect(connections).toBe(2);
+    try {
+      await router.run(designApply, { dsl: 'SET node name="x";' }).catch(() => undefined);
+      await router.run(codeFileWrite, {
+        name: "Ticker.tsx",
+        code: "export default function Ticker() { return null }",
+      });
+
+      // The next Server API call waits for Framer to compile the new code, then reads it through a new session.
+      const next = router.run(designApply, { dsl: 'SET node name="y";' }).catch(() => undefined);
+
+      await vi.advanceTimersByTimeAsync(CODE_COMPILE_MS - 1);
+      expect(connections).toBe(1);
+      await vi.advanceTimersByTimeAsync(1);
+      await next;
+      expect(connections).toBe(2);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("regression: gives nothing to a plugin open in another project, so two servers never mix projects", async () => {

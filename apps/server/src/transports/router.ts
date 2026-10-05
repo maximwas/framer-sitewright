@@ -7,7 +7,12 @@ import {
   type TransportKind,
 } from "@sitewright/core";
 import type * as z from "zod";
-import { LEARN_PROJECT_COOLDOWN_MS, SERVER_API_SETUP_HINT, SERVER_API_STALE_AFTER } from "../constants/transports.ts";
+import {
+  CODE_COMPILE_MS,
+  LEARN_PROJECT_COOLDOWN_MS,
+  SERVER_API_SETUP_HINT,
+  SERVER_API_STALE_AFTER,
+} from "../constants/transports.ts";
 import type {
   FramerTransport,
   OperationRunOptions,
@@ -33,6 +38,8 @@ export class TransportRouter {
   /** The plugin's "Plugin first" switch, as last read; auto reads it again on every call. */
   #pluginFirst = true;
   #readPluginFirst: (() => Promise<boolean>) | null = null;
+  /** When code was last written: the Server API reopens its session once Framer has compiled it (CODE_COMPILE_MS). */
+  #codeChangedAt: number | null = null;
   /** When learning the Server API's project last failed (see LEARN_PROJECT_COOLDOWN_MS). */
   #learnFailedAt = Number.NEGATIVE_INFINITY;
 
@@ -112,10 +119,29 @@ export class TransportRouter {
 
     // The Server API session keeps the project as it connected: its component list would miss the new code.
     if (SERVER_API_STALE_AFTER.has(operation.name)) {
-      await this.#serverApi?.reconnect();
+      this.#codeChangedAt = Date.now();
     }
 
     return output;
+  }
+
+  /** After a code change, before the Server API's next call: wait out Framer's compile, then open a new session. */
+  async #freshAfterCode(): Promise<void> {
+    const changedAt = this.#codeChangedAt;
+
+    if (changedAt === null) {
+      return;
+    }
+
+    this.#codeChangedAt = null;
+
+    const wait = changedAt + CODE_COMPILE_MS - Date.now();
+
+    if (wait > 0) {
+      await new Promise((resolve) => setTimeout(resolve, wait));
+    }
+
+    await this.#serverApi?.reconnect();
   }
 
   async #dispatch<I extends z.ZodObject, O extends z.ZodObject>(
@@ -146,8 +172,14 @@ export class TransportRouter {
     }
 
     if (!this.#splits(operation, input)) {
+      if (this.#selectedKind() === "server-api") {
+        await this.#freshAfterCode();
+      }
+
       return this.#selected().run(operation, input, options);
     }
+
+    await this.#freshAfterCode();
 
     const serverApi = this.#serverApi ?? unconfiguredServerApi;
 
