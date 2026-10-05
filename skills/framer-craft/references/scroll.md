@@ -46,7 +46,10 @@ Structure of the section (the section itself has no zIndex):
    - show every step in the editor;
    - are the scroll targets.
 
-   Hide them on the site with a `styleTransformEffect` whose states are `opacity 0`.
+   Hide them on the site with a `styleTransformEffect` whose states are `opacity 0`, and `pointerEvents="none"`.
+   Read the states back: opacity only. A `scale` left in a state (seen: `scale 0.5`) shrinks the invisible track, so
+   the targets sit elsewhere on screen than in the layout: steps switch at the wrong scroll, and code that measures
+   them gets wrong positions. Reset it with `scale="1"`; `null` is refused.
 
 **Keeping the editor readable:**
 

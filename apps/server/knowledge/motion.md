@@ -35,7 +35,11 @@ follows the scroll, images that swap, a counter. Build it this way, not with sep
    `elementId` and `scrollTargetEnabled="true"`. They give the section its height, show every step in the editor and are
    the scroll targets. Hide them on the site with a `styleTransformEffect` on the previews frame
    (`trigger="onScrollTarget"`, `sections.0.opacity="0"`, `sections.1.opacity="0"`, `sections.1.target` = the frame
-   itself), which needs `elementId` and `scrollTargetEnabled="true"` on that frame too.
+   itself), which needs `elementId` and `scrollTargetEnabled="true"` on that frame too, and `pointerEvents="none"`.
+   Read the sections back: they must hold opacity only. A `scale` or offset there (seen: `scale 0.5`) shrinks the
+   invisible track, so every target sits somewhere else on screen than in the layout: steps switch at the wrong
+   scroll, and code that measures them (`getBoundingClientRect`) gets wrong positions. Reset it with
+   `sections.0.scale="1"`; `null` is refused.
 5. **Clicks:** each list item links to its step: `/#<section id>` for the first, `/#<preview id>` for the rest.
 
 Pitfalls:
