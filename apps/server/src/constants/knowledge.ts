@@ -6,6 +6,7 @@ export const GUIDE_TOPICS = {
   typography: "families, scale, tracking, line height, balance, measure, labels, breakpoint sizes",
   direction: "what makes a site look designed, with numbers from top Framer sites, and the habits of generated pages",
   sections: "navigation, hero, features, proof, pricing, FAQ, closing call to action and footer",
+  motion: "pinned scroll sections that change step by step, tabs with active states, links on components",
   verify: "the audit, looking at the result, and the checklist before handing a page over",
   "no-key": "what works through the plugin without a Server API key, and how to get the rest anyway",
 } as const;

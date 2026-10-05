@@ -19,6 +19,7 @@ The full guide is served by the MCP server, so it always matches the installed v
 | Text styles, sizes, tracking, headings | `typography` |
 | Choosing the look, avoiding the generated look | `direction` |
 | Hero, navigation, features, proof, pricing, FAQ, footer | `sections` |
+| A pinned scroll section, tabs with states, links on components | `motion` |
 | Before saying a page is done | `verify` |
 | No Server API key (plugin only) | `no-key` |
 
@@ -30,7 +31,8 @@ The full guide is served by the MCP server, so it always matches the installed v
 - **Equal heights:** grid `gridRowHeightType="auto"` with cells `height="1fr"`; a row of cards: each card
   `height="1fr"`; stretched cards keep `stackDistribution="start"`.
 - **One content width** (`maxWidth` + side padding) for the header, every section and the footer.
-- **Links on frames,** not on text nodes: a text link takes Framer's default blue.
+- **Links on frames,** not on text nodes: a text link takes Framer's default blue. A component gets a Link
+  property, never a wrapper frame around its instance.
 - **Headings:** `balance: true` on their text styles; display tracking negative, line height ≤ 1.1.
 - **Spacing from the scale** (4…128), grouped by distance; one section padding; text never touches a visible edge.
 - **Real images,** never icons as the visual; a page without images is unfinished.

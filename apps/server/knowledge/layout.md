@@ -104,7 +104,8 @@ fix any of these for you, and most fail silently.
   with line height 1.0–1.2 so the text sits in the middle.
 - `width="auto"` on desktop; full width only on phone or in a form.
 - One button shape per site; a pill's radius is half its height.
-- The link goes on the button frame, not on its text.
+- The link goes on the button frame, not on its text. A button or tab that is a component gets a Link property bound
+  to its root, never a frame wrapped around the instance (`motion`, Links on components).
 
 ## Mixed sizes in a row
 

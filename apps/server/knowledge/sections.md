@@ -30,7 +30,8 @@ look follows `direction`.
 ## Features
 
 - Alternatives to six identical cards: alternating text and image rows; one large feature with two small ones (a bento
-  of separate grids); a list with images; a single scroll scene.
+  of separate grids); a list with images; a single scroll scene (a pinned section whose list and images change step
+  by step: `motion`).
 - When cards are right: equal heights (`layout`), content from the top, the same order of elements, real images rather
   than icon tiles, no numbers unless they are steps.
 
