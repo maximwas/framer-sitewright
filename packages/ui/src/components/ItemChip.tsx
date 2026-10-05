@@ -16,7 +16,7 @@ export function ItemChip({ item, read = false }: ItemChipProps) {
   // A token shows its swatch; anything else the icon of its first kind of change, or of what it is.
   const mainIcon = main === undefined ? null : CATEGORY_BADGES[main].icon;
   let Icon = item.kind === "color-style" ? null : (mainIcon ?? ITEM_ICONS[item.kind]);
-  let tint = main === undefined ? "text-framer-text-secondary" : CATEGORY_BADGES[main].className;
+  let tint = main === undefined ? "bg-sw-surface-2 text-sw-ink-2" : CATEGORY_BADGES[main].className;
 
   if (read) {
     Icon = READ_BADGE.icon;
@@ -29,7 +29,7 @@ export function ItemChip({ item, read = false }: ItemChipProps) {
   return (
     <button
       type="button"
-      className={`flex h-6 w-auto max-w-full items-center gap-1.5 rounded-md px-2 font-medium text-[11px] disabled:cursor-default ${tint}`}
+      className={`flex h-6 w-auto max-w-full items-center gap-1.5 rounded-full border-0 px-2.5 font-medium text-[11px] transition-[filter] hover:brightness-95 disabled:cursor-default ${tint}`}
       disabled={deleted}
       title={`${deleted ? `${item.path} was deleted` : `Open ${item.path} in the editor`}${item.change === "created" ? ", created" : ""}${kinds === "" ? "" : ` (${kinds})`}`}
       onClick={() => void host.reveal(item)}

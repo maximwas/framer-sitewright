@@ -125,7 +125,8 @@ export interface CheckpointFormProps {
 
 export interface RestoreDialogProps {
   readonly flow: RestoreFlow;
-  readonly state: RestoreState;
+  /** null: no restore under way, the sheet is closed. */
+  readonly state: RestoreState | null;
 }
 
 export interface RestorePreviewProps {

@@ -18,7 +18,7 @@ export function ChangeBadges({ items }: ChangeBadgesProps) {
         return (
           <li
             key={change}
-            className={`flex h-5 items-center gap-1 rounded-md px-1.5 font-semibold text-[10px] ${className}`}
+            className={`flex h-5 items-center gap-1 rounded-full px-2 font-semibold text-[10px] ${className}`}
           >
             <Icon aria-hidden className="size-3 shrink-0" />
             <span className={BADGE_TEXT}>

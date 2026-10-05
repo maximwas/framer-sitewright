@@ -351,11 +351,8 @@ const FEED = [
     for (const wrap of document.querySelectorAll("main section > .wrap")) {
       const items = wrap.querySelectorAll(parts);
 
+      // site.css hides these before the first paint (html.js), so nothing shows and then vanishes.
       const chips = wrap.querySelectorAll("ul.chips li");
-
-      for (const item of [...items, ...chips]) {
-        item.style.opacity = "0";
-      }
 
       inView(
         wrap,

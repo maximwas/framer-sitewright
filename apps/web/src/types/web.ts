@@ -1,4 +1,4 @@
-import type { ActivityFeed, NoticeVariant } from "@sitewright/ui";
+import type { ActivityFeed } from "@sitewright/ui";
 import type { WebSocketClient } from "../api/web-socket-client.ts";
 
 /** Where the page's socket stands; `unreachable` keeps retrying, but long enough that the page says so. */
@@ -7,21 +7,6 @@ export type ConnectionState = "connecting" | "connected" | "retrying" | "unreach
 /** The socket's state as its store holds it. */
 export interface WebConnection {
   readonly state: ConnectionState;
-}
-
-export interface Toast {
-  readonly id: number;
-  readonly message: string;
-  readonly variant: NoticeVariant;
-  /** A link the toast offers, e.g. to the editor when the browser blocked a new tab. */
-  readonly link?: string;
-}
-
-/** The page's notifications, and how they come and go. */
-export interface ToastState {
-  readonly toasts: readonly Toast[];
-  show(message: string, variant: NoticeVariant, link?: string): void;
-  dismiss(id: number): void;
 }
 
 export interface AppProps {

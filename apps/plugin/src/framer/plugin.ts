@@ -1,6 +1,7 @@
 // Everything that touches the plugin's `framer` object; the rest of the plugin stays free of the Plugin API.
 import { type ColorStop, framer, LinearGradient, type ProtectedMethod } from "@framer/plugin";
 import type { FramerPort, FramerRuntime, PluginInfo, PluginPermission } from "@sitewright/core";
+import { toastStore } from "@sitewright/ui";
 import { version as pluginVersion } from "../../package.json";
 import { NEW_TEXT_PLACEHOLDER, PLUGIN_WINDOW, REVEAL_MAX_ZOOM } from "../constants/ui.ts";
 
@@ -139,7 +140,7 @@ export async function copyText(text: string): Promise<boolean> {
 
     return true;
   } catch {
-    framer.notify("Could not copy: select the command and copy it by hand.", { variant: "warning" });
+    toastStore.getState().show("Could not copy: select the command and copy it by hand.", "warning");
 
     return false;
   }

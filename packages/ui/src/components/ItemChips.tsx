@@ -20,7 +20,7 @@ export function ItemChips({ items, read = false }: ItemChipsProps) {
         <li className="self-center">
           <button
             type="button"
-            className="h-auto w-auto bg-transparent p-0 text-framer-text-tertiary hover:text-framer-text"
+            className="h-auto w-auto border-0 bg-transparent p-0 font-semibold text-[11px] text-sw-ink-3 hover:text-sw-ink"
             onClick={() => setOpen(!open)}
           >
             {open ? "Show less" : `+${hidden} more`}

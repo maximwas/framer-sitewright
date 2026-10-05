@@ -1,4 +1,10 @@
-import type { ActivityLayer, ActivitySummary, ActivityView, ChangeCategory } from "@sitewright/core";
+import {
+  ACTIVITY_VIEWS,
+  type ActivityLayer,
+  type ActivitySummary,
+  type ActivityView,
+  type ChangeCategory,
+} from "@sitewright/core";
 import {
   BookOpen,
   CaseSensitive,
@@ -15,25 +21,20 @@ import {
   Trash,
   Type,
 } from "lucide-react";
+import type { Tone } from "../types/toolkit.ts";
 
-export const OUTCOME_DOT_COLORS: Readonly<Record<ActivitySummary["outcome"], string>> = {
-  ok: "bg-emerald-500",
-  partial: "bg-amber-500",
-  failed: "bg-red-500",
+/** The dot on an entry's icon when the call did not go well. */
+export const OUTCOME_DOTS: Readonly<Record<ActivitySummary["outcome"], Tone | null>> = {
+  ok: null,
+  partial: "warn",
+  failed: "danger",
 };
-
-/** A compact secondary button. framer.css makes every button full width and 30 px tall, so this undoes that. */
-export const SMALL_BUTTON =
-  "h-6 w-auto shrink-0 rounded-md px-2 text-[11px] disabled:cursor-default disabled:opacity-40";
 
 /**
  * Text in a badge, centered on its letters rather than on the font's line box: Framer's font sits off-centre in that
  * box (the text sat off-centre in badges), so the box is trimmed to the cap height and the baseline.
  */
 export const BADGE_TEXT = "leading-none [text-box:trim-both_cap_alphabetic]";
-
-/** A button sharing a row: one line, an ellipsis when the window is too narrow (no wrapping into two lines). */
-export const ROW_BUTTON = "min-w-0 flex-1 truncate disabled:cursor-default disabled:opacity-40";
 
 /** An item's icon when it went through no kind of change the panel knows: a text style, or a plain node. */
 export const ITEM_ICONS: Readonly<Record<"text-style" | "node", LucideIcon>> = {
@@ -138,27 +139,33 @@ export const FEED_VIEW_LABELS: Readonly<Record<ActivityView, { readonly label: s
   },
 };
 
+/** The journal views as the switch offers them. */
+export const FEED_VIEW_OPTIONS = ACTIVITY_VIEWS.map((view) => ({
+  value: view,
+  ...FEED_VIEW_LABELS[view],
+}));
+
 /**
  * How a call reached Framer, as a badge beside its time: the Plugin API in the open editor, the Server API's methods,
  * or Framer's agent layer (the DSL) on the Server API.
  */
 export const LAYER_BADGES: Readonly<
-  Record<ActivityLayer, { readonly label: string; readonly title: string; readonly className: string }>
+  Record<ActivityLayer, { readonly label: string; readonly title: string; readonly tone: Tone }>
 > = {
   "plugin-api": {
     label: "Plugin API",
     title: "Ran in the Framer editor, through the plugin",
-    className: "bg-emerald-500/15 text-emerald-800 dark:bg-emerald-400/20 dark:text-emerald-200",
+    tone: "ok",
   },
   "server-api": {
     label: "Server API",
     title: "Ran through Framer's Server API",
-    className: "bg-sky-500/15 text-sky-800 dark:bg-sky-400/20 dark:text-sky-200",
+    tone: "accent",
   },
   "framer-agent": {
     label: "Framer agent",
     title: "Ran through Framer's agent layer (the DSL) on the Server API",
-    className: "bg-violet-500/15 text-violet-800 dark:bg-violet-400/20 dark:text-violet-200",
+    tone: "violet",
   },
 };
 

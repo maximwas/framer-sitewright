@@ -1,7 +1,6 @@
 import { errorMessage, RevealResultSchema } from "@sitewright/core";
-import type { EditorHost } from "@sitewright/ui";
+import { type EditorHost, toastStore } from "@sitewright/ui";
 import type { WebSocketClient } from "../api/web-socket-client.ts";
-import { toastStore } from "../store/toast-store.ts";
 
 /**
  * The panel in a browser tab. An item opens in the Framer editor if the plugin is open there (the server relays it),

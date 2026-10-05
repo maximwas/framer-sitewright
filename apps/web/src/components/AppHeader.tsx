@@ -1,34 +1,49 @@
+import { StatusPill, WindowBar } from "@sitewright/ui";
+import { AnimatePresence, motion } from "motion/react";
 import { useStore } from "zustand";
-import {
-  CONNECTION_BADGE_COLORS,
-  CONNECTION_DOT_COLORS,
-  CONNECTION_LABELS,
-  RELAY_LABELS,
-  UNREACHABLE_HINT,
-} from "../constants/ui.ts";
+import { CONNECTION_STATUS, RELAY_LABELS, UNREACHABLE_HINT } from "../constants/ui.ts";
 import { relayStore } from "../store/relay-store.ts";
 import type { AppHeaderProps } from "../types/web.ts";
 
-/** The page title, the project, whether the sitewright server is reachable, and whether this window carries the plugin. */
+/**
+ * The window's bar: the journal of which project, and whether the sitewright server is reachable; below it, whether
+ * this window carries the plugin's bridge, or what to do while the server is away.
+ */
 export function AppHeader({ connection, feed }: AppHeaderProps) {
-  const project = feed.status === "ready" ? feed.value.project : null;
+  const project = feed.status === "ready" ? (feed.value.project?.name ?? null) : null;
   const relay = RELAY_LABELS[useStore(relayStore, ({ state }) => state)];
+  const status = CONNECTION_STATUS[connection];
+  const note = connection === "unreachable" ? UNREACHABLE_HINT : relay;
 
   return (
-    <header className="flex items-center gap-2 border-framer-divider border-b pb-3">
-      <div className="flex min-w-0 flex-1 flex-col">
-        <h1 className="font-semibold text-[15px] text-framer-text">Claude’s activity</h1>
-        <p className="truncate">{project === null ? "sitewright" : project.name}</p>
-        {connection === "unreachable" && <p className="text-framer-text">{UNREACHABLE_HINT}</p>}
-        {relay !== null && <p className="text-framer-text-secondary">{relay}</p>}
-      </div>
-      <span
-        role="status"
-        className={`flex shrink-0 items-center gap-1.5 self-start rounded-full px-2.5 py-1 font-semibold text-[11px] ${CONNECTION_BADGE_COLORS[connection]}`}
-      >
-        <span aria-hidden className={`size-1.5 rounded-full ${CONNECTION_DOT_COLORS[connection]}`} />
-        {CONNECTION_LABELS[connection]}
-      </span>
-    </header>
+    <div className="flex flex-col">
+      <WindowBar title="Journal" subtitle={project}>
+        <StatusPill tone={status.tone} live={connection === "connected"}>
+          {status.label}
+        </StatusPill>
+      </WindowBar>
+      <AnimatePresence initial={false}>
+        {note !== null && (
+          <motion.p
+            key={note}
+            className="border-sw-line border-b bg-sw-surface-2/40 px-3.5 py-2 text-[12px] text-sw-ink-2"
+            initial={{
+              opacity: 0,
+              height: 0,
+            }}
+            animate={{
+              opacity: 1,
+              height: "auto",
+            }}
+            exit={{
+              opacity: 0,
+              height: 0,
+            }}
+          >
+            {note}
+          </motion.p>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

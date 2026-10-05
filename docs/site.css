@@ -251,7 +251,11 @@ html:not(.js) .progress {
 
 .js [data-hero],
 .js .window,
-.js .entries > li {
+.js .entries > li,
+.js main section > .wrap > :is(.kicker, h2, .intro, .table, .note, .cta),
+.js main section > .wrap > :is(.flow, ol.steps, .features, .tools, .checks, .faq) > *,
+.js main section > .wrap > div > :is(.kicker, h2, .intro),
+.js main section ul.chips li {
   opacity: 0;
 }
 

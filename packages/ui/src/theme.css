@@ -3,14 +3,107 @@
 /* The panel's classes live in this package, so Tailwind must scan it wherever it is used. */
 @source "./";
 
-/* Framer's theme variables as Tailwind colors: the plugin gets them from the editor, the web app defines them. */
+/*
+ * Sitewright's palette, the same as the site's: light by default, dark where Framer says so (the plugin) or, on the web
+ * app's page (`.sw-system`), where the system does.
+ */
+:root {
+  --sw-bg: #f7f6f2;
+  --sw-surface: #ffffff;
+  --sw-surface-2: #efede6;
+  --sw-ink: #15171c;
+  --sw-ink-2: #4a4f5a;
+  --sw-ink-3: #7b808b;
+  --sw-line: #dfdcd2;
+  --sw-line-strong: #c9c5b8;
+  --sw-accent: #0a7cff;
+  --sw-accent-ink: #0060d6;
+  --sw-accent-soft: #e3efff;
+  --sw-ok: #12865a;
+  --sw-ok-soft: #e1f4ea;
+  --sw-warn: #b35c00;
+  --sw-warn-soft: #fbeedd;
+  --sw-violet: #6b4ce6;
+  --sw-violet-soft: #ece8fd;
+  --sw-danger: #c4322b;
+  --sw-danger-soft: #fbe5e3;
+  --sw-shadow: 0 1px 2px rgba(20, 22, 28, 0.06), 0 12px 32px -12px rgba(20, 22, 28, 0.18);
+}
+
+[data-framer-theme="dark"] {
+  --sw-bg: #0f1115;
+  --sw-surface: #161920;
+  --sw-surface-2: #1c2029;
+  --sw-ink: #eceef2;
+  --sw-ink-2: #b4b9c4;
+  --sw-ink-3: #848a96;
+  --sw-line: #262b35;
+  --sw-line-strong: #343a47;
+  --sw-accent: #3d9bff;
+  --sw-accent-ink: #6fb5ff;
+  --sw-accent-soft: #14263f;
+  --sw-ok: #42c38c;
+  --sw-ok-soft: #12291f;
+  --sw-warn: #f0a24b;
+  --sw-warn-soft: #2e2214;
+  --sw-violet: #a18cff;
+  --sw-violet-soft: #221d3d;
+  --sw-danger: #ff7b72;
+  --sw-danger-soft: #3a1a19;
+  --sw-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 16px 40px -16px rgba(0, 0, 0, 0.7);
+}
+
+@media (prefers-color-scheme: dark) {
+  .sw-system {
+    --sw-bg: #0f1115;
+    --sw-surface: #161920;
+    --sw-surface-2: #1c2029;
+    --sw-ink: #eceef2;
+    --sw-ink-2: #b4b9c4;
+    --sw-ink-3: #848a96;
+    --sw-line: #262b35;
+    --sw-line-strong: #343a47;
+    --sw-accent: #3d9bff;
+    --sw-accent-ink: #6fb5ff;
+    --sw-accent-soft: #14263f;
+    --sw-ok: #42c38c;
+    --sw-ok-soft: #12291f;
+    --sw-warn: #f0a24b;
+    --sw-warn-soft: #2e2214;
+    --sw-violet: #a18cff;
+    --sw-violet-soft: #221d3d;
+    --sw-danger: #ff7b72;
+    --sw-danger-soft: #3a1a19;
+    --sw-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 16px 40px -16px rgba(0, 0, 0, 0.7);
+  }
+}
+
+/* The palette as Tailwind colors: bg-sw-surface, text-sw-ink-2, border-sw-line… */
 @theme inline {
-  --color-framer-bg: var(--framer-color-bg);
-  --color-framer-bg-secondary: var(--framer-color-bg-secondary);
-  --color-framer-bg-tertiary: var(--framer-color-bg-tertiary);
-  --color-framer-divider: var(--framer-color-divider);
-  --color-framer-text: var(--framer-color-text);
-  --color-framer-text-secondary: var(--framer-color-text-secondary);
-  --color-framer-text-tertiary: var(--framer-color-text-tertiary);
-  --color-framer-tint: var(--framer-color-tint);
+  --color-sw-bg: var(--sw-bg);
+  --color-sw-surface: var(--sw-surface);
+  --color-sw-surface-2: var(--sw-surface-2);
+  --color-sw-ink: var(--sw-ink);
+  --color-sw-ink-2: var(--sw-ink-2);
+  --color-sw-ink-3: var(--sw-ink-3);
+  --color-sw-line: var(--sw-line);
+  --color-sw-line-strong: var(--sw-line-strong);
+  --color-sw-accent: var(--sw-accent);
+  --color-sw-accent-ink: var(--sw-accent-ink);
+  --color-sw-accent-soft: var(--sw-accent-soft);
+  --color-sw-ok: var(--sw-ok);
+  --color-sw-ok-soft: var(--sw-ok-soft);
+  --color-sw-warn: var(--sw-warn);
+  --color-sw-warn-soft: var(--sw-warn-soft);
+  --color-sw-violet: var(--sw-violet);
+  --color-sw-violet-soft: var(--sw-violet-soft);
+  --color-sw-danger: var(--sw-danger);
+  --color-sw-danger-soft: var(--sw-danger-soft);
+  --shadow-sw: var(--sw-shadow);
+}
+
+/* The page under the panel takes the palette's background. */
+body {
+  background: var(--sw-bg);
+  color: var(--sw-ink-2);
 }

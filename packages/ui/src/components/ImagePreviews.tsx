@@ -13,7 +13,7 @@ export function ImagePreviews({ urls }: ImagePreviewsProps) {
             title={url}
             loading="lazy"
             referrerPolicy="no-referrer"
-            className="h-14 max-w-[120px] rounded-md bg-framer-bg-secondary object-cover ring-1 ring-black/10 ring-inset"
+            className="h-14 max-w-[120px] rounded-lg bg-sw-surface-2 object-cover ring-1 ring-sw-line ring-inset"
           />
         </li>
       ))}

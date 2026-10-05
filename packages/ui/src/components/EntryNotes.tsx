@@ -9,5 +9,5 @@ export function EntryNotes({ entry }: EntryNotesProps) {
     return null;
   }
 
-  return <p className="break-words">{notes.join(" · ")}</p>;
+  return <p className="break-words text-[12px] text-sw-ink-3">{notes.join(" · ")}</p>;
 }

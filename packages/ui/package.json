@@ -17,6 +17,7 @@
   "dependencies": {
     "@sitewright/core": "workspace:*",
     "lucide-react": "1.49.0",
+    "motion": "14.0.0",
     "zod": "catalog:",
     "zustand": "catalog:"
   },

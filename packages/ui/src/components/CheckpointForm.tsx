@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { ROW_BUTTON } from "../constants/ui.ts";
+import { FIELD } from "../constants/toolkit.ts";
+import { Button } from "../toolkit/Button.tsx";
 import type { CheckpointFormProps } from "../types/props.ts";
 
 /** Names a checkpoint: what the user is about to start, so the project can be restored to this point. */
@@ -12,7 +13,7 @@ export function CheckpointForm({ busy, onSave, onCancel }: CheckpointFormProps) 
 
   return (
     <form
-      className="flex gap-2"
+      className="flex items-center gap-1.5 rounded-xl border border-sw-line bg-sw-surface p-1.5"
       onSubmit={(event) => {
         event.preventDefault();
 
@@ -23,7 +24,7 @@ export function CheckpointForm({ busy, onSave, onCancel }: CheckpointFormProps) 
     >
       <input
         ref={input}
-        className="w-auto min-w-0 flex-[2]"
+        className={`${FIELD} min-w-0 flex-1 border-transparent`}
         placeholder="What starts here?"
         maxLength={120}
         value={label}
@@ -34,12 +35,12 @@ export function CheckpointForm({ busy, onSave, onCancel }: CheckpointFormProps) 
           }
         }}
       />
-      <button type="submit" className={`framer-button-primary ${ROW_BUTTON}`} disabled={busy || trimmed === ""}>
+      <Button type="submit" variant="primary" disabled={busy || trimmed === ""}>
         Mark
-      </button>
-      <button type="button" className={ROW_BUTTON} onClick={onCancel}>
+      </Button>
+      <Button variant="ghost" onClick={onCancel}>
         Cancel
-      </button>
+      </Button>
     </form>
   );
 }

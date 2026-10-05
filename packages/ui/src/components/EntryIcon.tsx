@@ -1,16 +1,32 @@
-import { Eye } from "lucide-react";
-import { OUTCOME_DOT_COLORS, SKILL_ICON } from "../constants/ui.ts";
+import type { LucideIcon } from "lucide-react";
+import { Eye, Square, TriangleAlert } from "lucide-react";
+import { CATEGORY_BADGES, OUTCOME_DOTS, SKILL_ICON } from "../constants/ui.ts";
+import { IconTile } from "../toolkit/IconTile.tsx";
 import type { EntryIconProps } from "../types/props.ts";
+import type { Tone } from "../types/toolkit.ts";
 
-/** A book for a skill, an eye for a read that worked, the outcome's colored dot for the rest. */
+/**
+ * The entry's tile: a book for a skill, an eye for a read, the icon of what a change touched first; a failed call is a
+ * red warning, and one that went only partly well wears an amber dot.
+ */
 export function EntryIcon({ entry }: EntryIconProps) {
+  const [main] = entry.categories;
+  let icon: LucideIcon = main === undefined ? Square : CATEGORY_BADGES[main.category].icon;
+  let tone: Tone = "neutral";
+  let label = "Change";
+
   if (entry.kind === "skill") {
-    return <SKILL_ICON aria-label="Skill" className="size-3.5 shrink-0 text-framer-text-tertiary" />;
+    icon = SKILL_ICON;
+    tone = "warn";
+    label = "Skill";
+  } else if (entry.effect === "read") {
+    icon = Eye;
+    label = "Read";
   }
 
-  if (entry.effect === "read" && entry.outcome === "ok") {
-    return <Eye aria-label="Read" className="size-3.5 shrink-0 text-framer-text-tertiary" />;
+  if (entry.outcome === "failed") {
+    return <IconTile icon={TriangleAlert} tone="danger" label="Failed" />;
   }
 
-  return <span className={`mx-[3px] size-2 shrink-0 rounded-full ${OUTCOME_DOT_COLORS[entry.outcome]}`} />;
+  return <IconTile icon={icon} tone={tone} dot={OUTCOME_DOTS[entry.outcome]} label={label} />;
 }

@@ -7,12 +7,12 @@ export function SupportLinks() {
   }
 
   return (
-    <p className="text-framer-text-tertiary">
+    <p className="text-[12px] text-sw-ink-3">
       {PRODUCT.title} is free.{" "}
       {SUPPORT_LINKS.map(({ label, url }, index) => (
         <span key={url}>
           {index > 0 && " · "}
-          <a href={url} target="_blank" rel="noopener noreferrer" className="text-framer-tint underline">
+          <a href={url} target="_blank" rel="noopener noreferrer" className="text-sw-accent-ink underline">
             {label}
           </a>
         </span>

@@ -4,8 +4,19 @@
 /* Framer's plugin base styles (buttons, inputs, light/dark variables) sit in the base layer, so utilities override them. */
 @import "@framer/plugin/framer.css" layer(base);
 
-/* The activity panel (packages/ui) and Framer's theme variables as Tailwind colors. */
+/* The toolkit (packages/ui): Sitewright's palette, dark where Framer's theme is. */
 @import "@sitewright/ui/theme.css";
 
 /* Framer switches its theme with an attribute, not the system's color scheme: dark: must follow the editor. */
 @custom-variant dark (&:where([data-framer-theme="dark"], [data-framer-theme="dark"] *));
+
+/* The plugin's window is one surface from top to bottom. */
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--sw-surface);
+}

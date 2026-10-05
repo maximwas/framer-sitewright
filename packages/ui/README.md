@@ -1,7 +1,9 @@
 # @sitewright/ui
 
-The journal panel (React 18, Tailwind CSS 4, zustand) of the local page (`apps/web`), and the pieces the plugin shares
-with it: Framer's theme as Tailwind colors (`theme.css`), `framerCss()` for Vite, `SupportLinks`, small helpers.
+The journal panel (React 18, Tailwind CSS 4, zustand, Motion) of the local page (`apps/web`), and the toolkit the
+plugin shares with it: Sitewright's palette as Tailwind colors (`theme.css`, `sw-*`, light and dark), animated
+primitives (`Button`, `Segmented`, `Switch`, `Collapse`, `Sheet`, `CopyField`, `StatusPill`, `WindowBar`, the
+`Toaster` with `toastStore`), `framerCss()` for Vite and `SupportLinks`. The look is the website's journal.
 
 The panel shows Claude's calls newest first in four views (All, Changes with the skills used for them, Reads,
 Skills), each call's layer badge (Plugin API, Server API, Framer agent), Undo / Redo, checkpoints and Restore with a

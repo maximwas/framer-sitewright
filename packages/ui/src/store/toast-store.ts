@@ -1,10 +1,10 @@
 import { createStore } from "zustand/vanilla";
-import { TOAST_LINK_MS, TOAST_MS } from "../constants/web.ts";
-import type { ToastState } from "../types/web.ts";
+import { TOAST_LINK_MS, TOAST_MS } from "../constants/toolkit.ts";
+import type { ToastState } from "../types/toolkit.ts";
 
 let sequence = 0;
 
-/** The page's notifications: what the plugin shows with framer.notify, the web app shows as toasts. */
+/** The notifications the Toaster shows, in the web app and in the plugin alike. */
 export const toastStore = createStore<ToastState>()((set, get) => ({
   toasts: [],
   show: (message, variant, link) => {

@@ -1,4 +1,5 @@
 import { useStore } from "zustand";
+import { FIELD } from "../constants/toolkit.ts";
 import { useViewedProject } from "../hooks/useViewedProject.ts";
 import { feedViewStore } from "../store/feed-view-store.ts";
 
@@ -23,7 +24,7 @@ export function ProjectSwitch() {
   return (
     <select
       aria-label="Project"
-      className="h-7 w-full"
+      className={FIELD}
       value={current ?? ""}
       onChange={(event) => setProject(event.target.value === shown?.id ? null : event.target.value)}
     >

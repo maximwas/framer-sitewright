@@ -1,13 +1,22 @@
-// Public API of @sitewright/ui: the journal panel of the local app's page, and the pieces the plugin shares with it.
+// Public API of @sitewright/ui: the journal panel of the local app's page, and the toolkit the plugin shares with it.
 export { ActivityApiClient } from "./api/activity-api-client.ts";
 export { ServerCalls } from "./api/server-calls.ts";
 export { ActivityPanel } from "./components/ActivityPanel.tsx";
 export { SupportLinks } from "./components/SupportLinks.tsx";
 export { NORMAL_CLOSURE } from "./constants/connection.ts";
-export { SMALL_BUTTON } from "./constants/ui.ts";
+export { EASE_OUT, FADE, SPRING } from "./constants/toolkit.ts";
 export { ActivityApiProvider } from "./context/ActivityApiContext.tsx";
 export { EditorHostProvider } from "./context/EditorHostContext.tsx";
 export { useActivityFeed } from "./hooks/useActivityFeed.ts";
+export { toastStore } from "./store/toast-store.ts";
+export { Button } from "./toolkit/Button.tsx";
+export { Collapse } from "./toolkit/Collapse.tsx";
+export { CopyField } from "./toolkit/CopyField.tsx";
+export { IconButton } from "./toolkit/IconButton.tsx";
+export { StatusPill } from "./toolkit/StatusPill.tsx";
+export { Toaster } from "./toolkit/Toaster.tsx";
+export { WindowBar } from "./toolkit/WindowBar.tsx";
 export type { ActivityFeed } from "./types/activity.ts";
 export type { EditorHost, NoticeVariant, ReadonlyStore, UiTransport } from "./types/host.ts";
+export type { Tone } from "./types/toolkit.ts";
 export { backoffDelay } from "./utils/backoff.ts";

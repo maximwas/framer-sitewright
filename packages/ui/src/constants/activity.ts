@@ -10,6 +10,9 @@ export const JOURNAL_EVENTS: ReadonlySet<string> = new Set([
 /** How many journal entries the window loads; older ones stay in the journal. */
 export const FEED_LIMIT = 100;
 
+/** Rows of the first list shown come in one after another, this many at most. */
+export const STAGGERED_ROWS = 12;
+
 /** Chips shown per entry before "+N more". */
 export const CHIP_LIMIT = 6;
 

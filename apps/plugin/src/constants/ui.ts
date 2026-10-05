@@ -1,7 +1,8 @@
 import type { UIOptions } from "@framer/plugin";
 import { CloseCode } from "@sitewright/core";
+import { Bot, Frame, Sparkles } from "lucide-react";
 import type { LinkStatus } from "../types/link.ts";
-import type { StatusCopy, StatusTone } from "../types/ui.ts";
+import type { FlowNode, StatusCopy } from "../types/ui.ts";
 
 /** The plugin's window: small, top right, out of the way of the canvas; taller when the setup steps are open. */
 export const PLUGIN_WINDOW: UIOptions = {
@@ -30,9 +31,6 @@ export const REVEAL_MAX_ZOOM = 1;
 /** What a new text node holds until the batch sets its text: addText needs some. */
 export const NEW_TEXT_PLACEHOLDER = "Text";
 
-/** How long a copy button says "Copied". */
-export const COPIED_MS = 1_500;
-
 /** What the plugin says in each state; a stop is told by its close code (see STOP_COPY). */
 export const STATUS_COPY: Readonly<Record<Exclude<LinkStatus["state"], "stopped">, StatusCopy>> = {
   "needs-window": {
@@ -59,7 +57,7 @@ export const STATUS_COPY: Readonly<Record<Exclude<LinkStatus["state"], "stopped"
   connected: {
     title: "Connected",
     detail: "Claude Code can edit this project while the plugin and the journal window stay open.",
-    tone: "positive",
+    tone: "ok",
   },
 };
 
@@ -83,13 +81,21 @@ export const STOPPED_COPY: StatusCopy = {
   tone: "neutral",
 };
 
-/** The status badge: a pill with a dot, green while Claude Code can reach the project. */
-export const STATUS_BADGE_COLORS: Readonly<Record<StatusTone, string>> = {
-  positive: "bg-emerald-500/15 text-emerald-500",
-  neutral: "bg-framer-text-tertiary/15 text-framer-text-secondary",
-};
-
-export const STATUS_DOT_COLORS: Readonly<Record<StatusTone, string>> = {
-  positive: "bg-emerald-500",
-  neutral: "bg-framer-text-tertiary",
-};
+/** The links the plugin's window draws, from Claude Code to this project. */
+export const FLOW_NODES: readonly FlowNode[] = [
+  {
+    label: "Claude Code",
+    icon: Bot,
+    main: false,
+  },
+  {
+    label: "Sitewright",
+    icon: Sparkles,
+    main: true,
+  },
+  {
+    label: "This project",
+    icon: Frame,
+    main: false,
+  },
+];

@@ -1,39 +1,32 @@
+import { Info } from "lucide-react";
 import { useState } from "react";
+import { Collapse } from "../toolkit/Collapse.tsx";
+import { Switch } from "../toolkit/Switch.tsx";
 import type { SettingToggleProps } from "../types/props.ts";
 
-/** One switch: its name, an "!" that unfolds what it gives, and the switch itself. */
+/** One switch: its name, an info button that unfolds what it gives, and the switch itself. */
 export function SettingToggle({ label, info, checked, disabled, onToggle }: SettingToggleProps) {
   const [open, setOpen] = useState(false);
 
   return (
-    <li className="flex flex-col gap-1.5 rounded-lg bg-framer-bg-secondary p-2.5">
+    <div className="flex flex-col rounded-xl border border-sw-line bg-sw-surface px-3 py-2.5">
       <div className="flex items-center gap-2">
-        <span className="min-w-0 flex-1 font-semibold text-framer-text">{label}</span>
+        <span className="min-w-0 flex-1 font-semibold text-[12.5px] text-sw-ink">{label}</span>
         <button
           type="button"
           aria-label={`What ${label} does`}
           aria-expanded={open}
           title={info}
-          className="grid size-5 w-5 shrink-0 place-items-center rounded-full bg-amber-500/15 p-0 font-bold text-[11px] text-amber-700 dark:text-amber-300"
+          className={`grid size-6 w-6 shrink-0 place-items-center rounded-full border-0 p-0 transition-colors ${open ? "bg-sw-accent-soft text-sw-accent-ink" : "bg-transparent text-sw-ink-3 hover:text-sw-ink"}`}
           onClick={() => setOpen(!open)}
         >
-          !
+          <Info aria-hidden className="size-3.5" />
         </button>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={checked}
-          aria-label={label}
-          disabled={disabled}
-          className={`relative h-5 w-9 shrink-0 rounded-full p-0 transition-colors disabled:opacity-40 ${checked ? "bg-emerald-500" : "bg-slate-300 dark:bg-slate-600"}`}
-          onClick={onToggle}
-        >
-          <span
-            className={`absolute top-0.5 size-4 rounded-full bg-white shadow transition-[left] ${checked ? "left-[18px]" : "left-0.5"}`}
-          />
-        </button>
+        <Switch checked={checked} disabled={disabled} label={label} onToggle={onToggle} />
       </div>
-      {open && <p className="text-framer-text-secondary">{info}</p>}
-    </li>
+      <Collapse open={open}>
+        <p className="pt-1.5 text-[12px] text-sw-ink-2">{info}</p>
+      </Collapse>
+    </div>
   );
 }

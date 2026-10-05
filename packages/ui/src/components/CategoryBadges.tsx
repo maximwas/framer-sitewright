@@ -9,7 +9,7 @@ export function CategoryBadges({ categories }: CategoryBadgesProps) {
         const { icon: Icon, label } = CATEGORY_BADGES[category];
 
         return (
-          <li key={category} className="flex items-center gap-1 text-[10px] text-framer-text-secondary">
+          <li key={category} className="flex items-center gap-1 text-[10px] text-sw-ink-3">
             <Icon aria-hidden className="size-3" />
             {label}
           </li>

@@ -1,3 +1,5 @@
+import { Button } from "@sitewright/ui";
+import { ExternalLink, Plug, RotateCcw } from "lucide-react";
 import { useStore } from "zustand";
 import type { AppProps } from "../types/ui.ts";
 
@@ -10,17 +12,23 @@ export function ActionButton({ link }: AppProps) {
 
   if (state === "stopped") {
     return (
-      <button type="button" className="framer-button-primary" onClick={() => link.reconnect()}>
+      <Button size="lg" variant="primary" icon={RotateCcw} className="w-full" onClick={() => link.reconnect()}>
         Reconnect
-      </button>
+      </Button>
     );
   }
 
   const connect = state === "needs-window" || state === "waiting";
 
   return (
-    <button type="button" className={connect ? "framer-button-primary" : ""} onClick={() => link.show()}>
+    <Button
+      size="lg"
+      variant={connect ? "primary" : "secondary"}
+      icon={connect ? Plug : ExternalLink}
+      className="w-full"
+      onClick={() => link.show()}
+    >
       {connect ? "Connect" : "Open journal"}
-    </button>
+    </Button>
   );
 }

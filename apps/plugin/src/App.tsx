@@ -1,8 +1,10 @@
-import { SupportLinks } from "@sitewright/ui";
+import { StatusPill, SupportLinks, Toaster, WindowBar } from "@sitewright/ui";
+import { MotionConfig } from "motion/react";
 import { useStore } from "zustand";
 import { ActionButton } from "./components/ActionButton.tsx";
+import { ConnectionFlow } from "./components/ConnectionFlow.tsx";
 import { SetupGuide } from "./components/SetupGuide.tsx";
-import { StatusBadge } from "./components/StatusBadge.tsx";
+import { StatusNote } from "./components/StatusNote.tsx";
 import type { AppProps } from "./types/ui.ts";
 import { describeStatus } from "./utils/describe-status.ts";
 
@@ -12,17 +14,26 @@ import { describeStatus } from "./utils/describe-status.ts";
  */
 export function App({ link }: AppProps) {
   const status = useStore(link.status);
-  const { title, detail, tone } = describeStatus(status);
+  const copy = describeStatus(status);
+  const connected = status.state === "connected";
 
   return (
-    <main className="flex flex-col gap-3 px-[15px] pb-[15px]">
-      <header className="flex flex-col items-start gap-1.5">
-        <StatusBadge title={title} tone={tone} />
-        <p className="text-framer-text-secondary">{detail}</p>
-      </header>
-      <ActionButton link={link} />
-      <SetupGuide open={status.state !== "connected"} />
-      <SupportLinks />
-    </main>
+    <MotionConfig reducedMotion="user">
+      <main className="flex min-h-full flex-col bg-sw-surface">
+        <WindowBar title="Sitewright">
+          <StatusPill tone={copy.tone} live={connected}>
+            {copy.title}
+          </StatusPill>
+        </WindowBar>
+        <div className="flex flex-col gap-3 p-3.5">
+          <ConnectionFlow live={connected} />
+          <StatusNote state={status.state} detail={copy.detail} />
+          <ActionButton link={link} />
+          <SetupGuide initiallyOpen={!connected} />
+          <SupportLinks />
+        </div>
+        <Toaster />
+      </main>
+    </MotionConfig>
   );
 }
