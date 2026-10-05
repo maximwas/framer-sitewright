@@ -172,7 +172,8 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
     },
     uploadFile: async ({ file, name }) => {
       const id = nextId("file");
-      const extension = /\.(\w+)(?:\?|$)/.exec(file)?.[1] ?? null;
+      const extension =
+        typeof file === "string" ? (/\.(\w+)(?:\?|$)/.exec(file)?.[1] ?? null) : (file.mimeType.split("/")[1] ?? null);
 
       state.uploadedFiles.push({
         id,

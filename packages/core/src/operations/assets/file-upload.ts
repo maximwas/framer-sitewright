@@ -1,5 +1,7 @@
 import * as z from "zod";
 import { FILE_DATA_URL_BRIDGE_MAX } from "../../constants/assets.ts";
+import { OperationError } from "../../errors.ts";
+import { dataUrlBytes } from "../../utils/data-url.ts";
 import { defineOperation } from "../define.ts";
 
 /** Puts a file (a video for a code component, a PDF, a font) into the project's assets: Framer fetches the URL. */
@@ -24,8 +26,15 @@ export const fileUpload = defineOperation({
     extension: z.string().nullable(),
   }),
   async run({ runtime, history }, { url, name }) {
+    // Framer downloads a URL itself but cannot fetch a data URL ("Connection error", spike 18): a local file goes as bytes.
+    const file = url.startsWith("data:") ? dataUrlBytes(url) : url;
+
+    if (file === null) {
+      throw new OperationError("INVALID_INPUT", "The data URL is not base64: data:<type>;base64,<data>.");
+    }
+
     const asset = await runtime.port.uploadFile({
-      file: url,
+      file,
       ...(name === undefined ? {} : { name }),
     });
 

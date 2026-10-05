@@ -5,6 +5,7 @@ import type {
   ComponentData,
   CustomCodeLocation,
   DesignPageData,
+  FileBytes,
   FontData,
   ProjectInfoData,
   TextStyleData,
@@ -56,7 +57,7 @@ export interface FakeFramerState {
   nextApplyResult: unknown;
   uploadedImages: { id: string; url: string; name: string | null }[];
   /** uploadFile calls: what Framer was asked to fetch. */
-  uploadedFiles: { id: string; source: string; name: string | null }[];
+  uploadedFiles: { id: string; source: string | FileBytes; name: string | null }[];
   svgs: string[];
   /** Ids selected in the editor; addSVG selects what it inserts. */
   selection: string[];
