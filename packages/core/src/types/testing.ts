@@ -4,12 +4,15 @@ import type {
   ColorStyleData,
   ComponentData,
   CustomCodeLocation,
+  DeploymentData,
   DesignPageData,
   FileBytes,
   FontData,
   LocaleData,
   ProjectInfoData,
+  PublishInfoData,
   TextStyleData,
+  UnpublishedChangeData,
   WebPageData,
 } from "./framer-port.ts";
 
@@ -44,6 +47,12 @@ export interface FakeFramerState {
   projectFonts: FontData[];
   webPages: WebPageData[];
   designPages: DesignPageData[];
+  redirects: { id: string; from: string; to: string | null; expandToAllLocales: boolean }[];
+  /** Layers under the home page's breakpoints, for the Plugin API's tree reads; text layers have text. */
+  canvas: { id: string; parentId: string; className: string; name: string | null; text?: string }[];
+  publishInfo: PublishInfoData;
+  unpublishedChanges: UnpublishedChangeData[];
+  deployments: DeploymentData[];
   components: ComponentData[];
   collections: FakeCollection[];
   /** The default locale: Framer's getLocales lists only the locales added to it. */

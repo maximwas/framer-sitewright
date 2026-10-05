@@ -36,6 +36,12 @@ export type PluginPermission =
   | "Collection.removeItems"
   | "Collection.setItemOrder"
   | "setLocalizationData"
+  | "createWebPage"
+  | "createDesignPage"
+  | "removeNodes"
+  | "addRedirects"
+  | "removeRedirects"
+  | "setRedirectOrder"
   | "publish";
 
 /** A unit of work with typed input and output that runs wherever the `framer` object lives. */

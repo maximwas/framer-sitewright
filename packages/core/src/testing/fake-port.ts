@@ -6,8 +6,10 @@ import type {
   CollectionHandle,
   ColorStyleHandle,
   ComponentData,
+  DeploymentData,
   DesignPageData,
   FramerPort,
+  PublishInfoData,
   TextStyleHandle,
   TextStyleWrite,
   WebPageData,
@@ -186,6 +188,34 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
     };
   }
 
+  /** A canvas layer as the Plugin API hands it out: a text layer reads and writes its text. */
+  function canvasNode(layer: FakeFramerState["canvas"][number]) {
+    return {
+      id: layer.id,
+      name: layer.name,
+      __class: layer.className,
+      ...(layer.text === undefined
+        ? {}
+        : {
+            getText: async () => layer.text ?? null,
+            setText: async (text: string) => {
+              layer.text = text;
+            },
+          }),
+    };
+  }
+
+  function structuredPublishInfo(info: PublishInfoData): PublishInfoData {
+    return {
+      production: info.production === null ? null : { ...info.production },
+      staging: info.staging === null ? null : { ...info.staging },
+    };
+  }
+
+  async function* deploymentsOf(deployments: readonly DeploymentData[]): AsyncIterable<DeploymentData> {
+    yield* deployments;
+  }
+
   /** Field values as Framer keeps them: an image or file URL becomes an asset. */
   function storedFieldData(fieldData: CmsItemWrite["fieldData"]): FakeCollection["items"][number]["fieldData"] {
     return Object.fromEntries(
@@ -253,6 +283,68 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
       ) ?? null,
     getNodesWithType,
     getCollections: async () => state.collections.map(collectionHandle),
+    createWebPage: async (path) => {
+      const page = {
+        id: nextId("page"),
+        path,
+        draft: false,
+        collectionId: null,
+      };
+
+      state.webPages.push(page);
+
+      return { ...page };
+    },
+    createDesignPage: async (name) => {
+      const page = {
+        id: nextId("design-page"),
+        name,
+      };
+
+      state.designPages.push(page);
+
+      return { ...page };
+    },
+    getRedirects: async () => state.redirects.map((redirect) => ({ ...redirect })),
+    addRedirects: async (redirects) => {
+      const written = redirects.map((write) => {
+        if ("id" in write) {
+          const current = state.redirects.find((redirect) => redirect.id === write.id);
+
+          if (current === undefined) {
+            throw new Error(`No redirect ${write.id}.`);
+          }
+
+          Object.assign(current, {
+            ...(write.from === undefined ? {} : { from: write.from }),
+            ...(write.to === undefined ? {} : { to: write.to }),
+            ...(write.expandToAllLocales === undefined ? {} : { expandToAllLocales: write.expandToAllLocales }),
+          });
+
+          return { ...current };
+        }
+
+        const created = {
+          id: nextId("redirect"),
+          ...write,
+        };
+
+        state.redirects.push(created);
+
+        return { ...created };
+      });
+
+      return written;
+    },
+    removeRedirects: async (ids) => {
+      state.redirects = state.redirects.filter((redirect) => !ids.includes(redirect.id));
+    },
+    setRedirectOrder: async (ids) => {
+      state.redirects.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
+    },
+    getPublishInfo: async () => structuredPublishInfo(state.publishInfo),
+    getUnpublishedPageChanges: async () => state.unpublishedChanges.map((change) => ({ ...change })),
+    listDeployments: (limit) => deploymentsOf(state.deployments.slice(0, limit)),
     getLocales: async () => state.locales.map((locale) => ({ ...locale })),
     getDefaultLocale: async () => ({ ...state.defaultLocale }),
     getLocalizationGroups: async () =>
@@ -310,10 +402,15 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
 
       return collectionHandle(collection);
     },
-    getChildren: async (nodeId) =>
-      state.webPages.find((page) => page.id === nodeId)?.path === "/" ? state.breakpoints.map(breakpointFrame) : [],
+    getChildren: async (nodeId) => [
+      ...(state.webPages.find((page) => page.id === nodeId)?.path === "/"
+        ? state.breakpoints.map(breakpointFrame)
+        : []),
+      ...state.canvas.filter((layer) => layer.parentId === nodeId).map(canvasNode),
+    ],
     removeNodes: async (nodeIds) => {
       state.webPages = state.webPages.filter((page) => !nodeIds.includes(page.id));
+      state.designPages = state.designPages.filter((page) => !nodeIds.includes(page.id));
       state.breakpoints = state.breakpoints.filter((breakpoint) => !nodeIds.includes(breakpoint.id));
     },
     uploadImage: async ({ image, name }) => {
@@ -404,6 +501,12 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
         return breakpointFrame(breakpoint);
       }
 
+      const layer = state.canvas.find((candidate) => candidate.id === nodeId);
+
+      if (layer !== undefined) {
+        return canvasNode(layer);
+      }
+
       return controls === undefined
         ? null
         : {
@@ -415,10 +518,21 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
           };
     },
     // The fake project's canvas is the home page's breakpoints; other node work goes through the fake framer.agent.
-    getParent: async (nodeId) =>
-      state.breakpoints.some((breakpoint) => breakpoint.id === nodeId)
-        ? (state.webPages.find((page) => page.path === "/") ?? null)
-        : null,
+    getParent: async (nodeId) => {
+      if (state.breakpoints.some((breakpoint) => breakpoint.id === nodeId)) {
+        return state.webPages.find((page) => page.path === "/") ?? null;
+      }
+
+      const parentId = state.canvas.find((layer) => layer.id === nodeId)?.parentId;
+      const breakpoint = state.breakpoints.find((candidate) => candidate.id === parentId);
+      const layer = state.canvas.find((candidate) => candidate.id === parentId);
+
+      if (breakpoint !== undefined) {
+        return breakpointFrame(breakpoint);
+      }
+
+      return layer === undefined ? null : canvasNode(layer);
+    },
     createFrameNode: async () => {
       throw new Error("The fake project has no Plugin API canvas nodes.");
     },

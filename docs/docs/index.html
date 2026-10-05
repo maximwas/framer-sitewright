@@ -68,7 +68,7 @@
             <a href="#reference">All tools</a>
             <a href="#project">Project and connection</a>
             <a href="#design-system">Design system</a>
-            <a href="#pages">Pages and layout</a>
+            <a href="#pages">Pages, layout and redirects</a>
             <a href="#assets">Components and assets</a>
             <a href="#cms">CMS</a>
             <a href="#localization">Localization</a>
@@ -470,7 +470,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
           <p class="search-empty" hidden>No tool matches.</p>
 <!-- tools:start -->
 <section class="tool-group" id="project" data-group>
-  <h3>Project and connection <span>5</span></h3>
+  <h3>Project and connection <span>7</span></h3>
   <p class="group-intro">Where the agent starts: which project is open, how it is reached, and publishing when you ask.</p>
   <article class="tool" id="framer_status" data-tool="framer_status Framer connection status shows the active transport (server api or the framer plugin), whether each one is configured and connected, what to do if not, the projects with a saved server api key (framer_connect { project } switches between them), and what the project's framer plan allows. call it when a framer tool fails.">
     <header>
@@ -518,6 +518,31 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
     <p class="tool-title">Read the editor selection</p>
     <p>Returns the layers the user selected in the Framer editor (ids and names). Call it when the user says &quot;this&quot;, &quot;the selected one&quot; or &quot;what I picked&quot;, then read those ids with <a href="#nodes_read"><code>nodes_read</code></a> and change them with <a href="#design_apply"><code>design_apply</code></a>. Works through the Sitewright plugin only, open in this project.</p>
     <p class="no-params">No parameters.</p>
+  </article>
+  <article class="tool" id="publish_status" data-tool="publish_status Publish status where the site is published (production and staging urls, when) and which pages changed since the last publish. publish with project_publish, only when the user asks.">
+    <header>
+      <h4><a href="#publish_status">publish_status</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Publish status</p>
+    <p>Where the site is published (production and staging URLs, when) and which pages changed since the last publish. Publish with <a href="#project_publish"><code>project_publish</code></a>, only when the user asks.</p>
+    <p class="no-params">No parameters.</p>
+  </article>
+  <article class="tool" id="deployments_list" data-tool="deployments_list List deployments the site's newest deployments: when, by whom, and whether they went live or failed.">
+    <header>
+      <h4><a href="#deployments_list">deployments_list</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">List deployments</p>
+    <p>The site's newest deployments: when, by whom, and whether they went live or failed.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>10</code></span></td></tr>
+      </tbody>
+    </table></div>
   </article>
   <article class="tool" id="project_publish" data-tool="project_publish Publish the site publishes the site as it is in the editor: to staging when the project has staging on, otherwise live to visitors. only when the user asks to publish. returns the deployment's first status (optimization goes on after it) and the address; a failed status means framer could not publish, tell the user.">
     <header>
@@ -649,8 +674,40 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="pages" data-group>
-  <h3>Pages and layout <span>5</span></h3>
-  <p class="group-intro">Read a page as XML, change it, check what looks broken, adapt it to tablet and phone, look at it.</p>
+  <h3>Pages, layout and redirects <span>11</span></h3>
+  <p class="group-intro">Create and delete pages, read one as XML, find layers and replace text across pages, change pages, check what looks broken, adapt them to tablet and phone, look at them, and redirect old paths.</p>
+  <article class="tool" id="page_create" data-tool="page_create Create a page creates an empty web page at a path (&quot;/about&quot;) or a design page (a canvas for drafts) by name. build its content with design_apply; add breakpoints with breakpoints_add. undo does not remove pages.">
+    <header>
+      <h4><a href="#page_create">page_create</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Create a page</p>
+    <p>Creates an empty web page at a path (&quot;/about&quot;) or a design page (a canvas for drafts) by name. Build its content with <a href="#design_apply"><code>design_apply</code></a>; add breakpoints with <a href="#breakpoints_add"><code>breakpoints_add</code></a>. Undo does not remove pages.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>path</code></th><td><code class="type">string</code></td><td>A web page by its path, e.g. &quot;/about&quot;.</td></tr>
+      <tr><th scope="row"><code>designPage</code></th><td><code class="type">string</code></td><td>A design page (a canvas for drafts) by its name.</td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="page_delete" data-tool="page_delete Delete a page deletes a web page by path or a design page by name, with everything on it. undo cannot bring it back: delete only pages the user asked to remove or you created yourself. the home page cannot be deleted.">
+    <header>
+      <h4><a href="#page_delete">page_delete</a></h4>
+      <span class="badge destructive">Destructive</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Delete a page</p>
+    <p>Deletes a web page by path or a design page by name, with everything on it. Undo cannot bring it back: delete only pages the user asked to remove or you created yourself. The home page cannot be deleted.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>path</code></th><td><code class="type">string</code></td><td>A web page by its path, e.g. &quot;/about&quot;.</td></tr>
+      <tr><th scope="row"><code>designPage</code></th><td><code class="type">string</code></td><td>A design page (a canvas for drafts) by its name.</td></tr>
+      </tbody>
+    </table></div>
+  </article>
   <article class="tool" id="nodes_read" data-tool="nodes_read Read nodes reads a node (or the page root) with its children to a given depth, as xml by default: tags are node types, attributes are ids, names and dsl attributes, $-attributes are read-only metadata. blocks and runs of a rich text show no id: theirs follow from position (v:&lt;text id&gt;:&lt;n&gt;, then :&lt;m&gt;). edit the xml and send it back with design_apply xml. format &quot;json&quot; returns raw serialize(). keep depth low and filter attributes on big pages. without a server api key it reads through the plugin api: the same xml with fewer attributes, and the plain text of a rich text instead of blocks and runs.">
     <header>
       <h4><a href="#nodes_read">nodes_read</a></h4>
@@ -670,6 +727,24 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
+  <article class="tool" id="nodes_find" data-tool="nodes_find Find layers finds layers across the site's pages (or one page) by part of their name or text, and/or by type, on each page's main breakpoint. returns their ids for nodes_read and design_apply.">
+    <header>
+      <h4><a href="#nodes_find">nodes_find</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Find layers</p>
+    <p>Finds layers across the site's pages (or one page) by part of their name or text, and/or by type, on each page's main breakpoint. Returns their ids for <a href="#nodes_read"><code>nodes_read</code></a> and <a href="#design_apply"><code>design_apply</code></a>.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>query</code></th><td><code class="type">string</code></td><td>Part of a layer's name or text, in any case.</td></tr>
+      <tr><th scope="row"><code>type</code></th><td><code class="type">string</code></td><td>Only layers of this type, e.g. &quot;RichTextNode&quot;, &quot;FrameNode&quot;, &quot;ComponentInstanceNode&quot;.</td></tr>
+      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>One page; omit to look through every web page.</td></tr>
+      <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>50</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
   <article class="tool" id="design_apply" data-tool="design_apply Apply design changes changes a page and returns framer's diagnostics (errors, warnings, lint, renamedids). prefer xml; dsl (raw +node/set/del/move/dupe commands) runs after it, for moves and duplicates. without a server api key it runs through the plugin api: xml only, frames and plain text, the attributes listed in the server instructions, and overrides on breakpoint copies by compound id; anything else refuses the whole batch before a change. xml: tags are node types, attributes are dsl attributes (framer_docs), every value in quotes. an element without id is created: nested ones under their parent element, a top-level one under parent=&quot;&lt;id&gt;&quot;, at the end unless index=&quot;&lt;n&gt;&quot; is given; key=&quot;hero&quot; returns its real id in keys, and @hero in any value (scope, component, parent, var(--variable-@label), and the dsl part) points at it within the batch. an element with id gets a set of only the attributes it lists; $delete=&quot;true&quot; deletes it. nesting existing nodes only addresses them: nothing moves and omitted children stay. inside an existing rich text, blocks and runs without id are the ones at that position (as nodes_read prints them); give a new one a key. text: plain text inside a richtextnode, or &lt;textblock tag=&quot;h1&quot;&gt;…&lt;/textblock&gt; blocks with &lt;textrun bold=&quot;true&quot;&gt;…&lt;/textrun&gt; runs; write &amp; and &lt; as &amp;amp; and &amp;lt;. nested attributes are dotted: hovereffect.scale=&quot;1&quot;. color text with a token on the richtextnode itself, textcolor=&quot;var(--token-&lt;id&gt;)&quot;, not only through its text style: only then does the token show in framer's color field. fix every error and re-apply.">
     <header>
       <h4><a href="#design_apply">design_apply</a></h4>
@@ -684,6 +759,25 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <tr><th scope="row"><code>xml</code></th><td><code class="type">string</code></td><td>Nodes as XML, e.g. &lt;FrameNode parent=&quot;&lt;id&gt;&quot; key=&quot;hero&quot; layout=&quot;stack&quot;&gt;&lt;RichTextNode&gt;Hi&lt;/RichTextNode&gt;&lt;/FrameNode&gt;. Without id: created (key names it in the answer); with id: SET of the attributes given; $delete=&quot;true&quot; deletes.</td></tr>
       <tr><th scope="row"><code>dsl</code></th><td><code class="type">string</code></td><td>Framer DSL commands, each ending with &quot;;&quot;, applied after the XML. See framer_docs &quot;Updating the Project&quot;.</td></tr>
       <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>Page the commands apply to. <span class="def">default <code>&quot;/&quot;</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="text_replace" data-tool="text_replace Replace text replaces text inside text layers across the site's pages (or one page), through design_apply, so the journal can undo it. run it with dryrun first and show the user what changes. a replaced text keeps its text style, but formatting inside it (bold words, links in the text) becomes plain.">
+    <header>
+      <h4><a href="#text_replace">text_replace</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Replace text</p>
+    <p>Replaces text inside text layers across the site's pages (or one page), through <a href="#design_apply"><code>design_apply</code></a>, so the journal can undo it. Run it with dryRun first and show the user what changes. A replaced text keeps its text style, but formatting inside it (bold words, links in the text) becomes plain.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>find</code></th><td><code class="type">string</code></td><td>The text to find inside text layers. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>replace</code></th><td><code class="type">string</code></td><td>What it becomes; an empty string removes it. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>One page; omit for every web page.</td></tr>
+      <tr><th scope="row"><code>matchCase</code></th><td><code class="type">boolean</code></td><td> <span class="def">default <code>false</code></span></td></tr>
+      <tr><th scope="row"><code>dryRun</code></th><td><code class="type">boolean</code></td><td>Only list what would change. <span class="def">default <code>false</code></span></td></tr>
       </tbody>
     </table></div>
   </article>
@@ -733,6 +827,32 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>Node id from nodes_read or design_apply renamedIds. <span class="req">required</span></td></tr>
       <tr><th scope="row"><code>scale</code></th><td><code class="type">0.5 | 1 | 2</code></td><td>Pixel density. <span class="def">default <code>1</code></span></td></tr>
       <tr><th scope="row"><code>clip</code></th><td><code class="type">object</code></td><td>Region of the node to capture, in CSS pixels before scale.<ul class="fields"><li><code>x</code> <code class="type">number</code></li><li><code>y</code> <code class="type">number</code></li><li><code>width</code> <code class="type">number</code></li><li><code>height</code> <code class="type">number</code></li></ul></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="redirects_list" data-tool="redirects_list List redirects lists the site's redirects: from which path, to which path or url, and for every locale or not.">
+    <header>
+      <h4><a href="#redirects_list">redirects_list</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">List redirects</p>
+    <p>Lists the site's redirects: from which path, to which path or URL, and for every locale or not.</p>
+    <p class="no-params">No parameters.</p>
+  </article>
+  <article class="tool" id="redirects_set" data-tool="redirects_set Change redirects adds redirects (a from path that has one already changes it) and removes them by their from path. redirects need a paid framer plan. undo does not restore redirects yet: the changed and removed ones are in the result.">
+    <header>
+      <h4><a href="#redirects_set">redirects_set</a></h4>
+      <span class="badge destructive">Destructive</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Change redirects</p>
+    <p>Adds redirects (a from path that has one already changes it) and removes them by their from path. Redirects need a paid Framer plan. Undo does not restore redirects yet: the changed and removed ones are in the result.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>set</code></th><td><code class="type">object[]</code></td><td>Redirects to add; one whose from already has a redirect changes it. <span class="def">default <code>[]</code></span><ul class="fields"><li><code>from</code> <code class="type">string</code> — The old path, e.g. &quot;/old-blog/*&quot; or &quot;/pricing-2024&quot;.</li><li><code>to</code> <code class="type">string</code> — Where it goes: a path like &quot;/blog&quot; or a full URL.</li><li><code>allLocales</code> <code class="type">boolean</code> <span class="opt">optional</span> — Also for every locale's version of the path.</li></ul></td></tr>
+      <tr><th scope="row"><code>remove</code></th><td><code class="type">string[]</code></td><td>Redirects to remove, by their from path. <span class="def">default <code>[]</code></span></td></tr>
       </tbody>
     </table></div>
   </article>

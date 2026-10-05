@@ -42,6 +42,14 @@ export const OPERATION_LABELS: Readonly<Record<string, string>> = {
   "localization.locales": "Locales",
   "localization.get": "Read translations",
   "localization.set": "Translations",
+  "pages.create": "New page",
+  "pages.delete": "Delete page",
+  "nodes.find": "Find layers",
+  "text.replace": "Replace text",
+  "redirects.list": "Redirects",
+  "redirects.set": "Redirects",
+  "project.publishStatus": "Publish status",
+  "project.deployments": "Deployments",
 };
 
 /**

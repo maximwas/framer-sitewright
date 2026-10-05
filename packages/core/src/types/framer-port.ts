@@ -191,6 +191,46 @@ export interface LocalizationWriteResult {
   };
 }
 
+/** A redirect: from a path on the site to another path or a URL; null `to` sends to the home page. */
+export interface RedirectData {
+  readonly id: string;
+  readonly from: string;
+  readonly to: string | null;
+  readonly expandToAllLocales: boolean;
+}
+
+/** A redirect to add (no id) or to change (its id). */
+export type RedirectWrite =
+  | { from: string; to: string; expandToAllLocales: boolean }
+  | { id: string; from?: string; to?: string; expandToAllLocales?: boolean };
+
+/** One published version of the site: production or staging. */
+export interface PublishData {
+  readonly url: string;
+  readonly deploymentTime: number;
+  readonly optimizationStatus: string;
+}
+
+export interface PublishInfoData {
+  readonly production: PublishData | null;
+  readonly staging: PublishData | null;
+}
+
+/** A web page changed since the last publish. */
+export interface UnpublishedChangeData {
+  readonly nodeId: string;
+  readonly path: string;
+  readonly status: string;
+}
+
+export interface DeploymentData {
+  readonly id: string;
+  readonly status: string;
+  readonly createdAt: string;
+  readonly failureStage?: string;
+  readonly deployedBy: { readonly name?: string | null } | null;
+}
+
 export interface BranchData {
   readonly id: string;
   readonly title: string;
@@ -321,6 +361,17 @@ export interface FramerPort {
   getNodesWithType(type: "ComponentNode"): Promise<readonly ComponentData[]>;
   getCollections(): Promise<readonly CollectionHandle[]>;
   createCollection(name: string): Promise<CollectionHandle>;
+  createWebPage(pagePath: string): Promise<WebPageData>;
+  createDesignPage(pageName: string): Promise<DesignPageData>;
+  getRedirects(): Promise<readonly RedirectData[]>;
+  addRedirects(redirects: RedirectWrite[]): Promise<readonly RedirectData[]>;
+  removeRedirects(redirectIds: string[]): Promise<void>;
+  setRedirectOrder(redirectIds: string[]): Promise<void>;
+  getPublishInfo(): Promise<PublishInfoData>;
+  /** Alpha: the pages changed since the last publish. */
+  getUnpublishedPageChanges?(): Promise<readonly UnpublishedChangeData[]>;
+  /** Alpha: the newest deployments first. */
+  listDeployments?(limit?: number): AsyncIterable<DeploymentData>;
   getLocales(): Promise<readonly LocaleData[]>;
   getDefaultLocale(): Promise<LocaleData>;
   getLocalizationGroups(): Promise<readonly LocalizationGroupData[]>;

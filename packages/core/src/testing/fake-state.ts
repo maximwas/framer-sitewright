@@ -50,6 +50,14 @@ export function defaultState(): FakeFramerState {
       },
     ],
     designPages: [],
+    redirects: [],
+    canvas: [],
+    publishInfo: {
+      production: null,
+      staging: null,
+    },
+    unpublishedChanges: [],
+    deployments: [],
     components: [],
     collections: [],
     defaultLocale: {

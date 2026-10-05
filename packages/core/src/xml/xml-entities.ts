@@ -39,6 +39,16 @@ export function escapeText(text: string): string {
   return text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
 
+/**
+ * Text on the line of its tags, where edge spaces survive reading back. Line breaks and tabs would be read as
+ * indentation, and text of spaces only as nothing: those become character references.
+ */
+export function inlineText(text: string): string {
+  const escaped = escapeText(text).replaceAll("\n", "&#10;").replaceAll("\r", "&#13;").replaceAll("\t", "&#9;");
+
+  return text.trim() === "" ? escaped.replaceAll(" ", "&#32;") : escaped;
+}
+
 /** An attribute value inside double quotes; line breaks and tabs as references, since XML would turn them to spaces. */
 export function escapeAttribute(value: string): string {
   return escapeText(value)

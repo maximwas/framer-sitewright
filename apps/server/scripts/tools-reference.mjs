@@ -18,7 +18,15 @@ const GROUPS = [
     id: "project",
     title: "Project and connection",
     intro: "Where the agent starts: which project is open, how it is reached, and publishing when you ask.",
-    tools: ["framer_status", "framer_connect", "project_overview", "selection_get", "project_publish"],
+    tools: [
+      "framer_status",
+      "framer_connect",
+      "project_overview",
+      "selection_get",
+      "publish_status",
+      "deployments_list",
+      "project_publish",
+    ],
   },
   {
     id: "design-system",
@@ -36,9 +44,22 @@ const GROUPS = [
   },
   {
     id: "pages",
-    title: "Pages and layout",
-    intro: "Read a page as XML, change it, check what looks broken, adapt it to tablet and phone, look at it.",
-    tools: ["nodes_read", "design_apply", "layout_audit", "breakpoints_add", "node_screenshot"],
+    title: "Pages, layout and redirects",
+    intro:
+      "Create and delete pages, read one as XML, find layers and replace text across pages, change pages, check what looks broken, adapt them to tablet and phone, look at them, and redirect old paths.",
+    tools: [
+      "page_create",
+      "page_delete",
+      "nodes_read",
+      "nodes_find",
+      "design_apply",
+      "text_replace",
+      "layout_audit",
+      "breakpoints_add",
+      "node_screenshot",
+      "redirects_list",
+      "redirects_set",
+    ],
   },
   {
     id: "assets",

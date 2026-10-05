@@ -4,7 +4,7 @@ import { childrenOf, paramsOf } from "../history/dsl/serialized.ts";
 import type { SerializedNode } from "../types/dsl.ts";
 import type { XmlPrintPlace } from "../types/xml.ts";
 import { positionalChildId } from "../utils/text-ids.ts";
-import { escapeText } from "./xml-entities.ts";
+import { escapeText, inlineText } from "./xml-entities.ts";
 import { flattenAttribute, formatAttributes, metaText } from "./xml-values.ts";
 
 /**
@@ -122,14 +122,4 @@ function runText(node: SerializedNode): string | null {
   return XML_TEXT_ATTRIBUTE_TYPES.has(node.type) && typeof text === "string" && childrenOf(node).length === 0
     ? text
     : null;
-}
-
-/**
- * Text on the line of its tags, where edge spaces survive reading back. Line breaks and tabs would be read as
- * indentation, and text of spaces only as nothing: those become character references.
- */
-function inlineText(text: string): string {
-  const escaped = escapeText(text).replaceAll("\n", "&#10;").replaceAll("\r", "&#13;").replaceAll("\t", "&#9;");
-
-  return text.trim() === "" ? escaped.replaceAll(" ", "&#32;") : escaped;
 }

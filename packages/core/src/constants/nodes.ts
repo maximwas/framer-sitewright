@@ -8,3 +8,21 @@ export const NODE_FORMATS = ["xml", "json"] as const;
 export const BREAKPOINT_MIN_WIDTH = 240;
 
 export const BREAKPOINT_MAX_WIDTH = 3840;
+
+/** Layers nodes_find and text_replace look at, at most, before they stop: a page of a big site, not a runaway walk. */
+export const FIND_MAX_LAYERS = 20_000;
+
+/** Matches nodes_find returns by default, and at most. */
+export const FIND_LIMIT = 50;
+export const FIND_LIMIT_MAX = 200;
+
+/** A found text is cut to this many characters in the answer. */
+export const FIND_TEXT_MAX = 160;
+
+/** What the journal says after page, redirect and publishing changes it cannot take back. */
+export const PAGES_UNDO_NOTE = "Undo does not create or delete pages: use page_create or page_delete.";
+export const REDIRECTS_UNDO_NOTE = "Undo does not restore redirects yet; the previous ones are in the result.";
+
+/** Deployments deployments_list returns by default, and at most. */
+export const DEPLOYMENTS_LIMIT = 10;
+export const DEPLOYMENTS_LIMIT_MAX = 50;
