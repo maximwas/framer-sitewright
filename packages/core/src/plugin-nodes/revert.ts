@@ -20,6 +20,7 @@ import type { PluginNodeRecord, StyleLookup } from "../types/plugin-nodes.ts";
 import { errorMessage } from "../utils/errors.ts";
 import { fromPluginNode, toPluginAttributes } from "./attributes.ts";
 import { addBreakpoint, deletionSnapshot } from "./breakpoints.ts";
+import { withFills } from "./fills.ts";
 import { dslValueOf, layoutOf, nodeRecord, setTextOf, textOf } from "./node-record.ts";
 import { readPluginTree } from "./read.ts";
 
@@ -138,7 +139,7 @@ export class PluginNodeRevert {
 
     if (!this.#options.dryRun) {
       if (Object.keys(converted.attributes).length > 0) {
-        await this.#port.setAttributes(step.id, converted.attributes);
+        await this.#port.setAttributes(step.id, await this.#fills(converted.attributes));
       }
 
       if (typeof text === "string") {
@@ -313,7 +314,7 @@ export class PluginNodeRevert {
       lost.push(...converted.unsupported, ...converted.invalid);
 
       if (Object.keys(converted.attributes).length > 0) {
-        await this.#port.setAttributes(id, converted.attributes);
+        await this.#port.setAttributes(id, await this.#fills(converted.attributes));
       }
 
       if (typeof text === "string") {
@@ -339,7 +340,7 @@ export class PluginNodeRevert {
         ? await this.#port.createFrameNode(
             {
               backgroundColor: null,
-              ...named,
+              ...(await this.#fills(named)),
             },
             parentId,
           )
@@ -406,6 +407,11 @@ export class PluginNodeRevert {
     }
 
     return values;
+  }
+
+  /** Image and gradient fills as the Plugin API sets them (withFills). */
+  #fills(attributes: Record<string, unknown>): Promise<Record<string, unknown>> {
+    return withFills(attributes, this.#port, this.#runtime.createGradient);
   }
 
   async #lookup(): Promise<StyleLookup> {

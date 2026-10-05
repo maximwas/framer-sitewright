@@ -1,5 +1,5 @@
 import type { AgentPort, FramerPort, FramerRuntime } from "@sitewright/core";
-import type { Framer } from "framer-api";
+import { type ColorStop, type Framer, LinearGradient } from "framer-api";
 
 export function createServerApiRuntime(framer: Framer): FramerRuntime {
   // Compile-time conformance: if framer-api drifts from the structural ports, these lines stop compiling.
@@ -11,6 +11,11 @@ export function createServerApiRuntime(framer: Framer): FramerRuntime {
     port,
     agent,
     screenshot: (nodeId, options) => framer.screenshot(nodeId, options),
+    createGradient: ({ angle, stops }) =>
+      new LinearGradient({
+        angle,
+        stops: stops as readonly ColorStop[],
+      }),
     // Framer keeps temp ids for the whole (possibly resumed) session, so salt them per connection.
     tempIdSalt: `_${Date.now().toString(36)}_`,
   };

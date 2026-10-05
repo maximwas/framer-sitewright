@@ -58,11 +58,29 @@ export interface ScreenshotData {
 export type ScreenshotFn = (nodeId: string, options?: ScreenshotOptions) => Promise<ScreenshotData>;
 
 /** Everything an operation may use. One runtime lives as long as its connection (or plugin session). */
+/** A gradient as Framer's gradient classes take it: stop positions from 0 to 1, colors as CSS or a color token. */
+export interface GradientSpec {
+  readonly kind: "linear";
+  /** CSS degrees: 0 points up, 90 right, 180 down. */
+  readonly angle: number;
+  readonly stops: readonly GradientStop[];
+}
+
+export interface GradientStop {
+  readonly color: unknown;
+  readonly position: number;
+}
+
 export interface FramerRuntime {
   readonly transport: TransportKind;
   readonly port: FramerPort;
   readonly agent: AgentPort | null;
   readonly screenshot: ScreenshotFn | null;
+  /**
+   * Builds a gradient fill for backgroundGradient from Framer's own gradient classes, which core cannot import; absent
+   * where no package provides them (tests).
+   */
+  readonly createGradient?: (spec: GradientSpec) => unknown;
   /**
    * Added to DSL temp ids. Framer never accepts a temp id twice in a session, and a new Server API
    * connection may resume a warm session, so that transport salts ids per connection.

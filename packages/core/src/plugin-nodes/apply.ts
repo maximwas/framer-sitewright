@@ -3,6 +3,7 @@ import { PLUGIN_CREATABLE_TYPES } from "../constants/plugin-nodes.ts";
 import { XML_TEXT_ATTRIBUTE_TYPES } from "../constants/xml.ts";
 import { OperationError } from "../errors.ts";
 import type { DesignApplyResult, DslIssue } from "../types/dsl.ts";
+import type { FramerRuntime } from "../types/framer.ts";
 import type { FramerPort } from "../types/framer-port.ts";
 import type { DslAttributeMap } from "../types/history.ts";
 import type { OperationContext } from "../types/operations.ts";
@@ -15,6 +16,7 @@ import { invalidXml } from "../xml/xml-errors.ts";
 import { textAttribute } from "../xml/xml-text.ts";
 import { fromPluginNode, toPluginAttributes } from "./attributes.ts";
 import { deletionSnapshot } from "./breakpoints.ts";
+import { withFills } from "./fills.ts";
 import { dslValueOf, layoutOf, nameOf, nodeRecord, setTextOf, textOf } from "./node-record.ts";
 import { readPluginTree } from "./read.ts";
 import { dslAttributes } from "./snapshots.ts";
@@ -72,7 +74,7 @@ export async function applyXmlWithPluginApi(
     return result(false, "Nothing was changed: a breakpoint's copy takes overrides only.", copies, {});
   }
 
-  const runner = new Runner(port, styles, pagePath, history);
+  const runner = new Runner(port, styles, pagePath, history, runtime.createGradient);
 
   for (const item of planner.plan) {
     try {
@@ -254,14 +256,22 @@ class Runner {
   readonly #styles: StyleLookup;
   readonly #pagePath: string;
   readonly #history: OperationContext["history"];
+  readonly #createGradient: FramerRuntime["createGradient"];
   /** Created nodes by their reference (key or internal). */
   readonly #created = new Map<string, string>();
 
-  constructor(port: FramerPort, styles: StyleLookup, pagePath: string, history: OperationContext["history"]) {
+  constructor(
+    port: FramerPort,
+    styles: StyleLookup,
+    pagePath: string,
+    history: OperationContext["history"],
+    createGradient: FramerRuntime["createGradient"],
+  ) {
     this.#port = port;
     this.#styles = styles;
     this.#pagePath = pagePath;
     this.#history = history;
+    this.#createGradient = createGradient;
   }
 
   async run(item: NodePlan): Promise<void> {
@@ -296,7 +306,7 @@ class Runner {
         ? await this.#port.createFrameNode(
             {
               backgroundColor: null,
-              ...(await this.#withImages(converted.attributes)),
+              ...(await withFills(converted.attributes, this.#port, this.#createGradient)),
             },
             parentId,
           )
@@ -325,6 +335,8 @@ class Runner {
       await this.#port.setParent(id, parentId, item.index);
     }
 
+    const stored = await this.#readBack(id, attributes);
+
     this.#history?.record({
       kind: "node",
       id,
@@ -338,9 +350,9 @@ class Runner {
         index: item.index,
         attributes:
           item.text === null
-            ? attributes
+            ? stored
             : {
-                ...attributes,
+                ...stored,
                 text: item.text,
               },
         nodes: [],
@@ -371,19 +383,23 @@ class Runner {
     const before: DslAttributeMap = Object.fromEntries(
       Object.keys(attributes).map((name) => [name, dslValueOf(node, current.attributes, name)]),
     );
-    const after: DslAttributeMap = { ...attributes };
 
     if (item.text !== null) {
       before.text = await textOf(node);
-      after.text = item.text;
     }
 
     if (Object.keys(converted.attributes).length > 0) {
-      await this.#port.setAttributes(item.id, await this.#withImages(converted.attributes));
+      await this.#port.setAttributes(item.id, await withFills(converted.attributes, this.#port, this.#createGradient));
     }
 
     if (item.text !== null && !(await setTextOf(node, item.text))) {
       throw new OperationError("INVALID_INPUT", `Node ${item.id} is a ${current.type}: it holds no text.`);
+    }
+
+    const after: DslAttributeMap = await this.#readBack(item.id, attributes);
+
+    if (item.text !== null) {
+      after.text = item.text;
     }
 
     const parentId = parent === null ? null : String(parent.id);
@@ -435,19 +451,27 @@ class Runner {
     });
   }
 
-  /** An image fill by URL is uploaded to the project and set as the frame's backgroundImage instead of a color. */
-  async #withImages(attributes: Record<string, unknown>): Promise<Record<string, unknown>> {
-    const fill = attributes["backgroundColor"];
+  /**
+   * The values as Framer stored them, for the undo step: Framer rewrites some of what it is given (a gradient's
+   * `#ff0000` comes back as `rgb(255, 0, 0)`), and undo compares the node with this to tell our change from someone
+   * else's. A value it cannot read back stays as written.
+   */
+  async #readBack(id: string, written: Readonly<Record<string, string>>): Promise<DslAttributeMap> {
+    const node = nodeRecord(await this.#port.getNode(id));
 
-    if (typeof fill !== "object" || fill === null || !("imageUrl" in fill) || typeof fill.imageUrl !== "string") {
-      return attributes;
+    if (node === null) {
+      return { ...written };
     }
 
-    return {
-      ...attributes,
-      backgroundColor: null,
-      backgroundImage: await this.#port.uploadImage({ image: fill.imageUrl }),
-    };
+    const parent = nodeRecord(await this.#port.getParent(id));
+    const { attributes } = fromPluginNode(node, layoutOf(parent));
+
+    return Object.fromEntries(
+      Object.entries(written).map(([name, value]) => [
+        name,
+        value === "null" ? null : (dslValueOf(node, attributes, name) ?? value),
+      ]),
+    );
   }
 
   async #createText(attributes: Record<string, unknown>, parentId: string): Promise<unknown> {

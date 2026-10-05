@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { fromPluginNode, toPluginAttributes } from "../src/plugin-nodes/attributes.ts";
+import { withFills } from "../src/plugin-nodes/fills.ts";
 import type { ColorStyleHandle, TextStyleHandle } from "../src/types/framer-port.ts";
 
 const brand = {
@@ -93,7 +94,7 @@ describe("DSL attributes for the Plugin API", () => {
       {
         "appearEffect.trigger": "onInView",
         textColor: "#000000",
-        fill: "linear-gradient(90deg, #fff 0%, #000 100%)",
+        fill: "conic-gradient(#fff, #000)",
         opacity: "half",
       },
       styles,
@@ -196,5 +197,47 @@ describe("Plugin API nodes as the DSL prints them", () => {
         width: "auto",
       },
     });
+  });
+
+  it("fills a frame with a linear gradient without a key: token stops become color styles, and it reads back as CSS", async () => {
+    const { attributes } = toPluginAttributes(
+      "FrameNode",
+      { fill: "linear-gradient(90deg, var(--token-tok-brand) 0%, rgba(0, 0, 0, 0.5) 100%)" },
+      styles,
+    );
+    const filled = await withFills(attributes, {} as never, (spec) => ({ gradient: spec }));
+
+    expect(filled).toEqual({
+      backgroundColor: null,
+      backgroundImage: null,
+      backgroundGradient: {
+        gradient: {
+          kind: "linear",
+          angle: 90,
+          stops: [
+            {
+              color: brand,
+              position: 0,
+            },
+            {
+              color: "rgba(0, 0, 0, 0.5)",
+              position: 1,
+            },
+          ],
+        },
+      },
+    });
+    expect(
+      fromPluginNode(
+        {
+          __class: "FrameNode",
+          backgroundGradient: { toCSS: () => "linear-gradient(90deg, red 0%, blue 100%)" },
+        },
+        null,
+      ).attributes.fill,
+    ).toBe("linear-gradient(90deg, red 0%, blue 100%)");
+    expect(toPluginAttributes("FrameNode", { fill: "radial-gradient(red, blue)" }, styles).invalid).toEqual([
+      'fill="radial-gradient(red, blue)": radial and conic gradients need a Server API key (the DSL)',
+    ]);
   });
 });

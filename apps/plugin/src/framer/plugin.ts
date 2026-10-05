@@ -1,5 +1,5 @@
 // Everything that touches the plugin's `framer` object; the rest of the plugin stays free of the Plugin API.
-import { framer, type ProtectedMethod } from "@framer/plugin";
+import { type ColorStop, framer, LinearGradient, type ProtectedMethod } from "@framer/plugin";
 import type { FramerPort, FramerRuntime, PluginInfo, PluginPermission } from "@sitewright/core";
 import { version as pluginVersion } from "../../package.json";
 import { NEW_TEXT_PLACEHOLDER, PLUGIN_WINDOW, REVEAL_MAX_ZOOM } from "../constants/ui.ts";
@@ -52,6 +52,11 @@ export const pluginRuntime: FramerRuntime = {
   port,
   agent: null,
   screenshot: null,
+  createGradient: ({ angle, stops }) =>
+    new LinearGradient({
+      angle,
+      stops: stops as readonly ColorStop[],
+    }),
 };
 
 /** Opens the plugin's window: small, top right, out of the way of the canvas. */

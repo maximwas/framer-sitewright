@@ -1,3 +1,4 @@
+import type { GradientSpec } from "./framer.ts";
 import type { ColorStyleHandle, TextStyleHandle } from "./framer-port.ts";
 import type { DslAttributeMap, NodeSnapshot } from "./history.ts";
 import type { XmlElementNode } from "./xml.ts";
@@ -18,6 +19,11 @@ import type { XmlElementNode } from "./xml.ts";
 /** An image fill by URL: uploaded and set as the frame's backgroundImage when the batch runs. */
 export interface PendingImage {
   readonly imageUrl: string;
+}
+
+/** A linear gradient fill: built from Framer's gradient class (runtime.createGradient) when the batch runs. */
+export interface PendingGradient {
+  readonly gradient: GradientSpec;
 }
 
 export type AttributeValueKind =

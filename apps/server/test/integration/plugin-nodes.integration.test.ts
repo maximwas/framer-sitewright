@@ -118,6 +118,14 @@ describe.skipIf(config === null)("pages without a Server API key (the Plugin API
     expect(restored).toContain('gap="12px"');
     expect(restored).toContain(">Hello</RichTextNode>");
 
+    // A linear gradient fill without a key: read back as CSS, and undo brings the color back.
+    const gradient = await apply(`<FrameNode id="${bar}" fill="linear-gradient(90deg, #ff0000 0%, #0000ff 100%)" />`);
+
+    expect(gradient.output.ok).toBe(true);
+    expect(await read(card ?? "")).toMatch(/name="Bar"[^>]*fill="linear-gradient\(90deg/);
+    await undo(gradient.steps);
+    expect(await read(card ?? "")).toMatch(/<FrameNode[^>]*name="Bar"[^>]*fill="#0099ff"/);
+
     // What only the DSL has refuses the whole batch, before anything changes.
     const refused = await apply(`<FrameNode id="${card}" gap="40px" appearEffect.trigger="onMount" />`);
 

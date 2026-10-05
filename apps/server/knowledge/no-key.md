@@ -10,7 +10,8 @@ how to get the same result anyway.
   `padding`, grid columns, rows and item placement.
 - Size and position: `width`, `height`, min/max, `aspectRatio`, `position`, pins, `centerAnchorX/Y`, `zIndex`,
   `rotation`, `opacity`, `visible`, `overflow`.
-- Look: `fill` (a color, a token, or an image URL: uploaded to the project and set as the frame's image), `radius`,
+- Look: `fill` (a color, a token, a `linear-gradient(…)` with colors or tokens, or an image URL: uploaded to the
+  project and set as the frame's image), `radius`,
   `border`, `link` (on frames), `textStylePreset`.
 - Tokens and text styles (`color_tokens_upsert`, `text_styles_upsert`, including alignment, `balance` and breakpoint
   sizes), SVG (`svg_add`), image upload (`image_upload`), component controls, code files when allowed.
@@ -20,7 +21,8 @@ how to get the same result anyway.
 ## Needs a key (the DSL)
 
 - Effects and motion (hover, appear, loop, scroll), variants and components, rich text blocks and runs, `textColor`
-  and `type` on a text node, shadows, gradient fills, link styles, screenshots, stock photo and icon catalogs.
+  and `type` on a text node, shadows, radial and conic gradients, link styles, screenshots, stock photo and icon
+  catalogs.
 
 ## Same result anyway
 

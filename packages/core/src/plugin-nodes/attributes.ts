@@ -10,11 +10,13 @@ import {
 import type { ColorStyleHandle, TextStyleHandle } from "../types/framer-port.ts";
 import type {
   AttributeRule,
+  PendingGradient,
   PendingImage,
   PluginAttributes,
   PluginNodeRecord,
   StyleLookup,
 } from "../types/plugin-nodes.ts";
+import { parseLinearGradient } from "../utils/gradient.ts";
 
 /** Attributes the XML writer reads itself rather than setting them. */
 const STRUCTURE = new Set(["text"]);
@@ -96,11 +98,21 @@ export function fromPluginNode(
     attributes.position = "relative";
   }
 
-  // An image fill reads as the DSL writes it: fill="<url>".
+  // An image fill reads as the DSL writes it: fill="<url>"; a gradient as its CSS.
   const image = node["backgroundImage"];
+  const gradient = node["backgroundGradient"];
 
   if (typeof image === "object" && image !== null && "url" in image && typeof image.url === "string") {
     attributes.fill = image.url;
+  }
+
+  if (
+    typeof gradient === "object" &&
+    gradient !== null &&
+    "toCSS" in gradient &&
+    typeof gradient.toCSS === "function"
+  ) {
+    attributes.fill = String(gradient.toCSS());
   }
 
   return {
@@ -172,8 +184,9 @@ function fromPluginValue(rule: AttributeRule, value: unknown): string | null {
 }
 
 /**
- * A color as written, a token as the project's ColorStyle, or an image URL to upload when the batch runs (it becomes
- * the frame's backgroundImage). Gradient fills need the DSL: the Plugin API takes only its own gradient objects.
+ * A color as written, a token as the project's ColorStyle, an image URL to upload when the batch runs (it becomes the
+ * frame's backgroundImage), or a linear gradient to build from Framer's gradient class (its token stops as
+ * ColorStyles). Radial and conic gradients need the DSL.
  */
 function colorValue(value: string, colors: readonly ColorStyleHandle[]): Converted {
   const token = TOKEN_VALUE.exec(value)?.[1];
@@ -190,11 +203,50 @@ function colorValue(value: string, colors: readonly ColorStyleHandle[]): Convert
     return ok(image);
   }
 
-  if (/^(linear-gradient|radial-gradient|conic-gradient)/.test(value)) {
-    return fail("gradient fills need a Server API key (the DSL)");
+  if (/^linear-gradient/.test(value)) {
+    return gradientValue(value, colors);
+  }
+
+  if (/^(radial-gradient|conic-gradient)/.test(value)) {
+    return fail("radial and conic gradients need a Server API key (the DSL)");
   }
 
   return ok(value);
+}
+
+function gradientValue(value: string, colors: readonly ColorStyleHandle[]): Converted {
+  const spec = parseLinearGradient(value);
+
+  if (spec === null) {
+    return fail(
+      'linear-gradient(<angle>deg, <color> <position>%, …), e.g. "linear-gradient(180deg, #000 0%, #fff 100%)"',
+    );
+  }
+
+  const stops = [];
+
+  for (const stop of spec.stops) {
+    const token = typeof stop.color === "string" ? TOKEN_VALUE.exec(stop.color)?.[1] : undefined;
+    const style = token === undefined ? undefined : colors.find((color) => color.id === token);
+
+    if (token !== undefined && style === undefined) {
+      return fail(`no color token with id ${token}`);
+    }
+
+    stops.push({
+      color: style ?? stop.color,
+      position: stop.position,
+    });
+  }
+
+  const pending: PendingGradient = {
+    gradient: {
+      ...spec,
+      stops,
+    },
+  };
+
+  return ok(pending);
 }
 
 /** "1px solid #000000", the color possibly a token or rgba() with spaces. */
