@@ -1,0 +1,1301 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sitewright docs</title>
+    <meta
+      name="description"
+      content="How to install and use Sitewright, an MCP server that lets AI agents build and edit Framer sites, and a reference of all its tools."
+    />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../site.css" />
+    <script src="docs.js" defer></script>
+  </head>
+  <body class="docs-page">
+    <a class="skip" href="#content">Skip to content</a>
+
+    <header class="top">
+      <div class="wrap">
+        <a class="brand" href="../" aria-label="Sitewright home">
+          <svg aria-hidden="true" viewBox="0 0 30 30">
+            <rect width="30" height="30" rx="8" fill="#0099ff" />
+            <path d="M9 11h12M9 19h12M12 11v8M18 11v8" stroke="#fff" stroke-width="2" stroke-linecap="round" />
+          </svg>
+          Sitewright <span class="brand-sub">Docs</span>
+        </a>
+        <nav class="links" aria-label="Sections">
+          <a href="#start">Get started</a>
+          <a href="#guide">Guide</a>
+          <a href="#reference">Tools</a>
+          <a href="../">Home</a>
+        </nav>
+        <a class="gh" href="https://github.com/maximwas/framer-sitewright">
+          <svg aria-hidden="true" viewBox="0 0 16 16" fill="currentColor">
+            <path
+              d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"
+            />
+          </svg>
+          GitHub
+        </a>
+      </div>
+    </header>
+
+    <div class="wrap docs">
+      <aside class="toc" aria-label="On this page">
+        <details open>
+          <summary>On this page</summary>
+          <nav>
+            <p class="toc-title">Get started</p>
+            <a href="#start">What Sitewright is</a>
+            <a href="#install">Install</a>
+            <a href="#plugin">Connect the plugin</a>
+            <a href="#keys">Server API keys</a>
+            <p class="toc-title">Guide</p>
+            <a href="#paths">How calls reach Framer</a>
+            <a href="#no-key">Working without a key</a>
+            <a href="#journal">The journal and undo</a>
+            <a href="#settings">What the agent may do</a>
+            <a href="#quality">Design guide and audit</a>
+            <a href="#xml">Pages as XML</a>
+            <a href="#skills">Skills in the journal</a>
+            <a href="#cli">Commands</a>
+            <a href="#config">Configuration</a>
+            <a href="#files">Files on your computer</a>
+            <a href="#trouble">Troubleshooting</a>
+            <p class="toc-title">Tools</p>
+            <a href="#reference">All tools</a>
+            <a href="#project">Project and connection</a>
+            <a href="#design-system">Design system</a>
+            <a href="#pages">Pages and layout</a>
+            <a href="#assets">Components and assets</a>
+            <a href="#cms">CMS</a>
+            <a href="#localization">Localization</a>
+            <a href="#code">Code (opt-in)</a>
+            <a href="#journal-tools">Journal</a>
+            <a href="#knowledge">Knowledge</a>
+          </nav>
+        </details>
+      </aside>
+
+      <main id="content" class="prose">
+        <section id="start">
+          <p class="kicker">Get started</p>
+          <h1>Sitewright docs</h1>
+          <p class="lead">
+            Sitewright is an MCP server that lets AI agents — Claude Code, Cursor, Codex — build and edit Framer sites:
+            design tokens and text styles, pages and sections, breakpoints, components, images, CMS content and
+            translations. It runs on your computer, works in the Framer project you have open, and records every change
+            in a journal you can undo.
+          </p>
+          <div class="callout">
+            <strong>Unofficial.</strong> Sitewright is not affiliated with or endorsed by Framer. “Framer” is a
+            trademark of Framer B.V. It is free and open source under the MIT license.
+          </div>
+          <p>You need:</p>
+          <ul>
+            <li><strong>Node.js 24.11 or newer</strong> on macOS, Linux or Windows.</li>
+            <li><strong>An MCP client:</strong> Claude Code, Cursor, Codex or any agent that speaks MCP.</li>
+            <li><strong>A Framer project</strong> you can edit, and the Sitewright plugin in it.</li>
+            <li>
+              <strong>Optionally, the project's Server API key.</strong> Without one, the plugin does the work; a key
+              adds effects, components, rich text, screenshots and catalogs (see
+              <a href="#no-key">Working without a key</a>).
+            </li>
+          </ul>
+        </section>
+
+        <section id="install">
+          <h2>Install</h2>
+          <p>Run the setup wizard in a terminal:</p>
+          <pre><code>npx -y sitewright@latest</code></pre>
+          <p>It asks, step by step:</p>
+          <ol>
+            <li>which clients to connect: Claude Code, Cursor, Codex;</li>
+            <li>the Server API keys of your projects, one per project (you can skip it and add them later);</li>
+            <li>what the agent may do: custom code, code components;</li>
+            <li>whether to add the Claude Code hooks that show the skills Claude uses in the journal.</li>
+          </ol>
+          <p>To set it up by hand instead, add the server to Claude Code:</p>
+          <pre><code>claude mcp add sitewright -- npx -y sitewright@latest</code></pre>
+          <p>For Cursor, Codex and other clients, add this to their MCP config:</p>
+          <pre><code>{
+  "mcpServers": {
+    "sitewright": {
+      "command": "npx",
+      "args": ["-y", "sitewright@latest"]
+    }
+  }
+}</code></pre>
+          <p>
+            <code>npx -y sitewright@latest setup --print</code> prints these commands and blocks, for scripts. After a
+            Sitewright update, reconnect the server in your client (in Claude Code: <code>/mcp</code> → reconnect) so it
+            sees the new tools.
+          </p>
+        </section>
+
+        <section id="plugin">
+          <h2>Connect the plugin</h2>
+          <ol>
+            <li>Open your project in Framer, then <strong>Plugins → Sitewright</strong>.</li>
+            <li>
+              Click <strong>Connect</strong>. A small window opens: the journal. It carries the plugin's connection to
+              Sitewright, so <strong>keep it open</strong> while you work.
+            </li>
+            <li>
+              The plugin says <strong>Connected</strong>. Ask your agent to start with
+              <a href="#project_overview"><code>project_overview</code></a>.
+            </li>
+          </ol>
+          <p>
+            Sitewright works in the project the plugin is open in. Open the plugin in another project and the agent
+            follows it; nothing runs while no plugin is connected, so a change never lands in a project you did not
+            open.
+          </p>
+          <div class="callout">
+            Browsers do not let a published plugin talk to your computer directly, so the journal window relays for it.
+            If the plugin keeps waiting, check that the window is open and that your agent is running with Sitewright
+            connected.
+          </div>
+        </section>
+
+        <section id="keys">
+          <h2>Server API keys</h2>
+          <p>
+            A key gives Sitewright Framer's Server API for one project, including Framer's agent layer (its layout
+            language). Create one in Framer: <strong>Site Settings → General → API Keys</strong>. Then save it:
+          </p>
+          <pre><code>npx -y sitewright@latest key          # add a project's key
+npx -y sitewright@latest key list     # the projects with a key
+npx -y sitewright@latest key remove   # remove one</code></pre>
+          <p>
+            You can also add it on the journal page: the gear → <strong>Server API key</strong>. Keys are checked when
+            you save them and stay in <code>~/.sitewright/keys.json</code>, readable only by you. Sitewright uses the key
+            of the project the plugin is open in; to work on another saved project, name it to your agent (it calls
+            <a href="#framer_connect"><code>framer_connect</code></a>).
+          </p>
+        </section>
+
+        <section id="paths">
+          <p class="kicker" id="guide">Guide</p>
+          <h2>How calls reach Framer</h2>
+          <p>Every call goes one of three ways, and the journal tags each entry with the one it took:</p>
+          <div class="table">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Path</th>
+                  <th scope="col">Needs</th>
+                  <th scope="col">Used for</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row"><span class="tag plugin">Plugin API</span></th>
+                  <td>The plugin, connected</td>
+                  <td>Everything it can do, first: changes land live in the editor.</td>
+                </tr>
+                <tr>
+                  <th scope="row"><span class="tag server">Server API</span></th>
+                  <td>The project's key</td>
+                  <td>Screenshots, catalogs, large uploads, reads the plugin cannot make.</td>
+                </tr>
+                <tr>
+                  <th scope="row"><span class="tag agent">Framer agent</span></th>
+                  <td>The project's key</td>
+                  <td>Framer's layout language: effects, variants, components, rich text, shadows.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            The default mode, <code>auto</code>, needs the plugin connected. <code>SITEWRIGHT_TRANSPORT=server-api</code>
+            is the mode for working without the editor open, on purpose: the agent then works on the saved project you
+            name.
+          </p>
+        </section>
+
+        <section id="no-key">
+          <h2>Working without a key</h2>
+          <p>With the plugin alone, the agent can:</p>
+          <ul>
+            <li>build pages from frames and text: layout (stacks, grids), sizes, positions, fills, borders, radius, links;</li>
+            <li>fill frames with a color, a token, a linear gradient or an image from a URL;</li>
+            <li>manage color tokens and text styles, including sizes per breakpoint;</li>
+            <li>add Tablet and Phone breakpoints and adapt their copies;</li>
+            <li>add SVG, upload images and files, set component controls;</li>
+            <li>edit CMS collections, fields and items, and write translations;</li>
+            <li>write code files and custom code, when you allow it.</li>
+          </ul>
+          <p>
+            These need a key: effects and motion (hover, appear, scroll), variants and components, rich text, text color
+            on a text node (put it on the text style instead), shadows, radial and conic gradients, screenshots, the icon,
+            component and stock photo catalogs, and deleting a whole CMS collection. A batch that asks for one of them
+            changes nothing and says what needs the key.
+          </p>
+        </section>
+
+        <section id="journal">
+          <h2>The journal and undo</h2>
+          <p>
+            Every call is an entry: what the agent read or changed, how it reached Framer, and what it touched — tokens,
+            styles and layers you can click to select in the editor. Open the journal page with
+            <code>sitewright open</code>, the plugin's <strong>Open journal</strong>, or ask the agent
+            (<a href="#activity_open"><code>activity_open</code></a>).
+          </p>
+          <ul>
+            <li><strong>All · Changes · Reads · Skills</strong> pick what the list shows.</li>
+            <li><strong>Undo</strong> takes back the newest change; Undo on an entry takes back that change and everything after it.</li>
+            <li><strong>Redo</strong> puts back what the last undo took.</li>
+            <li><strong>Mark</strong> sets a checkpoint, and <strong>Restore</strong> beside it undoes everything since, with a preview first.</li>
+            <li><strong>Clear</strong> starts the journal over: the changes stay in Framer, but can no longer be undone from here.</li>
+          </ul>
+          <p>
+            What you undo on the page, the agent hears about with its next result, so it re-reads before building on it.
+            Edits you made yourself after the agent are kept: undo skips them unless you choose to revert them too.
+          </p>
+          <div class="callout">
+            Not undoable yet: CMS changes, translations, component controls and deleted code files. Those tools say so,
+            and a deletion returns what it removed, so the agent can put it back.
+          </div>
+        </section>
+
+        <section id="settings">
+          <h2>What the agent may do</h2>
+          <p>
+            Switches on the journal page (the gear) or in the terminal (<code>sitewright settings</code>,
+            <code>sitewright settings customCode=on</code>). Every agent session follows them.
+          </p>
+          <div class="table">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Switch</th>
+                  <th scope="col">What it does</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">Plugin first</th>
+                  <td>
+                    While the plugin is connected, the agent works through it, so changes land live in the editor. Only
+                    what needs Framer's layout language, screenshots and catalogs go through the Server API. Off: the
+                    Server API does everything it can.
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">Custom code</th>
+                  <td>
+                    Lets the agent add HTML to every page: analytics, verification tags, embeds. Off: it tells you what
+                    needs code instead of writing it.
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">Code components</th>
+                  <td>
+                    Lets the agent write React code components and overrides for what the canvas cannot do. Off: it
+                    builds with canvas components, variants and effects only.
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">Support reminders</th>
+                  <td>At most once a week, after a change, the agent mentions how to support Sitewright. Off: never.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="quality">
+          <h2>Design guide and layout audit</h2>
+          <p>
+            <a href="#design_guide"><code>design_guide</code></a> gives the agent the order of work, layout and type
+            rules, direction measured on top Framer sites, the habits of generated pages to avoid, and the checklist
+            before a page is handed over. The Claude Code skill (<code>sitewright setup --skill</code>) points the agent
+            at it.
+          </p>
+          <p>
+            After every <a href="#design_apply"><code>design_apply</code></a>, Sitewright audits what the batch touched,
+            and <a href="#layout_audit"><code>layout_audit</code></a> checks a whole page with its breakpoints. The audit
+            looks for what breaks on the published site: children on different edges, cards of uneven height, text links
+            in the default blue, sections wider than the rest, fixed sizes that break on phones, grids too dense for a
+            phone, missing headings, uneven spacing.
+          </p>
+        </section>
+
+        <section id="xml">
+          <h2>Pages as XML</h2>
+          <p>
+            <a href="#nodes_read"><code>nodes_read</code></a> returns a page or a layer as XML: one tag per layer with its
+            attributes. <a href="#design_apply"><code>design_apply</code></a> takes the same XML back:
+          </p>
+          <ul>
+            <li>a tag with an <code>id</code> changes that layer, only in the attributes it gives;</li>
+            <li>a tag without one creates a layer, inside the tag around it or in the <code>parent</code> it names;</li>
+            <li><code>$delete="true"</code> removes the layer;</li>
+            <li>
+              a <code>key</code> names a new layer: its id comes back in the result, and a later tag's
+              <code>parent</code> can use the key;
+            </li>
+            <li>with a key, raw DSL works too (<code>dsl</code>: moves, duplicates, variants).</li>
+          </ul>
+          <pre><code>&lt;FrameNode id="hero" gap="24px"&gt;
+  &lt;RichTextNode key="title"&gt;Build calm spaces&lt;/RichTextNode&gt;
+  &lt;FrameNode id="old-banner" $delete="true" /&gt;
+&lt;/FrameNode&gt;</code></pre>
+        </section>
+
+        <section id="skills">
+          <h2>Skills in the journal</h2>
+          <p>
+            Claude Code loads skills itself, so Sitewright learns about them through Claude Code hooks. With them on, the
+            journal shows which skills Claude used for a change.
+          </p>
+          <pre><code>npx -y sitewright@latest setup --hooks          # print the hooks to add
+npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your settings is kept)</code></pre>
+          <p>Restart Claude Code afterwards.</p>
+        </section>
+
+        <section id="cli">
+          <h2>Commands</h2>
+          <div class="table">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Command</th>
+                  <th scope="col">What</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row"><code>sitewright</code></th><td>In a terminal: the setup wizard. For an MCP client: the server on stdio.</td></tr>
+                <tr><th scope="row"><code>sitewright setup</code></th><td>The setup wizard; <code>--print</code> prints the commands and config blocks instead.</td></tr>
+                <tr><th scope="row"><code>sitewright setup --hooks</code></th><td>The Claude Code hooks for skills in the journal; <code>--yes</code> adds them.</td></tr>
+                <tr><th scope="row"><code>sitewright setup --skill</code></th><td>Adds the Sitewright skill to Claude Code.</td></tr>
+                <tr><th scope="row"><code>sitewright key</code></th><td>Adds a project's Server API key; <code>key list</code>, <code>key remove</code>.</td></tr>
+                <tr><th scope="row"><code>sitewright settings</code></th><td>What the agent may do; <code>--print</code>, or set one: <code>settings customCode=on</code>.</td></tr>
+                <tr><th scope="row"><code>sitewright open</code></th><td>Opens the journal page of the running server.</td></tr>
+                <tr><th scope="row"><code>sitewright logs</code></th><td>Follows the logs of every running server on this machine.</td></tr>
+                <tr><th scope="row"><code>sitewright --version</code></th><td>Prints the version.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="config">
+          <h2>Configuration</h2>
+          <p>Set these in the environment of the MCP server, in your client's config.</p>
+          <div class="table">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Variable</th>
+                  <th scope="col">Default</th>
+                  <th scope="col">What</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row"><code>SITEWRIGHT_TRANSPORT</code></th><td><code>auto</code></td><td><code>auto</code> (through the plugin, nothing without it), <code>server-api</code> or <code>plugin</code>.</td></tr>
+                <tr><th scope="row"><code>SITEWRIGHT_HOME</code></th><td><code>~/.sitewright</code></td><td>The journal, keys, settings, logs and the bridge's port.</td></tr>
+                <tr><th scope="row"><code>SITEWRIGHT_BRIDGE_PORT</code></th><td><code>18710</code></td><td>The journal page and the plugin's bridge.</td></tr>
+                <tr><th scope="row"><code>SITEWRIGHT_PLUGIN_BRIDGE</code></th><td><code>on</code></td><td><code>off</code>: no bridge for the plugin.</td></tr>
+                <tr><th scope="row"><code>SITEWRIGHT_HISTORY</code></th><td><code>on</code></td><td><code>off</code>: no journal, nothing to undo.</td></tr>
+                <tr><th scope="row"><code>SITEWRIGHT_SUPPORT_REMINDERS</code></th><td><code>on</code></td><td><code>off</code>: the agent never mentions how to support the project.</td></tr>
+                <tr><th scope="row"><code>SITEWRIGHT_CACHE_DIR</code></th><td><code>~/.cache/sitewright</code></td><td>Where Framer's DSL reference is cached.</td></tr>
+                <tr><th scope="row"><code>LOG_LEVEL</code></th><td><code>info</code></td><td>Logs go to stderr and to <code>~/.sitewright/logs/</code>.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="files">
+          <h2>Files on your computer</h2>
+          <p>Everything stays in <code>~/.sitewright</code>; nothing goes anywhere but Framer.</p>
+          <ul>
+            <li><code>keys.json</code> — the Server API keys, one per project, readable only by you;</li>
+            <li><code>settings.json</code> — the switches;</li>
+            <li>the journal of each project, which undo reads;</li>
+            <li><code>logs/</code> — the logs (<code>sitewright logs</code>);</li>
+            <li><code>bridge.json</code> — the port the journal page and the plugin's bridge use.</li>
+          </ul>
+          <p>There is no telemetry and no account.</p>
+        </section>
+
+        <section id="trouble">
+          <h2>Troubleshooting</h2>
+          <dl class="faq-list">
+            <dt>“The Sitewright plugin is not connected”</dt>
+            <dd>
+              Open the plugin in your project, click Connect, and keep the journal window open. Without the plugin
+              nothing runs, unless you chose <code>SITEWRIGHT_TRANSPORT=server-api</code>.
+            </dd>
+            <dt>The plugin keeps waiting</dt>
+            <dd>
+              The journal window looks for the MCP server your agent runs. Start your agent with Sitewright connected (in
+              Claude Code, <code>/mcp</code>); the window reconnects by itself.
+            </dd>
+            <dt>The agent does not see a new tool</dt>
+            <dd>Reconnect the server in your client after an update (in Claude Code: <code>/mcp</code> → reconnect).</dd>
+            <dt>A change needs a key</dt>
+            <dd>
+              The result names what needs the Server API. Add the project's key with <code>sitewright key</code> or on the
+              journal page, or ask the agent for the way that works without one.
+            </dd>
+            <dt>Something else</dt>
+            <dd>
+              <code>sitewright logs</code> follows what every running server does. Issues and questions:
+              <a href="https://github.com/maximwas/framer-sitewright/issues">GitHub</a>.
+            </dd>
+          </dl>
+        </section>
+
+        <section id="reference" class="reference">
+          <p class="kicker">Tools</p>
+          <h2>All tools</h2>
+          <p>
+            Every tool as your agent sees it: what it does, its parameters, whether it only reads, and what it needs.
+            You rarely call them yourself: you ask, and the agent picks them.
+          </p>
+          <ul class="legend">
+            <li><span class="badge read">Reads</span> never changes the project</li>
+            <li><span class="badge write">Changes</span> changes it, with undo unless the tool says otherwise</li>
+            <li><span class="badge destructive">Destructive</span> deletes or overwrites; the agent asks first</li>
+            <li><span class="badge needs-plugin">Plugin</span> works without a key</li>
+            <li><span class="badge needs-key">Server API key</span> needs the project's key</li>
+          </ul>
+          <label class="search">
+            <span class="visually-hidden">Filter tools</span>
+            <input type="search" placeholder="Filter tools: cms, undo, image…" autocomplete="off" />
+          </label>
+          <p class="search-empty" hidden>No tool matches.</p>
+<!-- tools:start -->
+<section class="tool-group" id="project" data-group>
+  <h3>Project and connection <span>5</span></h3>
+  <p class="group-intro">Where the agent starts: which project is open, how it is reached, and publishing when you ask.</p>
+  <article class="tool" id="framer_status" data-tool="framer_status Framer connection status shows the active transport (server api or the framer plugin), whether each one is configured and connected, what to do if not, the projects with a saved server api key (framer_connect { project } switches between them), and what the project's framer plan allows. call it when a framer tool fails.">
+    <header>
+      <h4><a href="#framer_status">framer_status</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
+    </header>
+    <p class="tool-title">Framer connection status</p>
+    <p>Shows the active transport (Server API or the Framer plugin), whether each one is configured and connected, what to do if not, the projects with a saved Server API key (<a href="#framer_connect"><code>framer_connect</code></a> { project } switches between them), and what the project's Framer plan allows. Call it when a Framer tool fails.</p>
+    <p class="no-params">No parameters.</p>
+  </article>
+  <article class="tool" id="framer_connect" data-tool="framer_connect Choose Framer transport or project switches how tools reach framer, which project they edit, or both. transport: &quot;server-api&quot; (api key, headless, dsl + screenshots), &quot;plugin&quot; (the sitewright plugin open in the editor; plugin api only) or &quot;auto&quot; (everything through the connected plugin, the dsl through the server api of its project; nothing runs while the plugin is not connected). project: when the user names another project, switch to it here, by name from framer_status's projects (only those have a saved key); the plugin follows only if it is open in that project. returns the new status.">
+    <header>
+      <h4><a href="#framer_connect">framer_connect</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
+    </header>
+    <p class="tool-title">Choose Framer transport or project</p>
+    <p>Switches how tools reach Framer, which project they edit, or both. transport: &quot;server-api&quot; (API key, headless, DSL + screenshots), &quot;plugin&quot; (the Sitewright plugin open in the editor; Plugin API only) or &quot;auto&quot; (everything through the connected plugin, the DSL through the Server API of its project; nothing runs while the plugin is not connected). project: when the user names another project, switch to it here, by name from <a href="#framer_status"><code>framer_status</code></a>'s projects (only those have a saved key); the plugin follows only if it is open in that project. Returns the new status.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>transport</code></th><td><code class="type">&quot;auto&quot; | &quot;server-api&quot; | &quot;plugin&quot;</code></td><td>Leave out to keep the current one.</td></tr>
+      <tr><th scope="row"><code>project</code></th><td><code class="type">string | null</code></td><td>A project with a saved Server API key, by name, id or editor link: the Server API switches to it, also without the plugin, until the plugin is opened in another project. null: follow the plugin's project again. Leave out to keep the current one.</td></tr>
+      <tr><th scope="row"><code>reconnect</code></th><td><code class="type">boolean</code></td><td>Reopen the Server API session first. It keeps the project as it was when it connected, so after people change things in the editor (vector sets, uploaded fonts, edits) reconnect to see them. <span class="def">default <code>false</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="project_overview" data-tool="project_overview Project overview summarizes the connected framer project: web pages with paths, design pages, counts of color tokens, text styles, components and cms collections, and what its framer plan allows (capabilities). start here.">
+    <header>
+      <h4><a href="#project_overview">project_overview</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Project overview</p>
+    <p>Summarizes the connected Framer project: web pages with paths, design pages, counts of color tokens, text styles, components and CMS collections, and what its Framer plan allows (capabilities). Start here.</p>
+    <p class="no-params">No parameters.</p>
+  </article>
+  <article class="tool" id="selection_get" data-tool="selection_get Read the editor selection returns the layers the user selected in the framer editor (ids and names). call it when the user says &quot;this&quot;, &quot;the selected one&quot; or &quot;what i picked&quot;, then read those ids with nodes_read and change them with design_apply. works through the sitewright plugin only, open in this project.">
+    <header>
+      <h4><a href="#selection_get">selection_get</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-editor" title="Runs in the open editor, through the plugin">Plugin only</span>
+    </header>
+    <p class="tool-title">Read the editor selection</p>
+    <p>Returns the layers the user selected in the Framer editor (ids and names). Call it when the user says &quot;this&quot;, &quot;the selected one&quot; or &quot;what I picked&quot;, then read those ids with <a href="#nodes_read"><code>nodes_read</code></a> and change them with <a href="#design_apply"><code>design_apply</code></a>. Works through the Sitewright plugin only, open in this project.</p>
+    <p class="no-params">No parameters.</p>
+  </article>
+  <article class="tool" id="project_publish" data-tool="project_publish Publish the site publishes the site as it is in the editor: to staging when the project has staging on, otherwise live to visitors. only when the user asks to publish. returns the deployment's first status (optimization goes on after it) and the address; a failed status means framer could not publish, tell the user.">
+    <header>
+      <h4><a href="#project_publish">project_publish</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Publish the site</p>
+    <p>Publishes the site as it is in the editor: to staging when the project has staging on, otherwise live to visitors. Only when the user asks to publish. Returns the deployment's first status (optimization goes on after it) and the address; a failed status means Framer could not publish, tell the user.</p>
+    <p class="no-params">No parameters.</p>
+  </article>
+</section>
+<section class="tool-group" id="design-system" data-group>
+  <h3>Design system <span>7</span></h3>
+  <p class="group-intro">Color tokens with light and dark values, and text styles with their sizes per breakpoint.</p>
+  <article class="tool" id="color_tokens_list" data-tool="color_tokens_list List color tokens lists framer color styles (tokens) as { id, path, light, dark }. path uses &quot;/&quot; folders like &quot;brand/primary&quot;.">
+    <header>
+      <h4><a href="#color_tokens_list">color_tokens_list</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">List color tokens</p>
+    <p>Lists Framer color styles (tokens) as { id, path, light, dark }. path uses &quot;/&quot; folders like &quot;Brand/Primary&quot;.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>prefix</code></th><td><code class="type">string</code></td><td>Only tokens inside this folder, e.g. &quot;Brand&quot;.</td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="color_tokens_upsert" data-tool="color_tokens_upsert Create or update color tokens creates or updates color tokens by path in one batch (idempotent: unchanged tokens are skipped). accepts hex, rgb(), hsl(), oklch() or css names for light and optional dark. reference a token elsewhere as var(--token-&lt;id&gt;).">
+    <header>
+      <h4><a href="#color_tokens_upsert">color_tokens_upsert</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Create or update color tokens</p>
+    <p>Creates or updates color tokens by path in one batch (idempotent: unchanged tokens are skipped). Accepts hex, rgb(), hsl(), oklch() or CSS names for light and optional dark. Reference a token elsewhere as var(--token-&lt;id&gt;).</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>tokens</code></th><td><code class="type">object[]</code></td><td> <span class="req">required</span><ul class="fields"><li><code>path</code> <code class="type">string</code> — Token path with &quot;/&quot; folders, e.g. &quot;Brand/Primary&quot;.</li><li><code>light</code> <code class="type">string</code> — Light-mode color: hex, rgb(), hsl(), oklch() or a CSS name.</li><li><code>dark</code> <code class="type">string | null</code> <span class="opt">optional</span> — Dark-mode color. null removes it; omit to keep the current value.</li></ul></td></tr>
+      <tr><th scope="row"><code>dryRun</code></th><td><code class="type">boolean</code></td><td>Only return the plan, change nothing. <span class="def">default <code>false</code></span></td></tr>
+      <tr><th scope="row"><code>via</code></th><td><code class="type">&quot;auto&quot; | &quot;dsl&quot; | &quot;plugin-api&quot;</code></td><td>How to write: &quot;dsl&quot; (framer.agent, Server API only), &quot;plugin-api&quot; (works on both transports), &quot;auto&quot; (dsl when available). <span class="def">default <code>&quot;auto&quot;</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="color_tokens_delete" data-tool="color_tokens_delete Delete color tokens deletes color tokens by path (every token at a path, if several share it) and whole folders (folders: [&quot;brand&quot;] deletes everything inside, and so the folder). tokens framer refuses to delete come back in failed with the reason; unknown paths and folders in notfound.">
+    <header>
+      <h4><a href="#color_tokens_delete">color_tokens_delete</a></h4>
+      <span class="badge destructive">Destructive</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Delete color tokens</p>
+    <p>Deletes color tokens by path (every token at a path, if several share it) and whole folders (folders: [&quot;Brand&quot;] deletes everything inside, and so the folder). Tokens Framer refuses to delete come back in failed with the reason; unknown paths and folders in notFound.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>paths</code></th><td><code class="type">string[]</code></td><td>Style paths; every style at a path goes. <span class="def">default <code>[]</code></span></td></tr>
+      <tr><th scope="row"><code>folders</code></th><td><code class="type">string[]</code></td><td>Folders to empty, e.g. &quot;mcp-test/live&quot;: every style inside goes, and the folder with them. <span class="def">default <code>[]</code></span></td></tr>
+      <tr><th scope="row"><code>via</code></th><td><code class="type">&quot;auto&quot; | &quot;dsl&quot; | &quot;plugin-api&quot;</code></td><td>How to write: &quot;dsl&quot; (framer.agent, Server API only), &quot;plugin-api&quot; (works on both transports), &quot;auto&quot; (dsl when available). <span class="def">default <code>&quot;auto&quot;</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="text_styles_list" data-tool="text_styles_list List text styles lists framer text styles (presets) with font, sizes, color (token path or raw value) and breakpoint slots: each slot's label and the width it starts at.">
+    <header>
+      <h4><a href="#text_styles_list">text_styles_list</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">List text styles</p>
+    <p>Lists Framer text styles (presets) with font, sizes, color (token path or raw value) and breakpoint slots: each slot's label and the width it starts at.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>prefix</code></th><td><code class="type">string</code></td><td></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="text_styles_upsert" data-tool="text_styles_upsert Create or update text styles creates or updates text styles by path in one batch. font family must exist (use fonts_search); color binds a token with { token: &quot;brand/text&quot; }. only provided attributes change on existing styles.">
+    <header>
+      <h4><a href="#text_styles_upsert">text_styles_upsert</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Create or update text styles</p>
+    <p>Creates or updates text styles by path in one batch. Font family must exist (use <a href="#fonts_search"><code>fonts_search</code></a>); color binds a token with { token: &quot;Brand/Text&quot; }. Only provided attributes change on existing styles.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>styles</code></th><td><code class="type">object[]</code></td><td> <span class="req">required</span><ul class="fields"><li><code>path</code> <code class="type">string</code> — Style path with &quot;/&quot; folders, e.g. &quot;Heading/H1&quot;.</li><li><code>tag</code> <code class="type">&quot;h1&quot; | &quot;h2&quot; | &quot;h3&quot; | &quot;h4&quot; | &quot;h5&quot; | &quot;h6&quot; | &quot;p&quot;</code> <span class="opt">optional</span> — HTML tag. New styles default to p.</li><li><code>font</code> <code class="type">object</code> <span class="opt">optional</span></li><li><code>fontSize</code> <code class="type">string</code> <span class="opt">optional</span></li><li><code>lineHeight</code> <code class="type">string</code> <span class="opt">optional</span></li><li><code>letterSpacing</code> <code class="type">string</code> <span class="opt">optional</span></li><li><code>paragraphSpacing</code> <code class="type">number</code> <span class="opt">optional</span></li><li><code>color</code> <code class="type">object</code> <span class="opt">optional</span> — { token: &quot;Brand/Text&quot; } binds a color token; { value: &quot;#111111&quot; } sets a raw color.</li><li><code>transform</code> <code class="type">&quot;none&quot; | &quot;capitalize&quot; | &quot;uppercase&quot; | &quot;lowercase&quot;</code> <span class="opt">optional</span></li><li><code>alignment</code> <code class="type">&quot;start&quot; | &quot;center&quot; | &quot;end&quot; | &quot;left&quot; | &quot;right&quot; | &quot;justify&quot;</code> <span class="opt">optional</span></li><li><code>decoration</code> <code class="type">&quot;none&quot; | &quot;underline&quot; | &quot;line-through&quot;</code> <span class="opt">optional</span></li><li><code>balance</code> <code class="type">boolean</code> <span class="opt">optional</span> — Even out line lengths, so a headline never ends with one word alone. Turn it on for headings.</li><li><code>breakpoints</code> <code class="type">object</code> <span class="opt">optional</span> — Sizes for narrower screens, by slot. A style with 1 slot has medium; 2: medium, small; 3: medium, small, extraSmall; 4: large, medium, small, extraSmall. Slots start at the page breakpoints from the top, the narrowest at 0, so on a site of 1440/1280/810/390 medium alone covers everything below 1440. A skipped earlier slot is added with the base fontSize.</li></ul></td></tr>
+      <tr><th scope="row"><code>dryRun</code></th><td><code class="type">boolean</code></td><td>Only return the plan, change nothing. <span class="def">default <code>false</code></span></td></tr>
+      <tr><th scope="row"><code>via</code></th><td><code class="type">&quot;auto&quot; | &quot;dsl&quot; | &quot;plugin-api&quot;</code></td><td>How to write: &quot;dsl&quot; (framer.agent, Server API only), &quot;plugin-api&quot; (works on both transports), &quot;auto&quot; (dsl when available). <span class="def">default <code>&quot;auto&quot;</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="text_styles_delete" data-tool="text_styles_delete Delete text styles deletes text styles by path (every style at a path, if several share it) and whole folders (folders: [&quot;mcp-test/live&quot;] deletes everything inside, and so the folder). styles framer refuses to delete, e.g. still used by text, come back in failed with the reason; unknown paths and folders in notfound.">
+    <header>
+      <h4><a href="#text_styles_delete">text_styles_delete</a></h4>
+      <span class="badge destructive">Destructive</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Delete text styles</p>
+    <p>Deletes text styles by path (every style at a path, if several share it) and whole folders (folders: [&quot;mcp-test/live&quot;] deletes everything inside, and so the folder). Styles Framer refuses to delete, e.g. still used by text, come back in failed with the reason; unknown paths and folders in notFound.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>paths</code></th><td><code class="type">string[]</code></td><td>Style paths; every style at a path goes. <span class="def">default <code>[]</code></span></td></tr>
+      <tr><th scope="row"><code>folders</code></th><td><code class="type">string[]</code></td><td>Folders to empty, e.g. &quot;mcp-test/live&quot;: every style inside goes, and the folder with them. <span class="def">default <code>[]</code></span></td></tr>
+      <tr><th scope="row"><code>via</code></th><td><code class="type">&quot;auto&quot; | &quot;dsl&quot; | &quot;plugin-api&quot;</code></td><td>How to write: &quot;dsl&quot; (framer.agent, Server API only), &quot;plugin-api&quot; (works on both transports), &quot;auto&quot; (dsl when available). <span class="def">default <code>&quot;auto&quot;</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="fonts_search" data-tool="fonts_search Search fonts searches fonts by family name: framer's library with its weights and styles, and fonts uploaded to the project (source project) with the variants its text styles use. framer swaps a weight the project lacks without an error; text_styles_upsert reports that as fontfallbacks.">
+    <header>
+      <h4><a href="#fonts_search">fonts_search</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Search fonts</p>
+    <p>Searches fonts by family name: Framer's library with its weights and styles, and fonts uploaded to the project (source project) with the variants its text styles use. Framer swaps a weight the project lacks without an error; <a href="#text_styles_upsert"><code>text_styles_upsert</code></a> reports that as fontFallbacks.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>query</code></th><td><code class="type">string</code></td><td>Part of a font family name, e.g. &quot;inter&quot; or &quot;serif display&quot;. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>10</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+</section>
+<section class="tool-group" id="pages" data-group>
+  <h3>Pages and layout <span>5</span></h3>
+  <p class="group-intro">Read a page as XML, change it, check what looks broken, adapt it to tablet and phone, look at it.</p>
+  <article class="tool" id="nodes_read" data-tool="nodes_read Read nodes reads a node (or the page root) with its children to a given depth, as xml by default: tags are node types, attributes are ids, names and dsl attributes, $-attributes are read-only metadata. blocks and runs of a rich text show no id: theirs follow from position (v:&lt;text id&gt;:&lt;n&gt;, then :&lt;m&gt;). edit the xml and send it back with design_apply xml. format &quot;json&quot; returns raw serialize(). keep depth low and filter attributes on big pages. without a server api key it reads through the plugin api: the same xml with fewer attributes, and the plain text of a rich text instead of blocks and runs.">
+    <header>
+      <h4><a href="#nodes_read">nodes_read</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-partial" title="Works without a key; a Server API key adds more">Plugin · more with a key</span>
+    </header>
+    <p class="tool-title">Read nodes</p>
+    <p>Reads a node (or the page root) with its children to a given depth, as XML by default: tags are node types, attributes are ids, names and DSL attributes, $-attributes are read-only metadata. Blocks and runs of a rich text show no id: theirs follow from position (v:&lt;text id&gt;:&lt;n&gt;, then :&lt;m&gt;). Edit the XML and send it back with <a href="#design_apply"><code>design_apply</code></a> xml. format &quot;json&quot; returns raw serialize(). Keep depth low and filter attributes on big pages. Without a Server API key it reads through the Plugin API: the same XML with fewer attributes, and the plain text of a rich text instead of blocks and runs.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>Node id. Omit to read the page root of pagePath.</td></tr>
+      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>Page path, e.g. &quot;/&quot; or &quot;/about&quot;. <span class="def">default <code>&quot;/&quot;</code></span></td></tr>
+      <tr><th scope="row"><code>depth</code></th><td><code class="type">number</code></td><td>How many child levels to include. <span class="def">default <code>2</code></span></td></tr>
+      <tr><th scope="row"><code>attributes</code></th><td><code class="type">string[]</code></td><td>Only these attributes, e.g. [&quot;fill&quot;, &quot;layout&quot;, &quot;$rect&quot;]. [] returns structure only.</td></tr>
+      <tr><th scope="row"><code>format</code></th><td><code class="type">&quot;xml&quot; | &quot;json&quot;</code></td><td>xml: the tree as elements (compact, writable back with design_apply); json: raw serialize(). <span class="def">default <code>&quot;xml&quot;</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="design_apply" data-tool="design_apply Apply design changes changes a page and returns framer's diagnostics (errors, warnings, lint, renamedids). prefer xml; dsl (raw +node/set/del/move/dupe commands) runs after it, for moves and duplicates. without a server api key it runs through the plugin api: xml only, frames and plain text, the attributes listed in the server instructions, and overrides on breakpoint copies by compound id; anything else refuses the whole batch before a change. xml: tags are node types, attributes are dsl attributes (framer_docs), every value in quotes. an element without id is created: nested ones under their parent element, a top-level one under parent=&quot;&lt;id&gt;&quot;, at the end unless index=&quot;&lt;n&gt;&quot; is given; key=&quot;hero&quot; returns its real id in keys, and @hero in any value (scope, component, parent, var(--variable-@label), and the dsl part) points at it within the batch. an element with id gets a set of only the attributes it lists; $delete=&quot;true&quot; deletes it. nesting existing nodes only addresses them: nothing moves and omitted children stay. inside an existing rich text, blocks and runs without id are the ones at that position (as nodes_read prints them); give a new one a key. text: plain text inside a richtextnode, or &lt;textblock tag=&quot;h1&quot;&gt;…&lt;/textblock&gt; blocks with &lt;textrun bold=&quot;true&quot;&gt;…&lt;/textrun&gt; runs; write &amp; and &lt; as &amp;amp; and &amp;lt;. nested attributes are dotted: hovereffect.scale=&quot;1&quot;. color text with a token on the richtextnode itself, textcolor=&quot;var(--token-&lt;id&gt;)&quot;, not only through its text style: only then does the token show in framer's color field. fix every error and re-apply.">
+    <header>
+      <h4><a href="#design_apply">design_apply</a></h4>
+      <span class="badge destructive">Destructive</span>
+      <span class="badge needs-partial" title="Works without a key; a Server API key adds more">Plugin · more with a key</span>
+    </header>
+    <p class="tool-title">Apply design changes</p>
+    <p>Changes a page and returns Framer's diagnostics (errors, warnings, lint, renamedIds). Prefer xml; dsl (raw +Node/SET/DEL/MOVE/DUPE commands) runs after it, for moves and duplicates. Without a Server API key it runs through the Plugin API: xml only, frames and plain text, the attributes listed in the server instructions, and overrides on breakpoint copies by compound id; anything else refuses the whole batch before a change. XML: tags are node types, attributes are DSL attributes (<a href="#framer_docs"><code>framer_docs</code></a>), every value in quotes. An element without id is created: nested ones under their parent element, a top-level one under parent=&quot;&lt;id&gt;&quot;, at the end unless index=&quot;&lt;n&gt;&quot; is given; key=&quot;hero&quot; returns its real id in keys, and @hero in any value (scope, component, parent, var(--variable-@label), and the dsl part) points at it within the batch. An element with id gets a SET of only the attributes it lists; $delete=&quot;true&quot; deletes it. Nesting existing nodes only addresses them: nothing moves and omitted children stay. Inside an existing rich text, blocks and runs without id are the ones at that position (as <a href="#nodes_read"><code>nodes_read</code></a> prints them); give a new one a key. Text: plain text inside a RichTextNode, or &lt;TextBlock tag=&quot;h1&quot;&gt;…&lt;/TextBlock&gt; blocks with &lt;TextRun bold=&quot;true&quot;&gt;…&lt;/TextRun&gt; runs; write &amp; and &lt; as &amp;amp; and &amp;lt;. Nested attributes are dotted: hoverEffect.scale=&quot;1&quot;. Color text with a token on the RichTextNode itself, textColor=&quot;var(--token-&lt;id&gt;)&quot;, not only through its text style: only then does the token show in Framer's Color field. Fix every error and re-apply.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>xml</code></th><td><code class="type">string</code></td><td>Nodes as XML, e.g. &lt;FrameNode parent=&quot;&lt;id&gt;&quot; key=&quot;hero&quot; layout=&quot;stack&quot;&gt;&lt;RichTextNode&gt;Hi&lt;/RichTextNode&gt;&lt;/FrameNode&gt;. Without id: created (key names it in the answer); with id: SET of the attributes given; $delete=&quot;true&quot; deletes.</td></tr>
+      <tr><th scope="row"><code>dsl</code></th><td><code class="type">string</code></td><td>Framer DSL commands, each ending with &quot;;&quot;, applied after the XML. See framer_docs &quot;Updating the Project&quot;.</td></tr>
+      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>Page the commands apply to. <span class="def">default <code>&quot;/&quot;</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="layout_audit" data-tool="layout_audit Audit the layout checks a page (or one node and its children) for classes of layout defects that look broken on the published site, and returns each with the node and the fix: children of a stack lined up on different edges, cards of uneven height in grids and rows, text links in framer's default link color, sections whose content width does not match the others, fixed widths and heights that break on narrower screens, what a tablet or phone breakpoint kept from desktop (grids with too many columns, columns side by side, wide side padding, display sizes without a phone size), gap ignored by space-between, nested corners that are not concentric, missing or skipped headings, uneven section spacing, and template habits (uppercase labels over every heading, numbered cards, a text-only page, inter everywhere, headlines without balance). run it after building a section and before calling a page done; fix every defect, then the likely ones. design_apply already returns the same findings for what it touched in audit.">
+    <header>
+      <h4><a href="#layout_audit">layout_audit</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Audit the layout</p>
+    <p>Checks a page (or one node and its children) for classes of layout defects that look broken on the published site, and returns each with the node and the fix: children of a stack lined up on different edges, cards of uneven height in grids and rows, text links in Framer's default link color, sections whose content width does not match the others, fixed widths and heights that break on narrower screens, what a tablet or phone breakpoint kept from desktop (grids with too many columns, columns side by side, wide side padding, display sizes without a phone size), gap ignored by space-between, nested corners that are not concentric, missing or skipped headings, uneven section spacing, and template habits (uppercase labels over every heading, numbered cards, a text-only page, Inter everywhere, headlines without balance). Run it after building a section and before calling a page done; fix every defect, then the likely ones. <a href="#design_apply"><code>design_apply</code></a> already returns the same findings for what it touched in audit.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>Page to audit, e.g. &quot;/&quot; or &quot;/about&quot;. <span class="def">default <code>&quot;/&quot;</code></span></td></tr>
+      <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>Audit only this node and its children; omit for the whole page with its breakpoints.</td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="breakpoints_add" data-tool="breakpoints_add Add breakpoints adds breakpoints to a page (tablet 810 and phone 390 are the usual pair; a width the page has is left alone) and returns all of its breakpoints with ids. each is a copy of the primary breakpoint: build and delete layers in the primary only, then adapt a breakpoint by overriding its copies with design_apply xml, by compound id &lt;breakpoint id&gt;&lt;node id&gt;, e.g. &lt;framenode id=&quot;&lt;tablet id&gt;&lt;grid id&gt;&quot; gridcolumncount=&quot;2&quot; /&gt;. works without a server api key. add breakpoints before giving text styles their breakpoint sizes: the sizes follow the site's breakpoints.">
+    <header>
+      <h4><a href="#breakpoints_add">breakpoints_add</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Add breakpoints</p>
+    <p>Adds breakpoints to a page (Tablet 810 and Phone 390 are the usual pair; a width the page has is left alone) and returns all of its breakpoints with ids. Each is a copy of the primary breakpoint: build and delete layers in the primary only, then adapt a breakpoint by overriding its copies with <a href="#design_apply"><code>design_apply</code></a> xml, by compound id &lt;breakpoint id&gt;&lt;node id&gt;, e.g. &lt;FrameNode id=&quot;&lt;tablet id&gt;&lt;grid id&gt;&quot; gridColumnCount=&quot;2&quot; /&gt;. Works without a Server API key. Add breakpoints before giving text styles their breakpoint sizes: the sizes follow the site's breakpoints.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>Page to add them to, e.g. &quot;/&quot;. <span class="def">default <code>&quot;/&quot;</code></span></td></tr>
+      <tr><th scope="row"><code>breakpoints</code></th><td><code class="type">object[]</code></td><td>E.g. [{ &quot;name&quot;: &quot;Tablet&quot;, &quot;width&quot;: 810 }, { &quot;name&quot;: &quot;Phone&quot;, &quot;width&quot;: 390 }]. <span class="req">required</span><ul class="fields"><li><code>name</code> <code class="type">string</code> — Shown on the frame, e.g. &quot;Tablet&quot; or &quot;Phone&quot;.</li><li><code>width</code> <code class="type">number</code> — Window width in px where the breakpoint starts, e.g. 810 for tablets and 390 for phones.</li></ul></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="node_screenshot" data-tool="node_screenshot Screenshot a node renders a node (breakpoint, section, component variant) to png so you can verify the visual result. server api transport only. images longer than 2000 px on a side are refused: capture a region with clip, or use scale 0.5.">
+    <header>
+      <h4><a href="#node_screenshot">node_screenshot</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Screenshot a node</p>
+    <p>Renders a node (breakpoint, section, component variant) to PNG so you can verify the visual result. Server API transport only. Images longer than 2000 px on a side are refused: capture a region with clip, or use scale 0.5.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>Node id from nodes_read or design_apply renamedIds. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>scale</code></th><td><code class="type">0.5 | 1 | 2</code></td><td>Pixel density. <span class="def">default <code>1</code></span></td></tr>
+      <tr><th scope="row"><code>clip</code></th><td><code class="type">object</code></td><td>Region of the node to capture, in CSS pixels before scale.<ul class="fields"><li><code>x</code> <code class="type">number</code></li><li><code>y</code> <code class="type">number</code></li><li><code>width</code> <code class="type">number</code></li><li><code>height</code> <code class="type">number</code></li></ul></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+</section>
+<section class="tool-group" id="assets" data-group>
+  <h3>Components and assets <span>7</span></h3>
+  <p class="group-intro">Components and their controls, icon sets, stock photos, your own images, files and SVG.</p>
+  <article class="tool" id="components_read" data-tool="components_read Read components lists the project's components with their exact controls ($control__variant options, $control__&lt;name&gt; for each variable) before you place or change instances. control names are the ones listed here, e.g. $control__showicon; do not derive them from variable names. code components are listed in codecomponents: place one with +componentinstancenode component=&quot;&lt;id&gt;&quot;.">
+    <header>
+      <h4><a href="#components_read">components_read</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Read components</p>
+    <p>Lists the project's components with their exact controls ($control__variant options, $control__&lt;name&gt; for each variable) before you place or change instances. Control names are the ones listed here, e.g. $control__showIcon; do not derive them from variable names. Code components are listed in codeComponents: place one with +ComponentInstanceNode component=&quot;&lt;id&gt;&quot;.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>ids</code></th><td><code class="type">string[]</code></td><td>Component ids to read controls for. Omit for every canvas component of the project.</td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="component_controls_set" data-tool="component_controls_set Set component controls sets control values on a component instance, object controls included: a code component's arrows, dots or clipping, which design_apply refuses (&quot;unsupported type object&quot;). names are the component's own, without $control__; an object merges with the instance's current value, so { arrows: { show: false } } keeps the other arrow settings. simple controls (text, numbers, slots) still go through design_apply. undo does not restore controls set here.">
+    <header>
+      <h4><a href="#component_controls_set">component_controls_set</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Set component controls</p>
+    <p>Sets control values on a component instance, object controls included: a code component's arrows, dots or clipping, which <a href="#design_apply"><code>design_apply</code></a> refuses (&quot;unsupported type object&quot;). Names are the component's own, without $control__; an object merges with the instance's current value, so { arrows: { show: false } } keeps the other arrow settings. Simple controls (text, numbers, slots) still go through <a href="#design_apply"><code>design_apply</code></a>. Undo does not restore controls set here.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>The component instance (ComponentInstanceNode) to set. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>controls</code></th><td><code class="type">object</code></td><td>Control values by the names the component declares, without $control__ (e.g. arrows, dots). An object control merges with the instance's current value. <span class="req">required</span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="icons_search" data-tool="icons_search Search icons finds icons by name across framer's icon sets (phosphor, lucide, material, feather, logos for brand logos…) and returns the set ids, exact icon names and each set's controls. insert with +iconnode set=&quot;&lt;setid&gt;&quot; $control__icon=&quot;&lt;exact name&gt;&quot;; never guess names. for an icon no set has, draw it as svg (image_upload svg or svg_add).">
+    <header>
+      <h4><a href="#icons_search">icons_search</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Search icons</p>
+    <p>Finds icons by name across Framer's icon sets (Phosphor, Lucide, Material, Feather, Logos for brand logos…) and returns the set ids, exact icon names and each set's controls. Insert with +IconNode set=&quot;&lt;setId&gt;&quot; $control__icon=&quot;&lt;exact name&gt;&quot;; never guess names. For an icon no set has, draw it as SVG (<a href="#image_upload"><code>image_upload</code></a> svg or <a href="#svg_add"><code>svg_add</code></a>).</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>query</code></th><td><code class="type">string</code></td><td>Words of the icon name, e.g. &quot;arrow right&quot; or &quot;menu&quot;. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>set</code></th><td><code class="type">string</code></td><td>A set id or name (Phosphor, Lucide, Logos…). Omit to search every set.</td></tr>
+      <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>20</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="images_search" data-tool="images_search Search stock images finds unsplash photos for a section and returns their urls: put one in a frame's fill (fill=&quot;&lt;url&gt;&quot;, with alttext). pass width as twice the frame's display width. use photos where the design needs real-world imagery, not as decoration everywhere.">
+    <header>
+      <h4><a href="#images_search">images_search</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Search stock images</p>
+    <p>Finds Unsplash photos for a section and returns their urls: put one in a frame's fill (fill=&quot;&lt;url&gt;&quot;, with altText). Pass width as twice the frame's display width. Use photos where the design needs real-world imagery, not as decoration everywhere.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>query</code></th><td><code class="type">string</code></td><td>What the photo shows, e.g. &quot;white ceramic vases on a table&quot;. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>count</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>4</code></span></td></tr>
+      <tr><th scope="row"><code>orientation</code></th><td><code class="type">&quot;landscape&quot; | &quot;portrait&quot; | &quot;squarish&quot;</code></td><td></td></tr>
+      <tr><th scope="row"><code>width</code></th><td><code class="type">number</code></td><td>Twice the display width of the frame the image fills, for sharp images on dense screens.</td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="image_upload" data-tool="image_upload Upload an image uploads an image to the project's assets and returns its url, for a fill, a logo or a favicon. pass exactly one of: url (https), path (absolute path to a local png, jpg, gif, webp, avif or svg), or svg (svg markup: own icons, logos and illustrations drawn as vectors).">
+    <header>
+      <h4><a href="#image_upload">image_upload</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Upload an image</p>
+    <p>Uploads an image to the project's assets and returns its url, for a fill, a logo or a favicon. Pass exactly one of: url (https), path (absolute path to a local png, jpg, gif, webp, avif or svg), or svg (SVG markup: own icons, logos and illustrations drawn as vectors).</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>url</code></th><td><code class="type">string</code></td><td></td></tr>
+      <tr><th scope="row"><code>path</code></th><td><code class="type">string</code></td><td></td></tr>
+      <tr><th scope="row"><code>svg</code></th><td><code class="type">string</code></td><td></td></tr>
+      <tr><th scope="row"><code>name</code></th><td><code class="type">string</code></td><td></td></tr>
+      <tr><th scope="row"><code>altText</code></th><td><code class="type">string</code></td><td></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="file_upload" data-tool="file_upload Upload a file puts a file that is not an image into the project's assets — a video for a code component's file control, a pdf, a font — and returns its url. pass exactly one of: url (https, framer downloads it) or path (absolute path to a local mp4, m4v, mov, webm, pdf, woff, woff2, ttf or otf). images go through image_upload.">
+    <header>
+      <h4><a href="#file_upload">file_upload</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Upload a file</p>
+    <p>Puts a file that is not an image into the project's assets — a video for a code component's File control, a PDF, a font — and returns its url. Pass exactly one of: url (https, Framer downloads it) or path (absolute path to a local mp4, m4v, mov, webm, pdf, woff, woff2, ttf or otf). Images go through <a href="#image_upload"><code>image_upload</code></a>.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>url</code></th><td><code class="type">string</code></td><td></td></tr>
+      <tr><th scope="row"><code>path</code></th><td><code class="type">string</code></td><td></td></tr>
+      <tr><th scope="row"><code>name</code></th><td><code class="type">string</code></td><td></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="svg_add" data-tool="svg_add Add an SVG layer adds svg markup as an editable vector layer — own icons, logos, illustrations — and returns the new layer's id (nodeids). without parentid framer puts it into the layer selected in the editor; with it, it moves there. its size cannot be set through the dsl: to reuse a logo or icon across the site, ask the user to add the layer to a project vector set (vectors panel; the api cannot), then place it as an iconnode of that set. works through the sitewright plugin only.">
+    <header>
+      <h4><a href="#svg_add">svg_add</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-editor" title="Runs in the open editor, through the plugin">Plugin only</span>
+    </header>
+    <p class="tool-title">Add an SVG layer</p>
+    <p>Adds SVG markup as an editable vector layer — own icons, logos, illustrations — and returns the new layer's id (nodeIds). Without parentId Framer puts it into the layer selected in the editor; with it, it moves there. Its size cannot be set through the DSL: to reuse a logo or icon across the site, ask the user to add the layer to a project vector set (Vectors panel; the API cannot), then place it as an IconNode of that set. Works through the Sitewright plugin only.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>svg</code></th><td><code class="type">string</code></td><td>SVG markup with width, height and viewBox. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>name</code></th><td><code class="type">string</code></td><td></td></tr>
+      <tr><th scope="row"><code>parentId</code></th><td><code class="type">string</code></td><td>Layer to put the vector into. Without it Framer puts it into the layer selected in the editor.</td></tr>
+      <tr><th scope="row"><code>index</code></th><td><code class="type">number</code></td><td>Position among parentId's children; last by default.</td></tr>
+      </tbody>
+    </table></div>
+  </article>
+</section>
+<section class="tool-group" id="cms" data-group>
+  <h3>CMS <span>8</span></h3>
+  <p class="group-intro">Collections and their fields; items by slug, with values by field name. Undo does not cover CMS yet.</p>
+  <article class="tool" id="cms_collections_list" data-tool="cms_collections_list List CMS collections lists the project's cms collections with their fields (type, enum cases, the collection a reference points at) and item counts. collections a sync plugin manages are read-only here.">
+    <header>
+      <h4><a href="#cms_collections_list">cms_collections_list</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">List CMS collections</p>
+    <p>Lists the project's CMS collections with their fields (type, enum cases, the collection a reference points at) and item counts. Collections a sync plugin manages are read-only here.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>collection</code></th><td><code class="type">string</code></td><td>One collection by name or id; omit for all of them.</td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="cms_collection_create" data-tool="cms_collection_create Create a CMS collection creates a cms collection with its fields. every collection already has a title and a slug. undo does not restore cms changes yet: the journal cannot take this back.">
+    <header>
+      <h4><a href="#cms_collection_create">cms_collection_create</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Create a CMS collection</p>
+    <p>Creates a CMS collection with its fields. Every collection already has a title and a slug. Undo does not restore CMS changes yet: the journal cannot take this back.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>name</code></th><td><code class="type">string</code></td><td>Collection name, e.g. Blog. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>fields</code></th><td><code class="type">object[]</code></td><td>Fields besides the title and slug every collection has, in order. <span class="def">default <code>[]</code></span><ul class="fields"><li><code>name</code> <code class="type">string</code></li><li><code>type</code> <code class="type">&quot;string&quot; | &quot;formattedText&quot; | &quot;number&quot; | &quot;boolean&quot; | &quot;date&quot; | &quot;link&quot; | &quot;image&quot; | &quot;file&quot; | &quot;color&quot; | &quot;enum&quot; | &quot;collectionReference&quot; | &quot;multiCollectionReference&quot;</code></li><li><code>cases</code> <code class="type">string[]</code> <span class="opt">optional</span> — enum: its options, in order.</li><li><code>collection</code> <code class="type">string</code> <span class="opt">optional</span> — collectionReference / multiCollectionReference: the collection it points at, by name or id.</li><li><code>allowedFileTypes</code> <code class="type">string[]</code> <span class="opt">optional</span> — file: extensions or media types, e.g. [&quot;pdf&quot;] or [&quot;image/*&quot;]; any file when omitted.</li></ul></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="cms_collection_delete" data-tool="cms_collection_delete Delete a CMS collection deletes a cms collection with all its items and returns its fields and items. only when the user asked for it, or for a collection you created yourself in this task. needs a server api key. undo does not restore cms changes yet: the journal cannot take this back.">
+    <header>
+      <h4><a href="#cms_collection_delete">cms_collection_delete</a></h4>
+      <span class="badge destructive">Destructive</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Delete a CMS collection</p>
+    <p>Deletes a CMS collection with all its items and returns its fields and items. Only when the user asked for it, or for a collection you created yourself in this task. Needs a Server API key. Undo does not restore CMS changes yet: the journal cannot take this back.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>collection</code></th><td><code class="type">string</code></td><td>Collection name or id. <span class="req">required</span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="cms_fields_set" data-tool="cms_fields_set Change CMS fields adds, removes and orders a collection's fields. removing a field drops its value in every item: do it only when the user asked. undo does not restore cms changes yet: the journal cannot take this back.">
+    <header>
+      <h4><a href="#cms_fields_set">cms_fields_set</a></h4>
+      <span class="badge destructive">Destructive</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Change CMS fields</p>
+    <p>Adds, removes and orders a collection's fields. Removing a field drops its value in every item: do it only when the user asked. Undo does not restore CMS changes yet: the journal cannot take this back.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>collection</code></th><td><code class="type">string</code></td><td>Collection name or id. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>add</code></th><td><code class="type">object[]</code></td><td>Fields to add; one that exists with the same name and type is left alone. <span class="def">default <code>[]</code></span><ul class="fields"><li><code>name</code> <code class="type">string</code></li><li><code>type</code> <code class="type">&quot;string&quot; | &quot;formattedText&quot; | &quot;number&quot; | &quot;boolean&quot; | &quot;date&quot; | &quot;link&quot; | &quot;image&quot; | &quot;file&quot; | &quot;color&quot; | &quot;enum&quot; | &quot;collectionReference&quot; | &quot;multiCollectionReference&quot;</code></li><li><code>cases</code> <code class="type">string[]</code> <span class="opt">optional</span> — enum: its options, in order.</li><li><code>collection</code> <code class="type">string</code> <span class="opt">optional</span> — collectionReference / multiCollectionReference: the collection it points at, by name or id.</li><li><code>allowedFileTypes</code> <code class="type">string[]</code> <span class="opt">optional</span> — file: extensions or media types, e.g. [&quot;pdf&quot;] or [&quot;image/*&quot;]; any file when omitted.</li></ul></td></tr>
+      <tr><th scope="row"><code>remove</code></th><td><code class="type">string[]</code></td><td>Field names to remove, with their values in every item. <span class="def">default <code>[]</code></span></td></tr>
+      <tr><th scope="row"><code>order</code></th><td><code class="type">string[]</code></td><td>Field names in the order they should come first; the rest keep their order after them. <span class="def">default <code>[]</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="cms_items_list" data-tool="cms_items_list List CMS items lists a collection's items, a page at a time, with their values by field name. values: text and formattedtext as strings (markdown or html), numbers, true/false, dates as iso strings, link, file and color as strings, an image as its url or { &quot;url&quot;, &quot;alt&quot; }, an enum by its case name, a reference by the referenced item's slug (a list of slugs for multi-references); null clears a value.">
+    <header>
+      <h4><a href="#cms_items_list">cms_items_list</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">List CMS items</p>
+    <p>Lists a collection's items, a page at a time, with their values by field name. Values: text and formattedText as strings (markdown or HTML), numbers, true/false, dates as ISO strings, link, file and color as strings, an image as its URL or { &quot;url&quot;, &quot;alt&quot; }, an enum by its case name, a reference by the referenced item's slug (a list of slugs for multi-references); null clears a value.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>collection</code></th><td><code class="type">string</code></td><td>Collection name or id. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>offset</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>0</code></span></td></tr>
+      <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>50</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="cms_items_upsert" data-tool="cms_items_upsert Write CMS items creates or updates items by slug, with values by field name. values: text and formattedtext as strings (markdown or html), numbers, true/false, dates as iso strings, link, file and color as strings, an image as its url or { &quot;url&quot;, &quot;alt&quot; }, an enum by its case name, a reference by the referenced item's slug (a list of slugs for multi-references); null clears a value. undo does not restore cms changes yet: the journal cannot take this back.">
+    <header>
+      <h4><a href="#cms_items_upsert">cms_items_upsert</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Write CMS items</p>
+    <p>Creates or updates items by slug, with values by field name. Values: text and formattedText as strings (markdown or HTML), numbers, true/false, dates as ISO strings, link, file and color as strings, an image as its URL or { &quot;url&quot;, &quot;alt&quot; }, an enum by its case name, a reference by the referenced item's slug (a list of slugs for multi-references); null clears a value. Undo does not restore CMS changes yet: the journal cannot take this back.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>collection</code></th><td><code class="type">string</code></td><td>Collection name or id. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>items</code></th><td><code class="type">object[]</code></td><td> <span class="req">required</span><ul class="fields"><li><code>slug</code> <code class="type">string</code> — The item's slug: an item with this slug is updated, else created.</li><li><code>draft</code> <code class="type">boolean</code> <span class="opt">optional</span></li><li><code>values</code> <code class="type">object</code> <span class="opt">optional</span> — Field values by field name; fields left out keep their value.</li></ul></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="cms_items_delete" data-tool="cms_items_delete Delete CMS items deletes items by slug and returns their values, which cms_items_upsert takes back. delete only items you created or the user asked to remove. undo does not restore cms changes yet: the journal cannot take this back.">
+    <header>
+      <h4><a href="#cms_items_delete">cms_items_delete</a></h4>
+      <span class="badge destructive">Destructive</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Delete CMS items</p>
+    <p>Deletes items by slug and returns their values, which <a href="#cms_items_upsert"><code>cms_items_upsert</code></a> takes back. Delete only items you created or the user asked to remove. Undo does not restore CMS changes yet: the journal cannot take this back.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>collection</code></th><td><code class="type">string</code></td><td>Collection name or id. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>slugs</code></th><td><code class="type">string[]</code></td><td> <span class="req">required</span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="cms_items_order" data-tool="cms_items_order Order CMS items moves items to the top of a collection in the given order; the rest keep their order after them.">
+    <header>
+      <h4><a href="#cms_items_order">cms_items_order</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Order CMS items</p>
+    <p>Moves items to the top of a collection in the given order; the rest keep their order after them.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>collection</code></th><td><code class="type">string</code></td><td>Collection name or id. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>slugs</code></th><td><code class="type">string[]</code></td><td>Slugs in the order they should come first; the other items keep their order after them. <span class="req">required</span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+</section>
+<section class="tool-group" id="localization" data-group>
+  <h3>Localization <span>3</span></h3>
+  <p class="group-intro">What still needs translating, and the translations, one locale at a time. Locales are added in the editor.</p>
+  <article class="tool" id="locales_list" data-tool="locales_list List locales lists the site's locales (code, name, url slug, fallback) and which one is the default. the user adds locales in the framer editor; there is no tool for it.">
+    <header>
+      <h4><a href="#locales_list">locales_list</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">List locales</p>
+    <p>Lists the site's locales (code, name, URL slug, fallback) and which one is the default. The user adds locales in the Framer editor; there is no tool for it.</p>
+    <p class="no-params">No parameters.</p>
+  </article>
+  <article class="tool" id="localization_get" data-tool="localization_get Read translations lists translatable texts (pages, cms items, components, site settings) with their default-locale text and the translation for one locale. missing: true lists only what still needs translating. page through with offset.">
+    <header>
+      <h4><a href="#localization_get">localization_get</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Read translations</p>
+    <p>Lists translatable texts (pages, CMS items, components, site settings) with their default-locale text and the translation for one locale. missing: true lists only what still needs translating. Page through with offset.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>locale</code></th><td><code class="type">string</code></td><td>Locale by code, name or id, e.g. &quot;nl&quot; or &quot;Dutch&quot;. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>type</code></th><td><code class="type">&quot;page&quot; | &quot;collection&quot; | &quot;collection-item&quot; | &quot;component&quot; | &quot;template&quot; | &quot;settings&quot;</code></td><td>Only pages, CMS items, components…</td></tr>
+      <tr><th scope="row"><code>group</code></th><td><code class="type">string</code></td><td>Only the groups whose name contains this, e.g. a page path or a CMS item's title.</td></tr>
+      <tr><th scope="row"><code>missing</code></th><td><code class="type">boolean</code></td><td>Only texts without a translation, in groups not excluded from the locale. <span class="def">default <code>false</code></span></td></tr>
+      <tr><th scope="row"><code>offset</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>0</code></span></td></tr>
+      <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>100</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="localization_set" data-tool="localization_set Write translations writes translations for one locale by source id from localization_get (null clears one, so the fallback shows), and can mark groups ready or excluded for the locale. keep the markup of formattedtext sources (the html tags) and translate only the text. undo does not restore translations yet: the previous values are in the result.">
+    <header>
+      <h4><a href="#localization_set">localization_set</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Write translations</p>
+    <p>Writes translations for one locale by source id from <a href="#localization_get"><code>localization_get</code></a> (null clears one, so the fallback shows), and can mark groups ready or excluded for the locale. Keep the markup of formattedText sources (the HTML tags) and translate only the text. Undo does not restore translations yet: the previous values are in the result.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>locale</code></th><td><code class="type">string</code></td><td>Locale by code, name or id, e.g. &quot;nl&quot; or &quot;Dutch&quot;. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>translations</code></th><td><code class="type">object[]</code></td><td> <span class="def">default <code>[]</code></span><ul class="fields"><li><code>id</code> <code class="type">string</code> — Source id from localization_get.</li><li><code>value</code> <code class="type">string | null</code> — The translation; null clears it, so the fallback shows.</li></ul></td></tr>
+      <tr><th scope="row"><code>needsReview</code></th><td><code class="type">boolean</code></td><td>Mark the translations for the user to review. <span class="def">default <code>false</code></span></td></tr>
+      <tr><th scope="row"><code>groups</code></th><td><code class="type">object[]</code></td><td> <span class="def">default <code>[]</code></span><ul class="fields"><li><code>group</code> <code class="type">string</code> — Group name or id, e.g. a page or CMS item.</li><li><code>status</code> <code class="type">&quot;ready&quot; | &quot;excluded&quot;</code> — excluded keeps the group out of this locale.</li></ul></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+</section>
+<section class="tool-group" id="code" data-group>
+  <h3>Code (opt-in) <span>6</span></h3>
+  <p class="group-intro">Custom HTML and code components. The agent uses them only when you ask for code or the canvas cannot do the task, and the writes work only while you allow them.</p>
+  <article class="tool" id="custom_code_get" data-tool="custom_code_get Read custom code shows the site's custom html in each location (head start and end, body start and end).">
+    <header>
+      <h4><a href="#custom_code_get">custom_code_get</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Read custom code</p>
+    <p>Shows the site's custom HTML in each location (head start and end, body start and end).</p>
+    <p class="no-params">No parameters.</p>
+  </article>
+  <article class="tool" id="custom_code_set" data-tool="custom_code_set Set custom code sets the site's custom html for one location on every page (analytics, verification tags, fonts); html null removes it. use only when the user explicitly asks for custom code or a code component, or when the canvas (design_apply: components, variants, effects, interactions) cannot do what they asked. in that case tell the user why code is needed before writing it. never choose code on your own for something the canvas can build. works only while the user has custom code switched on in the plugin.">
+    <header>
+      <h4><a href="#custom_code_set">custom_code_set</a></h4>
+      <span class="badge destructive">Destructive</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Set custom code</p>
+    <p>Sets the site's custom HTML for one location on every page (analytics, verification tags, fonts); html null removes it. Use only when the user explicitly asks for custom code or a code component, or when the canvas (<a href="#design_apply"><code>design_apply</code></a>: components, variants, effects, interactions) cannot do what they asked. In that case tell the user why code is needed before writing it. Never choose code on your own for something the canvas can build. Works only while the user has Custom code switched on in the plugin.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>location</code></th><td><code class="type">&quot;headStart&quot; | &quot;headEnd&quot; | &quot;bodyStart&quot; | &quot;bodyEnd&quot;</code></td><td> <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>html</code></th><td><code class="type">string | null</code></td><td>The HTML for this location on every page; null removes it. <span class="req">required</span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="code_files_list" data-tool="code_files_list List code files lists the project's code files with their exports (code components and overrides).">
+    <header>
+      <h4><a href="#code_files_list">code_files_list</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">List code files</p>
+    <p>Lists the project's code files with their exports (code components and overrides).</p>
+    <p class="no-params">No parameters.</p>
+  </article>
+  <article class="tool" id="code_file_read" data-tool="code_file_read Read a code file returns a code file's source.">
+    <header>
+      <h4><a href="#code_file_read">code_file_read</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Read a code file</p>
+    <p>Returns a code file's source.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>name</code></th><td><code class="type">string</code></td><td>File name or path, e.g. Ticker.tsx. <span class="req">required</span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="code_file_write" data-tool="code_file_write Write a code file creates or replaces a code file: a react code component or a code override for framer. the replaced version is not returned (only its size): read it with code_file_read first when you may need it back. use only when the user explicitly asks for custom code or a code component, or when the canvas (design_apply: components, variants, effects, interactions) cannot do what they asked. in that case tell the user why code is needed before writing it. never choose code on your own for something the canvas can build. works only while the user has code components switched on in the plugin.">
+    <header>
+      <h4><a href="#code_file_write">code_file_write</a></h4>
+      <span class="badge destructive">Destructive</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Write a code file</p>
+    <p>Creates or replaces a code file: a React code component or a code override for Framer. The replaced version is not returned (only its size): read it with <a href="#code_file_read"><code>code_file_read</code></a> first when you may need it back. Use only when the user explicitly asks for custom code or a code component, or when the canvas (<a href="#design_apply"><code>design_apply</code></a>: components, variants, effects, interactions) cannot do what they asked. In that case tell the user why code is needed before writing it. Never choose code on your own for something the canvas can build. Works only while the user has Code components switched on in the plugin.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>name</code></th><td><code class="type">string</code></td><td>File name, e.g. Ticker.tsx; an existing file with this name or path is replaced. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>code</code></th><td><code class="type">string</code></td><td>The whole file: a React component or override module for Framer. <span class="req">required</span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="code_file_delete" data-tool="code_file_delete Delete a code file deletes a code file and returns its source. undo does not bring it back: delete only files you created yourself (a temporary probe) or the user asked to remove. works only while the user has code components switched on in the plugin.">
+    <header>
+      <h4><a href="#code_file_delete">code_file_delete</a></h4>
+      <span class="badge destructive">Destructive</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Delete a code file</p>
+    <p>Deletes a code file and returns its source. Undo does not bring it back: delete only files you created yourself (a temporary probe) or the user asked to remove. Works only while the user has Code components switched on in the plugin.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>name</code></th><td><code class="type">string</code></td><td>File name or path, e.g. Ticker.tsx. <span class="req">required</span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+</section>
+<section class="tool-group" id="journal-tools" data-group>
+  <h3>Journal <span>7</span></h3>
+  <p class="group-intro">What the agent did, undo and redo, checkpoints and restoring to one.</p>
+  <article class="tool" id="activity_list" data-tool="activity_list Activity journal lists what the ai did in this framer project, newest first: every tool call, undo, redo, restore, checkpoint and skill used, with a human title, the layer it ran through (plugin-api, server-api, framer-agent) and whether it can be undone. show picks changes with the skills (default), reads, skills, or all.">
+    <header>
+      <h4><a href="#activity_list">activity_list</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
+    </header>
+    <p class="tool-title">Activity journal</p>
+    <p>Lists what the AI did in this Framer project, newest first: every tool call, undo, redo, restore, checkpoint and skill used, with a human title, the layer it ran through (plugin-api, server-api, framer-agent) and whether it can be undone. show picks changes with the skills (default), reads, skills, or all.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>20</code></span></td></tr>
+      <tr><th scope="row"><code>show</code></th><td><code class="type">&quot;all&quot; | &quot;changes&quot; | &quot;reads&quot; | &quot;skills&quot;</code></td><td> <span class="def">default <code>&quot;changes&quot;</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="activity_get" data-tool="activity_get Activity entry one journal entry in full, including its undo steps (the state before and after each change).">
+    <header>
+      <h4><a href="#activity_get">activity_get</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
+    </header>
+    <p class="tool-title">Activity entry</p>
+    <p>One journal entry in full, including its undo steps (the state before and after each change).</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>id</code></th><td><code class="type">string</code></td><td> <span class="req">required</span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="activity_checkpoint" data-tool="activity_checkpoint Mark a checkpoint marks a point in the activity journal (call it when you start a new user task). activity_restore can later roll the project back to it.">
+    <header>
+      <h4><a href="#activity_checkpoint">activity_checkpoint</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
+    </header>
+    <p class="tool-title">Mark a checkpoint</p>
+    <p>Marks a point in the activity journal (call it when you start a new user task). <a href="#activity_restore"><code>activity_restore</code></a> can later roll the project back to it.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>label</code></th><td><code class="type">string</code></td><td> <span class="req">required</span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="activity_undo" data-tool="activity_undo Undo an AI change undoes the newest ai change still in effect, or the entry given by entryid; andlater also undoes every change made after that entry, bringing the project back to how it was before it. items someone changed after the ai are reported as conflicts and kept unless onconflict is force; an undo that kept every item changes nothing, so the entry can be undone again with force. color tokens, text styles and design_apply edits undo exactly; deleted nodes come back with new ids (results[].newid). undoing dsl edits needs the server api.">
+    <header>
+      <h4><a href="#activity_undo">activity_undo</a></h4>
+      <span class="badge destructive">Destructive</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Undo an AI change</p>
+    <p>Undoes the newest AI change still in effect, or the entry given by entryId; andLater also undoes every change made after that entry, bringing the project back to how it was before it. Items someone changed after the AI are reported as conflicts and kept unless onConflict is force; an undo that kept every item changes nothing, so the entry can be undone again with force. Color tokens, text styles and <a href="#design_apply"><code>design_apply</code></a> edits undo exactly; deleted nodes come back with new ids (results[].newId). Undoing DSL edits needs the Server API.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>entryId</code></th><td><code class="type">string</code></td><td></td></tr>
+      <tr><th scope="row"><code>andLater</code></th><td><code class="type">boolean</code></td><td>Also undo every change made after entryId. <span class="def">default <code>false</code></span></td></tr>
+      <tr><th scope="row"><code>dryRun</code></th><td><code class="type">boolean</code></td><td>Only report what would happen. <span class="def">default <code>false</code></span></td></tr>
+      <tr><th scope="row"><code>onConflict</code></th><td><code class="type">&quot;skip&quot; | &quot;force&quot;</code></td><td>skip keeps items someone changed after the AI; force overwrites them. <span class="def">default <code>&quot;skip&quot;</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="activity_redo" data-tool="activity_redo Redo an undone change reapplies the newest undo or restore still in effect, or the one given by entryid.">
+    <header>
+      <h4><a href="#activity_redo">activity_redo</a></h4>
+      <span class="badge destructive">Destructive</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Redo an undone change</p>
+    <p>Reapplies the newest undo or restore still in effect, or the one given by entryId.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>entryId</code></th><td><code class="type">string</code></td><td></td></tr>
+      <tr><th scope="row"><code>dryRun</code></th><td><code class="type">boolean</code></td><td>Only report what would happen. <span class="def">default <code>false</code></span></td></tr>
+      <tr><th scope="row"><code>onConflict</code></th><td><code class="type">&quot;skip&quot; | &quot;force&quot;</code></td><td>skip keeps items someone changed after the AI; force overwrites them. <span class="def">default <code>&quot;skip&quot;</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="activity_restore" data-tool="activity_restore Restore to a checkpoint brings the project back to how it was at a checkpoint: undoes the changes made after it and redoes undos of older changes made since. runs as a dry run unless dryrun is false, so check the preview first.">
+    <header>
+      <h4><a href="#activity_restore">activity_restore</a></h4>
+      <span class="badge destructive">Destructive</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Restore to a checkpoint</p>
+    <p>Brings the project back to how it was at a checkpoint: undoes the changes made after it and redoes undos of older changes made since. Runs as a dry run unless dryRun is false, so check the preview first.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>checkpointId</code></th><td><code class="type">string</code></td><td> <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>dryRun</code></th><td><code class="type">boolean</code></td><td>Preview only (default). Set false to restore. <span class="def">default <code>true</code></span></td></tr>
+      <tr><th scope="row"><code>onConflict</code></th><td><code class="type">&quot;skip&quot; | &quot;force&quot;</code></td><td>skip keeps items someone changed after the AI; force overwrites them. <span class="def">default <code>&quot;skip&quot;</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="activity_open" data-tool="activity_open Open the activity journal returns the link to the local app in the browser: the activity journal with everything the ai did in the project, undo, redo and checkpoints, the settings (custom code, code components, plugin first), and the window that connects the framer plugin. give the link to the user.">
+    <header>
+      <h4><a href="#activity_open">activity_open</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
+    </header>
+    <p class="tool-title">Open the activity journal</p>
+    <p>Returns the link to the local app in the browser: the activity journal with everything the AI did in the project, undo, redo and checkpoints, the settings (custom code, code components, plugin first), and the window that connects the Framer plugin. Give the link to the user.</p>
+    <p class="no-params">No parameters.</p>
+  </article>
+</section>
+<section class="tool-group" id="knowledge" data-group>
+  <h3>Knowledge <span>2</span></h3>
+  <p class="group-intro">The design guide built into Sitewright, and Framer's own DSL reference and guides.</p>
+  <article class="tool" id="design_guide" data-tool="design_guide Design guide how to build framer sites that look designed and hold together, from measuring top framer sites and from live builds. read &quot;workflow&quot; before building or restyling any page, then the topic for the task. topics: workflow (the order of work for a new page or redesign, and the checks before calling it done); layout (alignment, distribution, sizes by role, equal heights, grids, containers, spacing, breakpoints, buttons, images); typography (families, scale, tracking, line height, balance, measure, labels, breakpoint sizes); direction (what makes a site look designed, with numbers from top framer sites, and the habits of generated pages); sections (navigation, hero, features, proof, pricing, faq, closing call to action and footer); verify (the audit, looking at the result, and the checklist before handing a page over); no-key (what works through the plugin without a server api key, and how to get the rest anyway).">
+    <header>
+      <h4><a href="#design_guide">design_guide</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
+    </header>
+    <p class="tool-title">Design guide</p>
+    <p>How to build Framer sites that look designed and hold together, from measuring top Framer sites and from live builds. Read &quot;workflow&quot; before building or restyling any page, then the topic for the task. Topics: workflow (the order of work for a new page or redesign, and the checks before calling it done); layout (alignment, distribution, sizes by role, equal heights, grids, containers, spacing, breakpoints, buttons, images); typography (families, scale, tracking, line height, balance, measure, labels, breakpoint sizes); direction (what makes a site look designed, with numbers from top Framer sites, and the habits of generated pages); sections (navigation, hero, features, proof, pricing, FAQ, closing call to action and footer); verify (the audit, looking at the result, and the checklist before handing a page over); no-key (what works through the plugin without a Server API key, and how to get the rest anyway).</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>topic</code></th><td><code class="type">&quot;workflow&quot; | &quot;layout&quot; | &quot;typography&quot; | &quot;direction&quot; | &quot;sections&quot; | &quot;verify&quot; | &quot;no-key&quot;</code></td><td>Which part of the guide to read. <span class="def">default <code>&quot;workflow&quot;</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="framer_docs" data-tool="framer_docs Framer DSL reference framer's official agent reference for the design dsl (commands, attributes, layout rules, cms, variables, forms, effects). no arguments lists sections; pass section to read one, or query to search. guide reads one of framer's implementation guides (faq, navigations, buttons, effects, overlays, forms, grids…): read the one for what you build before building it, they hold the recipes the reference lacks (e.g. how an accordion animates).">
+    <header>
+      <h4><a href="#framer_docs">framer_docs</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Framer DSL reference</p>
+    <p>Framer's official agent reference for the design DSL (commands, attributes, layout rules, CMS, variables, forms, effects). No arguments lists sections; pass section to read one, or query to search. guide reads one of Framer's implementation guides (FAQ, Navigations, Buttons, Effects, Overlays, Forms, Grids…): read the one for what you build before building it, they hold the recipes the reference lacks (e.g. how an accordion animates).</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>section</code></th><td><code class="type">string</code></td><td>Section id or title, e.g. &quot;updating-the-project&quot; or &quot;Variables&quot;.</td></tr>
+      <tr><th scope="row"><code>query</code></th><td><code class="type">string</code></td><td>Full-text search across the reference.</td></tr>
+      <tr><th scope="row"><code>guide</code></th><td><code class="type">string</code></td><td>One of Framer's implementation guides by name, e.g. &quot;FAQ&quot;, &quot;Navigations&quot;, &quot;Buttons&quot;, &quot;Effects&quot;, &quot;Overlays&quot;, &quot;Forms&quot;: its recipe with example nodes.</td></tr>
+      <tr><th scope="row"><code>offset</code></th><td><code class="type">number</code></td><td>Continue a long section from nextOffset. <span class="def">default <code>0</code></span></td></tr>
+      <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td>Maximum characters of content to return. <span class="def">default <code>20000</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+</section>
+<!-- tools:end -->
+        </section>
+      </main>
+    </div>
+
+    <footer>
+      <div class="wrap">
+        <p>
+          Sitewright is free and open source under the
+          <a href="https://github.com/maximwas/framer-sitewright/blob/main/LICENSE">MIT license</a>. Unofficial: not
+          affiliated with or endorsed by Framer. “Framer” is a trademark of Framer B.V.
+        </p>
+        <p><a href="../">Home</a> · <a href="https://github.com/maximwas/framer-sitewright">GitHub</a></p>
+      </div>
+    </footer>
+  </body>
+</html>
