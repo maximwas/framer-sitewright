@@ -2,7 +2,7 @@ import * as z from "zod";
 import { FONT_STYLES } from "../../constants/fonts.ts";
 import { countOf } from "../../utils/text.ts";
 import { defineOperation } from "../define.ts";
-import { fontFamilies, uploadedFontFamilies } from "./font-catalog.ts";
+import { exactFontFamily, fontFamilies, uploadedFontFamilies } from "./font-catalog.ts";
 
 function rank(family: string, needle: string): number {
   const name = family.toLowerCase();
@@ -40,6 +40,22 @@ export const fontsSearch = defineOperation({
     totalMatches: z.number().int(),
   }),
   async run({ runtime }, { query, limit }) {
+    // A whole family name needs no library scan: that scan is what takes over 30 s through the plugin.
+    const exact = await exactFontFamily(runtime.port, query);
+
+    if (exact !== null) {
+      return {
+        fonts: [
+          {
+            family: exact.family,
+            source: "library" as const,
+            variants: exact.variants,
+          },
+        ],
+        totalMatches: 1,
+      };
+    }
+
     const needle = query.trim().toLowerCase();
     const library = await fontFamilies(runtime);
     const uploaded = uploadedFontFamilies(library, await runtime.port.getTextStyles());

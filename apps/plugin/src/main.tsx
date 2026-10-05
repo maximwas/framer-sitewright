@@ -17,6 +17,11 @@ const link = new WindowLink({
 
 link.onEvent(revealOnRequest);
 
+// The font library takes over 30 s through the plugin: load it in the background once, so font searches find it ready.
+void runInPlugin(pluginRuntime, isAllowedTo, "fonts.search", { query: "serif" }, { journal: false }).catch(
+  () => undefined,
+);
+
 const root = document.getElementById("root");
 
 if (root === null) {
