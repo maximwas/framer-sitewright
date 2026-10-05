@@ -73,7 +73,13 @@ export const codeFileWrite = defineOperation({
   }),
   output: CodeFileSummarySchema.extend({
     created: z.boolean(),
-    previous: z.string().nullable(),
+    /** The size of the version it replaced; its source is not repeated back (code_file_read reads it before). */
+    replaced: z
+      .object({
+        lines: z.number().int(),
+        characters: z.number().int(),
+      })
+      .nullable(),
   }),
   async run({ runtime }, { name, code }) {
     const existing = (await runtime.port.getCodeFiles()).find((candidate) => matches(candidate, name));
@@ -83,7 +89,13 @@ export const codeFileWrite = defineOperation({
     return {
       ...summaryOf(file),
       created: existing === undefined,
-      previous: existing?.content ?? null,
+      replaced:
+        existing === undefined
+          ? null
+          : {
+              lines: existing.content.split("\n").length,
+              characters: existing.content.length,
+            },
     };
   },
   describe(_input, { name, created }) {

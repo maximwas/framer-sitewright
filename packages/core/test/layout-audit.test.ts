@@ -516,4 +516,32 @@ describe("layout audit", () => {
 
     expect(issues.map((found) => found.rule)).not.toContain("narrow-row");
   });
+
+  it("regression: a breakpoint's own fixed size and a sticky 100vh stage are not findings (the DSL prints no position)", () => {
+    const stage = node("FrameNode", "Stage", {
+      layout: "stack",
+      position: "sticky",
+      width: "1fr",
+      height: "100vh",
+    });
+    const desktop = {
+      ...node(
+        "FrameNode",
+        "Desktop",
+        {
+          layout: "stack",
+          stackDirection: "vertical",
+          width: "1440px",
+          height: "1000px",
+        },
+        [stage, text("Title", "Heading 1", "Sites, live")],
+      ),
+      $isPrimary: true,
+    };
+    const rules = auditTree(node("WebPageNode", "Home", {}, [desktop]), context()).map((found) => found.rule);
+
+    for (const rule of ["fixed-width", "fixed-height", "fixed-vh"]) {
+      expect(rules, rule).not.toContain(rule);
+    }
+  });
 });

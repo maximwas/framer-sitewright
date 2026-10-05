@@ -19,3 +19,6 @@ export const USE_SERVER_API_HINT = `Or use the Server API: ${SERVER_API_SETUP_HI
  * network would otherwise cost every call routed to the plugin a failed connect.
  */
 export const LEARN_PROJECT_COOLDOWN_MS = 30_000;
+
+/** Operations after which the Server API session is reopened: they change what its project snapshot lists (code). */
+export const SERVER_API_STALE_AFTER: ReadonlySet<string> = new Set(["codeFiles.write", "codeFiles.delete"]);

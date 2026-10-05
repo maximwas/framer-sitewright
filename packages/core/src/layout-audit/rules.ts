@@ -24,6 +24,7 @@ import {
   TABLET_GRID_MAX_COLUMNS,
   TABLET_MAX_WIDTH_PX,
   TEMPLATE_REPEAT,
+  VIEWPORT_POSITIONS,
 } from "../constants/layout-audit.ts";
 import type { SerializedNode } from "../types/dsl.ts";
 import type { AuditContext, AuditIssue, AuditTextStyle, NodeRule, PageRule } from "../types/layout-audit.ts";
@@ -407,9 +408,9 @@ const autoWidthText: NodeRule = (node) =>
         )
     : [];
 
-/** A fixed viewport height cuts content on short screens and long text. */
+/** A fixed viewport height cuts content on short screens and long text; a sticky stage or fixed overlay means it. */
 const fixedViewportHeight: NodeRule = (node) =>
-  isFrame(node) && /vh$/.test(attr(node, "height") ?? "")
+  isFrame(node) && /vh$/.test(attr(node, "height") ?? "") && !VIEWPORT_POSITIONS.has(attr(node, "position") ?? "")
     ? [
         issue(
           "fixed-vh",

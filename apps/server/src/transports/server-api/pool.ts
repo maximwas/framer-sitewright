@@ -8,8 +8,9 @@ import type { ServerApiTransport } from "./transport.ts";
 
 /**
  * Which Server API a call uses: the saved project framer_connect chose, else the key saved for the project the plugin
- * is open in, else the one from the environment (FRAMER_API_KEY and FRAMER_PROJECT_URL), else without the plugin the
- * project used last. A project's connection opens on first use and stays for the session; a new key for it replaces
+ * is open in. Without the plugin (it reloads, the window closed): the saved project this session worked on, so the
+ * session never slides into another project; else the one from the environment (FRAMER_API_KEY and
+ * FRAMER_PROJECT_URL), else the project used last. A project's connection opens on first use and stays for the session; a new key for it replaces
  * it. Without any key there is no Server API and the plugin does the work.
  */
 export class ServerApiPool {
@@ -20,6 +21,8 @@ export class ServerApiPool {
   #pluginProject: () => ProjectRef | null = () => null;
   /** framer_connect's choice, and the plugin's project when it was made (or since seen on the chosen project). */
   #chosen: { readonly id: string; pluginAt: string | null } | null = null;
+  /** The saved project this session last worked on, chosen or through the plugin: kept while the plugin is away. */
+  #session: string | null = null;
 
   /** Only the Server API from the environment (or none): tests, CI, setups without saved keys. */
   static fixed(transport: ServerApiTransport | null): ServerApiPool {
@@ -88,6 +91,12 @@ export class ServerApiPool {
 
       // The environment's project may differ from the plugin's: the router's same-project checks catch that.
       return saved === null ? this.#env : this.#for(saved);
+    }
+
+    const session = this.#session === null ? null : (this.#keys?.get(this.#session) ?? null);
+
+    if (session !== null) {
+      return this.#for(session);
     }
 
     if (this.#env !== null) {
@@ -173,6 +182,8 @@ export class ServerApiPool {
 
   #for(project: StoredProject): ServerApiTransport {
     const open = this.#byProject.get(project.id);
+
+    this.#session = project.id;
 
     if (open !== undefined && open.key === project.key) {
       return open.transport;

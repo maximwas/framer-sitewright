@@ -1,4 +1,4 @@
-import { AUDIT_MAX_ISSUES, AUDIT_SEVERITIES } from "../constants/layout-audit.ts";
+import { AUDIT_MAX_ISSUES, AUDIT_SEVERITIES, BREAKPOINT_SIZE_RULES } from "../constants/layout-audit.ts";
 import type { SerializedNode } from "../types/dsl.ts";
 import type { FramerPort, TextStyleData } from "../types/framer-port.ts";
 import type { AuditContext, AuditIssue, AuditTextStyle } from "../types/layout-audit.ts";
@@ -16,8 +16,16 @@ export function auditTree(root: SerializedNode, context: AuditContext): AuditIss
     return [];
   }
 
-  const nodeIssues = walk(root).flatMap((node) => NODE_RULES.flatMap((rule) => rule(node, context)));
   const breakpoints = childrenOf(root);
+  // A breakpoint's width is the window it starts at and its height comes from a layout template: not content sizes.
+  const frames = new Set(
+    [...(root.type === "WebPageNode" ? breakpoints : []), ...(root.$isPrimary || root.$isReplica ? [root] : [])].map(
+      (node) => node.id,
+    ),
+  );
+  const nodeIssues = walk(root)
+    .flatMap((node) => NODE_RULES.flatMap((rule) => rule(node, context)))
+    .filter((found) => !(frames.has(found.nodeId) && BREAKPOINT_SIZE_RULES.has(found.rule)));
   const primary = breakpoints.find((breakpoint) => breakpoint.$isPrimary) ?? breakpoints[0];
   const pageIssues =
     root.type === "WebPageNode"

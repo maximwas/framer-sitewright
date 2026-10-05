@@ -90,3 +90,9 @@ export const CENTERED_MIN_HEADINGS = 4;
 
 /** A text at least this long with width auto in a column does not wrap to the column. */
 export const AUTO_TEXT_CHARS = 30;
+
+/** Size rules a breakpoint frame is exempt from: its width is where the breakpoint starts. */
+export const BREAKPOINT_SIZE_RULES: ReadonlySet<string> = new Set(["fixed-width", "fixed-height"]);
+
+/** Positions that take a viewport height on purpose: a sticky stage, a fixed overlay. */
+export const VIEWPORT_POSITIONS: ReadonlySet<string> = new Set(["sticky", "fixed"]);

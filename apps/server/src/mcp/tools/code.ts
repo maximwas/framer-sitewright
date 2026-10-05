@@ -49,7 +49,7 @@ export function registerCodeTools(server: McpServer, context: ToolContext): void
   addOperationTool(server, context, codeFileWrite, {
     name: "code_file_write",
     title: "Write a code file",
-    description: `Creates or replaces a code file: a React code component or a code override for Framer. ${CODE_TOOLS_RULE} Works only while the user has Code components switched on in the plugin.`,
+    description: `Creates or replaces a code file: a React code component or a code override for Framer. The replaced version is not returned (only its size): read it with code_file_read first when you may need it back. ${CODE_TOOLS_RULE} Works only while the user has Code components switched on in the plugin.`,
     before: allowed("codeComponents"),
   });
 

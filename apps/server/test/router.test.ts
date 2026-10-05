@@ -1,7 +1,14 @@
 import { mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { colorTokensList, designApply, type Operation, runOperation, selectionGet } from "@sitewright/core";
+import {
+  codeFileWrite,
+  colorTokensList,
+  designApply,
+  type Operation,
+  runOperation,
+  selectionGet,
+} from "@sitewright/core";
 import { createFakeRuntime } from "@sitewright/core/testing";
 import type { Framer } from "framer-api";
 import { describe, expect, it } from "vitest";
@@ -79,6 +86,36 @@ describe("TransportRouter auto", () => {
     expect(router.status().active).toBe("plugin");
   });
 
+  it("regression: opens a fresh Server API session after code changes, so its component list shows them", async () => {
+    const { plugin } = fakePlugin("project-1");
+    let connections = 0;
+    const session = new ServerApiSession({
+      projectUrl: "https://framer.com/projects/Sandbox--abc",
+      apiKey: "key",
+      logger: createLogger("silent"),
+      connectFn: async () => {
+        connections += 1;
+
+        return { disconnect: async () => undefined } as unknown as Framer;
+      },
+    });
+    const { runtime } = createFakeRuntime();
+    const router = new TransportRouter(
+      ServerApiPool.fixed(new ServerApiTransport(session, () => runtime)),
+      plugin,
+      "auto",
+    );
+
+    await router.run(designApply, { dsl: 'SET node name="x";' }).catch(() => undefined);
+    await router.run(codeFileWrite, {
+      name: "Ticker.tsx",
+      code: "export default function Ticker() { return null }",
+    });
+    await router.run(designApply, { dsl: 'SET node name="y";' }).catch(() => undefined);
+
+    expect(connections).toBe(2);
+  });
+
   it("regression: gives nothing to a plugin open in another project, so two servers never mix projects", async () => {
     const { plugin, ran } = fakePlugin("another-project");
     const router = new TransportRouter(serverApi(), plugin, "auto");
@@ -120,11 +157,11 @@ describe("TransportRouter selection", () => {
 });
 
 /** A pool over a fresh keys.json whose Server APIs open fake projects; `opened` lists the links they connected to. */
-async function poolWithKeys() {
+async function poolWithKeys(env: ServerApiTransport | null = null) {
   const keys = new KeyStore(join(await mkdtemp(join(tmpdir(), "sitewright-keys-")), "keys.json"));
   const opened: string[] = [];
   const pool = new ServerApiPool({
-    env: null,
+    env,
     keys,
     create: ({ id, name, url }) => {
       opened.push(url);
@@ -184,6 +221,41 @@ describe("TransportRouter with keys saved per project", () => {
 
     await expect(withoutKey.run(designApply, { dsl: 'SET node name="x";' })).rejects.toThrow(/Server API key/);
     expect(unsaved.ran).toEqual(["design.apply"]);
+  });
+
+  it("regression: keeps the session's project when the plugin drops, instead of the environment's other project", async () => {
+    const environment = new ServerApiTransport(
+      new ServerApiSession({
+        projectUrl: "https://framer.com/projects/Sandbox--env",
+        apiKey: "key",
+        logger: createLogger("silent"),
+        connectFn: async () => ({ disconnect: async () => undefined }) as unknown as Framer,
+      }),
+      () => createFakeRuntime().runtime,
+    );
+    const { keys, pool } = await poolWithKeys(environment);
+
+    await keys.set({
+      id: "project-1",
+      name: "Client",
+      url: "https://framer.com/projects/Client--abc",
+      key: "key",
+    });
+
+    let plugin: { id: string; name: string } | null = {
+      id: "project-1",
+      name: "Client",
+    };
+
+    pool.followPlugin(() => plugin);
+
+    const client = pool.current();
+
+    expect(client).not.toBe(environment);
+
+    // The plugin reloads: the session goes on with the client's project, not the sandbox in .env.
+    plugin = null;
+    expect(pool.current()).toBe(client);
   });
 
   it("switches to a project framer_connect names, until the plugin opens another one", async () => {

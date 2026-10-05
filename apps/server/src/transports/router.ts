@@ -7,7 +7,7 @@ import {
   type TransportKind,
 } from "@sitewright/core";
 import type * as z from "zod";
-import { LEARN_PROJECT_COOLDOWN_MS, SERVER_API_SETUP_HINT } from "../constants/transports.ts";
+import { LEARN_PROJECT_COOLDOWN_MS, SERVER_API_SETUP_HINT, SERVER_API_STALE_AFTER } from "../constants/transports.ts";
 import type {
   FramerTransport,
   OperationRunOptions,
@@ -104,6 +104,21 @@ export class TransportRouter {
   }
 
   async run<I extends z.ZodObject, O extends z.ZodObject>(
+    operation: Operation<I, O>,
+    input: unknown,
+    options?: OperationRunOptions,
+  ): Promise<z.output<O>> {
+    const output = await this.#dispatch(operation, input, options);
+
+    // The Server API session keeps the project as it connected: its component list would miss the new code.
+    if (SERVER_API_STALE_AFTER.has(operation.name)) {
+      await this.#serverApi?.reconnect();
+    }
+
+    return output;
+  }
+
+  async #dispatch<I extends z.ZodObject, O extends z.ZodObject>(
     operation: Operation<I, O>,
     input: unknown,
     options?: OperationRunOptions,
