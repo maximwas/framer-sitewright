@@ -5,8 +5,9 @@ import { FEED_VIEW_STORAGE_KEY } from "../constants/activity.ts";
 import type { FeedViewState } from "../types/activity.ts";
 
 /**
- * Which part of the journal the page shows, and whose: kept in localStorage, so it reopens the way it was left. A
- * remembered view this version no longer has (the plugin's old "off") falls back to the default.
+ * Which part of the journal the page shows, and whose. The view is kept in localStorage, so it reopens the way it was
+ * left (a view this version no longer has falls back to the default); another project picked to look at is not: the
+ * page opens on the project the plugin is open in.
  */
 export const feedViewStore = createStore<FeedViewState>()(
   persist(
@@ -19,17 +20,13 @@ export const feedViewStore = createStore<FeedViewState>()(
     {
       name: FEED_VIEW_STORAGE_KEY,
       storage: createJSONStorage(() => localStorage),
-      partialize: ({ view, project }) => ({
-        view,
-        project,
-      }),
+      partialize: ({ view }) => ({ view }),
       merge: (persisted, current) => {
-        const { view, project } = (persisted ?? {}) as { view?: unknown; project?: unknown };
+        const { view } = (persisted ?? {}) as { view?: unknown };
 
         return {
           ...current,
           ...(ACTIVITY_VIEWS.includes(view as ActivityView) ? { view: view as ActivityView } : {}),
-          ...(typeof project === "string" ? { project } : {}),
         };
       },
     },

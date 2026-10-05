@@ -41,7 +41,22 @@ export const componentsRead = defineOperation({
     const wanted = ids === undefined ? canvas.map(({ id }) => id) : ids;
     const controls =
       wanted.length === 0 ? {} : ControlsByIdSchema.parse(await agent.readComponentControls({ componentIds: wanted }));
-    const names = new Map(canvas.map((entry) => [entry.id, entry.displayName]));
+    const codeComponents = Object.entries(catalog.project.code).flatMap(([file, entries]) => {
+      const declared = CodeComponentEntriesSchema.safeParse(entries);
+
+      return declared.success
+        ? declared.data.map((entry) => ({
+            id: entry.id,
+            name: entry.displayName ?? entry.name ?? entry.id,
+            file,
+          }))
+        : [];
+    });
+    // Code components are named by their export: the journal shows "ScrollVideo", not codeFile/…:default.
+    const names = new Map([
+      ...codeComponents.map((entry) => [entry.id, entry.name] as const),
+      ...canvas.map((entry) => [entry.id, entry.displayName] as const),
+    ]);
 
     return {
       components: wanted.map((id) => ({
@@ -50,17 +65,7 @@ export const componentsRead = defineOperation({
         controls: controls[id] ?? null,
       })),
       codeFiles: Object.keys(catalog.project.code),
-      codeComponents: Object.entries(catalog.project.code).flatMap(([file, entries]) => {
-        const declared = CodeComponentEntriesSchema.safeParse(entries);
-
-        return declared.success
-          ? declared.data.map((entry) => ({
-              id: entry.id,
-              name: entry.displayName ?? entry.name ?? entry.id,
-              file,
-            }))
-          : [];
-      }),
+      codeComponents,
     };
   },
   describe({ ids }, { components, codeComponents }) {

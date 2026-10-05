@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { NODE_TYPE_LABELS } from "../../constants/history.ts";
 import { LAYOUT_AUDIT_DEPTH } from "../../constants/layout-audit.ts";
 import { OperationError } from "../../errors.ts";
 import { auditContext, auditTree } from "../../layout-audit/audit.ts";
@@ -22,6 +23,8 @@ export const layoutAudit = defineOperation({
   }),
   output: z.object({
     pagePath: z.string(),
+    /** What was audited, by name: the page, or the layer of nodeId. */
+    target: z.string(),
     issues: z.array(AuditIssueSchema),
     summary: z.string(),
   }),
@@ -41,6 +44,7 @@ export const layoutAudit = defineOperation({
 
     return {
       pagePath,
+      target: nodeId === undefined ? `Page ${pagePath}` : (tree.name ?? NODE_TYPE_LABELS[tree.type] ?? tree.type),
       issues,
       summary:
         issues.length === 0
@@ -48,9 +52,9 @@ export const layoutAudit = defineOperation({
           : `${countOf(issues.length, "issue")}, ${countOf(defects, "visible defect")}: fix the defects first.`,
     };
   },
-  describe({ pagePath, nodeId }, { issues }) {
+  describe(_input, { target, issues }) {
     return {
-      subject: nodeId ?? `Page ${pagePath}`,
+      subject: target,
       summary: countOf(issues.length, "issue"),
     };
   },

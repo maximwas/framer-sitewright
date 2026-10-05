@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { NODE_TYPE_LABELS } from "../../constants/history.ts";
 import { NODE_FORMATS, NODES_READ_MAX_CHARS } from "../../constants/nodes.ts";
 import { OperationError } from "../../errors.ts";
 import { parseSerializedNode } from "../../history/dsl/serialized.ts";
@@ -68,7 +69,10 @@ export const nodesRead = defineOperation({
   describe({ nodeId, pagePath, depth }, { xml }) {
     const root = xml === undefined ? undefined : parseXml(xml).find(isElement);
     const id = root?.props.id ?? nodeId;
-    const name = root?.props.name ?? (nodeId === undefined ? `Page ${pagePath}` : nodeId);
+    // An unnamed layer is called by its type: the journal shows names, never ids.
+    const name =
+      root?.props.name ??
+      (nodeId === undefined ? `Page ${pagePath}` : (NODE_TYPE_LABELS[root?.type ?? ""] ?? root?.type ?? "Layer"));
 
     return {
       subject: `${name}, depth ${depth}`,
