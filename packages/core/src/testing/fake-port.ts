@@ -170,6 +170,22 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
         url,
       };
     },
+    uploadFile: async ({ file, name }) => {
+      const id = nextId("file");
+      const extension = /\.(\w+)(?:\?|$)/.exec(file)?.[1] ?? null;
+
+      state.uploadedFiles.push({
+        id,
+        source: file,
+        name: name ?? null,
+      });
+
+      return {
+        id,
+        url: `https://framerusercontent.com/assets/${id}${extension === null ? "" : `.${extension}`}`,
+        extension,
+      };
+    },
     addSVG: async ({ svg }) => {
       state.svgs.push(svg);
       // Like the editor, select what was inserted.

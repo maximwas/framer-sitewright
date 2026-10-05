@@ -55,6 +55,8 @@ export interface FakeFramerState {
   /** Returned by the next applyChanges call instead of running it. */
   nextApplyResult: unknown;
   uploadedImages: { id: string; url: string; name: string | null }[];
+  /** uploadFile calls: what Framer was asked to fetch. */
+  uploadedFiles: { id: string; source: string; name: string | null }[];
   svgs: string[];
   /** Ids selected in the editor; addSVG selects what it inserts. */
   selection: string[];

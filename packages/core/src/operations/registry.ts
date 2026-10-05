@@ -1,4 +1,5 @@
 import type { AnyOperation } from "../types/operations.ts";
+import { fileUpload } from "./assets/file-upload.ts";
 import { iconsSearch } from "./assets/icons-search.ts";
 import { imageUpload } from "./assets/image-upload.ts";
 import { imagesSearch } from "./assets/images-search.ts";
@@ -48,6 +49,7 @@ const OPERATIONS: readonly AnyOperation[] = [
   projectPublish,
   imagesSearch,
   imageUpload,
+  fileUpload,
   svgAdd,
   iconsSearch,
   componentsRead,

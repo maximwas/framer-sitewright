@@ -14,7 +14,8 @@ export const breakpointsAdd = defineOperation({
   name: "breakpoints.add",
   effect: "write",
   idempotent: true,
-  permissions: ["WebPageNode.addBreakpoint"],
+  // WebPageNode.addBreakpoint is `@alpha`: framer.isAllowedTo does not list it, Framer checks the write itself.
+  permissions: [],
   input: z.strictObject({
     pagePath: z.string().startsWith("/").default("/").describe('Page to add them to, e.g. "/".'),
     breakpoints: z

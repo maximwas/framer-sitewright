@@ -75,6 +75,7 @@ export function defaultState(): FakeFramerState {
     systemPrompt: "# Overview\n\nFake prompt.\n",
     nextApplyResult: undefined,
     uploadedImages: [],
+    uploadedFiles: [],
     svgs: [],
     selection: [],
     moves: [],

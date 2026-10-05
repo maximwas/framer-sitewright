@@ -44,6 +44,7 @@ export {
 export { describeCall, trimDetail } from "./history/activity-detail.ts";
 export { applyAliases } from "./history/aliases.ts";
 export { HistoryRecorder, withJournal } from "./history/recorder.ts";
+export { fileUpload } from "./operations/assets/file-upload.ts";
 export { iconsSearch } from "./operations/assets/icons-search.ts";
 export { imageUpload } from "./operations/assets/image-upload.ts";
 export { imagesSearch } from "./operations/assets/images-search.ts";

@@ -28,7 +28,6 @@ export type PluginPermission =
   | "CodeFile.setFileContent"
   | "CodeFile.remove"
   | "Node.setAttributes"
-  | "WebPageNode.addBreakpoint"
   | "publish";
 
 /** A unit of work with typed input and output that runs wherever the `framer` object lives. */

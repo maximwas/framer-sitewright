@@ -2,6 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/server";
 import {
   type ActivityNote,
   ActivityNoteSchema,
+  fileUpload,
   iconsSearch,
   imagesSearch,
   imageUpload,
@@ -51,6 +52,13 @@ export function registerAssetTools(server: McpServer, context: ToolContext): voi
         ...(name === undefined ? {} : { name }),
         ...(altText === undefined ? {} : { altText }),
       }),
+  });
+
+  addOperationTool(server, context, fileUpload, {
+    name: "file_upload",
+    title: "Upload a file",
+    description:
+      "Puts a file that is not an image into the project's assets from an https URL — a video for a code component's File control, a PDF, a font — and returns its url. Images go through image_upload.",
   });
 
   addOperationTool(server, context, svgAdd, {

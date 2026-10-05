@@ -20,6 +20,8 @@ describe("stdio server", () => {
       env: {
         ...inherited,
         CLAUDE_PROJECT_DIR: projectDir,
+        // Keys, journal and settings of this machine stay out: a saved project key would connect the Server API.
+        SITEWRIGHT_HOME: projectDir,
         FRAMER_API_KEY: "",
         FRAMER_PROJECT_URL: "",
         LOG_LEVEL: "info",
@@ -41,7 +43,7 @@ describe("stdio server", () => {
     try {
       const { tools } = await client.listTools();
 
-      expect(tools).toHaveLength(38);
+      expect(tools).toHaveLength(39);
 
       const status = await client.callTool({
         name: "framer_status",

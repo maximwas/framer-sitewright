@@ -147,6 +147,13 @@ export interface ImageAssetInfo {
   readonly url: string;
 }
 
+/** An uploaded file: the url goes into a File control (a video's source) or a link. */
+export interface FileAssetInfo {
+  readonly id: string;
+  readonly url: string;
+  readonly extension: string | null;
+}
+
 /** A node on the canvas. A page's breakpoints are frames that say so, with their width ("1440px"). */
 export interface CanvasNodeData {
   readonly id: string;
@@ -222,6 +229,8 @@ export interface FramerPort {
   removeNodes(nodeIds: string[]): Promise<void>;
   /** `image`: an https URL or a data URL. */
   uploadImage(image: { image: string; name?: string; altText?: string }): Promise<ImageAssetInfo>;
+  /** Any file (a video, a PDF, a font); `file`: an https URL Framer fetches, or a data URL. */
+  uploadFile(file: { file: string; name?: string }): Promise<FileAssetInfo>;
   /** Inserts an SVG as a vector layer (the plugin); the Server API refuses it ("Failed to optimize SVG"). */
   addSVG(svg: { svg: string; name?: string }): Promise<void>;
   /** The layers selected in the editor. Only the plugin has a selection; the Server API lacks the method. */
