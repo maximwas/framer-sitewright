@@ -33,6 +33,7 @@ import { projectOverview } from "./project/overview.ts";
 import { projectPublish } from "./project/publish.ts";
 import { deploymentsList, publishStatus } from "./project/publish-status.ts";
 import { redirectsList, redirectsSet } from "./redirects/redirects.ts";
+import { a11yAudit, contrastCheck, imagesCheck, linksCheck, seoAudit } from "./site/checks.ts";
 import { textStylesDelete } from "./text-styles/delete.ts";
 import { textStylesList } from "./text-styles/list.ts";
 import { textStylesUpsert } from "./text-styles/upsert.ts";
@@ -90,6 +91,11 @@ const OPERATIONS: readonly AnyOperation[] = [
   redirectsSet,
   publishStatus,
   deploymentsList,
+  linksCheck,
+  seoAudit,
+  imagesCheck,
+  a11yAudit,
+  contrastCheck,
 ];
 
 const byName = new Map(OPERATIONS.map((operation) => [operation.name, operation]));

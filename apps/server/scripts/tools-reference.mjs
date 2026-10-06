@@ -63,6 +63,13 @@ const GROUPS = [
     ],
   },
   {
+    id: "checks",
+    title: "Checks before handover",
+    intro:
+      "What looks fine in the editor and still fails on the published site: search titles and descriptions, broken links and anchors, the same photo twice, missing alt text, and text that does not stand out from its background.",
+    tools: ["seo_audit", "links_check", "images_check", "a11y_audit", "contrast_check"],
+  },
+  {
     id: "assets",
     title: "Components and assets",
     intro:
@@ -143,7 +150,7 @@ const GROUPS = [
  */
 const NEEDS = {
   key: ["node_screenshot", "components_read", "icons_search", "images_search", "framer_docs", "cms_collection_delete"],
-  partial: ["nodes_read", "design_apply"],
+  partial: ["nodes_read", "design_apply", "seo_audit", "links_check", "images_check"],
   editor: ["selection_get", "svg_add"],
   local: [
     "framer_status",

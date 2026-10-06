@@ -84,6 +84,7 @@ export { projectPublish } from "./operations/project/publish.ts";
 export { deploymentsList, publishStatus } from "./operations/project/publish-status.ts";
 export { redirectsList, redirectsSet } from "./operations/redirects/redirects.ts";
 export { findOperation } from "./operations/registry.ts";
+export { a11yAudit, contrastCheck, imagesCheck, linksCheck, seoAudit } from "./operations/site/checks.ts";
 export { textStylesDelete } from "./operations/text-styles/delete.ts";
 export { textStylesList } from "./operations/text-styles/list.ts";
 export { textStylesUpsert } from "./operations/text-styles/upsert.ts";

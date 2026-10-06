@@ -94,6 +94,10 @@ sitewright --help
   palette, theme, assets, copy, motion, CMS, languages…), with the answers saved per project for later sessions.
 - **Pages and nodes:** `project_overview`, `nodes_read`, `design_apply`, `layout_audit`, `selection_get`,
   `node_screenshot`, `breakpoints_add`, `framer_docs`.
+- **Checks before handover:** `seo_audit` (titles, descriptions, one h1, noindex, social image, favicon),
+  `links_check` (missing pages, anchors without a target, broken mailto and tel), `images_check` (the same photo twice,
+  missing alt text), `a11y_audit` (text that does not stand out from its background, links without text),
+  `contrast_check` (a color or token pair against WCAG).
 - **Design guide:** `design_guide` — the order of work, layout and typography rules, direction from top Framer sites,
   and the checklist before handing a page over. The Claude Code skill (`setup --skill`) points the agent at it.
 - **Components and assets:** `components_read`, `component_controls_set`, `component_insert` (a free Marketplace

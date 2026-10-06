@@ -44,6 +44,8 @@ When both are available, calls go to the plugin first and the DSL work goes to t
 - **Components:** variants, controls, hover and pressed states, interactions.
 - **Assets:** stock photos, uploads, SVG, icon sets.
 - **Marketplace:** browse templates and components in their current ranking and insert free components.
+- **Checks before handover:** SEO (titles, descriptions, h1, social image), broken links and anchors, the same photo
+  twice, missing alt text, and text that does not stand out from its background (WCAG contrast).
 - **Journal with undo:** every call is recorded; undo the last change, a change and everything after it, or restore
   to a checkpoint. A local page (`sitewright open`) shows the journal, how each call reached Framer (Plugin API,
   Server API or Framer's agent layer), the skills Claude used, the settings (custom code, code components) and the project's Server API key.

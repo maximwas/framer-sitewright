@@ -28,6 +28,7 @@ import { ServerApiSession } from "../src/transports/server-api/session.ts";
 import { ServerApiTransport } from "../src/transports/server-api/transport.ts";
 
 const EXPECTED_TOOLS = [
+  "a11y_audit",
   "activity_checkpoint",
   "activity_get",
   "activity_list",
@@ -54,6 +55,7 @@ const EXPECTED_TOOLS = [
   "component_controls_set",
   "component_insert",
   "components_read",
+  "contrast_check",
   "custom_code_get",
   "custom_code_set",
   "deployments_list",
@@ -66,8 +68,10 @@ const EXPECTED_TOOLS = [
   "framer_status",
   "icons_search",
   "image_upload",
+  "images_check",
   "images_search",
   "layout_audit",
+  "links_check",
   "locales_list",
   "localization_get",
   "localization_set",
@@ -84,6 +88,7 @@ const EXPECTED_TOOLS = [
   "redirects_list",
   "redirects_set",
   "selection_get",
+  "seo_audit",
   "svg_add",
   "text_replace",
   "text_styles_delete",
