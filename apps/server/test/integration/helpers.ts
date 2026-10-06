@@ -1,6 +1,14 @@
 import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { colorTokensDelete, colorTokensList, requireAgent, textStylesDelete, textStylesList } from "@sitewright/core";
+import {
+  colorTokensDelete,
+  colorTokensList,
+  linkStylesDelete,
+  linkStylesList,
+  requireAgent,
+  textStylesDelete,
+  textStylesList,
+} from "@sitewright/core";
 import { createLogger } from "../../src/logging/logger.ts";
 import { PluginTransport } from "../../src/transports/plugin/transport.ts";
 import { TransportRouter } from "../../src/transports/router.ts";
@@ -61,6 +69,12 @@ export async function createIntegrationTransports({ projectUrl, apiKey }: Sandbo
 }
 
 export async function cleanupTestObjects(transports: TransportRouter): Promise<void> {
+  const links = await transports.run(linkStylesList, { prefix: TEST_PREFIX });
+
+  if (links.styles.length > 0) {
+    await transports.run(linkStylesDelete, { paths: links.styles.map((style) => style.path) });
+  }
+
   const styles = await transports.run(textStylesList, { prefix: TEST_PREFIX });
 
   if (styles.styles.length > 0) {

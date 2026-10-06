@@ -58,6 +58,12 @@ const DslAttributeValueSchema = z.union([z.string(), z.number(), z.boolean(), z.
 
 export const DslAttributeMapSchema = z.record(z.string(), DslAttributeValueSchema);
 
+/** A link style as undo writes it back: its path and every attribute it sets, as dotted DSL keys in key order. */
+export const LinkStyleStateSchema = z.object({
+  path: z.string(),
+  attributes: DslAttributeMapSchema,
+});
+
 /** One node of a snapshot. A subtree is a list in pre-order: each node names its parent and its place there. */
 export const NodeSnapshotSchema = z.object({
   id: z.string(),
@@ -120,6 +126,12 @@ export const UndoStepSchema = z.discriminatedUnion("kind", [
     id: z.string(),
     before: TextStyleStateSchema.nullable(),
     after: TextStyleStateSchema.nullable(),
+  }),
+  z.object({
+    kind: z.literal("link-style"),
+    id: z.string(),
+    before: LinkStyleStateSchema.nullable(),
+    after: LinkStyleStateSchema.nullable(),
   }),
   z.object({
     kind: z.literal("node"),

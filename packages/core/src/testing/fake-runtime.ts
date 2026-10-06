@@ -25,6 +25,10 @@ export function createFakeRuntime(
 
   state.colorStyles = state.colorStyles.map((style) => ({ ...style }));
   state.textStyles = state.textStyles.map((style) => ({ ...style }));
+  state.linkStyles = state.linkStyles.map((style) => ({
+    ...style,
+    attributes: { ...style.attributes },
+  }));
 
   const nextId = createIdSequence();
   // Like the real transports: the Server API has framer.agent and screenshots, the plugin has neither.

@@ -8,6 +8,8 @@ export function defaultState(): FakeFramerState {
     },
     colorStyles: [],
     textStyles: [],
+    linkStyles: [],
+    layers: {},
     fonts: [
       {
         selector: "GF;Inter-regular",

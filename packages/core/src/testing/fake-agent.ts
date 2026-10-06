@@ -1,12 +1,20 @@
 import { DSL_VARIABLE_TYPE } from "../constants/dsl.ts";
+import { LINK_STYLE_NODE_TYPE } from "../constants/link-styles.ts";
 import { parseDsl } from "../dsl/parse.ts";
 import type { DslCommand } from "../types/dsl.ts";
 import type { AgentPort } from "../types/framer.ts";
 import type { FakeAgentSession, FakeColorStyle, FakeFramerState, FakeTextStyle } from "../types/testing.ts";
+import {
+  assertLinkStyleUnused,
+  linkStyleNode,
+  newLinkStyle,
+  referencedStyles,
+  withLinkAttributes,
+} from "./fake-link-styles.ts";
 import { FakeCommandError, tokenColors, withTextStyleAttributes } from "./fake-node-attributes.ts";
 import { newTextStyle, stylePath } from "./fake-state.ts";
 
-/** framer.agent over the fake state. Models color tokens and text styles; anything else is an error. */
+/** framer.agent over the fake state. Models color tokens, text and link styles; anything else is an error. */
 export function createFakeAgent(state: FakeFramerState, nextId: (prefix: string) => string): AgentPort {
   const session: FakeAgentSession = {
     state,
@@ -40,7 +48,25 @@ export function createFakeAgent(state: FakeFramerState, nextId: (prefix: string)
     getNodesOfTypes: async ({ types }) => [
       ...(types.includes("ColorStyleTokenNode") ? state.colorStyles.map(dslNode) : []),
       ...(types.includes("TextStylePresetNode") ? state.textStyles.map(dslNode) : []),
+      ...(types.includes(LINK_STYLE_NODE_TYPE) ? state.linkStyles.map(linkStyleNode) : []),
+      ...(types.includes("ComponentNode")
+        ? state.components.map(({ id, name, componentName }) => ({
+            type: "ComponentNode",
+            id,
+            name: componentName ?? name,
+          }))
+        : []),
+      ...(types.includes("DesignPageNode")
+        ? state.designPages.map(({ id, name }) => ({
+            type: "DesignPageNode",
+            id,
+            name,
+          }))
+        : []),
     ],
+    getDescendantsOfTypes: async ({ id, types }) => (state.layers[id] ?? []).filter(({ type }) => types.includes(type)),
+    getDescendantReferencesOfTypes: async ({ id, types }) =>
+      referencedStyles(state, state.layers[id] ?? []).filter(({ type }) => types.includes(type)),
     queryImages: async () => state.stockImages,
     listIconSets: async () =>
       Object.fromEntries(
@@ -271,6 +297,14 @@ function createNode(
     return style.id;
   }
 
+  if (type === LINK_STYLE_NODE_TYPE) {
+    const style = newLinkStyle(nextId("link"), name, attributes);
+
+    state.linkStyles.push(style);
+
+    return style.id;
+  }
+
   throw new FakeCommandError(`The fake does not model +${type} nodes.`);
 }
 
@@ -347,6 +381,25 @@ function setNode({ id, attributes }: DslCommand, session: FakeAgentSession): voi
     return;
   }
 
+  const link = session.state.linkStyles.findIndex((candidate) => candidate.id === target);
+
+  if (link !== -1) {
+    const { name, ...rest } = attributes;
+    const current = session.state.linkStyles[link];
+
+    if (current !== undefined) {
+      session.state.linkStyles[link] = withLinkAttributes(
+        {
+          ...current,
+          name: name ?? current.name,
+        },
+        rest,
+      );
+    }
+
+    return;
+  }
+
   const style = session.state.textStyles.find((candidate) => candidate.id === target);
 
   if (style === undefined) {
@@ -389,12 +442,18 @@ function withAvailableWeight<T extends Pick<FakeTextStyle, "font">>(style: T, st
 function deleteNode({ id }: DslCommand, session: FakeAgentSession): void {
   const { state } = session;
   const target = targetOf(id, session);
-  const count = state.colorStyles.length + state.textStyles.length;
+  const count = state.colorStyles.length + state.textStyles.length + state.linkStyles.length;
+  const link = state.linkStyles.find((style) => style.id === target);
+
+  if (link !== undefined) {
+    assertLinkStyleUnused(state, link);
+  }
 
   state.colorStyles = state.colorStyles.filter((token) => token.id !== target);
   state.textStyles = state.textStyles.filter((style) => style.id !== target);
+  state.linkStyles = state.linkStyles.filter((style) => style.id !== target);
 
-  if (state.colorStyles.length + state.textStyles.length === count) {
+  if (state.colorStyles.length + state.textStyles.length + state.linkStyles.length === count) {
     throw new FakeCommandError(missingTarget("DEL"));
   }
 }

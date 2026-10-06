@@ -2,9 +2,16 @@ import {
   colorTokensDelete,
   colorTokensList,
   colorTokensUpsert,
+  designApply,
   HistoryRecorder,
   historyRevert,
+  linkStylesDelete,
+  linkStylesList,
+  linkStylesUpsert,
+  pagesCreate,
+  pagesDelete,
   requireAgent,
+  stylesUsage,
   textStylesDelete,
   textStylesList,
   textStylesUpsert,
@@ -22,6 +29,7 @@ import {
 
 const config = integrationConfig();
 const run = `${TEST_PREFIX}/${Date.now().toString(36)}`;
+const LINK_PAGE = `/${TEST_PREFIX}-links`;
 
 describe.skipIf(config === null)("styles on the sandbox project", () => {
   let transports: TransportRouter;
@@ -312,5 +320,119 @@ describe.skipIf(config === null)("styles on the sandbox project", () => {
     expect((await transports.run(colorTokensList, { prefix: `${run}/Undo` })).tokens).toEqual([]);
     expect((await transports.run(textStylesList, { prefix: `${run}/Undo` })).styles).toEqual([]);
     expect(await presetsInDsl(transports, `${run}/Undo`)).toEqual([]);
+  });
+
+  it("styles a text link with a link style, finds it with styles_usage, and undoes the link style", async () => {
+    const history = new HistoryRecorder();
+    const ink = `${run}/Link/Ink`;
+    const accent = `${run}/Link/Accent`;
+    const nav = `${run}/Link/Nav`;
+
+    await transports.run(colorTokensUpsert, {
+      tokens: [
+        {
+          path: ink,
+          light: "#111827",
+        },
+        {
+          path: accent,
+          light: "#2563eb",
+        },
+      ],
+    });
+
+    const input = {
+      styles: [
+        {
+          path: nav,
+          color: { token: ink },
+          decoration: "none" as const,
+          hover: {
+            color: { token: accent },
+            decoration: "underline" as const,
+            backgroundPadding: "2px 4px",
+          },
+          current: { color: { token: accent } },
+        },
+      ],
+    };
+    const created = await transports.run(linkStylesUpsert, input, { history });
+    const id = created.created[0]?.id ?? "";
+
+    expect(created.diagnostics?.ok).toBe(true);
+    expect(id).not.toBe("");
+    // What Framer stored reads back as the same input, though it drops decoration "none" and spells the padding out.
+    expect((await transports.run(linkStylesUpsert, input)).unchanged).toHaveLength(1);
+    expect((await transports.run(linkStylesList, { prefix: `${run}/Link` })).styles).toEqual([
+      {
+        id,
+        path: nav,
+        color: expect.objectContaining({ token: ink }),
+        hover: expect.objectContaining({
+          decoration: "underline",
+          backgroundPadding: "2px 4px 2px 4px",
+        }),
+        current: { color: expect.objectContaining({ token: accent }) },
+        transition: null,
+      },
+    ]);
+
+    await transports.run(pagesDelete, { path: LINK_PAGE }).catch(() => undefined);
+
+    const page = await transports.run(pagesCreate, { path: LINK_PAGE });
+
+    try {
+      const root = await transports.withServerApi(async (runtime) => runtime.port.getChildren(page.id));
+      const primary = root.find((child) => child.isPrimaryBreakpoint) ?? root[0];
+      const applied = await transports.run(designApply, {
+        pagePath: LINK_PAGE,
+        xml: `<RichTextNode parent="${primary?.id}" link.href="/" linkStylePreset="${id}">${TEST_PREFIX} link</RichTextNode>`,
+      });
+
+      expect(applied.ok).toBe(true);
+
+      const onPage = await transports.run(stylesUsage, { pagePath: LINK_PAGE });
+
+      expect(onPage.linkStyles.used).toEqual([
+        {
+          id,
+          path: nav,
+          layers: 1,
+          usedIn: [LINK_PAGE],
+        },
+      ]);
+
+      const site = await transports.run(stylesUsage, {});
+
+      expect(site.note).toBeNull();
+      expect(site.linkStyles.used.find((style) => style.id === id)?.usedIn).toEqual([LINK_PAGE]);
+      expect(site.tokens.used.find((token) => token.path === accent)?.styles).toEqual([nav]);
+
+      const refused = await transports.run(linkStylesDelete, { paths: [nav] });
+
+      expect(refused.failed.map((style) => style.id)).toEqual([id]);
+    } finally {
+      await transports.run(pagesDelete, { path: LINK_PAGE });
+    }
+
+    await transports.run(
+      linkStylesUpsert,
+      {
+        styles: [
+          {
+            path: nav,
+            hover: { color: null },
+          },
+        ],
+      },
+      { history },
+    );
+
+    expect(history.steps.map((step) => step.kind)).toEqual(["link-style", "link-style"]);
+
+    const undone = await transports.run(historyRevert, { steps: [...history.steps] });
+
+    expect(undone.conflicts).toBe(0);
+    expect((await transports.run(linkStylesList, { prefix: `${run}/Link` })).styles).toEqual([]);
   });
 });

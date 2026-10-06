@@ -70,6 +70,13 @@ export const DSL_ASSET_FAILURE = /Assets upload from URL (\S+) to \S+ failed\.?\
  */
 export const PHYSICS_TRANSITIONS = /^(?:styleTransformEffect|pageEffects)\./;
 
+/**
+ * Transitions that take no spring at all: a link style's takes only tween easing and refuses spring-physics,
+ * spring-duration and instant (seen 06.10.2026). Sitewright writes no tween, so a spring there is left out and the link
+ * changes color at once.
+ */
+export const TWEEN_ONLY_TRANSITIONS = /^link\.transition$/;
+
 export const SPRING_PHYSICS = /^spring-physics\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)(?:\s+(-?[\d.]+)s?)?\s*$/;
 
 export const SPRING_DURATION = /^spring-duration\s+([\d.]+)s?\s+([\d.]+)(?:\s+(-?[\d.]+)s?)?\s*$/;

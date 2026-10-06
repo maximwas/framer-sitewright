@@ -23,6 +23,17 @@ export function serializedById(value: unknown): Map<string, SerializedNode> {
   );
 }
 
+/** The nodes of a getNodesOfTypes-like answer, a list or an object of nodes; what does not parse is left out. */
+export function serializedList(value: unknown): SerializedNode[] {
+  const items: unknown[] = Array.isArray(value) ? value : Object.values(value ?? {});
+
+  return items.flatMap((item) => {
+    const node = parseSerializedNode(item);
+
+    return node === null ? [] : [node];
+  });
+}
+
 export function childrenOf(node: SerializedNode): SerializedNode[] {
   return (node.children ?? []).flatMap((child) => {
     const parsed = parseSerializedNode(child);

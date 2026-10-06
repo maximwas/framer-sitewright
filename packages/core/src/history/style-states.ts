@@ -1,6 +1,7 @@
 import { normalizeAssetPath } from "../styles/asset-path.ts";
 import type { ColorStyleData, TextStyleData } from "../types/framer-port.ts";
-import type { ColorStyleState, TextStyleState } from "../types/history.ts";
+import type { ColorStyleState, LinkStyleState, TextStyleState } from "../types/history.ts";
+import type { LinkStyleData } from "../types/link-styles.ts";
 
 export function colorStyleState(style: ColorStyleData): ColorStyleState {
   return {
@@ -44,6 +45,16 @@ export function textStyleState(style: TextStyleData): TextStyleState {
       lineHeight: breakpoint.lineHeight,
       paragraphSpacing: breakpoint.paragraphSpacing,
     })),
+  };
+}
+
+/** Attributes in key order: Framer lists them in the order they were last set, which says nothing about the style. */
+export function linkStyleState(style: LinkStyleData): LinkStyleState {
+  return {
+    path: style.path,
+    attributes: Object.fromEntries(
+      Object.entries(style.attributes).sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0)),
+    ),
   };
 }
 

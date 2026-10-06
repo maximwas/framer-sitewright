@@ -21,14 +21,15 @@ import { labelOf } from "./activity.ts";
 import { applyAliases } from "./aliases.ts";
 import { CmsItemRevert } from "./cms-revert.ts";
 import { NodeRevertRun } from "./dsl/node-revert-run.ts";
+import { LinkStyleRevert } from "./link-style-revert.ts";
 import { decide } from "./revert-decision.ts";
 import { colorStyleState, textStyleState } from "./style-states.ts";
 
 /**
  * Undoes steps newest first. Each step is decided against the items as the earlier steps left them, so an item
- * recreated by one step is found, under its new id, by the next. Styles go one at a time through the Plugin API;
- * canvas nodes go in DSL batches (NodeRevertRun). A dry run changes nothing in Framer but walks the same path on its
- * own copy of the items.
+ * recreated by one step is found, under its new id, by the next. Styles go one at a time through the Plugin API, link
+ * styles through the DSL (LinkStyleRevert); canvas nodes go in DSL batches (NodeRevertRun). A dry run changes nothing
+ * in Framer but walks the same path on its own copy of the items.
  */
 export class RevertRun {
   readonly #runtime: FramerRuntime;
@@ -38,6 +39,7 @@ export class RevertRun {
   readonly #remap = new Map<string, string>();
   readonly #nodes: NodeRevertRun | PluginNodeRevert;
   readonly #cms: CmsItemRevert;
+  readonly #links: LinkStyleRevert;
   /** Font handles by family, weight and style: many text styles share a font, and each lookup is a Framer call. */
   readonly #fonts = new Map<string, Promise<FontData | null>>();
 
@@ -51,6 +53,7 @@ export class RevertRun {
     this.#colors = current.colors.map((handle) => entry(handle, colorStyleState(handle)));
     this.#texts = current.texts.map((handle) => entry(handle, textStyleState(handle)));
     this.#cms = new CmsItemRevert(runtime, options, this.#remap);
+    this.#links = new LinkStyleRevert(runtime, options, this.#remap);
     // Without framer.agent (no Server API key) node steps go back through the Plugin API.
     this.#nodes =
       runtime.agent === null
@@ -78,9 +81,12 @@ export class RevertRun {
   async #revert(original: StyleStep): Promise<RevertResult> {
     const [step = original] = applyAliases([original], this.#remap) as StyleStep[];
     let outcome: RevertOutcome;
+    let note: string | null = null;
 
     if (step.kind === "cms-item") {
       outcome = await this.#cms.revert(step);
+    } else if (step.kind === "link-style") {
+      ({ outcome, note } = await this.#links.revert(step));
     } else {
       outcome = step.kind === "color-style" ? await this.#revertColor(step) : await this.#revertText(step);
     }
@@ -91,7 +97,7 @@ export class RevertRun {
       path: labelOf(original),
       outcome,
       newId: this.#remap.get(original.id) ?? null,
-      note: null,
+      note,
     };
   }
 

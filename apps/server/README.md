@@ -90,7 +90,9 @@ sitewright --help
 
 - **Design system:** `color_tokens_list`, `color_tokens_upsert`, `color_tokens_delete`, `text_styles_list`,
   `text_styles_upsert`, `text_styles_delete`, `fonts_search`, `fonts_discover` (Google Fonts and Fontshare beyond
-  Framer's library, with licenses and the files to upload).
+  Framer's library, with licenses and the files to upload), `link_styles_list`, `link_styles_upsert`,
+  `link_styles_delete` (text links without Framer's default blue, with hover and the current page), `styles_usage`
+  (where each token and style is used, and what nothing uses).
 - **Before a site:** `project_brief` — the questions to ask before building or redesigning a site (purpose, pages,
   palette, theme, assets, copy, motion, CMS, languages…), with the answers saved per project for later sessions.
 - **Pages and nodes:** `project_overview`, `nodes_read`, `design_apply`, `layout_audit`, `selection_get`,

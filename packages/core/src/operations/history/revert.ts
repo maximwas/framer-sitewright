@@ -1,8 +1,9 @@
 import * as z from "zod";
 import { REVERT_MAX_STEPS } from "../../constants/history.ts";
 import { RevertRun } from "../../history/revert-run.ts";
-import { colorStyleKind, textStyleKind, withStyleHistory } from "../../history/style-history.ts";
+import { colorStyleKind, linkStyleKind, textStyleKind, withStyleHistory } from "../../history/style-history.ts";
 import { RevertResultSchema, UndoStepSchema } from "../../schemas/history.ts";
+import { readLinkStyles } from "../../styles/link-styles.ts";
 import { indexByPath } from "../../styles/style-index.ts";
 import type { RevertResult, StyleStep, UndoStep } from "../../types/history.ts";
 import { defineOperation } from "../define.ts";
@@ -26,8 +27,8 @@ export const historyRevert = defineOperation({
     "Collection.addItems",
     "Collection.removeItems",
   ],
-  // Node steps are undone through the DSL; styles through the Plugin API.
-  needsAgent: ({ steps }) => steps.some((step) => step.kind === "node"),
+  // Node and link style steps are undone through the DSL; other styles through the Plugin API.
+  needsAgent: ({ steps }) => steps.some((step) => step.kind === "node" || step.kind === "link-style"),
   input: z.strictObject({
     steps: z
       .array(UndoStepSchema)
@@ -64,10 +65,26 @@ export const historyRevert = defineOperation({
       return summarize(await revert.revertAll(steps), true);
     }
 
-    const [colorsByPath, textsByPath] = await Promise.all([
+    const linkPaths = touchedPaths(steps, "link-style");
+    // Link styles are read through framer.agent, which a revert without link style steps may not have.
+    const [colorsByPath, textsByPath, linksByPath] = await Promise.all([
       indexByPath(Promise.resolve(colors)),
       indexByPath(Promise.resolve(texts)),
+      linkPaths.length === 0 ? new Map() : indexByPath(readLinkStyles(runtime)),
     ]);
+    const revertLinks = () =>
+      linkPaths.length === 0
+        ? revert.revertAll(steps)
+        : withStyleHistory(
+            {
+              history,
+              runtime,
+              kind: linkStyleKind,
+              before: linksByPath,
+              paths: linkPaths,
+            },
+            () => revert.revertAll(steps),
+          );
     const results = await withStyleHistory(
       {
         history,
@@ -85,7 +102,7 @@ export const historyRevert = defineOperation({
             before: textsByPath,
             paths: touchedPaths(steps, "text-style"),
           },
-          () => revert.revertAll(steps),
+          revertLinks,
         ),
     );
 

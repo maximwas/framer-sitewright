@@ -1,11 +1,12 @@
 import { FRAMER_NODE_ID } from "../constants/dsl.ts";
 import { TOKEN_REFERENCE } from "../constants/history.ts";
-import type { DslAttributeMap, NodeSnapshot, NodeState, UndoStep } from "../types/history.ts";
+import type { DslAttributeMap, LinkStyleState, NodeSnapshot, NodeState, UndoStep } from "../types/history.ts";
 
 /**
  * Undoing a deletion recreates the item with a new id. Later steps that still name the old id, as the item itself, as
- * a text style's colour token, or inside a node's values (a parent, a replica source, `var(--token-…)`), are
- * rewritten to the newest id. `aliases` maps old id → new id, possibly in chains (a → b → c).
+ * a text style's colour token, or inside a node's or link style's values (a parent, a replica source,
+ * `var(--token-…)`), are rewritten to the newest id. `aliases` maps old id → new id, possibly in chains
+ * (a → b → c).
  */
 export function applyAliases(steps: readonly UndoStep[], aliases: ReadonlyMap<string, string>): UndoStep[] {
   if (aliases.size === 0) {
@@ -28,6 +29,20 @@ export function applyAliases(steps: readonly UndoStep[], aliases: ReadonlyMap<st
         id: resolveNodeId(step.id, resolve),
         before: step.before === null ? null : withNodeAliases(step.before, resolve),
         after: step.after === null ? null : withNodeAliases(step.after, resolve),
+      };
+    }
+
+    if (step.kind === "link-style") {
+      const withTokens = (state: LinkStyleState): LinkStyleState => ({
+        ...state,
+        attributes: withReferences(state.attributes, resolve),
+      });
+
+      return {
+        ...step,
+        id: resolve(step.id),
+        before: step.before === null ? null : withTokens(step.before),
+        after: step.after === null ? null : withTokens(step.after),
       };
     }
 

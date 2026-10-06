@@ -12,6 +12,7 @@ import {
   Database,
   Eye,
   LayoutGrid,
+  Link2,
   type LucideIcon,
   Palette,
   Pencil,
@@ -37,9 +38,10 @@ export const OUTCOME_DOTS: Readonly<Record<ActivitySummary["outcome"], Tone | nu
  */
 export const BADGE_TEXT = "leading-none [text-box:trim-both_cap_alphabetic]";
 
-/** An item's icon when it went through no kind of change the panel knows: a text style, or a plain node. */
-export const ITEM_ICONS: Readonly<Record<"text-style" | "node" | "cms-item", LucideIcon>> = {
+/** An item's icon when it went through no kind of change the panel knows: a text or link style, or a plain node. */
+export const ITEM_ICONS: Readonly<Record<"text-style" | "link-style" | "node" | "cms-item", LucideIcon>> = {
   "text-style": CaseSensitive,
+  "link-style": Link2,
   "cms-item": Database,
   node: Square,
 };

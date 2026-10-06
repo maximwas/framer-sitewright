@@ -27,6 +27,16 @@ export interface AgentPort {
   serializeNodes(input: SerializeNodesInput, options?: PageScope): Promise<unknown>;
   /** Nodes of the given DSL types across the whole project, as the DSL sees them. */
   getNodesOfTypes(input: { types: readonly string[] }, options?: PageScope): Promise<unknown>;
+  /**
+   * Every descendant of a node with one of the given DSL types, as one flat list without their children (a rich text
+   * still carries its blocks and runs, which the list also has on their own).
+   */
+  getDescendantsOfTypes(input: { id: string; types: readonly string[] }, options?: PageScope): Promise<unknown>;
+  /** The style and token nodes of the given types that a node's descendants use, each once. */
+  getDescendantReferencesOfTypes(
+    input: { id: string; types: readonly string[] },
+    options?: PageScope,
+  ): Promise<unknown>;
   /** Stock image candidates (Unsplash): `{ source, query, count, orientation?, width? }`. */
   queryImages(input: Record<string, unknown>): Promise<unknown>;
   /** Icon sets by group: `{ project, external, additional }`, each `{ id, displayName }[]`. */

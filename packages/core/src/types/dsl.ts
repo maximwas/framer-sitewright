@@ -42,5 +42,6 @@ export interface SpringConversion {
   readonly target: string;
   readonly attribute: string;
   readonly from: string;
-  readonly to: string;
+  /** null: left out, where Framer keeps no spring. */
+  readonly to: string | null;
 }

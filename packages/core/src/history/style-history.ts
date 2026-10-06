@@ -1,8 +1,16 @@
+import { readLinkStyles } from "../styles/link-styles.ts";
 import { indexByPath } from "../styles/style-index.ts";
 import type { ColorStyleData, TextStyleData } from "../types/framer-port.ts";
-import type { ColorStyleState, StyleHistoryScope, StyleKind, TextStyleState } from "../types/history.ts";
+import type {
+  ColorStyleState,
+  LinkStyleState,
+  StyleHistoryScope,
+  StyleKind,
+  TextStyleState,
+} from "../types/history.ts";
+import type { LinkStyleData } from "../types/link-styles.ts";
 import type { HistoryRecorder } from "./recorder.ts";
-import { colorStyleState, sameState, textStyleState } from "./style-states.ts";
+import { colorStyleState, linkStyleState, sameState, textStyleState } from "./style-states.ts";
 
 export const colorStyleKind: StyleKind<ColorStyleData, ColorStyleState> = {
   read: (runtime) => runtime.port.getColorStyles(),
@@ -20,6 +28,18 @@ export const textStyleKind: StyleKind<TextStyleData, TextStyleState> = {
   state: textStyleState,
   step: (id, before, after) => ({
     kind: "text-style",
+    id,
+    before,
+    after,
+  }),
+};
+
+/** Link styles exist only in the DSL, so the journal reads them through framer.agent. */
+export const linkStyleKind: StyleKind<LinkStyleData, LinkStyleState> = {
+  read: readLinkStyles,
+  state: linkStyleState,
+  step: (id, before, after) => ({
+    kind: "link-style",
     id,
     before,
     after,

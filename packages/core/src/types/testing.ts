@@ -40,11 +40,25 @@ export type FakeColorStyle = Mutable<ColorStyleData>;
 
 export type FakeTextStyle = Mutable<TextStyleData>;
 
+/** A link style preset as the fake keeps it: its name (the path) and its attributes as dotted DSL keys. */
+export interface FakeLinkStyle {
+  id: string;
+  name: string;
+  attributes: Record<string, string>;
+}
+
+/** A layer as getDescendantsOfTypes lists it: type, id, attributes and the DSL's $ metadata. */
+export type FakeLayer = Readonly<Record<string, unknown>> & { readonly type: string; readonly id: string };
+
 /** The fake project: style arrays change as Plugin API calls and DSL commands run. */
 export interface FakeFramerState {
   project: ProjectInfoData;
   colorStyles: FakeColorStyle[];
   textStyles: FakeTextStyle[];
+  /** Link styles exist only in the DSL: the Plugin API has none. */
+  linkStyles: FakeLinkStyle[];
+  /** The layers under each page, component or design page, by its id, as getDescendantsOfTypes lists them. */
+  layers: Record<string, FakeLayer[]>;
   fonts: FontData[];
   /** Fonts uploaded to the project: getFonts() leaves them out, and the DSL swaps a weight they lack for the nearest. */
   projectFonts: FontData[];

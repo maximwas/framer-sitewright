@@ -6,6 +6,7 @@ import {
   SPRING_PHYSICS,
   SPRING_REST,
   TRANSITION_ATTRIBUTE,
+  TWEEN_ONLY_TRANSITIONS,
 } from "../constants/dsl.ts";
 import type { DslIssue, SpringConversion } from "../types/dsl.ts";
 import { joinCommands } from "./commands.ts";
@@ -15,16 +16,31 @@ import { parseDslCommand, splitDslCommands } from "./parse.ts";
  * Each transition as the spring Framer keeps there. Framer stores only time springs on most transitions and drops a
  * spring-physics written there for its own bouncy default, and keeps only physics on scroll transforms and page
  * transitions: a spring of the other kind becomes the nearest spring of the kept kind, without bounce, and is
- * reported so the user can switch it to Physics in the editor.
+ * reported so the user can switch it to Physics in the editor. A link style takes no spring at all: a spring there is
+ * left out, and a SET left with nothing to set goes too.
  */
 export function keptSprings(dsl: string): { dsl: string; converted: SpringConversion[] } {
   const converted: SpringConversion[] = [];
-  const commands = splitDslCommands(dsl).map((raw) => {
+  const commands = splitDslCommands(dsl).flatMap((raw) => {
     const command = parseDslCommand(raw);
-
-    return Object.entries(command.attributes).reduce((text, [attribute, value]) => {
+    const text = Object.entries(command.attributes).reduce((text, [attribute, value]) => {
       if (!TRANSITION_ATTRIBUTE.test(attribute)) {
         return text;
+      }
+
+      if (TWEEN_ONLY_TRANSITIONS.test(attribute)) {
+        if (!SPRING_PHYSICS.test(value) && !SPRING_DURATION.test(value)) {
+          return text;
+        }
+
+        converted.push({
+          target: command.id,
+          attribute,
+          from: value,
+          to: null,
+        });
+
+        return text.replace(` ${attribute}="${value}"`, "");
       }
 
       // A drag takes only inertia (Framer refuses any spring there); the rest keep one kind of spring.
@@ -47,6 +63,10 @@ export function keptSprings(dsl: string): { dsl: string; converted: SpringConver
 
       return text.replace(`${attribute}="${value}"`, `${attribute}="${kept}"`);
     }, raw);
+    const emptied =
+      text !== raw && command.verb === "SET" && Object.keys(parseDslCommand(text).attributes).length === 0;
+
+    return emptied ? [] : [text];
   });
 
   return {
@@ -113,10 +133,11 @@ function asPhysics(value: string): string | null {
   return `spring-physics ${Math.round(frequency ** 2)} ${Math.round(2 * frequency)} 1 ${Number(delay)}s`;
 }
 
-/** What design_apply says about the springs it rewrote: where, from what to what, and where to switch to Physics. */
+/** What design_apply says about the springs it rewrote or left out, and where to switch to Physics in the editor. */
 export function springWarnings(converted: readonly SpringConversion[]): DslIssue[] {
-  const toTime = converted.filter(({ to }) => to.startsWith("spring-duration"));
-  const toPhysics = converted.filter(({ to }) => to.startsWith("spring-physics"));
+  const toTime = converted.filter(({ to }) => to?.startsWith("spring-duration"));
+  const toPhysics = converted.filter(({ to }) => to?.startsWith("spring-physics"));
+  const dropped = converted.filter(({ to }) => to === null);
   const examples = (list: readonly SpringConversion[]) =>
     [...new Set(list.map(({ from, to }) => `${from} → ${to}`))].slice(0, 3).join("; ");
   const targets = (list: readonly SpringConversion[]) => list.map(({ target, attribute }) => `${target} ${attribute}`);
@@ -136,6 +157,15 @@ export function springWarnings(converted: readonly SpringConversion[]): DslIssue
           {
             message: `Framer keeps only physics springs on scroll transforms and page transitions, so the physics spring that settles as fast was written (${examples(toPhysics)}).`,
             targets: targets(toPhysics),
+          },
+        ]),
+    ...(dropped.length === 0
+      ? []
+      : [
+          {
+            message:
+              "Framer animates link styles only with tween easing and refuses every spring, so these transitions were left out: the links change color at once. Sitewright writes no tween.",
+            targets: targets(dropped),
           },
         ]),
   ];

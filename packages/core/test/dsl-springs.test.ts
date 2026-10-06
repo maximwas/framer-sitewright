@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { keptSprings, settleSeconds } from "../src/dsl/springs.ts";
+import { keptSprings, settleSeconds, springWarnings } from "../src/dsl/springs.ts";
 
 describe("springs Framer keeps", () => {
   it("regression: writes the nearest time spring without bounce where Framer drops physics (seen: bounce 0.2, a 0s backdrop)", () => {
@@ -36,6 +36,33 @@ describe("springs Framer keeps", () => {
     expect(
       keptSprings('SET o backdrop.enter="spring-physics 400 40 1 0s" backdrop.exit="spring-physics 400 40 1 0s";').dsl,
     ).toBe('SET o backdrop.enter="spring-duration 0.45s 0 0s" backdrop.exit="spring-duration 0.45s 0 0s";');
+  });
+
+  it("regression: leaves a spring out of a link style's transition, where Framer refuses every spring (seen 06.10.2026)", () => {
+    const { dsl, converted } = keptSprings(
+      [
+        'SET l1 link.transition="spring-physics 400 40 1 0s" link.hover.textColor="rgb(0, 0, 0)";',
+        'SET l2 link.transition="spring-duration 0.3s 0 0s";',
+        'SET a1 transition="spring-duration 0.3s 0 0s";',
+      ].join("\n"),
+    );
+
+    expect(dsl).toBe('SET l1 link.hover.textColor="rgb(0, 0, 0)";\nSET a1 transition="spring-duration 0.3s 0 0s";');
+    expect(converted).toEqual([
+      {
+        target: "l1",
+        attribute: "link.transition",
+        from: "spring-physics 400 40 1 0s",
+        to: null,
+      },
+      {
+        target: "l2",
+        attribute: "link.transition",
+        from: "spring-duration 0.3s 0 0s",
+        to: null,
+      },
+    ]);
+    expect(springWarnings(converted)[0]?.message).toContain("only with tween");
   });
 
   it("measures how long a spring takes to settle", () => {

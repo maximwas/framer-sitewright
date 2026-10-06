@@ -23,6 +23,9 @@ import { designApply } from "./design/apply.ts";
 import { fontsInLibrary } from "./fonts/in-library.ts";
 import { fontsSearch } from "./fonts/search.ts";
 import { historyRevert } from "./history/revert.ts";
+import { linkStylesDelete } from "./link-styles/delete.ts";
+import { linkStylesList } from "./link-styles/list.ts";
+import { linkStylesUpsert } from "./link-styles/upsert.ts";
 import { localeAdd, localesList, localizationGet, localizationSet } from "./localization/localization.ts";
 import { effectsSet } from "./motion/effects-set.ts";
 import { layoutAudit } from "./nodes/audit.ts";
@@ -43,6 +46,7 @@ import { redirectsList, redirectsSet } from "./redirects/redirects.ts";
 import { a11yAudit, contrastCheck, imagesCheck, linksCheck, seoAudit } from "./site/checks.ts";
 import { referenceScreenshot } from "./site/reference-screenshot.ts";
 import { templateAudit } from "./site/template-audit.ts";
+import { stylesUsage } from "./styles/usage.ts";
 import { textStylesDelete } from "./text-styles/delete.ts";
 import { textStylesList } from "./text-styles/list.ts";
 import { textStylesUpsert } from "./text-styles/upsert.ts";
@@ -56,6 +60,10 @@ const OPERATIONS: readonly AnyOperation[] = [
   textStylesList,
   textStylesUpsert,
   textStylesDelete,
+  linkStylesList,
+  linkStylesUpsert,
+  linkStylesDelete,
+  stylesUsage,
   fontsSearch,
   nodesRead,
   layoutAudit,

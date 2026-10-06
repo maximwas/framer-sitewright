@@ -93,8 +93,8 @@ export const ACTIVITY_LAYERS = ["plugin-api", "server-api", "framer-agent"] as c
 /** Who asked for an entry: the AI through an MCP tool, or the user in the journal window. */
 export const ACTIVITY_ACTORS = ["ai", "user"] as const;
 
-/** What an undo step is about: a color token, a text style, or a canvas node changed through the DSL. */
-export const UNDO_STEP_KINDS = ["color-style", "text-style", "node", "cms-item"] as const;
+/** What an undo step is about: a color token, a text or link style, a node changed through the DSL, a CMS item. */
+export const UNDO_STEP_KINDS = ["color-style", "text-style", "link-style", "node", "cms-item"] as const;
 
 /** How a DSL command changed a canvas node. */
 export const NODE_CHANGES = ["created", "updated", "moved", "deleted"] as const;

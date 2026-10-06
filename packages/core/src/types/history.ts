@@ -20,6 +20,7 @@ import type {
   JournalProjectSchema,
   JournalProjectsSchema,
   JournalSchema,
+  LinkStyleStateSchema,
   NodeSnapshotSchema,
   NodeStateSchema,
   RevertReportSchema,
@@ -36,6 +37,8 @@ export type ColorStyleState = z.infer<typeof ColorStyleStateSchema>;
 export type CmsItemState = z.infer<typeof CmsItemStateSchema>;
 
 export type TextStyleState = z.infer<typeof TextStyleStateSchema>;
+
+export type LinkStyleState = z.infer<typeof LinkStyleStateSchema>;
 
 export type UndoStep = z.infer<typeof UndoStepSchema>;
 
@@ -73,7 +76,7 @@ export type NodeState = z.infer<typeof NodeStateSchema>;
 
 export type NodeStep = Extract<UndoStep, { kind: "node" }>;
 
-/** Style and CMS item steps; the Plugin API reverts them, one at a time. */
+/** Style and CMS item steps, reverted one at a time: through the Plugin API, link styles through the DSL. */
 export type StyleStep = Exclude<UndoStep, { kind: "node" }>;
 
 export type CmsItemStep = Extract<UndoStep, { kind: "cms-item" }>;
@@ -109,6 +112,11 @@ export interface StepStates<State> {
 export type ColorStep = Extract<UndoStep, { kind: "color-style" }>;
 
 export type TextStep = Extract<UndoStep, { kind: "text-style" }>;
+
+export type LinkStep = Extract<UndoStep, { kind: "link-style" }>;
+
+/** A link style as a revert tracks it: the DSL needs no handle, only the id. */
+export type LinkEntry = WorkingEntry<LinkStyleState, null>;
 
 export type ColorEntry = WorkingEntry<ColorStyleState, ColorStyleHandle>;
 
