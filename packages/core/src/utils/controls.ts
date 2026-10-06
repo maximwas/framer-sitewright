@@ -1,4 +1,5 @@
 import type { ControlledNode } from "../types/framer-port.ts";
+import { IMAGE_CONTROL_KEYS } from "../constants/assets.ts";
 import { isPlainObject } from "./guards.ts";
 
 /** A component instance whose control values setAttributes can change. */
@@ -56,4 +57,39 @@ function sortedKeys(value: unknown): unknown {
           .map((key) => [key, sortedKeys(value[key])]),
       )
     : value;
+}
+
+/**
+ * The controls with every image URL in an image field uploaded first: Framer keeps only an uploaded image there (an
+ * ImageAsset) and drops a URL silently. A field that is not an image field keeps its text, URL or not.
+ */
+export async function withUploadedImages(
+  controls: Readonly<Record<string, unknown>>,
+  upload: (url: string, alt: string | null) => Promise<unknown>,
+): Promise<Record<string, unknown>> {
+  const visit = async (value: unknown, imageField: boolean): Promise<unknown> => {
+    if (imageField && typeof value === "string" && /^https?:\/\//.test(value)) {
+      return upload(value, null);
+    }
+
+    if (imageField && isPlainObject(value) && typeof value.url === "string" && !("id" in value)) {
+      return upload(value.url, typeof value.alt === "string" ? value.alt : null);
+    }
+
+    if (Array.isArray(value)) {
+      return Promise.all(value.map((item) => visit(item, imageField)));
+    }
+
+    if (isPlainObject(value)) {
+      return Object.fromEntries(
+        await Promise.all(
+          Object.entries(value).map(async ([key, item]) => [key, await visit(item, IMAGE_CONTROL_KEYS.has(key))]),
+        ),
+      );
+    }
+
+    return value;
+  };
+
+  return (await visit(controls, false)) as Record<string, unknown>;
 }

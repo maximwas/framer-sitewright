@@ -32,4 +32,7 @@ export const MARKETPLACE_ITEMS_MAX = 5;
 export const ITEM_DESCRIPTION_MAX = 1500;
 
 /** The temporary design page a component is inserted on to read its controls, then deleted. */
-export const INSPECT_PAGE_NAME = "Sitewright component check";
+/** The temporary web page inspect places a component on, with a random suffix. */
+export const INSPECT_PAGE_PATH = "/sitewright-check";
+
+export const CONTROL_PREFIX = "$control__";

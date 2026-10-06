@@ -1,14 +1,29 @@
 import { randomUUID } from "node:crypto";
-import { componentInsert, errorMessage, nodesRead, OperationError, pagesCreate, pagesDelete } from "@sitewright/core";
-import { INSPECT_PAGE_NAME, MARKETPLACE_TIMEOUT_MS, MARKETPLACE_USER_AGENT } from "../constants/marketplace.ts";
+import {
+  componentInsert,
+  componentsRead,
+  errorMessage,
+  nodesRead,
+  OperationError,
+  pagesCreate,
+  pagesDelete,
+} from "@sitewright/core";
+import {
+  CONTROL_PREFIX,
+  INSPECT_PAGE_PATH,
+  MARKETPLACE_TIMEOUT_MS,
+  MARKETPLACE_USER_AGENT,
+} from "../constants/marketplace.ts";
 import type { TransportRouter } from "../transports/router.ts";
 import type { MarketplaceItemDetail } from "../types/marketplace.ts";
 import { itemPageUrl, parseMarketplaceItem } from "../utils/marketplace.ts";
 
-/** A component's control as an inserted instance holds it: its name and default value. */
+/** A component's control as an inserted instance holds it: its name, default value, type and the tool that sets it. */
 export interface InspectedControl {
   readonly name: string;
   readonly value: string;
+  readonly type: string | null;
+  readonly write: "design_apply" | "component_controls_set" | null;
 }
 
 /**
@@ -84,12 +99,12 @@ async function inspectComponent(
   transports: TransportRouter,
   moduleUrl: string,
 ): Promise<{ controls: InspectedControl[] | null; note: string | null }> {
-  // A name of its own, so the cleanup never takes a page left by an earlier run.
-  const designPage = `${INSPECT_PAGE_NAME} ${randomUUID().slice(0, 8)}`;
+  // A web page of its own: a design page has no path, and the DSL read of a node on it failed ("not found on page /").
+  const path = `${INSPECT_PAGE_PATH}-${randomUUID().slice(0, 8)}`;
   let created = false;
 
   try {
-    const page = await transports.run(pagesCreate, { designPage });
+    const page = await transports.run(pagesCreate, { path });
 
     created = true;
 
@@ -99,16 +114,19 @@ async function inspectComponent(
     });
     const read = await transports.run(nodesRead, {
       nodeId,
+      pagePath: path,
       depth: 0,
       format: "json",
     });
-    const attributes = (read as { node?: { attributes?: Record<string, unknown> } }).node?.attributes ?? {};
-    const controls = Object.entries(attributes).flatMap(([name, value]) =>
-      name.startsWith("$control__")
+    const node = (read as { node?: { component?: unknown; attributes?: Record<string, unknown> } }).node;
+    const types = typeof node?.component === "string" ? await controlTypes(transports, node.component) : {};
+    const controls = Object.entries(node?.attributes ?? {}).flatMap(([name, value]) =>
+      name.startsWith(CONTROL_PREFIX)
         ? [
             {
-              name: name.slice("$control__".length),
+              name: name.slice(CONTROL_PREFIX.length),
               value: typeof value === "string" ? value : JSON.stringify(value),
+              ...controlType(types[name]),
             },
           ]
         : [],
@@ -128,7 +146,54 @@ async function inspectComponent(
     };
   } finally {
     if (created) {
-      await transports.run(pagesDelete, { designPage }).catch(() => undefined);
+      await transports.run(pagesDelete, { path }).catch(() => undefined);
     }
   }
+}
+
+/** The component's control definitions by `$control__` name, from its component id; empty when unreadable. */
+async function controlTypes(transports: TransportRouter, componentId: string): Promise<Record<string, unknown>> {
+  try {
+    const { components } = await transports.run(componentsRead, { ids: [componentId] });
+    const controls = (components[0]?.controls as { controls?: unknown } | null)?.controls;
+
+    return typeof controls === "object" && controls !== null ? (controls as Record<string, unknown>) : {};
+  } catch {
+    return {};
+  }
+}
+
+/** A control's type in words, and the tool that writes it. */
+function controlType(definition: unknown): { type: string | null; write: InspectedControl["write"] } {
+  const type = describeType(definition);
+
+  return {
+    type,
+    write: type === null ? null : /^(list|object|transition)/.test(type) ? "component_controls_set" : "design_apply",
+  };
+}
+
+function describeType(definition: unknown): string | null {
+  if (typeof definition !== "object" || definition === null) {
+    return null;
+  }
+
+  const { type, control, controls } = definition as { type?: unknown; control?: unknown; controls?: unknown };
+
+  if (type === "array") {
+    return `list of ${describeType(control) ?? "values"}`;
+  }
+
+  if (type === "object" && typeof controls === "object" && controls !== null) {
+    return `object { ${Object.entries(controls)
+      .map(([key, inner]) => `${key}: ${describeType(inner) ?? "value"}`)
+      .join(", ")} }`;
+  }
+
+  if (typeof type !== "string") {
+    return null;
+  }
+
+  // Framer spells colors and fonts out as their accepted formats.
+  return type.includes("var(--token") ? "color" : type.startsWith("fontSelector") ? "font" : type;
 }

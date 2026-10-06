@@ -103,8 +103,10 @@ something else; every rule here was seen on a live project.
   initialValue="…"/>` returns the variable's real id in `keys`.
 - Read exact control names with `components_read` before setting `$control__*` on instances: names are camelCase
   (`$control__showBadge`; "CTA" is `$control__cTA`).
-- A code component's object controls (arrows, dots, clipping) go through `component_controls_set`. A slot takes
-  `$control__<slot>.<i>="<id>"` of a layer that is a direct child of the page.
+- A code component's object controls (arrows, dots, clipping) and lists go through `component_controls_set`; it
+  uploads image URLs in image fields itself (a carousel's `slides: [{ image: "<url>" }]`). A single image or file
+  control takes a URL straight in `design_apply` (`$control__image="https://…"`, `$control__videoFile="…"`): Framer
+  uploads it. A slot takes `$control__<slot>.<i>="<id>"` of a layer that is a direct child of the page.
 - More variants: `CREATE_VARIANT`; hover and pressed states: `CREATE_VARIANT gesture="hover"`. A variant created from a
   copy copies its state at that moment: finish the source variant's overrides first.
 - A click that switches a variant (accordions, menus, tabs): `onTap.0.action="SET_VARIANT"`

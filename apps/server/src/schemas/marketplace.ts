@@ -77,6 +77,9 @@ export const MarketplaceItemOutputSchema = z.object({
           z.object({
             name: z.string(),
             value: z.string(),
+            /** In words: "list of object { image: responsiveimage, caption: string }", "color", "number"… */
+            type: z.string().nullable(),
+            write: z.enum(["design_apply", "component_controls_set"]).nullable(),
           }),
         )
         .nullable(),

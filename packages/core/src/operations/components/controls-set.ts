@@ -1,6 +1,6 @@
 import * as z from "zod";
 import { OperationError } from "../../errors.ts";
-import { holdsValue, isControlledNode, mergeControls } from "../../utils/controls.ts";
+import { holdsValue, isControlledNode, mergeControls, withUploadedImages } from "../../utils/controls.ts";
 import { defineOperation } from "../define.ts";
 
 /**
@@ -40,7 +40,10 @@ export const componentControlsSet = defineOperation({
       );
     }
 
-    const next = mergeControls(node.controls, controls);
+    const uploaded = await withUploadedImages(controls, (url, alt) =>
+      runtime.port.uploadImage({ image: url, ...(alt === null ? {} : { altText: alt }) }),
+    );
+    const next = mergeControls(node.controls, uploaded);
 
     const name = node.name ?? null;
 

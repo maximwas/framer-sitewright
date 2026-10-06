@@ -18,3 +18,24 @@ export const SVG_DATA_URL_PREFIX = "data:image/svg+xml;base64,";
  * for the rest of the message); a longer one goes through the Server API.
  */
 export const FILE_DATA_URL_BRIDGE_MAX = 3_500_000;
+
+/**
+ * Control fields that take an image (alone, in a list, or in a list's entries) in Marketplace components: Framer keeps
+ * there only an uploaded image, and drops a URL without a word (seen 06.10.2026 on 7 of 8 popular carousels).
+ */
+export const IMAGE_CONTROL_KEYS: ReadonlySet<string> = new Set([
+  "image",
+  "images",
+  "photo",
+  "photos",
+  "picture",
+  "pictures",
+  "poster",
+  "thumbnail",
+  "avatar",
+  "logo",
+  "logos",
+  "cover",
+  "background",
+  "backgroundImage",
+]);
