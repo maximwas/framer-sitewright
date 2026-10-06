@@ -26,13 +26,16 @@ describe("springs Framer keeps", () => {
     expect(dsl).toBe('SET bp pageEffects.enter.transition="spring-physics 341 37 1 0s";');
   });
 
-  it("regression: leaves a drag's transition alone: Framer takes only inertia there and refuses any spring", () => {
-    const dsl = 'SET d dragEffect.transition="spring-physics 400 40 1 0s";';
+  it("regression: a drag gets inertia with the spring's stiffness and damping: Framer refuses any spring there", () => {
+    expect(keptSprings('SET d dragEffect.transition="spring-physics 400 40 1 0s";').dsl).toBe(
+      'SET d dragEffect.transition="inertia 400 40";',
+    );
+  });
 
-    expect(keptSprings(dsl)).toEqual({
-      dsl,
-      converted: [],
-    });
+  it("regression: converts an overlay's backdrop too (seen: physics there became spring-duration 0s, no fade)", () => {
+    expect(
+      keptSprings('SET o backdrop.enter="spring-physics 400 40 1 0s" backdrop.exit="spring-physics 400 40 1 0s";').dsl,
+    ).toBe('SET o backdrop.enter="spring-duration 0.45s 0 0s" backdrop.exit="spring-duration 0.45s 0 0s";');
   });
 
   it("measures how long a spring takes to settle", () => {

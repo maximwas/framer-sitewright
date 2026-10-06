@@ -5,6 +5,7 @@ import {
   SPRING_DURATION_STEP_S,
   SPRING_PHYSICS,
   SPRING_REST,
+  TRANSITION_ATTRIBUTE,
 } from "../constants/dsl.ts";
 import type { DslIssue, SpringConversion } from "../types/dsl.ts";
 import { joinCommands } from "./commands.ts";
@@ -22,12 +23,16 @@ export function keptSprings(dsl: string): { dsl: string; converted: SpringConver
     const command = parseDslCommand(raw);
 
     return Object.entries(command.attributes).reduce((text, [attribute, value]) => {
-      // A drag takes only inertia: Framer refuses any spring there, so it is left for Framer to say so.
-      if ((attribute !== "transition" && !attribute.endsWith(".transition")) || attribute.startsWith("dragEffect.")) {
+      if (!TRANSITION_ATTRIBUTE.test(attribute)) {
         return text;
       }
 
-      const kept = PHYSICS_TRANSITIONS.test(attribute) ? asPhysics(value) : asDuration(value);
+      // A drag takes only inertia (Framer refuses any spring there); the rest keep one kind of spring.
+      const kept = attribute.startsWith("dragEffect.")
+        ? asInertia(value)
+        : PHYSICS_TRANSITIONS.test(attribute)
+          ? asPhysics(value)
+          : asDuration(value);
 
       if (kept === null) {
         return text;
@@ -85,6 +90,13 @@ function asDuration(value: string): string | null {
   );
 
   return `spring-duration ${Number(rounded.toFixed(2))}s 0 ${Number(delay)}s`;
+}
+
+/** A spring-physics as the inertia a drag takes: the same stiffness and damping, no overshoot when critically damped. */
+function asInertia(value: string): string | null {
+  const physics = SPRING_PHYSICS.exec(value);
+
+  return physics === null ? null : `inertia ${physics[1]} ${physics[2]}`;
 }
 
 /** A spring-duration as the critically damped physics spring of that duration (mass 1); null for anything else. */

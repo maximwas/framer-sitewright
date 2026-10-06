@@ -82,3 +82,6 @@ export const CRITICAL_SETTLE_RADIANS = 9.233;
 
 /** Time springs are written to the nearest 0.05 s. */
 export const SPRING_DURATION_STEP_S = 0.05;
+
+/** The attributes that hold a transition: a node's, an effect's (`*.transition`) and an overlay backdrop's. */
+export const TRANSITION_ATTRIBUTE = /^(?:transition|.+\.transition|backdrop\.(?:enter|exit))$/;
