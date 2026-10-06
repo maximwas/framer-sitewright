@@ -54,6 +54,8 @@ export const OPERATION_LABELS: Readonly<Record<string, string>> = {
   "redirects.set": "Redirects",
   "project.publishStatus": "Publish status",
   "project.deployments": "Deployments",
+  "site.settings.get": "Read site settings",
+  "site.settings.set": "Site settings",
 };
 
 /**
@@ -118,6 +120,24 @@ export const SERIALIZED_STRUCTURE_KEYS: ReadonlySet<string> = new Set([
 export const UNSET_LOOKALIKES: Readonly<Record<string, Readonly<Record<string, string>>>> = {
   RichTextNode: { textAlignment: "start" },
 };
+
+/**
+ * Attributes serialize() leaves out at their default, which the DSL cannot write as null: a web page without `draft`
+ * is published (draft="null" is refused), and one without `layoutTemplate` takes the home page's (layoutTemplate="null"
+ * means no template at all). They are recorded at that default, so undo writes it back (06.10.2026).
+ */
+export const ABSENT_DEFAULTS: Readonly<Record<string, Readonly<Record<string, string | boolean>>>> = {
+  WebPageNode: {
+    draft: false,
+    layoutTemplate: "default",
+  },
+};
+
+/**
+ * Attribute objects the DSL cannot clear whole, unlike an effect: `metadata="null"` is refused ("Set subproperties
+ * such as `metadata.title` instead", 06.10.2026), so undo clears their fields one by one.
+ */
+export const FIELD_ONLY_GROUPS: ReadonlySet<string> = new Set(["metadata"]);
 
 /** Attributes Framer takes but never reports back through serialize(), so no undo step can hold them (30.09.2026). */
 export const UNREADABLE_ATTRIBUTES: ReadonlySet<string> = new Set(["appearEffect.replay", "textEffect.replay"]);

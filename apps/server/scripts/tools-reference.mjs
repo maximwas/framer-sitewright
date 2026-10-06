@@ -53,7 +53,7 @@ const GROUPS = [
     id: "pages",
     title: "Pages, layout and redirects",
     intro:
-      "Create and delete pages, read one as XML, find layers and replace text across pages, change pages, check what looks broken, adapt them to tablet and phone, look at them, and redirect old paths.",
+      "Create and delete pages, read one as XML, find layers and replace text across pages, read and set the site's and pages' titles, descriptions, images and search settings, change pages, check what looks broken, adapt them to tablet and phone, look at them, and redirect old paths.",
     tools: [
       "page_create",
       "page_delete",
@@ -63,6 +63,8 @@ const GROUPS = [
       "design_apply",
       "effects_set",
       "text_replace",
+      "site_settings_get",
+      "site_settings_set",
       "layout_audit",
       "breakpoints_add",
       "node_screenshot",
@@ -178,12 +180,12 @@ const NEEDS = {
     "link_styles_upsert",
     "link_styles_delete",
     "styles_usage",
-    "text_replace",
     "localization_get",
     "localization_set",
     "locale_add",
     "reference_screenshot",
     "publish_preview",
+    "site_settings_set",
   ],
   partial: [
     "nodes_read",
@@ -193,6 +195,8 @@ const NEEDS = {
     "images_check",
     "marketplace_item",
     "template_audit",
+    "text_replace",
+    "site_settings_get",
   ],
   editor: ["selection_get", "svg_add"],
   local: [

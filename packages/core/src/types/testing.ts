@@ -65,11 +65,11 @@ export interface FakeFramerState {
   webPages: WebPageData[];
   designPages: DesignPageData[];
   redirects: { id: string; from: string; to: string | null; expandToAllLocales: boolean }[];
-  /** Layers under the home page's breakpoints, for the Plugin API's tree reads; text layers have text. */
-  /** Layers by parent; a page's own breakpoints (pages other than "/") are layers with isBreakpoint and a px width. */
   /**
-   * Layers under the home page's breakpoints, for the Plugin API's tree reads; text layers have text. `attributes` are
-   * what getNode reads beside id and name, and what setAttributes writes.
+   * Layers by parent: under the home page's breakpoints for the Plugin API's tree reads, and a page's own
+   * breakpoints (pages other than "/") as layers with isBreakpoint and a px width. Text layers have text;
+   * `attributes` are what getNode reads beside id and name, and what setAttributes writes. A layer of a
+   * breakpoint copy names its `originalId`; without its own text it shows the original's.
    */
   canvas: {
     id: string;
@@ -80,6 +80,7 @@ export interface FakeFramerState {
     isBreakpoint?: boolean;
     width?: string;
     attributes?: Record<string, unknown>;
+    originalId?: string;
   }[];
   publishInfo: PublishInfoData;
   unpublishedChanges: UnpublishedChangeData[];

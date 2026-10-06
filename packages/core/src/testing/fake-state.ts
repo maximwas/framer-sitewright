@@ -193,6 +193,11 @@ export function defaultState(): FakeFramerState {
   };
 }
 
+/** A canvas layer's text: its own, or, for a breakpoint copy without one, its original's. */
+export function canvasText(state: FakeFramerState, layer: FakeFramerState["canvas"][number]): string | undefined {
+  return layer.text ?? state.canvas.find(({ id }) => id === layer.originalId)?.text;
+}
+
 /** Ids of created objects share one sequence, like "color-1", "text-2". */
 export function createIdSequence(): (prefix: string) => string {
   let sequence = 0;

@@ -1,4 +1,4 @@
-import { SERIALIZED_STRUCTURE_KEYS, UNSET_LOOKALIKES } from "../../constants/history.ts";
+import { ABSENT_DEFAULTS, SERIALIZED_STRUCTURE_KEYS, UNSET_LOOKALIKES } from "../../constants/history.ts";
 import { SerializedNodeSchema } from "../../schemas/dsl.ts";
 import type { SerializedNode } from "../../types/dsl.ts";
 import type { DslAttributeMap, NodeSnapshot } from "../../types/history.ts";
@@ -45,11 +45,12 @@ export function childrenOf(node: SerializedNode): SerializedNode[] {
 /**
  * A node's attributes as DSL values. Effects and shadows come as objects and lists; they become dotted keys, the way
  * the DSL sets them (`appearEffect.enter.opacity`, `boxShadows.0`), so the journal sees and restores them. Keys without
- * a value are left out: the DSL would reject them. A value that also means "unset" is null (UNSET_LOOKALIKES).
+ * a value are left out: the DSL would reject them. A value that also means "unset" is null (UNSET_LOOKALIKES); one
+ * Framer leaves out at a default the DSL cannot clear to is that default (ABSENT_DEFAULTS).
  */
 export function attributesOf(node: SerializedNode): DslAttributeMap {
   const lookalikes = UNSET_LOOKALIKES[node.type] ?? {};
-  const flat: Record<string, string | number | boolean | null> = {};
+  const flat: Record<string, string | number | boolean | null> = { ...ABSENT_DEFAULTS[node.type] };
 
   for (const [key, value] of Object.entries(node.attributes ?? {})) {
     flattenInto(flat, key, value);

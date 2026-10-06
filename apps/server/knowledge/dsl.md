@@ -60,11 +60,12 @@ something else; every rule here was seen on a live project.
   auto there, it collapses. To centre one, give `centerAnchorX="50%"` (or `centerAnchorY`) and no pins on that axis:
   `design_apply` creates it pinned and then unpins it.
 - A link to `/#id` needs the target section to have `elementId` and `scrollTargetEnabled` first.
-- Site settings: `<RootNode id="rootNode" metadata.title="…" metadata.description="…" metadata.favicon="…"
-  metadata.faviconDark="…" metadata.appleTouchIcon="…" metadata.socialImage="…" />`. A page:
-  `<WebPageNode id="<page id>" metadata.title="…" metadata.description="…" metadata.socialImage="…" />`. Favicons live
-  only on the site, `noIndex` only on pages. Framer downloads any https image URL there itself; one that does not
-  answer refuses the whole batch.
+- Site and page settings: read them with `site_settings_get` and change them with `site_settings_set`, which writes
+  the attributes below quoted and journaled. In raw XML: `<RootNode id="rootNode" metadata.title="…"
+  metadata.description="…" metadata.favicon="…" metadata.faviconDark="…" metadata.appleTouchIcon="…"
+  metadata.socialImage="…" />`; a page: `<WebPageNode id="<page id>" metadata.title="…" metadata.description="…"
+  metadata.socialImage="…" />`. Favicons live only on the site, `noIndex` only on pages. Framer downloads any https
+  image URL there itself; when one does not answer, the call fails but everything else in the batch is applied.
 - `metadata.noIndex="true"` also turns `noIndexSite` on (out of the site's own search), and `noIndex="false"` leaves it
   on: set both.
 

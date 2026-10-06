@@ -45,6 +45,7 @@ import { deploymentsList, publishStatus } from "./project/publish-status.ts";
 import { redirectsList, redirectsSet } from "./redirects/redirects.ts";
 import { a11yAudit, contrastCheck, imagesCheck, linksCheck, seoAudit } from "./site/checks.ts";
 import { referenceScreenshot } from "./site/reference-screenshot.ts";
+import { siteSettingsGet, siteSettingsSet } from "./site/settings.ts";
 import { templateAudit } from "./site/template-audit.ts";
 import { stylesUsage } from "./styles/usage.ts";
 import { textStylesDelete } from "./text-styles/delete.ts";
@@ -117,6 +118,8 @@ const OPERATIONS: readonly AnyOperation[] = [
   a11yAudit,
   contrastCheck,
   templateAudit,
+  siteSettingsGet,
+  siteSettingsSet,
   fontsInLibrary,
   effectsSet,
   shadersRead,

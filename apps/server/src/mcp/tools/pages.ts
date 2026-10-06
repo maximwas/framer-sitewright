@@ -9,12 +9,14 @@ import {
   publishStatus,
   redirectsList,
   redirectsSet,
+  siteSettingsGet,
+  siteSettingsSet,
   textReplace,
 } from "@sitewright/core";
 import type { ToolContext } from "../../types/mcp.ts";
 import { addOperationTool } from "../add-tool.ts";
 
-/** Pages, finding and replacing across them, redirects, and where the site is published. */
+/** Pages, finding and replacing across them, site and page settings, redirects, and where the site is published. */
 export function registerPageTools(server: McpServer, context: ToolContext): void {
   addOperationTool(server, context, pagesCreate, {
     name: "page_create",
@@ -48,7 +50,21 @@ export function registerPageTools(server: McpServer, context: ToolContext): void
     name: "text_replace",
     title: "Replace text",
     description:
-      "Replaces text inside text layers across the site's pages (or one page), through design_apply, so the journal can undo it. Run it with dryRun first and show the user what changes. A replaced text keeps its text style, but formatting inside it (bold words, links in the text) becomes plain.",
+      "Replaces text inside text layers across the site's pages (or one page), including breakpoint copies that hold their own text (a copy that follows the primary breakpoint changes with it); the journal can undo it. Run it with dryRun first and show the user what changes. Each change says what happens to the formatting inside the layer: kept (with the Server API key Framer replaces in place: bold, links and lists stay), partial (the match crosses differently formatted runs and takes the formatting of the run it starts in), plain (without a key the layer is rewritten as plain text through design_apply).",
+  });
+
+  addOperationTool(server, context, siteSettingsGet, {
+    name: "site_settings_get",
+    title: "Read site settings",
+    description:
+      "Reads the site's settings and every page's in one place. The site: title, description, social image and favicons (light, dark, Apple touch icon), which every page inherits. Each page: its own title, description and social image (null inherits the site's), noIndex (hidden from search engines), noIndexSite (hidden from the site's own search), its layout template and whether it is a draft; plus the layout templates there are. Without a Server API key only the pages' paths and drafts are visible. Change them with site_settings_set.",
+  });
+
+  addOperationTool(server, context, siteSettingsSet, {
+    name: "site_settings_set",
+    title: "Change site settings",
+    description:
+      "Changes the site's and pages' settings in one call, so the fixes seo_audit suggests land together. The site: title, description, socialImage, favicon, faviconDark, appleTouchIcon (favicons exist only on the site). Pages by path, each with only what changes: title, description, socialImage, noIndex, noIndexSite, layoutTemplate, draft (noIndex exists only on pages). null clears a value, so a page inherits the site's again. noIndexSite follows noIndex unless given: Framer turns it on with noIndex and keeps it on after. Framer downloads each image URL itself; one it cannot download is left out and the call fails, but the rest is applied (the answer shows the settings as they are now). A page on a layout template takes its breakpoints' background, padding and gap from the template, so fill on them is refused. The journal can undo it; needs the Server API key.",
   });
 
   addOperationTool(server, context, redirectsList, {

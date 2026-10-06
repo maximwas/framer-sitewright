@@ -97,6 +97,7 @@ export { redirectsList, redirectsSet } from "./operations/redirects/redirects.ts
 export { findOperation } from "./operations/registry.ts";
 export { a11yAudit, contrastCheck, imagesCheck, linksCheck, seoAudit } from "./operations/site/checks.ts";
 export { referenceScreenshot } from "./operations/site/reference-screenshot.ts";
+export { siteSettingsGet, siteSettingsSet } from "./operations/site/settings.ts";
 export { templateAudit } from "./operations/site/template-audit.ts";
 export { stylesUsage } from "./operations/styles/usage.ts";
 export { textStylesDelete } from "./operations/text-styles/delete.ts";

@@ -28,7 +28,7 @@ import type {
   FakeTextStyle,
 } from "../types/testing.ts";
 import { normalizeColor } from "../utils/color.ts";
-import { newTextStyle, stylePath } from "./fake-state.ts";
+import { canvasText, newTextStyle, stylePath } from "./fake-state.ts";
 
 /** The Plugin API over the fake state. Handles are snapshots with methods, like Framer's ColorStyle / TextStyle. */
 export function createFakePort(state: FakeFramerState, nextId: (prefix: string) => string): FramerPort {
@@ -256,8 +256,13 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
     };
   }
 
-  /** A canvas layer as the Plugin API hands it out: a text layer reads and writes its text. */
+  /**
+   * A canvas layer as the Plugin API hands it out: a text layer reads and writes its text. A breakpoint copy's layer is
+   * a replica of its original; it shows the original's text until it gets its own.
+   */
   function canvasNode(layer: FakeFramerState["canvas"][number]) {
+    const text = canvasText(state, layer);
+
     return {
       ...layer.attributes,
       id: layer.id,
@@ -265,12 +270,18 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
       __class: layer.className,
       ...(layer.isBreakpoint === undefined ? {} : { isBreakpoint: layer.isBreakpoint }),
       ...(layer.width === undefined ? {} : { width: layer.width }),
-      ...(layer.text === undefined
+      ...(layer.originalId === undefined
         ? {}
         : {
-            getText: async () => layer.text ?? null,
-            setText: async (text: string) => {
-              layer.text = text;
+            isReplica: true,
+            originalId: layer.originalId,
+          }),
+      ...(text === undefined
+        ? {}
+        : {
+            getText: async () => canvasText(state, layer) ?? null,
+            setText: async (next: string) => {
+              layer.text = next;
             },
           }),
     };

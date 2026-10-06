@@ -67,6 +67,14 @@ export interface PluginAttributes {
 /** A canvas node as the Plugin API reads it: its own fields by name; `getText` on text nodes. */
 export type PluginNodeRecord = Readonly<Record<string, unknown>>;
 
+export interface WalkOptions {
+  /** Also walk the breakpoint copies: their layers are replicas, listed once more per breakpoint. */
+  readonly copies?: boolean;
+}
+
+/** Called for every layer of a walk, with the breakpoint it is on (null for a layer of the page itself). */
+export type WalkVisitor = (node: PluginNodeRecord, breakpoint: PluginNodeRecord | null) => Promise<void> | void;
+
 /** Where a new node goes: an existing node, a `key` created earlier in the batch, or the new element it is nested in. */
 export type ParentRef = { readonly id: string } | { readonly key: string } | { readonly ref: string };
 

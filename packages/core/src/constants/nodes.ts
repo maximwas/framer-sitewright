@@ -19,6 +19,13 @@ export const FIND_LIMIT_MAX = 200;
 /** A found text is cut to this many characters in the answer. */
 export const FIND_TEXT_MAX = 160;
 
+/**
+ * What a text replacement does to the formatting inside the layer: "kept" (Framer replaces inside the runs: bold,
+ * links and lists stay), "partial" (a match crosses runs formatted differently and takes the formatting of the run it
+ * starts in), "plain" (no Server API key: the layer is rewritten as plain text).
+ */
+export const TEXT_FORMATTING = ["kept", "partial", "plain"] as const;
+
 /** What the journal says after page, redirect and publishing changes it cannot take back. */
 export const PAGES_UNDO_NOTE = "Undo does not create or delete pages: use page_create or page_delete.";
 export const REDIRECTS_UNDO_NOTE = "Undo does not restore redirects yet; the previous ones are in the result.";

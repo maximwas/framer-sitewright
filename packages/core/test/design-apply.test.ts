@@ -252,6 +252,40 @@ describe("design.apply", () => {
     expect(result.ok).toBe(true);
   });
 
+  it("regression: an image Framer cannot download leaves the rest of the batch applied, and the answer and journal say so", async () => {
+    const { runtime } = createFakeRuntime();
+    const history = new HistoryRecorder();
+    const agent = runtime.agent;
+
+    if (agent === null) {
+      throw new Error("unreachable");
+    }
+
+    // Live, 06.10.2026: Framer creates both frames, leaves the fill out, and throws instead of answering with ids.
+    const result = await runOperation(
+      designApply,
+      {
+        runtime: {
+          ...runtime,
+          agent: {
+            ...agent,
+            applyChanges: async () => {
+              throw new Error(
+                "FramerPluginError: Assets upload from URL https://example.com/missing.png to YAlYa1ydRLCwxtlTcmns failed. could not get asset, response code 404",
+              );
+            },
+          },
+        },
+        history,
+      },
+      { xml: '<FrameNode parent="bp" fill="https://example.com/missing.png" /><FrameNode parent="bp" />' },
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.message).toMatch(/applied the rest of the batch/);
+    expect(history.incomplete).toMatch(/nodes it may have created are not in the undo steps/);
+  });
+
   it("regression: says undo keeps the variables a batch created, instead of passing them over", async () => {
     const { runtime, state } = createFakeRuntime();
     const history = new HistoryRecorder();

@@ -3,7 +3,13 @@ import { SNAPSHOT_DEPTH, TEXT_CONTENT_DEPTH } from "../../constants/history.ts";
 import { parseDsl } from "../../dsl/parse.ts";
 import type { DslResult, SerializedNode } from "../../types/dsl.ts";
 import type { AgentPort } from "../../types/framer.ts";
-import type { BeforeSnapshots, CaptureTarget, DslCapture, DslHistoryScope } from "../../types/history.ts";
+import type {
+  BeforeSnapshots,
+  CaptureTarget,
+  DslCapture,
+  DslHistoryScope,
+  NodeHistoryScope,
+} from "../../types/history.ts";
 import { errorMessage } from "../../utils/errors.ts";
 import { countOf } from "../../utils/text.ts";
 import type { HistoryRecorder } from "../recorder.ts";
@@ -31,20 +37,54 @@ export async function withDslHistory(scope: DslHistoryScope, apply: () => Promis
     history.markIncomplete(reason);
   }
 
+  return withCapture(scope, capture, apply, (result) => result.renamedIds);
+}
+
+/**
+ * Runs `apply`, which changes the content of rich texts `ids` in place (framer.agent.replaceText), and records it the
+ * way a DSL batch that set their text is recorded: their content before and after becomes node steps, so undo rebuilds
+ * each text, runs and their formatting included.
+ */
+export function withTextHistory<T>(
+  scope: NodeHistoryScope,
+  ids: readonly string[],
+  apply: () => Promise<T>,
+): Promise<T> {
+  const capture: DslCapture = {
+    targets: ids.map((id) => ({
+      change: "updated",
+      id,
+      text: true,
+    })),
+    unsupported: [],
+  };
+
+  return withCapture(scope, capture, apply, () => ({}));
+}
+
+/** Reads the capture's nodes, runs `apply`, and records what changed, whether `apply` returned or threw. */
+async function withCapture<T>(
+  scope: NodeHistoryScope,
+  capture: DslCapture,
+  apply: () => Promise<T>,
+  renamedIdsOf: (result: T) => Readonly<Record<string, string>>,
+): Promise<T> {
   const before = await readBefore(scope.agent, scope.pagePath, capture.targets).catch((error: unknown) => {
-    history.markIncomplete(`The nodes could not be read before the change: ${errorMessage(error)}`);
+    scope.history.markIncomplete(`The nodes could not be read before the change: ${errorMessage(error)}`);
 
     return null;
   });
-  let result: DslResult | null = null;
+  let renamedIds: Readonly<Record<string, string>> | null = null;
 
   try {
-    result = await apply();
+    const result = await apply();
+
+    renamedIds = renamedIdsOf(result);
 
     return result;
   } finally {
     if (before !== null) {
-      await recordAfter(scope, capture, before, result);
+      await recordAfter(scope, capture, before, renamedIds);
     }
   }
 }
@@ -82,18 +122,18 @@ async function readBefore(
 }
 
 /**
- * Never throws: the batch already ran, and its result or error must reach the caller. `result` is null when the DSL
- * call threw. Nodes that outlived a deleted parent (moved out first) are cut from its snapshot, so undo does not
- * recreate a second copy of them.
+ * Never throws: the batch already ran, and its result or error must reach the caller. `renamed` is null when the call
+ * threw. Nodes that outlived a deleted parent (moved out first) are cut from its snapshot, so undo does not recreate a
+ * second copy of them.
  */
 async function recordAfter(
-  scope: DslHistoryScope,
+  scope: NodeHistoryScope,
   capture: DslCapture,
   before: BeforeSnapshots,
-  result: DslResult | null,
+  renamed: Readonly<Record<string, string>> | null,
 ): Promise<void> {
   const { history, agent, pagePath } = scope;
-  const renamedIds = result?.renamedIds ?? {};
+  const renamedIds = renamed ?? {};
 
   try {
     const ids = idsByRead(capture.targets);
@@ -134,7 +174,7 @@ async function recordAfter(
       history.record(step);
     }
 
-    for (const reason of missedChanges(snapshots, result === null)) {
+    for (const reason of missedChanges(snapshots, renamed === null)) {
       history.markIncomplete(reason);
     }
   } catch (error) {

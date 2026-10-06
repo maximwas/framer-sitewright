@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { TEXT_FORMATTING } from "../constants/nodes.ts";
 
 export const FoundLayerSchema = z.object({
   id: z.string(),
@@ -13,8 +14,12 @@ export const FoundLayerSchema = z.object({
 export const TextChangeSchema = z.object({
   id: z.string(),
   page: z.string(),
+  /** The breakpoint copy whose own text this is; null for the primary breakpoint, which the copies follow. */
+  breakpoint: z.string().nullable(),
   before: z.string(),
   after: z.string(),
+  /** kept: bold, links and lists stay; partial: a match crosses differently formatted runs; plain: no key, plain text. */
+  formatting: z.enum(TEXT_FORMATTING),
 });
 
 export const RedirectSchema = z.object({

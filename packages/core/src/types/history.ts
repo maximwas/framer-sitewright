@@ -199,10 +199,14 @@ export interface BeforeSnapshots {
   readonly unplaced: readonly string[];
 }
 
-export interface DslHistoryScope {
+/** Where the nodes a change touches are read, before and after it, and its undo steps recorded. */
+export interface NodeHistoryScope {
   readonly history: HistoryRecorder;
   readonly agent: AgentPort;
   readonly pagePath: string;
+}
+
+export interface DslHistoryScope extends NodeHistoryScope {
   readonly dsl: string;
   /** Ids among the batch's targets that are variables, not nodes: no node read finds them. */
   readonly variables?: ReadonlySet<string>;

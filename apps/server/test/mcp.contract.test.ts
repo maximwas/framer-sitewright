@@ -105,6 +105,8 @@ const EXPECTED_TOOLS = [
   "selection_get",
   "seo_audit",
   "shaders_read",
+  "site_settings_get",
+  "site_settings_set",
   "styles_usage",
   "svg_add",
   "template_audit",

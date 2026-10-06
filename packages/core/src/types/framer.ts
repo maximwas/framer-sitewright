@@ -37,6 +37,11 @@ export interface AgentPort {
     input: { id: string; types: readonly string[] },
     options?: PageScope,
   ): Promise<unknown>;
+  /**
+   * Replaces every exact (case-sensitive) `searchText` in a text node, inside its runs, so bold, links and lists stay;
+   * false when the text holds none. A match across runs takes the formatting of the run it starts in (06.10.2026).
+   */
+  replaceText(input: { id: string; searchText: string; replaceText: string }, options?: PageScope): Promise<boolean>;
   /** Stock image candidates (Unsplash): `{ source, query, count, orientation?, width? }`. */
   queryImages(input: Record<string, unknown>): Promise<unknown>;
   /** Icon sets by group: `{ project, external, additional }`, each `{ id, displayName }[]`. */

@@ -1,11 +1,11 @@
 import * as z from "zod";
 import { AUDIT_AFTER_APPLY_MS } from "../../constants/layout-audit.ts";
 import { deferAbsoluteCentering } from "../../dsl/absolute-centering.ts";
+import { applyDsl, assetRefusal } from "../../dsl/apply-changes.ts";
 import { joinCommands } from "../../dsl/commands.ts";
 import { separateControls } from "../../dsl/controls.ts";
 import { deferIconInitialValues } from "../../dsl/icon-variables.ts";
 import { parseDsl } from "../../dsl/parse.ts";
-import { assetFailureResult, normalizeDslResult } from "../../dsl/result.ts";
 import { keptSprings, springWarnings } from "../../dsl/springs.ts";
 import { isolateTempIds, nextTempId } from "../../dsl/temp-ids.ts";
 import { OperationError } from "../../errors.ts";
@@ -132,32 +132,20 @@ async function applyBatch(
   const variables = await loadVariableTargets(agent, pagePath, parsed, () =>
     pageRootId(runtime, pagePath).catch(() => null),
   ).catch(() => new Set<string>());
-  const apply = async () => {
-    try {
-      return normalizeDslResult(await agent.applyChanges(commands, { pagePath }));
-    } catch (error) {
-      const refused = assetFailureResult(errorMessage(error));
-
-      if (refused === null) {
-        throw error;
-      }
-
-      return refused;
-    }
-  };
-  const applied =
-    history === undefined
-      ? await apply()
-      : await withDslHistory(
-          {
-            history,
-            agent,
-            pagePath,
-            dsl: commands,
-            variables,
-          },
-          apply,
-        );
+  const apply = () => applyDsl(agent, commands, pagePath);
+  const applied = await (history === undefined
+    ? apply()
+    : withDslHistory(
+        {
+          history,
+          agent,
+          pagePath,
+          dsl: commands,
+          variables,
+        },
+        apply,
+      )
+  ).catch(assetRefusal);
   const iconWarnings = await projectIconControlWarnings(agent, pagePath, parsed, applied.renamedIds).catch(() => []);
   const result = withOwnNames(
     withWarnings(applied, [

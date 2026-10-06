@@ -68,7 +68,7 @@ export function seoFindings(
             page.path,
             null,
             `${page.path} is hidden from ${hidden.includes("noIndex") ? "search engines" : "the site's search"} (${hidden.join(", ")}).`,
-            "Set metadata.noIndex and metadata.noIndexSite to false unless the page must stay out of search: Framer turns both on with noIndex and keeps noIndexSite on after noIndex is turned off.",
+            "Unless the page must stay out of search, call site_settings_set with the page's noIndex: false (noIndexSite follows): Framer turns both on with noIndex and keeps noIndexSite on after noIndex is turned off.",
           ),
         );
       }
@@ -107,7 +107,7 @@ export function seoFindings(
           paths[1] ?? "/",
           null,
           `"${title}" is the title of ${paths.join(", ")}.`,
-          "Give each page its own title, the page's subject first.",
+          "Give each page its own title with site_settings_set, the page's subject first.",
         ),
       );
     }
@@ -121,7 +121,7 @@ export function seoFindings(
         "/",
         null,
         "The site has no social image, so shared links show no preview.",
-        "Set metadata.socialImage on the root node: 1200×630, e.g. a screenshot of the hero.",
+        "Set the site's socialImage with site_settings_set: 1200×630, e.g. a screenshot of the hero.",
       ),
     );
   }
@@ -134,7 +134,7 @@ export function seoFindings(
         "/",
         null,
         "The site has no favicon.",
-        "Set metadata.favicon on the root node: the brand mark as SVG.",
+        "Set the site's favicon with site_settings_set: the brand mark as SVG.",
       ),
     );
   }
@@ -156,7 +156,7 @@ function lengthFindings(
         path,
         null,
         `${path} has no ${field}, and the site has none to inherit.`,
-        `Write a ${field} of ${min}–${max} characters.`,
+        `Write a ${field} of ${min}–${max} characters with site_settings_set: the site's, or this page's own.`,
       ),
     ];
   }

@@ -1,18 +1,19 @@
+import { FIELD_ONLY_GROUPS } from "../../constants/history.ts";
 import type { DslAttributeMap } from "../../types/history.ts";
 
 // serialize() reports effects as objects (appearEffect: { enter: { … } }) and shadows as lists; the journal keeps them
 // as dotted DSL keys (appearEffect.enter.opacity, boxShadows.0). An effect is one thing to Framer: a batch that adds it
 // is undone by removing it whole (`appearEffect="null"`), not by clearing each field. Lists keep a null per index,
-// which is how the DSL removes an item.
+// which is how the DSL removes an item. A page's metadata is no effect: only its fields can be cleared.
 
 /** Marks a group as present when a map holds its fields but not the group key itself. */
 const PRESENT = Symbol("present");
 
-/** The effect a dotted key belongs to, or null for a plain key or a list item (`boxShadows.0`). */
+/** The effect a dotted key belongs to, or null for a plain key, a list item (`boxShadows.0`) or a metadata field. */
 function groupOf(key: string): string | null {
   const [root, next] = key.split(".");
 
-  return next === undefined || root === undefined || /^\d+$/.test(next) ? null : root;
+  return next === undefined || root === undefined || /^\d+$/.test(next) || FIELD_ONLY_GROUPS.has(root) ? null : root;
 }
 
 /** A key's value, where a group asked for by its own name counts as present when any of its fields is set. */

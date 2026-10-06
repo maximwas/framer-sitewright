@@ -191,6 +191,57 @@ function textColor(value: string, findToken: (id: string) => FakeColorStyle | un
   return token;
 }
 
+/**
+ * SET on a node the fake serializes, the way Framer keeps it (06.10.2026): dotted keys nest (`metadata.title`), "null"
+ * clears, "true" and "false" are booleans. `draft` takes only a boolean, `metadata` only its fields; a page's
+ * `layoutTemplate` keeps "null" (no template) and drops "default" (the home page's).
+ */
+export function setSerializedAttributes(
+  node: { attributes?: Record<string, unknown> },
+  attributes: NodeAttributes,
+): void {
+  node.attributes ??= {};
+
+  for (const [key, value] of Object.entries(attributes)) {
+    if (key === "draft" && value !== "true" && value !== "false") {
+      throw new FakeCommandError(`Invalid value \`draft="${value}"\`. Expected "true" or "false".`);
+    }
+
+    if (key === "metadata") {
+      throw new FakeCommandError(
+        `Invalid value \`metadata="${value}"\`. Set subproperties such as \`metadata.title\` instead.`,
+      );
+    }
+
+    if (key === "layoutTemplate") {
+      if (value === "default") {
+        delete node.attributes[key];
+      } else {
+        node.attributes[key] = value;
+      }
+
+      continue;
+    }
+
+    const path = key.split(".");
+    const last = path.pop() ?? key;
+    let target = node.attributes;
+
+    for (const segment of path) {
+      const next = target[segment];
+
+      target[segment] = typeof next === "object" && next !== null ? next : {};
+      target = target[segment] as Record<string, unknown>;
+    }
+
+    if (value === "null") {
+      delete target[last];
+    } else {
+      target[last] = value === "true" || value === "false" ? value === "true" : value;
+    }
+  }
+}
+
 function fakeColor(value: string): string {
   try {
     return normalizeColor(value);

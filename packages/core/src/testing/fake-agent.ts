@@ -1,5 +1,6 @@
 import { DSL_VARIABLE_TYPE } from "../constants/dsl.ts";
 import { LINK_STYLE_NODE_TYPE } from "../constants/link-styles.ts";
+import { FAKE_MODELED_NODE_TYPES } from "../constants/testing.ts";
 import { parseDsl } from "../dsl/parse.ts";
 import type { DslCommand } from "../types/dsl.ts";
 import type { AgentPort } from "../types/framer.ts";
@@ -11,8 +12,13 @@ import {
   referencedStyles,
   withLinkAttributes,
 } from "./fake-link-styles.ts";
-import { FakeCommandError, tokenColors, withTextStyleAttributes } from "./fake-node-attributes.ts";
-import { newTextStyle, stylePath } from "./fake-state.ts";
+import {
+  FakeCommandError,
+  setSerializedAttributes,
+  tokenColors,
+  withTextStyleAttributes,
+} from "./fake-node-attributes.ts";
+import { canvasText, newTextStyle, stylePath } from "./fake-state.ts";
 
 /** framer.agent over the fake state. Models color tokens, text and link styles; anything else is an error. */
 export function createFakeAgent(state: FakeFramerState, nextId: (prefix: string) => string): AgentPort {
@@ -37,14 +43,15 @@ export function createFakeAgent(state: FakeFramerState, nextId: (prefix: string)
 
       return result;
     },
-    serialize: async (input) => state.serializedNodes[input.id] ?? null,
+    serialize: async (input) => jsonCopy(state.serializedNodes[input.id] ?? null),
     serializeNodes: async ({ ids }) => {
       // Reading a scope loads it into the session: its variables become targets.
       state.unloadedScopes = state.unloadedScopes.filter((id) => !ids.includes(id));
 
-      return ids.flatMap((id) => state.serializedNodes[id] ?? []);
+      return jsonCopy(ids.flatMap((id) => state.serializedNodes[id] ?? []));
     },
-    // The DSL's view of styles: token and preset nodes named by their path without the leading slash.
+    // The DSL's view of styles: token and preset nodes named by their path without the leading slash. Types the fake
+    // does not model itself (the root, pages, layout templates) come from the serialized nodes.
     getNodesOfTypes: async ({ types }) => [
       ...(types.includes("ColorStyleTokenNode") ? state.colorStyles.map(dslNode) : []),
       ...(types.includes("TextStylePresetNode") ? state.textStyles.map(dslNode) : []),
@@ -63,10 +70,34 @@ export function createFakeAgent(state: FakeFramerState, nextId: (prefix: string)
             name,
           }))
         : []),
+      ...jsonCopy(
+        Object.values(state.serializedNodes).filter(
+          (node) =>
+            typeof node === "object" &&
+            node !== null &&
+            "type" in node &&
+            types.includes(String(node.type)) &&
+            !FAKE_MODELED_NODE_TYPES.includes(String(node.type)),
+        ),
+      ),
     ],
     getDescendantsOfTypes: async ({ id, types }) => (state.layers[id] ?? []).filter(({ type }) => types.includes(type)),
     getDescendantReferencesOfTypes: async ({ id, types }) =>
       referencedStyles(state, state.layers[id] ?? []).filter(({ type }) => types.includes(type)),
+    // Like Framer: every exact match, inside the runs. A copy that showed its original's text now holds its own.
+    replaceText: async ({ id, searchText, replaceText }) => {
+      const layer = state.canvas.find((candidate) => candidate.id === id);
+      const text = layer === undefined ? undefined : canvasText(state, layer);
+
+      if (layer === undefined || text === undefined || !text.includes(searchText)) {
+        return false;
+      }
+
+      layer.text = text.replaceAll(searchText, replaceText);
+      replaceInRuns(state.serializedNodes[id], searchText, replaceText);
+
+      return true;
+    },
     queryImages: async () => state.stockImages,
     listIconSets: async () =>
       Object.fromEntries(
@@ -196,6 +227,32 @@ function flattened(id: string, state: FakeFramerState, nextId: (prefix: string) 
     status: "success",
     replacementId: replacement.id,
   };
+}
+
+/** replaceText on a serialized rich text: each run's text, so its formatting stays. */
+function replaceInRuns(node: unknown, searchText: string, replaceText: string): void {
+  if (typeof node !== "object" || node === null) {
+    return;
+  }
+
+  const { type, attributes, children } = node as {
+    type?: unknown;
+    attributes?: { text?: unknown };
+    children?: unknown;
+  };
+
+  if (type === "TextRun" && typeof attributes?.text === "string") {
+    attributes.text = attributes.text.replaceAll(searchText, replaceText);
+  }
+
+  for (const child of Array.isArray(children) ? children : []) {
+    replaceInRuns(child, searchText, replaceText);
+  }
+}
+
+/** A copy, as Framer answers in JSON: a later SET must not change what an earlier read returned. */
+function jsonCopy<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T;
 }
 
 /** Runs each command on its own and reports failures in `errors`, keyed by message, like Framer. */
@@ -401,6 +458,13 @@ function setNode({ id, attributes }: DslCommand, session: FakeAgentSession): voi
   }
 
   const style = session.state.textStyles.find((candidate) => candidate.id === target);
+  const node = session.state.serializedNodes[target];
+
+  if (style === undefined && typeof node === "object" && node !== null) {
+    setSerializedAttributes(node, attributes);
+
+    return;
+  }
 
   if (style === undefined) {
     throw new FakeCommandError(missingTarget("SET"));

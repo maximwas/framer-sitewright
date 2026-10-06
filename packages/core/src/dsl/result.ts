@@ -71,8 +71,9 @@ export function normalizeDslResult(raw: unknown): DslResult {
 }
 
 /**
- * applyChanges throws, instead of answering, when it cannot download an image URL of the batch: the answer it would
- * have given, without Framer's internal ids. Null for any other error.
+ * applyChanges throws, instead of answering, when it cannot download an image URL of the batch, after applying all of
+ * the batch but that image (seen live 06.10.2026, for SET and `+` commands alike): a refusal that says so, without
+ * Framer's internal ids. Null for any other error.
  */
 export function assetFailureResult(error: string): DslResult | null {
   const failure = DSL_ASSET_FAILURE.exec(error);
@@ -85,7 +86,8 @@ export function assetFailureResult(error: string): DslResult | null {
 
   return {
     ok: false,
-    message: "Nothing was applied: Framer could not download an image of the batch.",
+    message:
+      "Framer could not download an image of the batch: it applied the rest of the batch without that image, and did not report the ids of new nodes. Read what changed with nodes_read before sending anything again.",
     errors: [
       {
         message: `Framer could not download ${url}${reason === "" ? "" : ` (${reason.trim()})`}. Use an https image URL that answers, or upload the file with image_upload and use the URL it returns.`,
