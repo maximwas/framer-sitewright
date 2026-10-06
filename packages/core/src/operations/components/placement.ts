@@ -1,6 +1,8 @@
-import { FLOW_LAYOUTS, FLOW_PLACEMENT, FREE_PLACEMENT } from "../../constants/components.ts";
+import { FLOW_LAYOUTS, FLOW_PLACEMENT, FREE_PLACEMENT, PAGE_LOOKUP_DEPTH } from "../../constants/components.ts";
+import type { HistoryRecorder } from "../../history/recorder.ts";
 import { nodeRecord } from "../../plugin-nodes/node-record.ts";
 import type { FramerRuntime } from "../../types/framer.ts";
+import type { FramerPort } from "../../types/framer-port.ts";
 import type { PluginNodeRecord } from "../../types/plugin-nodes.ts";
 import { errorMessage } from "../../utils/errors.ts";
 
@@ -64,4 +66,65 @@ export async function placeInParent(runtime: FramerRuntime, nodeId: string, pare
   } catch (error) {
     return `Framer did not place the layers in their parent: ${errorMessage(error)}. Set their position with design_apply.`;
   }
+}
+
+/**
+ * Journals layers an operation inserted as created, so undo removes them. `parentId` is where they go (null: where
+ * Framer put them); the DSL reverts them on the web page found up from there, the home page when there is none.
+ */
+export async function recordInserted(
+  runtime: FramerRuntime,
+  history: HistoryRecorder | undefined,
+  inserted: {
+    readonly id: string;
+    readonly type: string;
+    readonly name: string | null;
+    readonly parentId: string | null;
+    readonly index: number | null;
+  },
+): Promise<void> {
+  if (history === undefined) {
+    return;
+  }
+
+  history.record({
+    kind: "node",
+    id: inserted.id,
+    type: inserted.type,
+    name: inserted.name,
+    pagePath: await pagePathOf(runtime.port, inserted.parentId ?? inserted.id),
+    change: "created",
+    before: null,
+    after: {
+      parentId: inserted.parentId,
+      index: inserted.index,
+      attributes: {},
+      nodes: [],
+      overrides: {},
+    },
+  });
+}
+
+/** The path of the web page a layer is on; "/" for a design page, a component, or when the parents cannot be read. */
+async function pagePathOf(port: FramerPort, nodeId: string): Promise<string> {
+  try {
+    const pages = await port.getNodesWithType("WebPageNode");
+    let id: string | null = nodeId;
+
+    for (let depth = 0; id !== null && depth < PAGE_LOOKUP_DEPTH; depth += 1) {
+      const page = pages.find((candidate) => candidate.id === id);
+
+      if (page !== undefined) {
+        return page.path ?? "/";
+      }
+
+      const parent = nodeRecord(await port.getParent(id));
+
+      id = parent === null ? null : String(parent.id);
+    }
+  } catch {
+    // The plugin may not know an alpha id yet: the home page is the likeliest.
+  }
+
+  return "/";
 }

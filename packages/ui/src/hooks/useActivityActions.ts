@@ -41,9 +41,9 @@ export function useActivityActions(): ActivityActions {
           () => client.checkpoint(label),
           () => `Checkpoint "${label}" marked.`,
         ),
-      clear: () =>
+      clear: (project) =>
         run(
-          () => client.clear(),
+          () => client.clear(project),
           (cleared) =>
             `Journal cleared (${cleared} ${cleared === 1 ? "entry" : "entries"}). The changes stay in Framer.`,
         ),

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { HistoryRecorder } from "../src/history/recorder.ts";
 import { matchIcons } from "../src/operations/assets/icon-match.ts";
 import { iconsSearch } from "../src/operations/assets/icons-search.ts";
 import { svgAdd } from "../src/operations/assets/svg-add.ts";
@@ -106,6 +107,51 @@ describe("components.insert", () => {
     );
 
     expect(state.instances[0]?.parentId).toBe("testimonials");
+  });
+
+  it("regression: undo removes the inserted instance (seen: the journal said to delete it with design_apply)", async () => {
+    const { runtime, state } = createFakeRuntime();
+
+    state.canvas.push({
+      id: "row",
+      parentId: "breakpoint-desktop",
+      className: "FrameNode",
+      name: "Row",
+      attributes: { layout: "stack" },
+    });
+
+    const history = new HistoryRecorder();
+    const { nodeId } = await runOperation(
+      componentInsert,
+      {
+        runtime,
+        history,
+      },
+      {
+        url: "https://framer.com/m/Carousel-TC0BVf.js@NX0Ibe5BZmuZM0cYmZOE",
+        parentId: "row",
+      },
+    );
+
+    expect(history.incomplete).toBeNull();
+    expect(history.steps).toEqual([
+      {
+        kind: "node",
+        id: nodeId,
+        type: "ComponentInstanceNode",
+        name: null,
+        pagePath: "/",
+        change: "created",
+        before: null,
+        after: {
+          parentId: "row",
+          index: null,
+          attributes: {},
+          nodes: [],
+          overrides: {},
+        },
+      },
+    ]);
   });
 
   it("regression: puts the instance into a stack's flow, not where Framer dropped it (seen: absolute at left 5560px)", async () => {

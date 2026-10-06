@@ -329,6 +329,32 @@ it("lists every project with a journal, and opens another project's journal by i
   expect(other.entries.map((entry) => entry.label)).toEqual(["Client start"]);
 });
 
+it("regression: clears the journal on screen when the plugin is open in another project or in none", async () => {
+  // Seen: a journal of reads and errors from a closed project could not be cleared, Clear stayed disabled.
+  const journal = new ActivityJournal({
+    store: new JournalStore(await mkdtemp(join(tmpdir(), "sitewright-journal-"))),
+    transports,
+    logger: createLogger("silent"),
+  });
+  const client = {
+    id: "project-2",
+    name: "Client site",
+  };
+  const undo = new ActivityUndo(journal);
+
+  await journal.checkpoint("Sandbox start", "ai");
+  await journal.checkpoint("Client start", "user", client);
+
+  const call = {
+    method: "activity.clear" as const,
+    params: { project: client.id },
+  };
+
+  expect(await handleActivityCall(call, journal, undo, "user", project)).toEqual({ cleared: 1 });
+  expect(await journal.entries(client.id)).toEqual([]);
+  expect((await journal.entries(project.id)).map((entry) => entry.label)).toEqual(["Sandbox start"]);
+});
+
 it("lists the CMS work apart: collection, field and item calls, and the undos of items", async () => {
   const journal = new ActivityJournal({
     store: new JournalStore(await mkdtemp(join(tmpdir(), "sitewright-journal-"))),

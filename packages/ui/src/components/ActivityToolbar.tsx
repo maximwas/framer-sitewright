@@ -30,7 +30,7 @@ export function ActivityToolbar({
       <Button
         icon={Trash2}
         variant="ghost"
-        disabled={busy || readOnly || !canClear}
+        disabled={busy || !canClear}
         title="Start the journal over: the changes stay in Framer"
         onClick={onClear}
       >

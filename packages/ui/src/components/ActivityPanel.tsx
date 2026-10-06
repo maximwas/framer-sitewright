@@ -31,7 +31,7 @@ export function ActivityPanel({ feed }: ActivityPanelProps) {
   const [prompt, setPrompt] = useState<"mark" | "clear" | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const view = useStore(feedViewStore, (state) => state.view);
-  const { readOnly, shown } = useViewedProject();
+  const { readOnly, shown, picked } = useViewedProject();
   const list = feed.status === "ready" ? feed.value : null;
   const entries = list?.entries ?? [];
 
@@ -108,7 +108,7 @@ export function ActivityPanel({ feed }: ActivityPanelProps) {
               <ClearConfirm
                 busy={actions.busy}
                 onConfirm={async () => {
-                  if (await actions.clear()) {
+                  if (await actions.clear(picked ?? undefined)) {
                     setPrompt(null);
                   }
                 }}

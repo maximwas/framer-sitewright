@@ -77,9 +77,14 @@ export class ActivityApiClient {
     CheckpointResultSchema.parse(await this.#transport.call("activity.checkpoint", { label }));
   }
 
-  /** Starts the journal over; the changes stay in Framer. Resolves with how many entries were cleared. */
-  async clear(): Promise<number> {
-    return ClearResultSchema.parse(await this.#transport.call("activity.clear", {})).cleared;
+  /**
+   * Starts the journal over, another project's when its id is given; the changes stay in Framer. Resolves with how
+   * many entries were cleared.
+   */
+  async clear(project?: string): Promise<number> {
+    return ClearResultSchema.parse(
+      await this.#transport.call("activity.clear", project === undefined ? {} : { project }),
+    ).cleared;
   }
 
   /** The switches the user set in the plugin; every Claude Code session reads them. */

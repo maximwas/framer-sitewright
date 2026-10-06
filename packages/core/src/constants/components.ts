@@ -2,7 +2,9 @@
 export const MAKE_LOCAL_UNDO_NOTE =
   "Undo does not turn a local copy back into the external component: the copy stays in the project.";
 export const DETACH_UNDO_NOTE = "Undo does not bring a detached instance back: insert the component again.";
-export const SECTION_UNDO_NOTE = "Undo does not remove inserted layers: delete them with design_apply.";
+
+/** How far up the parents an inserted layer's web page is looked for; deeper, its undo runs on the home page. */
+export const PAGE_LOOKUP_DEPTH = 32;
 
 /** What needs_confirmation means, in Sitewright's terms: Framer's own message names its internal tools. */
 export const MAKE_LOCAL_CONFIRMATION =

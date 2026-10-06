@@ -1,12 +1,12 @@
 import * as z from "zod";
-import { LAYOUT_NOT_MATCHED_NOTE, SECTION_INSERT_HINT, SECTION_UNDO_NOTE } from "../../constants/components.ts";
+import { LAYOUT_NOT_MATCHED_NOTE, SECTION_INSERT_HINT } from "../../constants/components.ts";
 import { OperationError } from "../../errors.ts";
 import { nodeRecord } from "../../plugin-nodes/node-record.ts";
 import type { FramerPort } from "../../types/framer-port.ts";
 import type { PluginNodeRecord } from "../../types/plugin-nodes.ts";
 import { errorMessage } from "../../utils/errors.ts";
 import { defineOperation } from "../define.ts";
-import { placeInParent } from "./placement.ts";
+import { placeInParent, recordInserted } from "./placement.ts";
 
 /**
  * Inserts a component designed in Framer (a section from the Insert menu or the Marketplace) as editable layers, not
@@ -76,8 +76,16 @@ export const sectionInsert = defineOperation({
     }
 
     const nodeId = String(root.id);
+    const name = typeof root.name === "string" ? root.name : null;
 
-    history?.markIncomplete(SECTION_UNDO_NOTE);
+    // Journaled before the move, so undo removes the layers even if the move fails.
+    await recordInserted(runtime, history, {
+      id: nodeId,
+      type: typeof root.__class === "string" ? root.__class : "FrameNode",
+      name,
+      parentId,
+      index: index ?? null,
+    });
 
     // Where Framer put it decides the breakpoints, so this is read before the move.
     const matched = layout ? await sameBreakpointPage(port, nodeId, parentId) : true;
@@ -90,7 +98,7 @@ export const sectionInsert = defineOperation({
 
     return {
       nodeId,
-      name: typeof root.name === "string" ? root.name : null,
+      name,
       note: notes.length === 0 ? null : notes.join(" "),
     };
   },

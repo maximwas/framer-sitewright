@@ -112,7 +112,16 @@ export async function handleActivityCall(
 
       return { checkpoint: entry === null ? null : refOf(entry) };
     }
-    case "activity.clear":
-      return { cleared: await journal.clear(shown) };
+    case "activity.clear": {
+      // Clearing is local: any project's journal can start over, the plugin need not be open in it.
+      if (call.params.project === undefined) {
+        return { cleared: await journal.clear(shown) };
+      }
+
+      const { project } = call.params;
+      const picked = (await journal.projects()).find((known) => known.id === project);
+
+      return { cleared: picked === undefined ? 0 : await journal.clear(picked) };
+    }
   }
 }

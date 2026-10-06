@@ -3,7 +3,7 @@ import { OperationError } from "../../errors.ts";
 import { errorMessage } from "../../utils/errors.ts";
 import { isPlainObject } from "../../utils/guards.ts";
 import { defineOperation } from "../define.ts";
-import { placeInParent } from "./placement.ts";
+import { placeInParent, recordInserted } from "./placement.ts";
 
 /**
  * Inserts a component by its module URL: a free Marketplace component (marketplace_browse gives its moduleUrl), one of
@@ -61,6 +61,17 @@ export const componentInsert = defineOperation({
       throw new OperationError("WRITE_FAILED", "Framer inserted the component but did not say which layer it is.");
     }
 
+    const name = isPlainObject(node) && typeof node.name === "string" ? node.name : null;
+
+    // Journaled before the move, so undo removes the instance even if the move fails.
+    await recordInserted(runtime, history, {
+      id: nodeId,
+      type: "ComponentInstanceNode",
+      name,
+      parentId: parentId ?? null,
+      index: index ?? null,
+    });
+
     // The plugin may not know the alpha parentId yet: the move puts it there anyway, and at its index.
     // The move keeps the canvas coordinates Framer dropped it at: in a stack or grid it goes into the flow.
     const note =
@@ -68,11 +79,9 @@ export const componentInsert = defineOperation({
         ? null
         : await port.setParent(nodeId, parentId, index).then(() => placeInParent(runtime, nodeId, parentId));
 
-    history?.markIncomplete("Undo does not remove an inserted component instance: delete it with design_apply.");
-
     return {
       nodeId,
-      name: isPlainObject(node) && typeof node.name === "string" ? node.name : null,
+      name,
       note,
     };
   },

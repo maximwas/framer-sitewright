@@ -53,8 +53,8 @@ export interface ActivityActions {
   redo(entry?: ActivitySummary): Promise<void>;
   /** Resolves with whether the checkpoint was marked. */
   checkpoint(label: string): Promise<boolean>;
-  /** Starts the journal over; resolves with whether it was cleared. */
-  clear(): Promise<boolean>;
+  /** Starts the journal over, another project's when its id is given; resolves with whether it was cleared. */
+  clear(project?: string): Promise<boolean>;
 }
 
 /** The restore dialog: which checkpoint, the dry run's preview once it is in, and whether the restore runs. */

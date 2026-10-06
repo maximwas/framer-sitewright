@@ -314,7 +314,10 @@ export const ActivityCallSchema = z.discriminatedUnion("method", [
   /** Starts the journal over: the changes stay in Framer but can no longer be undone; the old journal is archived. */
   z.object({
     method: z.literal("activity.clear"),
-    params: z.object({}),
+    params: z.object({
+      /** The journal on screen when it is another project's, by id; omitted: the project the plugin is open in. */
+      project: z.string().min(1).exactOptional(),
+    }),
   }),
 ]);
 

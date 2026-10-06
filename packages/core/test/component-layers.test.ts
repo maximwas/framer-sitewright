@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { HistoryRecorder } from "../src/history/recorder.ts";
 import { componentDetach } from "../src/operations/components/detach.ts";
 import { componentMakeLocal } from "../src/operations/components/make-local.ts";
 import { sectionInsert } from "../src/operations/components/section-insert.ts";
@@ -156,6 +157,53 @@ describe("components.detach", () => {
 });
 
 describe("components.insertSection", () => {
+  it("regression: undo removes the inserted layers (seen: the journal said to delete them with design_apply)", async () => {
+    const { runtime } = createFakeRuntime({
+      canvas: [
+        {
+          id: "main",
+          parentId: "breakpoint-desktop",
+          className: "FrameNode",
+          name: "Main",
+          attributes: { layout: "stack" },
+        },
+      ],
+    });
+    const history = new HistoryRecorder();
+    const { nodeId } = await runOperation(
+      sectionInsert,
+      {
+        runtime,
+        history,
+      },
+      {
+        url: FOOTER,
+        parentId: "main",
+        index: 2,
+      },
+    );
+
+    expect(history.incomplete).toBeNull();
+    expect(history.steps).toEqual([
+      {
+        kind: "node",
+        id: nodeId,
+        type: "FrameNode",
+        name: "Section",
+        pagePath: "/",
+        change: "created",
+        before: null,
+        after: {
+          parentId: "main",
+          index: 2,
+          attributes: {},
+          nodes: [],
+          overrides: {},
+        },
+      },
+    ]);
+  });
+
   it("regression: moves the layers from where Framer dropped them into the parent's flow at the index (seen: absolute at 4320px)", async () => {
     const { runtime, state } = createFakeRuntime({
       canvas: [
