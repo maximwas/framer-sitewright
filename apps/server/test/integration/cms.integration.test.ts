@@ -89,13 +89,46 @@ describe.skipIf(config === null)("CMS on the sandbox project", () => {
           name: "Featured",
           type: "boolean",
         },
+        {
+          name: "Steps",
+          type: "array",
+          fields: [
+            {
+              name: "Label",
+              type: "string",
+            },
+            {
+              name: "Minutes",
+              type: "number",
+            },
+          ],
+        },
+      ],
+      update: [
+        {
+          field: "Body",
+          name: "Text",
+        },
+        {
+          field: "Kind",
+          addCases: ["Review"],
+          renameCases: { News: "Update" },
+          caseOrder: ["Review"],
+        },
       ],
       remove: ["Views"],
       order: ["Kind"],
     });
 
-    expect(fields.fields.map(({ name }) => name)).toEqual(expect.arrayContaining(["Kind", "Featured", "Author"]));
+    expect(fields.fields.map(({ name }) => name)).toEqual(
+      expect.arrayContaining(["Title", "Text", "Kind", "Featured", "Author", "Steps"]),
+    );
     expect(fields.fields.map(({ name }) => name)).not.toContain("Views");
+    expect(fields.fields.find(({ name }) => name === "Kind")?.cases).toEqual(["Review", "Update", "Guide"]);
+    expect(fields.fields.find(({ name }) => name === "Steps")?.fields?.map(({ name }) => name)).toEqual([
+      "Label",
+      "Minutes",
+    ]);
 
     const written = await transports.run(cmsItemsUpsert, {
       collection: posts,
@@ -104,27 +137,46 @@ describe.skipIf(config === null)("CMS on the sandbox project", () => {
           slug: "hello",
           values: {
             Title: "Hello",
-            Body: "**Bold** start",
+            Text: "**Bold** start",
             Kind: "Guide",
             Author: "ann",
             Featured: true,
+            Steps: [
+              {
+                Label: "Mix",
+                Minutes: 5,
+              },
+              { Label: "Rest" },
+            ],
           },
         },
         {
-          slug: "second",
+          slug: "Second Post!",
           draft: true,
           values: {
             Title: "Second",
-            Kind: "News",
+            Kind: "Update",
           },
         },
       ],
     });
 
-    expect(written).toMatchObject({
-      created: ["hello", "second"],
-      updated: [],
-    });
+    // Framer keeps the slug lower case and hyphenated; the same slug again finds that item.
+    expect(written.created.map(({ slug }) => slug)).toEqual(["hello", "second-post"]);
+    expect(written.updated).toEqual([]);
+    expect(
+      (
+        await transports.run(cmsItemsUpsert, {
+          collection: posts,
+          items: [
+            {
+              slug: "Second Post!",
+              values: { Title: "Second" },
+            },
+          ],
+        })
+      ).updated,
+    ).toEqual([written.created[1]]);
 
     const update = new HistoryRecorder();
     const again = await transports.run(
@@ -143,7 +195,7 @@ describe.skipIf(config === null)("CMS on the sandbox project", () => {
 
     expect(again).toMatchObject({
       created: [],
-      updated: ["hello"],
+      updated: [written.created[0]],
     });
 
     // Undo through the journal puts the title back; redo (the undo of the undo) brings the new one again.
@@ -156,28 +208,36 @@ describe.skipIf(config === null)("CMS on the sandbox project", () => {
 
     await transports.run(cmsItemsOrder, {
       collection: posts,
-      slugs: ["second"],
+      slugs: ["second-post"],
     });
 
     const listed = await transports.run(cmsItemsList, { collection: posts });
     const hello = listed.items.find(({ slug }) => slug === "hello");
 
-    expect(listed.items.map(({ slug }) => slug)).toEqual(["second", "hello"]);
+    expect(listed.items.map(({ slug }) => slug)).toEqual(["second-post", "hello"]);
+    expect(hello?.id).toBe(written.created[0]?.id);
     expect(hello?.values).toMatchObject({
       Title: "Hello again",
       Kind: "Guide",
       Author: "ann",
       Featured: true,
     });
-    // Framer keeps rich text as HTML, whatever it was written as.
-    expect(String(hello?.values.Body)).toContain("<strong>Bold</strong>");
+    expect(hello?.values.Steps).toMatchObject([
+      {
+        Label: "Mix",
+        Minutes: 5,
+      },
+      { Label: "Rest" },
+    ]);
+    // Framer keeps rich text as HTML, whatever it was written as; the renamed field kept it.
+    expect(String(hello?.values.Text)).toContain("<strong>Bold</strong>");
 
     const deleted = await transports.run(cmsItemsDelete, {
       collection: posts,
-      slugs: ["second"],
+      slugs: ["Second Post!"],
     });
 
-    expect(deleted.deleted.map(({ slug }) => slug)).toEqual(["second"]);
+    expect(deleted.deleted.map(({ slug }) => slug)).toEqual(["second-post"]);
     expect((await transports.run(cmsItemsList, { collection: posts })).total).toBe(1);
 
     // The Plugin API cannot remove a collection; the DSL removes it as the CollectionNode it is there.

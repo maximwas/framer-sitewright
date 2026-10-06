@@ -87,25 +87,55 @@ export interface CollectionData {
   readonly name: string;
 }
 
-/** A CMS field as getFields lists it: an enum has its cases, a reference field the collection it points at. */
+/** An enum field's case; renaming one keeps the items set to it. */
+export interface CmsEnumCaseHandle {
+  readonly id: string;
+  readonly name: string;
+  setAttributes(attributes: { name?: string }): Promise<unknown>;
+  remove(): Promise<void>;
+}
+
+/**
+ * A CMS field as getFields lists it: an enum has its cases, a reference field the collection it points at, a List
+ * (array) its nested fields. setAttributes renames it and keeps its values.
+ */
 export interface CmsFieldData {
   readonly id: string;
   readonly name: string;
   readonly type: string;
-  readonly cases?: readonly { readonly id: string; readonly name: string }[];
+  readonly cases?: readonly CmsEnumCaseHandle[];
   readonly collectionId?: string;
+  readonly fields?: readonly CmsFieldData[];
+  setAttributes(attributes: { name?: string }): Promise<unknown>;
+  /** Enum fields only. */
+  addCase?(attributes: { name: string }): Promise<unknown>;
+  /** Enum fields only: every case id, in the new order. */
+  setCaseOrder?(caseIds: string[]): Promise<void>;
 }
 
-/** A field value as Framer takes it: its field's type and the value in that type's shape. */
-export type CmsFieldInput =
-  | { readonly type: "string" | "enum"; readonly value: string }
+/** A value of a field nested in a List: Framer nests no enums, references or Lists. */
+export type CmsListItemFieldInput =
+  | { readonly type: "string"; readonly value: string }
   | { readonly type: "formattedText"; readonly value: string; readonly contentType?: "auto" | "markdown" | "html" }
   | { readonly type: "number"; readonly value: number }
   | { readonly type: "boolean"; readonly value: boolean }
   | { readonly type: "date"; readonly value: string | null }
   | { readonly type: "image"; readonly value: string | null; readonly alt?: string }
-  | { readonly type: "link" | "file" | "color" | "collectionReference"; readonly value: string | null }
-  | { readonly type: "multiCollectionReference"; readonly value: readonly string[] | null };
+  | { readonly type: "link" | "file" | "color"; readonly value: string | null };
+
+/** One entry of a List: values by nested field id; fields left out are cleared. */
+export interface CmsListItemInput {
+  fieldData: Record<string, CmsListItemFieldInput>;
+}
+
+/** A field value as Framer takes it: its field's type and the value in that type's shape. */
+export type CmsFieldInput =
+  | CmsListItemFieldInput
+  | { readonly type: "enum"; readonly value: string }
+  | { readonly type: "collectionReference"; readonly value: string | null }
+  | { readonly type: "multiCollectionReference"; readonly value: readonly string[] | null }
+  /** The whole List in order: entries left out are removed. */
+  | { readonly type: "array"; readonly value: CmsListItemInput[] };
 
 /** What addItems and setAttributes take for an item: field values by field id. */
 export interface CmsItemWrite {
@@ -124,15 +154,20 @@ export interface CmsItemHandle {
   remove(): Promise<void>;
 }
 
-/** A field to add: an enum lists its cases, a reference names the collection it points at. */
-export type CmsFieldCreate =
+/** A field to add inside a List. */
+export type CmsListItemFieldCreate =
   | {
       type: "string" | "formattedText" | "number" | "boolean" | "date" | "link" | "image" | "color";
       name: string;
     }
-  | { type: "file"; name: string; allowedFileTypes: string[] }
+  | { type: "file"; name: string; allowedFileTypes: string[] };
+
+/** A field to add: an enum lists its cases, a reference names the collection it points at, a List its fields. */
+export type CmsFieldCreate =
+  | CmsListItemFieldCreate
   | { type: "enum"; name: string; cases: { name: string }[] }
-  | { type: "collectionReference" | "multiCollectionReference"; name: string; collectionId: string };
+  | { type: "collectionReference" | "multiCollectionReference"; name: string; collectionId: string }
+  | { type: "array"; name: string; fields: CmsListItemFieldCreate[] };
 
 /** A CMS collection with its fields and items; managed ones belong to a sync plugin and refuse edits. */
 export interface CollectionHandle extends CollectionData {

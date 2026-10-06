@@ -59,7 +59,7 @@ export const CODE_TOOLS_RULE =
 
 /** How CMS values are written and read, shared by the CMS item tools. */
 export const CMS_VALUES_RULE =
-  'Values: text and formattedText as strings (markdown or HTML), numbers, true/false, dates as ISO strings, link, file and color as strings, an image as its URL or { "url", "alt" }, an enum by its case name, a reference by the referenced item\'s slug (a list of slugs for multi-references); null clears a value.';
+  'Values: text and formattedText as strings (markdown or HTML), numbers, true/false, dates as ISO strings, link, file and color as strings, an image as its URL or { "url", "alt" } (a bare URL clears the alt), an enum by its case name, a reference by the referenced item\'s slug (a list of slugs for multi-references), a List (array) as a list of entries, each an object by its nested fields\' names (a gallery also as a list of image URLs); a List value replaces the whole list, and a nested field an entry leaves out takes Framer\'s default (0, #09F); null clears a value.';
 
 /** CMS writes have no undo yet: the journal marks them, and the agent must know before it acts. */
 export const CMS_UNDO_RULE =

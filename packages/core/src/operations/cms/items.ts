@@ -3,11 +3,19 @@ import { editableCollection, findCollection, findField } from "../../cms/collect
 import { cmsItemState, cmsItemStep } from "../../cms/item-state.ts";
 import { CmsItemIndex, itemOf, toFieldInput } from "../../cms/values.ts";
 import { CMS_ITEMS_PAGE, CMS_ITEMS_PAGE_MAX, CMS_UNDO_NOTE, CMS_UPSERT_MAX } from "../../constants/cms.ts";
+import { OperationError } from "../../errors.ts";
 import type { HistoryRecorder } from "../../history/recorder.ts";
 import { sameState } from "../../history/style-states.ts";
-import { CmsItemSchema } from "../../schemas/cms.ts";
-import type { CmsFieldData, CmsFieldInput, CmsItemWrite, CollectionHandle } from "../../types/framer-port.ts";
+import { CmsItemRefSchema, CmsItemSchema } from "../../schemas/cms.ts";
+import type {
+  CmsFieldData,
+  CmsFieldInput,
+  CmsItemHandle,
+  CmsItemWrite,
+  CollectionHandle,
+} from "../../types/framer-port.ts";
 import type { CmsItemState } from "../../types/history.ts";
+import { findBySlug, normalizeSlug } from "../../utils/cms.ts";
 import { countOf } from "../../utils/text.ts";
 import { defineOperation } from "../define.ts";
 
@@ -60,7 +68,12 @@ export const cmsItemsUpsert = defineOperation({
     items: z
       .array(
         z.strictObject({
-          slug: z.string().min(1).describe("The item's slug: an item with this slug is updated, else created."),
+          slug: z
+            .string()
+            .min(1)
+            .describe(
+              'The item\'s slug: an item with it is updated, else one is created. Framer keeps slugs lower case with hyphens ("My Post!" as my-post), and items are matched that way.',
+            ),
           draft: z.boolean().exactOptional(),
           values: z
             .record(z.string(), z.unknown())
@@ -73,8 +86,9 @@ export const cmsItemsUpsert = defineOperation({
   }),
   output: z.object({
     collection: z.string(),
-    created: z.array(z.string()),
-    updated: z.array(z.string()),
+    /** The items added, with the slug Framer kept (lower case, hyphenated) and the id. */
+    created: z.array(CmsItemRefSchema),
+    updated: z.array(CmsItemRefSchema),
   }),
   async run({ runtime, history }, { collection: query, items }) {
     const { port } = runtime;
@@ -84,7 +98,12 @@ export const cmsItemsUpsert = defineOperation({
     const index = new CmsItemIndex(collections);
     const writes: CmsItemWrite[] = [];
 
-    for (const { slug, draft, values } of items) {
+    assertDistinctSlugs(items.map(({ slug }) => slug));
+
+    // Framer keeps a slug normalized ("Lab Spaced Slug!" as lab-spaced-slug): an item is found the way it was stored.
+    const matched = items.map(({ slug }) => findBySlug(existing, slug));
+
+    for (const [position, { slug, draft, values }] of items.entries()) {
       const fieldData: Record<string, CmsFieldInput> = {};
 
       for (const [name, value] of Object.entries(values)) {
@@ -93,7 +112,7 @@ export const cmsItemsUpsert = defineOperation({
         fieldData[field.id] = await toFieldInput(field, value, index);
       }
 
-      const current = existing.find((item) => item.slug === slug);
+      const current = matched[position];
 
       writes.push({
         ...(current === undefined ? { slug } : { id: current.id }),
@@ -111,16 +130,35 @@ export const cmsItemsUpsert = defineOperation({
     // One call: an entry with an id updates that item, one with a slug adds a new one.
     await collection.addItems(writes);
 
+    // addItems answers nothing: the new items are found by their slug, or by their place at the end.
+    const now = await collection.getItems();
+    const added = now.filter((item) => !before.has(item.id));
+    const written = items.map(({ slug }, position) => {
+      const current = matched[position];
+
+      return current === undefined
+        ? (findBySlug(added, slug) ??
+            added[items.slice(0, position).filter((_, at) => matched[at] === undefined).length])
+        : now.find((item) => item.id === current.id);
+    });
+
     if (history !== undefined) {
-      await recordWritten(history, collection, fields, items, before, index);
+      await recordWritten(history, collection, fields, written, before, index);
     }
 
-    const known = new Set(existing.map(({ slug }) => slug));
+    const refOf = (item: CmsItemHandle | undefined, slug: string) => ({
+      id: item?.id ?? "",
+      slug: item?.slug ?? slug,
+    });
 
     return {
       collection: collection.name,
-      created: items.filter(({ slug }) => !known.has(slug)).map(({ slug }) => slug),
-      updated: items.filter(({ slug }) => known.has(slug)).map(({ slug }) => slug),
+      created: items.flatMap(({ slug }, position) =>
+        matched[position] === undefined ? [refOf(written[position], slug)] : [],
+      ),
+      updated: items.flatMap(({ slug }, position) =>
+        matched[position] === undefined ? [] : [refOf(written[position], slug)],
+      ),
     };
   },
   describe(_input, { collection, created, updated }) {
@@ -158,7 +196,7 @@ export const cmsItemsDelete = defineOperation({
     const collections = await port.getCollections();
     const collection = await editableCollection(port, query);
     const [fields, items] = await Promise.all([collection.getFields(), collection.getItems()]);
-    const targets = items.filter(({ slug }) => slugs.includes(slug));
+    const targets = [...new Set(slugs.flatMap((slug) => findBySlug(items, slug) ?? []))];
     const index = new CmsItemIndex(collections);
     const deleted = await Promise.all(targets.map((item) => itemOf(item, fields, index)));
 
@@ -179,7 +217,7 @@ export const cmsItemsDelete = defineOperation({
     return {
       collection: collection.name,
       deleted,
-      missing: slugs.filter((slug) => !targets.some((item) => item.slug === slug)),
+      missing: slugs.filter((slug) => findBySlug(targets, slug) === undefined),
     };
   },
   describe(_input, { collection, deleted }) {
@@ -211,14 +249,14 @@ export const cmsItemsOrder = defineOperation({
   async run({ runtime, history }, { collection: query, slugs }) {
     const collection = await editableCollection(runtime.port, query);
     const items = await collection.getItems();
-    const first = slugs.flatMap((slug) => items.filter((item) => item.slug === slug).map(({ id }) => id));
+    const first = [...new Set(slugs.flatMap((slug) => findBySlug(items, slug)?.id ?? []))];
 
     history?.markIncomplete(CMS_UNDO_NOTE);
     await collection.setItemOrder([...first, ...items.map(({ id }) => id).filter((id) => !first.includes(id))]);
 
     return {
       collection: collection.name,
-      missing: slugs.filter((slug) => !items.some((item) => item.slug === slug)),
+      missing: slugs.filter((slug) => findBySlug(items, slug) === undefined),
     };
   },
   describe({ slugs }, { collection }) {
@@ -229,29 +267,54 @@ export const cmsItemsOrder = defineOperation({
   },
 });
 
-/** Records each written item as it was and as it is now; a failed re-read only leaves the journal incomplete. */
+/** Records each written item as it was and as it is now; a failed read only leaves the journal incomplete. */
 async function recordWritten(
   history: HistoryRecorder,
   collection: CollectionHandle,
   fields: readonly CmsFieldData[],
-  written: readonly { readonly slug: string }[],
+  written: readonly (CmsItemHandle | undefined)[],
   before: ReadonlyMap<string, CmsItemState>,
   index: CmsItemIndex,
 ): Promise<void> {
   try {
-    const slugs = new Set(written.map(({ slug }) => slug));
+    for (const item of new Set(written)) {
+      if (item === undefined) {
+        history.markIncomplete("An item written could not be found again after the write.");
+        continue;
+      }
 
-    for (const item of await collection.getItems()) {
-      if (slugs.has(item.slug)) {
-        const after = await cmsItemState(collection, fields, item, index);
-        const was = before.get(item.id) ?? null;
+      const after = await cmsItemState(collection, fields, item, index);
+      const was = before.get(item.id) ?? null;
 
-        if (was === null || !sameState(was, after)) {
-          history.record(cmsItemStep(item.id, was, after));
-        }
+      if (was === null || !sameState(was, after)) {
+        history.record(cmsItemStep(item.id, was, after));
       }
     }
   } catch (error) {
     history.markIncomplete(`The CMS items could not be re-read after the write: ${String(error)}`);
+  }
+}
+
+/** Two items of one batch that Framer would keep under one slug are refused before anything is written. */
+function assertDistinctSlugs(slugs: readonly string[]): void {
+  const seen = new Map<string, string>();
+
+  for (const slug of slugs) {
+    const key = normalizeSlug(slug);
+    const other = seen.get(key);
+
+    if (key === "") {
+      throw new OperationError("INVALID_INPUT", `The slug "${slug}" has no letters or digits.`);
+    }
+
+    if (other !== undefined) {
+      throw new OperationError(
+        "INVALID_INPUT",
+        `The items "${other}" and "${slug}" have one slug: Framer keeps both as ${key}.`,
+        "Give each item its own slug.",
+      );
+    }
+
+    seen.set(key, slug);
   }
 }

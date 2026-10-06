@@ -88,10 +88,8 @@ it("writes CMS items by slug with values by field name, and reads them back in t
     ],
   });
 
-  expect(first).toMatchObject({
-    created: ["hello", "second"],
-    updated: [],
-  });
+  expect(first.created.map(({ slug }) => slug)).toEqual(["hello", "second"]);
+  expect(first.updated).toEqual([]);
 
   const posts = state.collections.find(({ name }) => name === "Posts");
   const kind = posts?.fields.find(({ name }) => name === "Kind");
@@ -127,9 +125,15 @@ it("writes CMS items by slug with values by field name, and reads them back in t
     ],
   });
 
+  // The answer carries the item's id: a filter by a reference on the canvas takes ids, not slugs.
   expect(second).toMatchObject({
     created: [],
-    updated: ["hello"],
+    updated: [
+      {
+        id: first.created[0]?.id,
+        slug: "hello",
+      },
+    ],
   });
 
   await runOperation(cmsItemsOrder, run, {
@@ -141,6 +145,7 @@ it("writes CMS items by slug with values by field name, and reads them back in t
 
   expect(listed.items.map(({ slug }) => slug)).toEqual(["second", "hello"]);
   expect(listed.items[1]).toEqual({
+    id: first.created[0]?.id,
     slug: "hello",
     draft: false,
     values: {

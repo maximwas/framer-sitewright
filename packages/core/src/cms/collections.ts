@@ -1,7 +1,13 @@
-import { CMS_DEFAULT_FILE_TYPES } from "../constants/cms.ts";
+import { CMS_DEFAULT_FILE_TYPES, CMS_TITLE_FIELD, CMS_TITLE_NAMES } from "../constants/cms.ts";
 import { OperationError } from "../errors.ts";
-import type { CmsCollectionSummary, CmsFieldSpec, CmsFieldSummary } from "../types/cms.ts";
-import type { CmsFieldCreate, CmsFieldData, CollectionHandle, FramerPort } from "../types/framer-port.ts";
+import type { CmsCollectionSummary, CmsFieldSpec, CmsFieldSummary, CmsListItemFieldSpec } from "../types/cms.ts";
+import type {
+  CmsFieldCreate,
+  CmsFieldData,
+  CmsListItemFieldCreate,
+  CollectionHandle,
+  FramerPort,
+} from "../types/framer-port.ts";
 
 const LIST_HINT = "List them with cms_collections_list.";
 
@@ -61,7 +67,7 @@ export function findField(fields: readonly CmsFieldData[], query: string, collec
   return found;
 }
 
-/** A field as the tools show it: cases by name, a reference by its collection's name. */
+/** A field as the tools show it: cases by name, a reference by its collection's name, a List with its fields. */
 function fieldSummary(field: CmsFieldData, collections: readonly CollectionHandle[]): CmsFieldSummary {
   const target =
     field.collectionId === undefined
@@ -69,11 +75,36 @@ function fieldSummary(field: CmsFieldData, collections: readonly CollectionHandl
       : (collections.find(({ id }) => id === field.collectionId)?.name ?? field.collectionId);
 
   return {
+    id: field.id,
     name: field.name,
     type: field.type,
     ...(field.cases === undefined ? {} : { cases: field.cases.map(({ name }) => name) }),
     ...(target === undefined ? {} : { collection: target }),
+    ...(field.fields === undefined
+      ? {}
+      : {
+          fields: field.fields.map(({ id, name, type }) => ({
+            id,
+            name,
+            type,
+          })),
+        }),
   };
+}
+
+/**
+ * The fields a new collection is made with, its title first: the call's own string Title or Name field, else a new
+ * Title. Framer's Plugin API makes a collection with only a slug and builds slugs from the first string field.
+ */
+export function withTitleFirst(specs: readonly CmsFieldSpec[]): CmsFieldSpec[] {
+  const title = specs.find(
+    (spec) => spec.type === "string" && CMS_TITLE_NAMES.includes(spec.name.trim().toLowerCase()),
+  ) ?? {
+    name: CMS_TITLE_FIELD,
+    type: "string" as const,
+  };
+
+  return [title, ...specs.filter((spec) => spec !== title)];
 }
 
 export async function collectionSummary(
@@ -117,16 +148,39 @@ export function fieldCreate(spec: CmsFieldSpec, collections: readonly Collection
         name,
         collectionId: findCollection(collections, spec.collection).id,
       };
-    case "file":
+    case "array":
+      if (spec.fields === undefined) {
+        throw new OperationError(
+          "INVALID_INPUT",
+          `The List field ${name} needs its fields.`,
+          'Pass fields, e.g. [{ "name": "Image", "type": "image" }] for a gallery.',
+        );
+      }
+
       return {
+        type,
+        name,
+        fields: spec.fields.map(listItemFieldCreate),
+      };
+    default:
+      return listItemFieldCreate({
+        ...spec,
+        type,
+      });
+  }
+}
+
+function listItemFieldCreate(spec: CmsListItemFieldSpec): CmsListItemFieldCreate {
+  const { name, type } = spec;
+
+  return type === "file"
+    ? {
         type,
         name,
         allowedFileTypes: spec.allowedFileTypes ?? CMS_DEFAULT_FILE_TYPES,
-      };
-    default:
-      return {
+      }
+    : {
         type,
         name,
       };
-  }
 }

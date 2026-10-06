@@ -15,7 +15,8 @@ how to get the same result anyway.
   `border`, `link` (on frames), `textStylePreset`.
 - Tokens and text styles (`color_tokens_upsert`, `text_styles_upsert`, including alignment, `balance` and breakpoint
   sizes), SVG (`svg_add`), image upload (`image_upload`), component controls, code files when allowed.
-- CMS: collections, fields and items (`cms_*` tools); only deleting a whole collection needs a key.
+- CMS: collections, fields and items (`cms_*` tools). A key is needed to delete a whole collection, and for the search
+  for layers bound to a field before `cms_fields_set` removes it: without one, the removal goes through unchecked.
 - Translations need the key: Framer gives a plugin the translations only in its Localization mode, and the Sitewright
   plugin runs on the canvas. `locales_list` works without one.
 - Breakpoints: `breakpoints_add`, then overrides on their copies by compound id `<breakpoint id><node id>`; undo

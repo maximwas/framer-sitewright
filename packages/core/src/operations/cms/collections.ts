@@ -1,5 +1,11 @@
 import * as z from "zod";
-import { collectionSummary, editableCollection, fieldCreate, findCollection } from "../../cms/collections.ts";
+import {
+  collectionSummary,
+  editableCollection,
+  fieldCreate,
+  findCollection,
+  withTitleFirst,
+} from "../../cms/collections.ts";
 import { CmsItemIndex, itemOf } from "../../cms/values.ts";
 import { CMS_UNDO_NOTE } from "../../constants/cms.ts";
 import { OperationError } from "../../errors.ts";
@@ -46,7 +52,9 @@ export const cmsCollectionCreate = defineOperation({
     fields: z
       .array(CmsFieldSpecSchema)
       .default([])
-      .describe("Fields besides the title and slug every collection has, in order."),
+      .describe(
+        "Fields in order. A string Title comes first unless you pass a string field named Title or Name, which then goes first.",
+      ),
   }),
   output: CmsCollectionSummarySchema,
   async run({ runtime, history }, { name, fields }) {
@@ -63,7 +71,7 @@ export const cmsCollectionCreate = defineOperation({
     }
 
     // Field specs are checked before anything is created: a bad reference must not leave an empty collection.
-    const creates = fields.map((field) => fieldCreate(field, existing));
+    const creates = withTitleFirst(fields).map((field) => fieldCreate(field, existing));
     const collection = await port.createCollection(name);
 
     history?.markIncomplete(CMS_UNDO_NOTE);

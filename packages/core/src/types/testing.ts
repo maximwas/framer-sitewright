@@ -112,10 +112,20 @@ export interface FakeFramerState {
 }
 
 /** A CMS collection of the fake project: its fields and items change as the Plugin API calls run. */
+export interface FakeCmsField {
+  id: string;
+  name: string;
+  type: string;
+  cases?: { id: string; name: string }[];
+  collectionId?: string;
+  /** A List's nested fields. */
+  fields?: FakeCmsField[];
+}
+
 export interface FakeCollection extends CollectionData {
   readonly: boolean;
   managedBy: string;
-  fields: { id: string; name: string; type: string; cases?: { id: string; name: string }[]; collectionId?: string }[];
+  fields: FakeCmsField[];
   items: { id: string; slug: string; draft: boolean; fieldData: Record<string, { type: string; value: unknown }> }[];
 }
 

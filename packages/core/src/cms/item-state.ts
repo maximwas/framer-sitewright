@@ -1,11 +1,19 @@
-import type { CmsFieldData, CmsFieldInput, CmsItemHandle, CollectionHandle } from "../types/framer-port.ts";
+import type {
+  CmsFieldData,
+  CmsFieldInput,
+  CmsItemHandle,
+  CmsListItemFieldInput,
+  CmsListItemInput,
+  CollectionHandle,
+} from "../types/framer-port.ts";
 import type { CmsItemState, CmsItemStep } from "../types/history.ts";
+import { isListItemInput } from "../utils/cms.ts";
 import { isPlainObject } from "../utils/guards.ts";
 import type { CmsItemIndex } from "./values.ts";
 
 /**
- * An item as undo can write it back, its values in addItems' shape. A value undo cannot write (a gallery, a color
- * bound to a token) is left out, so undo leaves that field as it is.
+ * An item as undo can write it back, its values in addItems' shape. A value undo cannot write (a color bound to a
+ * token) is left out, so undo leaves that field as it is.
  */
 export async function cmsItemState(
   collection: CollectionHandle,
@@ -136,7 +144,32 @@ function writableEntry(type: string, value: unknown): CmsFieldInput | null {
         type,
         value: Array.isArray(value) ? value.filter((id) => typeof id === "string") : null,
       };
+    case "array":
+      return {
+        type,
+        value: Array.isArray(value) ? value.map(writableListItem) : [],
+      };
     default:
       return null;
   }
+}
+
+/**
+ * A List entry as addItems takes it back, without its id: Framer gives entries new ids on every write, and the
+ * journal compares items by their values.
+ */
+function writableListItem(entry: unknown): CmsListItemInput {
+  const stored = isPlainObject(entry) && isPlainObject(entry.fieldData) ? entry.fieldData : {};
+  const fieldData: Record<string, CmsListItemFieldInput> = {};
+
+  for (const [id, nested] of Object.entries(stored)) {
+    const input =
+      isPlainObject(nested) && typeof nested.type === "string" ? writableEntry(nested.type, nested.value) : null;
+
+    if (input !== null && isListItemInput(input)) {
+      fieldData[id] = input;
+    }
+  }
+
+  return { fieldData };
 }

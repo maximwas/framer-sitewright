@@ -1,6 +1,14 @@
 import { OperationError } from "../errors.ts";
 import type { CmsItem } from "../types/cms.ts";
-import type { CmsFieldData, CmsFieldInput, CmsItemHandle, CollectionHandle } from "../types/framer-port.ts";
+import type {
+  CmsFieldData,
+  CmsFieldInput,
+  CmsItemHandle,
+  CmsListItemFieldInput,
+  CmsListItemInput,
+  CollectionHandle,
+} from "../types/framer-port.ts";
+import { findBySlug, isListItemInput } from "../utils/cms.ts";
 import { isPlainObject } from "../utils/guards.ts";
 
 /**
@@ -17,7 +25,7 @@ export class CmsItemIndex {
 
   async idOf(field: CmsFieldData, reference: string): Promise<string> {
     const items = await this.#itemsOf(field.collectionId);
-    const found = items.find(({ id }) => id === reference) ?? items.find(({ slug }) => slug === reference);
+    const found = items.find(({ id }) => id === reference) ?? findBySlug(items, reference);
 
     if (found === undefined) {
       throw new OperationError(
@@ -34,7 +42,7 @@ export class CmsItemIndex {
   async idOrNull(field: CmsFieldData, reference: string): Promise<string | null> {
     const items = await this.#itemsOf(field.collectionId);
 
-    return (items.find(({ id }) => id === reference) ?? items.find(({ slug }) => slug === reference))?.id ?? null;
+    return (items.find(({ id }) => id === reference) ?? findBySlug(items, reference))?.id ?? null;
   }
 
   async slugOf(field: CmsFieldData, id: string): Promise<string> {
@@ -153,6 +161,15 @@ export async function toFieldInput(field: CmsFieldData, value: unknown, index: C
         type: "multiCollectionReference",
         value: value === null ? null : await Promise.all(value.map((slug: string) => index.idOf(field, slug))),
       };
+    case "array":
+      if (value !== null && !Array.isArray(value)) {
+        throw wrong(`a list of entries by its fields' names (${namesOf(field.fields)}), or null`);
+      }
+
+      return {
+        type: "array",
+        value: await Promise.all((value ?? []).map((entry, position) => listItemInput(field, entry, position, index))),
+      };
     default:
       throw new OperationError(
         "INVALID_INPUT",
@@ -189,10 +206,85 @@ async function fromFieldEntry(field: CmsFieldData, value: unknown, index: CmsIte
         ? Promise.all(value.filter((id) => typeof id === "string").map((id: string) => index.slugOf(field, id)))
         : [];
     case "array":
-      return Array.isArray(value) ? { gallery: value.length } : null;
+      return Array.isArray(value) ? Promise.all(value.map((entry: unknown) => listEntryOf(field, entry, index))) : [];
     default:
       return value ?? null;
   }
+}
+
+/** One entry of a List, its values by nested field name: the shape listItemInput takes back. */
+async function listEntryOf(field: CmsFieldData, entry: unknown, index: CmsItemIndex): Promise<Record<string, unknown>> {
+  const fieldData = isPlainObject(entry) && isPlainObject(entry.fieldData) ? entry.fieldData : {};
+  const values: Record<string, unknown> = {};
+
+  for (const nested of field.fields ?? []) {
+    const stored = fieldData[nested.id];
+
+    if (isPlainObject(stored)) {
+      values[nested.name] = await fromFieldEntry(nested, stored.value, index);
+    }
+  }
+
+  return values;
+}
+
+/**
+ * One entry of a List as Framer takes it, values by nested field id. An entry is an object by nested field name; a
+ * List of one field (a gallery) also takes that field's value alone, e.g. an image URL or { url, alt }.
+ */
+async function listItemInput(
+  field: CmsFieldData,
+  entry: unknown,
+  position: number,
+  index: CmsItemIndex,
+): Promise<CmsListItemInput> {
+  const nested = field.fields ?? [];
+  const only = nested.length === 1 ? nested[0] : undefined;
+  const byName =
+    isPlainObject(entry) &&
+    (only === undefined || Object.keys(entry).every((key) => nestedField(nested, key) !== undefined))
+      ? entry
+      : only === undefined
+        ? null
+        : { [only.name]: entry };
+
+  if (byName === null) {
+    throw new OperationError(
+      "INVALID_INPUT",
+      `Field ${field.name}, entry ${position + 1}: takes an object by its fields' names (${namesOf(nested)}), not ${JSON.stringify(entry)}.`,
+    );
+  }
+
+  const fieldData: Record<string, CmsListItemFieldInput> = {};
+
+  for (const [name, value] of Object.entries(byName)) {
+    const target = nestedField(nested, name);
+
+    if (target === undefined) {
+      throw new OperationError(
+        "INVALID_INPUT",
+        `The List field ${field.name} has no field "${name}". Its fields: ${namesOf(nested)}.`,
+      );
+    }
+
+    const input = await toFieldInput(target, value, index);
+
+    if (isListItemInput(input)) {
+      fieldData[target.id] = input;
+    }
+  }
+
+  return { fieldData };
+}
+
+function nestedField(fields: readonly CmsFieldData[], query: string): CmsFieldData | undefined {
+  const wanted = query.trim().toLowerCase();
+
+  return fields.find(({ id }) => id === query) ?? fields.find(({ name }) => name.toLowerCase() === wanted);
+}
+
+function namesOf(fields: readonly CmsFieldData[] | undefined): string {
+  return (fields ?? []).map(({ name }) => name).join(", ") || "none";
 }
 
 /** An item with its values by field name. */
@@ -212,6 +304,7 @@ export async function itemOf(
   }
 
   return {
+    id: item.id,
     slug: item.slug,
     draft: item.draft,
     values,

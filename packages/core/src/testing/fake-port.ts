@@ -1,7 +1,12 @@
 import { FRAMER_TAG_STYLE_NAMES } from "../constants/text-styles.ts";
 import type {
+  CmsEnumCaseHandle,
+  CmsFieldCreate,
+  CmsFieldData,
+  CmsFieldInput,
   CmsItemHandle,
   CmsItemWrite,
+  CmsListItemFieldCreate,
   CodeFileHandle,
   CollectionHandle,
   ColorStyleHandle,
@@ -16,6 +21,7 @@ import type {
 } from "../types/framer-port.ts";
 import type {
   FakeBreakpoint,
+  FakeCmsField,
   FakeCollection,
   FakeColorStyle,
   FakeFramerState,
@@ -111,6 +117,68 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
     };
   }
 
+  /** A field as getFields hands it out: setAttributes renames it, an enum's cases rename and remove themselves. */
+  function fieldHandle(field: FakeCmsField): CmsFieldData {
+    const caseHandle = (option: { id: string; name: string }): CmsEnumCaseHandle => ({
+      ...option,
+      setAttributes: async ({ name }) => {
+        option.name = name ?? option.name;
+
+        return caseHandle(option);
+      },
+      remove: async () => {
+        field.cases = (field.cases ?? []).filter(({ id }) => id !== option.id);
+      },
+    });
+    const { cases, fields, ...rest } = field;
+
+    return {
+      ...rest,
+      ...(cases === undefined ? {} : { cases: cases.map(caseHandle) }),
+      ...(fields === undefined ? {} : { fields: fields.map(fieldHandle) }),
+      setAttributes: async ({ name }) => {
+        field.name = name ?? field.name;
+
+        return fieldHandle(field);
+      },
+      ...(field.type === "enum"
+        ? {
+            addCase: async ({ name }: { name: string }) => {
+              const option = {
+                id: nextId("case"),
+                name,
+              };
+
+              field.cases = [...(field.cases ?? []), option];
+
+              return caseHandle(option);
+            },
+            setCaseOrder: async (caseIds: string[]) => {
+              field.cases?.sort((a, b) => caseIds.indexOf(a.id) - caseIds.indexOf(b.id));
+            },
+          }
+        : {}),
+    };
+  }
+
+  function newField(field: CmsFieldCreate | CmsListItemFieldCreate): FakeCmsField {
+    return {
+      id: nextId("field"),
+      name: field.name,
+      type: field.type,
+      ...("cases" in field
+        ? {
+            cases: field.cases.map((entry) => ({
+              id: nextId("case"),
+              name: entry.name,
+            })),
+          }
+        : {}),
+      ...("collectionId" in field ? { collectionId: field.collectionId } : {}),
+      ...("fields" in field ? { fields: field.fields.map(newField) } : {}),
+    };
+  }
+
   /** A collection as the Plugin API hands it out: fields and items read and written on the fake state. */
   function collectionHandle(collection: FakeCollection): CollectionHandle {
     const itemHandle = (item: FakeCollection["items"][number]): CmsItemHandle => ({
@@ -120,7 +188,7 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
       fieldData: readFieldData(collection, item.fieldData),
       setAttributes: async ({ slug, draft, fieldData }) => {
         Object.assign(item, {
-          ...(slug === undefined ? {} : { slug }),
+          ...(slug === undefined ? {} : { slug: framerSlug(slug) }),
           ...(draft === undefined ? {} : { draft }),
         });
         assertWritable(collection, fieldData);
@@ -138,24 +206,9 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
       name: collection.name,
       readonly: collection.readonly,
       managedBy: collection.managedBy,
-      getFields: async () => collection.fields.map((field) => ({ ...field })),
+      getFields: async () => collection.fields.map(fieldHandle),
       addFields: async (fields) => {
-        for (const field of fields) {
-          collection.fields.push({
-            id: nextId("field"),
-            name: field.name,
-            type: field.type,
-            ...("cases" in field
-              ? {
-                  cases: field.cases.map((entry) => ({
-                    id: nextId("case"),
-                    name: entry.name,
-                  })),
-                }
-              : {}),
-            ...("collectionId" in field ? { collectionId: field.collectionId } : {}),
-          });
-        }
+        collection.fields.push(...fields.map(newField));
       },
       removeFields: async (fieldIds) => {
         collection.fields = collection.fields.filter((field) => !fieldIds.includes(field.id));
@@ -179,9 +232,16 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
             continue;
           }
 
+          // Like Framer: the slug is kept normalized, and one an item has already is refused.
+          const kept = framerSlug(slug ?? "");
+
+          if (collection.items.some((item) => item.slug === kept)) {
+            throw new Error(`Duplicate slug: ${kept}`);
+          }
+
           collection.items.push({
             id: nextId("item"),
-            slug: slug ?? "",
+            slug: kept,
             draft: draft ?? false,
             fieldData: storedFieldData(fieldData),
           });
@@ -224,7 +284,6 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
     yield* deployments;
   }
 
-  /** Field values as Framer keeps them: an image or file URL becomes an asset. */
   /** Like Framer, writes take an enum only by its case id and a reference only by an item id. */
   function assertWritable(collection: FakeCollection, fieldData: CmsItemWrite["fieldData"]): void {
     const itemIds = new Set(state.collections.flatMap((candidate) => candidate.items.map(({ id }) => id)));
@@ -277,21 +336,31 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
     );
   }
 
+  /** Field values as Framer keeps them: an image or file URL becomes an asset, a List entry gets an id. */
   function storedFieldData(fieldData: CmsItemWrite["fieldData"]): FakeCollection["items"][number]["fieldData"] {
-    return Object.fromEntries(
-      Object.entries(fieldData ?? {}).map(([id, entry]) => [
-        id,
-        (entry.type === "image" || entry.type === "file") && typeof entry.value === "string"
-          ? {
-              type: entry.type,
-              value: {
-                url: entry.value,
-                altText: "alt" in entry ? entry.alt : undefined,
-              },
-            }
-          : entry,
-      ]),
-    );
+    return Object.fromEntries(Object.entries(fieldData ?? {}).map(([id, entry]) => [id, storedEntry(entry)]));
+  }
+
+  function storedEntry(entry: CmsFieldInput): { type: string; value: unknown } {
+    if (entry.type === "array") {
+      return {
+        type: entry.type,
+        value: entry.value.map((listItem) => ({
+          id: nextId("entry"),
+          fieldData: storedFieldData(listItem.fieldData),
+        })),
+      };
+    }
+
+    return (entry.type === "image" || entry.type === "file") && typeof entry.value === "string"
+      ? {
+          type: entry.type,
+          value: {
+            url: entry.value,
+            altText: "alt" in entry ? entry.alt : undefined,
+          },
+        }
+      : entry;
   }
 
   function codeFileHandle(file: FakeFramerState["codeFiles"][number]): CodeFileHandle {
@@ -649,6 +718,14 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
           }
         : null,
   };
+}
+
+/** A slug as Framer keeps it on a write: lower case, spaces and punctuation as hyphens ("Lab Spaced Slug!", 06.10.2026). */
+function framerSlug(slug: string): string {
+  return slug
+    .toLowerCase()
+    .replace(/[\s!?,'&/]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 /** Like Framer: attributes merge, except `breakpoints`, which replaces the whole list. */
