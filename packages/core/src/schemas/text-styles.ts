@@ -20,7 +20,9 @@ export const FontInputSchema = z.strictObject({
   family: z
     .string()
     .min(1)
-    .describe("Exact family from fonts_search; a family uploaded to the project works too (checked after the write)."),
+    .describe(
+      "Exact family from Framer's library; a family uploaded to the project works too (checked after the write).",
+    ),
   weight: z
     .literal(FONT_WEIGHTS)
     .exactOptional()

@@ -1,32 +1,11 @@
 import {
-  CATEGORY_LINK,
   FLIGHT_CHUNK,
   ITEM_DESCRIPTION_MAX,
   ITEM_PAGE,
   ITEM_RESOURCE,
-  ITEM_START,
   MARKETPLACE_URL,
 } from "../constants/marketplace.ts";
-import type { MarketplaceItem, MarketplaceItemDetail, MarketplaceListing } from "../types/marketplace.ts";
-
-/** The items and category links of a Marketplace page, from the data Next.js streams into its HTML. */
-export function parseMarketplacePage(html: string): MarketplaceListing {
-  const data = [...html.matchAll(FLIGHT_CHUNK)].map(([, chunk]) => decodeChunk(chunk ?? "")).join("");
-  const items = new Map<string, MarketplaceItem>();
-
-  for (const match of data.matchAll(ITEM_START)) {
-    const item = itemOf(objectAt(data, match.index));
-
-    if (item !== null && !items.has(item.slug)) {
-      items.set(item.slug, item);
-    }
-  }
-
-  return {
-    items: [...items.values()],
-    categories: [...new Set([...html.matchAll(CATEGORY_LINK)].map(([, , slug]) => slug ?? ""))].filter(Boolean),
-  };
-}
+import type { MarketplaceItem, MarketplaceItemDetail } from "../types/marketplace.ts";
 
 /** The item a Marketplace detail page is about, with its description; null when the page holds none. */
 export function parseMarketplaceItem(html: string): MarketplaceItemDetail | null {

@@ -585,7 +585,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="design-system" data-group>
-  <h3>Design system <span>12</span></h3>
+  <h3>Design system <span>10</span></h3>
   <p class="group-intro">Color tokens with light and dark values, and text styles with their sizes per breakpoint.</p>
   <article class="tool" id="color_tokens_list" data-tool="color_tokens_list List color tokens lists framer color styles (tokens) as { id, path, light, dark }. path uses &quot;/&quot; folders like &quot;brand/primary&quot;.">
     <header>
@@ -651,14 +651,14 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="text_styles_upsert" data-tool="text_styles_upsert Create or update text styles creates or updates text styles by path in one batch. font family must exist (use fonts_search); color binds a token with { token: &quot;brand/text&quot; }. only provided attributes change on existing styles.">
+  <article class="tool" id="text_styles_upsert" data-tool="text_styles_upsert Create or update text styles creates or updates text styles by path in one batch. font family must exist in the framer font library or be uploaded to the project; color binds a token with { token: &quot;brand/text&quot; }. only provided attributes change on existing styles.">
     <header>
       <h4><a href="#text_styles_upsert">text_styles_upsert</a></h4>
       <span class="badge write">Changes</span>
       <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
     </header>
     <p class="tool-title">Create or update text styles</p>
-    <p>Creates or updates text styles by path in one batch. Font family must exist (use <a href="#fonts_search"><code>fonts_search</code></a>); color binds a token with { token: &quot;Brand/Text&quot; }. Only provided attributes change on existing styles.</p>
+    <p>Creates or updates text styles by path in one batch. Font family must exist in the Framer font library or be uploaded to the project; color binds a token with { token: &quot;Brand/Text&quot; }. Only provided attributes change on existing styles.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
@@ -744,43 +744,6 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
       <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>One web page; omit to read the whole site: every page, component, design page and layout.</td></tr>
-      </tbody>
-    </table></div>
-  </article>
-  <article class="tool" id="fonts_search" data-tool="fonts_search Search fonts searches fonts by family name: framer's library with its weights and styles, and fonts uploaded to the project (source project) with the variants its text styles use. framer swaps a weight the project lacks without an error; text_styles_upsert reports that as fontfallbacks.">
-    <header>
-      <h4><a href="#fonts_search">fonts_search</a></h4>
-      <span class="badge read">Reads</span>
-      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
-    </header>
-    <p class="tool-title">Search fonts</p>
-    <p>Searches fonts by family name: Framer's library with its weights and styles, and fonts uploaded to the project (source project) with the variants its text styles use. Framer swaps a weight the project lacks without an error; <a href="#text_styles_upsert"><code>text_styles_upsert</code></a> reports that as fontFallbacks.</p>
-    <div class="params"><table>
-      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
-      <tbody>
-      <tr><th scope="row"><code>query</code></th><td><code class="type">string</code></td><td>Part of a font family name, e.g. &quot;inter&quot; or &quot;serif display&quot;. <span class="req">required</span></td></tr>
-      <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>10</code></span></td></tr>
-      </tbody>
-    </table></div>
-  </article>
-  <article class="tool" id="fonts_discover" data-tool="fonts_discover Discover fonts finds fonts beyond framer's library search, in google fonts and fontshare: by words of the name, category (sans, serif, display, slab, mono, handwriting) and order (popular, trending, new). each comes with its license in plain words, its weights, a specimen link, and whether framer's library has it (inframer). propose two or three pairings from it, not only inter-like defaults, and pass script for the site's language (cyrillic for ukrainian: most fontshare families are latin only); a currency sign such as ₴ can still be missing, so check it in the specimen. google fonts (ofl) may be uploaded anywhere: pass files true for its woff2 files, upload each with file_upload, then use the family in text_styles_upsert. fontshare's license (itf ffl v2.0) allows uploading its files only to the user's own site: for a client's site or a sold template use a family with inframer true from framer's library.">
-    <header>
-      <h4><a href="#fonts_discover">fonts_discover</a></h4>
-      <span class="badge read">Reads</span>
-      <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
-    </header>
-    <p class="tool-title">Discover fonts</p>
-    <p>Finds fonts beyond Framer's library search, in Google Fonts and Fontshare: by words of the name, category (sans, serif, display, slab, mono, handwriting) and order (popular, trending, new). Each comes with its license in plain words, its weights, a specimen link, and whether Framer's library has it (inFramer). Propose two or three pairings from it, not only Inter-like defaults, and pass script for the site's language (cyrillic for Ukrainian: most Fontshare families are Latin only); a currency sign such as ₴ can still be missing, so check it in the specimen. Google Fonts (OFL) may be uploaded anywhere: pass files true for its woff2 files, upload each with <a href="#file_upload"><code>file_upload</code></a>, then use the family in <a href="#text_styles_upsert"><code>text_styles_upsert</code></a>. Fontshare's license (ITF FFL v2.0) allows uploading its files only to the user's own site: for a client's site or a sold template use a family with inFramer true from Framer's library.</p>
-    <div class="params"><table>
-      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
-      <tbody>
-      <tr><th scope="row"><code>query</code></th><td><code class="type">string</code></td><td>Words of a family name, e.g. &quot;grotesk&quot; or &quot;satoshi&quot;.</td></tr>
-      <tr><th scope="row"><code>category</code></th><td><code class="type">&quot;sans&quot; | &quot;serif&quot; | &quot;display&quot; | &quot;slab&quot; | &quot;mono&quot; | &quot;handwriting&quot;</code></td><td></td></tr>
-      <tr><th scope="row"><code>script</code></th><td><code class="type">string</code></td><td>Only families that cover this script, e.g. &quot;cyrillic&quot; for a Ukrainian site, &quot;greek&quot;, &quot;vietnamese&quot;.</td></tr>
-      <tr><th scope="row"><code>source</code></th><td><code class="type">&quot;google&quot; | &quot;fontshare&quot; | &quot;all&quot;</code></td><td>google: Google Fonts; fontshare: Fontshare (ITF). <span class="def">default <code>&quot;all&quot;</code></span></td></tr>
-      <tr><th scope="row"><code>sort</code></th><td><code class="type">&quot;popular&quot; | &quot;trending&quot; | &quot;new&quot;</code></td><td> <span class="def">default <code>&quot;popular&quot;</code></span></td></tr>
-      <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>12</code></span></td></tr>
-      <tr><th scope="row"><code>files</code></th><td><code class="type">boolean</code></td><td>Add the woff2 files of families Framer's library lacks, for file_upload. <span class="def">default <code>false</code></span></td></tr>
       </tbody>
     </table></div>
   </article>
@@ -1162,7 +1125,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="assets" data-group>
-  <h3>Components and assets <span>13</span></h3>
+  <h3>Components and assets <span>11</span></h3>
   <p class="group-intro">Components and their controls, components from the Marketplace, icon sets, stock photos, your own images, files and SVG.</p>
   <article class="tool" id="components_read" data-tool="components_read Read components lists the project's components with their exact controls ($control__variant options, $control__&lt;name&gt; for each variable) before you place or change instances. control names are the ones listed here, e.g. $control__showicon; do not derive them from variable names. code components are listed in codecomponents and framer's own (video, google maps, embed, slideshow, carousel, countdown, cookie banner, search…) in framer: place any of them with +componentinstancenode component=&quot;&lt;id&gt;&quot;, and pass its id in ids to read its controls first. needs the project's server api key (framer_status shows whether it is set).">
     <header>
@@ -1179,14 +1142,14 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="component_insert" data-tool="component_insert Insert a component inserts a component by its module url (framer.com/m/…): a free marketplace component from marketplace_browse (moduleurl), or a url the user copied from the insert menu. design_apply cannot take a url; framer's own components (video, youtube, google maps, embed, slideshow, carousel, countdown…) it places by the ids components_read lists in framer. then set its controls with design_apply ($control__…) or component_controls_set. undo does not remove it.">
+  <article class="tool" id="component_insert" data-tool="component_insert Insert a component inserts a component by its module url (framer.com/m/…): a free marketplace component (marketplace_item gives its moduleurl), or a url the user copied from the insert menu. design_apply cannot take a url; framer's own components (video, youtube, google maps, embed, slideshow, carousel, countdown…) it places by the ids components_read lists in framer. then set its controls with design_apply ($control__…) or component_controls_set. undo does not remove it.">
     <header>
       <h4><a href="#component_insert">component_insert</a></h4>
       <span class="badge write">Changes</span>
       <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
     </header>
     <p class="tool-title">Insert a component</p>
-    <p>Inserts a component by its module URL (framer.com/m/…): a free Marketplace component from <a href="#marketplace_browse"><code>marketplace_browse</code></a> (moduleUrl), or a URL the user copied from the Insert menu. <a href="#design_apply"><code>design_apply</code></a> cannot take a URL; Framer's own components (Video, YouTube, Google Maps, Embed, Slideshow, Carousel, Countdown…) it places by the ids <a href="#components_read"><code>components_read</code></a> lists in framer. Then set its controls with <a href="#design_apply"><code>design_apply</code></a> ($control__…) or <a href="#component_controls_set"><code>component_controls_set</code></a>. Undo does not remove it.</p>
+    <p>Inserts a component by its module URL (framer.com/m/…): a free Marketplace component (<a href="#marketplace_item"><code>marketplace_item</code></a> gives its moduleUrl), or a URL the user copied from the Insert menu. <a href="#design_apply"><code>design_apply</code></a> cannot take a URL; Framer's own components (Video, YouTube, Google Maps, Embed, Slideshow, Carousel, Countdown…) it places by the ids <a href="#components_read"><code>components_read</code></a> lists in framer. Then set its controls with <a href="#design_apply"><code>design_apply</code></a> ($control__…) or <a href="#component_controls_set"><code>component_controls_set</code></a>. Undo does not remove it.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
@@ -1243,37 +1206,18 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="marketplace_browse" data-tool="marketplace_browse Browse the Framer Marketplace reads the framer marketplace in its current ranking: templates of a category (agency, consulting, saas, portfolio…), to see what sells now before proposing a direction, or components (carousels, tickers, effects) to offer the user instead of building them. each item has its page, live preview, price (null = free) and, for a free component, the moduleurl that component_insert inserts. without a category you get the whole kind and the category slugs there are; query filters by name. open the previews you name with your browser tools when you can.">
-    <header>
-      <h4><a href="#marketplace_browse">marketplace_browse</a></h4>
-      <span class="badge read">Reads</span>
-      <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
-    </header>
-    <p class="tool-title">Browse the Framer Marketplace</p>
-    <p>Reads the Framer Marketplace in its current ranking: templates of a category (agency, consulting, saas, portfolio…), to see what sells now before proposing a direction, or components (carousels, tickers, effects) to offer the user instead of building them. Each item has its page, live preview, price (null = free) and, for a free component, the moduleUrl that <a href="#component_insert"><code>component_insert</code></a> inserts. Without a category you get the whole kind and the category slugs there are; query filters by name. Open the previews you name with your browser tools when you can.</p>
-    <div class="params"><table>
-      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
-      <tbody>
-      <tr><th scope="row"><code>kind</code></th><td><code class="type">&quot;templates&quot; | &quot;components&quot;</code></td><td> <span class="def">default <code>&quot;templates&quot;</code></span></td></tr>
-      <tr><th scope="row"><code>category</code></th><td><code class="type">string</code></td><td>A category slug, e.g. &quot;agency&quot;, &quot;consulting&quot;, &quot;saas&quot; (templates) or &quot;carousels&quot;, &quot;tickers&quot; (components).</td></tr>
-      <tr><th scope="row"><code>query</code></th><td><code class="type">string</code></td><td>Keep only items whose name has these words, e.g. testimonial.</td></tr>
-      <tr><th scope="row"><code>freeOnly</code></th><td><code class="type">boolean</code></td><td>Only free items (components that component_insert can insert). <span class="def">default <code>false</code></span></td></tr>
-      <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>12</code></span></td></tr>
-      </tbody>
-    </table></div>
-  </article>
-  <article class="tool" id="marketplace_item" data-tool="marketplace_item Look at Marketplace items reads marketplace item pages — links the user gives you (&quot;add this one, does it suit us?&quot;), or pageurl values from marketplace_browse — and returns what each is: the author's description, author, price (null = free), preview, categories, when it was last updated, and for a free component the moduleurl for component_insert. with inspect true, each free component is inserted on a temporary page, its controls are read with their defaults, types and the tool that writes each, and the page is deleted again. judge the fit from that before inserting it: does it take your own content (a slot takes ids of layers on the page; a list of images or of { image, … } entries takes image urls through component_controls_set, which uploads them), does it size to its container or measure its first slide once (then one instance per breakpoint width), can its colors and type match the tokens, does it use a tween (set a spring with component_controls_set), was it updated recently. open previewurl with your browser tools to see it move.">
+  <article class="tool" id="marketplace_item" data-tool="marketplace_item Look at Marketplace items reads marketplace item pages — links the user gives you (&quot;add this one, does it suit us?&quot;) — and returns what each is: the author's description, author, price (null = free), preview, categories, when it was last updated, and for a free component the moduleurl for component_insert. with inspect true, each free component is inserted on a temporary page, its controls are read with their defaults, types and the tool that writes each, and the page is deleted again. judge the fit from that before inserting it: does it take your own content (a slot takes ids of layers on the page; a list of images or of { image, … } entries takes image urls through component_controls_set, which uploads them), does it size to its container or measure its first slide once (then one instance per breakpoint width), can its colors and type match the tokens, does it use a tween (set a spring with component_controls_set), was it updated recently. open previewurl with your browser tools to see it move.">
     <header>
       <h4><a href="#marketplace_item">marketplace_item</a></h4>
       <span class="badge write">Changes</span>
       <span class="badge needs-partial" title="Works without a key; a Server API key adds more">Plugin · more with a key</span>
     </header>
     <p class="tool-title">Look at Marketplace items</p>
-    <p>Reads Marketplace item pages — links the user gives you (&quot;add this one, does it suit us?&quot;), or pageUrl values from <a href="#marketplace_browse"><code>marketplace_browse</code></a> — and returns what each is: the author's description, author, price (null = free), preview, categories, when it was last updated, and for a free component the moduleUrl for <a href="#component_insert"><code>component_insert</code></a>. With inspect true, each free component is inserted on a temporary page, its controls are read with their defaults, types and the tool that writes each, and the page is deleted again. Judge the fit from that before inserting it: does it take your own content (a slot takes ids of layers on the page; a list of images or of { image, … } entries takes image URLs through <a href="#component_controls_set"><code>component_controls_set</code></a>, which uploads them), does it size to its container or measure its first slide once (then one instance per breakpoint width), can its colors and type match the tokens, does it use a tween (set a spring with <a href="#component_controls_set"><code>component_controls_set</code></a>), was it updated recently. Open previewUrl with your browser tools to see it move.</p>
+    <p>Reads Marketplace item pages — links the user gives you (&quot;add this one, does it suit us?&quot;) — and returns what each is: the author's description, author, price (null = free), preview, categories, when it was last updated, and for a free component the moduleUrl for <a href="#component_insert"><code>component_insert</code></a>. With inspect true, each free component is inserted on a temporary page, its controls are read with their defaults, types and the tool that writes each, and the page is deleted again. Judge the fit from that before inserting it: does it take your own content (a slot takes ids of layers on the page; a list of images or of { image, … } entries takes image URLs through <a href="#component_controls_set"><code>component_controls_set</code></a>, which uploads them), does it size to its container or measure its first slide once (then one instance per breakpoint width), can its colors and type match the tokens, does it use a tween (set a spring with <a href="#component_controls_set"><code>component_controls_set</code></a>), was it updated recently. Open previewUrl with your browser tools to see it move.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
-      <tr><th scope="row"><code>links</code></th><td><code class="type">string[]</code></td><td>Marketplace item pages: links the user gave (https://www.framer.com/marketplace/components/&lt;slug&gt;/), pageUrl values from marketplace_browse, or component slugs. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>links</code></th><td><code class="type">string[]</code></td><td>Marketplace item pages: links the user gave (https://www.framer.com/marketplace/components/&lt;slug&gt;/), or component slugs. <span class="req">required</span></td></tr>
       <tr><th scope="row"><code>inspect</code></th><td><code class="type">boolean</code></td><td>Insert each free component on a temporary design page, read its controls and defaults, then delete the page. <span class="def">default <code>false</code></span></td></tr>
       </tbody>
     </table></div>
@@ -1292,24 +1236,6 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <tr><th scope="row"><code>query</code></th><td><code class="type">string</code></td><td>Words of the icon name, e.g. &quot;arrow right&quot; or &quot;menu&quot;. <span class="req">required</span></td></tr>
       <tr><th scope="row"><code>set</code></th><td><code class="type">string</code></td><td>A set id or name (Phosphor, Lucide, Logos…). Omit to search every set.</td></tr>
       <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>20</code></span></td></tr>
-      </tbody>
-    </table></div>
-  </article>
-  <article class="tool" id="images_search" data-tool="images_search Search stock images finds unsplash photos for a section and returns their urls: put one in a frame's fill (fill=&quot;&lt;url&gt;&quot;, with alttext). pass width as twice the frame's display width. use photos where the design needs real-world imagery, not as decoration everywhere. needs the project's server api key (framer_status shows whether it is set).">
-    <header>
-      <h4><a href="#images_search">images_search</a></h4>
-      <span class="badge read">Reads</span>
-      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
-    </header>
-    <p class="tool-title">Search stock images</p>
-    <p>Finds Unsplash photos for a section and returns their urls: put one in a frame's fill (fill=&quot;&lt;url&gt;&quot;, with altText). Pass width as twice the frame's display width. Use photos where the design needs real-world imagery, not as decoration everywhere. Needs the project's Server API key (<a href="#framer_status"><code>framer_status</code></a> shows whether it is set).</p>
-    <div class="params"><table>
-      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
-      <tbody>
-      <tr><th scope="row"><code>query</code></th><td><code class="type">string</code></td><td>What the photo shows, e.g. &quot;white ceramic vases on a table&quot;. <span class="req">required</span></td></tr>
-      <tr><th scope="row"><code>count</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>4</code></span></td></tr>
-      <tr><th scope="row"><code>orientation</code></th><td><code class="type">&quot;landscape&quot; | &quot;portrait&quot; | &quot;squarish&quot;</code></td><td></td></tr>
-      <tr><th scope="row"><code>width</code></th><td><code class="type">number</code></td><td>Twice the display width of the frame the image fills, for sharp images on dense screens.</td></tr>
       </tbody>
     </table></div>
   </article>

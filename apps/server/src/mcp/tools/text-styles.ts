@@ -14,7 +14,7 @@ export function registerTextStyleTools(server: McpServer, context: ToolContext):
     name: "text_styles_upsert",
     title: "Create or update text styles",
     description:
-      'Creates or updates text styles by path in one batch. Font family must exist (use fonts_search); color binds a token with { token: "Brand/Text" }. Only provided attributes change on existing styles.',
+      'Creates or updates text styles by path in one batch. Font family must exist in the Framer font library or be uploaded to the project; color binds a token with { token: "Brand/Text" }. Only provided attributes change on existing styles.',
   });
   addOperationTool(server, context, textStylesDelete, {
     name: "text_styles_delete",

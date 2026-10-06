@@ -35,12 +35,11 @@ something else; every rule here was seen on a live project.
 
 ## Design system
 
-- `color_tokens_*` and `text_styles_*`; `fonts_search` for Framer's families, `fonts_discover` for Google Fonts and
-  Fontshare.
+- `color_tokens_*` and `text_styles_*`: a font family from Framer's library or uploaded to the project.
 - A "/" in a style or component name makes a folder (`name="Content/Card"`). Group components by role (Brand,
   Navigation, Controls, Content); keep style names flat unless the user wants folders. A folder has no API of its own:
   it disappears with its last item, so empty it with the `folders` option of the delete tools.
-- When the DSL refuses a library family that `fonts_search` lists ("No available font variant"), set the font with
+- When the DSL refuses a library family ("No available font variant"), set the font with
   `text_styles_upsert` `via: "plugin-api"`. Fonts uploaded to the project go through the DSL; Framer swaps a weight
   the project lacks without an error, and `text_styles_upsert` lists those styles in `fontFallbacks`: tell the user
   which weight to upload.
@@ -323,7 +322,7 @@ keeps depends on the attribute:
 
 - Icons: `icons_search`, then `+IconNode set="<set id>" $control__icon="<exact name>"`. A Phosphor icon is an outline
   until `$control__alpha="1"` fills it (rating stars).
-- Photos: `images_search`, then `fill="<url>"` with `altText`. Own files: `image_upload`, videos, PDFs and fonts:
+- Photos: `fill="<url>"` with `altText` (the user's own or a URL they give). Own files: `image_upload`, videos, PDFs and fonts:
   `file_upload`. An Unsplash URL crops itself with `&rect=x,y,w,h` or `&crop=faces`.
 - Logos and own icons are vectors: `svg_add` through the plugin (parentId places it). To reuse one across the site, ask
   the user to add it to a project vector set (the API cannot), then place it as an `IconNode` of that set. An icon from
@@ -347,8 +346,7 @@ keeps depends on the attribute:
   date takes midnight only. A font control: `$control__font.fontSelector="GF;<Family>-<weight>"` and `fontSize`; one
   invalid field drops the whole font. Its `lineHeight` and `letterSpacing` are `[value, unit]` pairs (`[1.16,"em"]`),
   never a CSS string, and `fontSelector` goes in the same write as any other font field.
-- A Marketplace component (`marketplace_browse` components, `freeOnly`): read it with `marketplace_item` `inspect`
-  first (whether it takes your own layers as slides, sizes to its container, takes the site's colors and type, uses a
+- A Marketplace component the user links: read it with `marketplace_item` `inspect` first (whether it takes your own layers as slides, sizes to its container, takes the site's colors and type, uses a
   tween to replace with a spring, was updated this year), then `component_insert`. Check it without a cursor and in
   Preview: trails, tilts and magnetic effects do nothing on touch, counters show 00 and reveals their end state on the
   canvas, scroll-pinned carousels take over the scroll, and Marketplace components expose no events. Its defaults are
@@ -368,7 +366,7 @@ keeps depends on the attribute:
   variant. The canvas and screenshots never run effects: appear, hover, loop and scroll motion show only in Preview or
   on the published site.
 - Code: take the first that does the task: the canvas (variants, effects, interactions), Framer's own components and
-  shaders, a free Marketplace component (`marketplace_browse`), then code (`code_file_write`, `custom_code_set`). Code
+  shaders, a free Marketplace component, then code (`code_file_write`, `custom_code_set`). Code
   is the tool when the task needs a value or state the canvas has no node for (computed, from an API, random, shared by
   several components), input read every frame (cursor, drag, frames stepped by scroll), or a fix a component's controls
   cannot make, or when the user asks for it. Name which one to the user before writing; the code tools stay switched

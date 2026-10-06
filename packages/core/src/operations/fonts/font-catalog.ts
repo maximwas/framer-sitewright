@@ -81,7 +81,7 @@ export function resolveFontFamily(families: FontFamilies, requested: string): st
   throw new OperationError(
     "FONT_NOT_FOUND",
     `Font family "${requested}" is not available.`,
-    "Find the exact family with fonts_search; fonts uploaded to the project show there once a text style uses them.",
+    "Use the exact family name from Framer's font library, or upload the font to the project first.",
   );
 }
 

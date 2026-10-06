@@ -48,7 +48,6 @@ export { HistoryRecorder, withJournal } from "./history/recorder.ts";
 export { fileUpload } from "./operations/assets/file-upload.ts";
 export { iconsSearch } from "./operations/assets/icons-search.ts";
 export { imageUpload } from "./operations/assets/image-upload.ts";
-export { imagesSearch } from "./operations/assets/images-search.ts";
 export { shadersRead } from "./operations/assets/shaders-read.ts";
 export { svgAdd } from "./operations/assets/svg-add.ts";
 export {

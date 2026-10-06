@@ -89,8 +89,7 @@ sitewright --help
 ## Tools
 
 - **Design system:** `color_tokens_list`, `color_tokens_upsert`, `color_tokens_delete`, `text_styles_list`,
-  `text_styles_upsert`, `text_styles_delete`, `fonts_search`, `fonts_discover` (Google Fonts and Fontshare beyond
-  Framer's library, with licenses and the files to upload), `link_styles_list`, `link_styles_upsert`,
+  `text_styles_upsert`, `text_styles_delete`, `link_styles_list`, `link_styles_upsert`,
   `link_styles_delete` (text links without Framer's default blue, with hover and the current page), `styles_usage`
   (where each token and style is used, and what nothing uses).
 - **Pages and nodes:** `project_overview`, `nodes_read`, `design_apply`, `layout_audit`, `selection_get`,
@@ -107,11 +106,9 @@ sitewright --help
   templates, and the checklist before handing a page over. The Claude Code skill (`setup --skill`) points the agent at it.
 - **Components and assets:** `components_read`, `component_controls_set`, `component_insert` (a free Marketplace
   component or one of Framer's own, by module URL), `component_make_local` (a Marketplace component copied into the
-  project to restyle), `component_detach` (an instance as plain layers), `icons_search`, `images_search`, `image_upload`, `file_upload`
+  project to restyle), `component_detach` (an instance as plain layers), `icons_search`, `image_upload`, `file_upload`
   (videos, PDFs, fonts), `svg_add`.
-- **Marketplace:** `marketplace_browse` — templates and components in their current ranking, by category or name, to
-  offer a component instead of building one. `marketplace_item` —
-  the items behind links you or the agent found: description, author, price, preview and last update, and for a free
+- **Marketplace:** `marketplace_item` — the items behind Marketplace links you give: description, author, price, preview and last update, and for a free
   component its controls, read from a copy placed on a temporary design page, to judge whether it fits.
 - **CMS:** `cms_collections_list`, `cms_collection_create`, `cms_collection_delete`, `cms_fields_set`,
   `cms_items_list`, `cms_items_upsert`, `cms_items_delete`, `cms_items_order`. Items are written by slug, values by

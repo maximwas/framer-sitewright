@@ -1,7 +1,3 @@
-import type { MARKETPLACE_KINDS } from "../constants/marketplace.ts";
-
-export type MarketplaceKind = (typeof MARKETPLACE_KINDS)[number];
-
 /** A template or component as the Marketplace lists it. */
 export interface MarketplaceItem {
   readonly title: string;
@@ -17,12 +13,6 @@ export interface MarketplaceItem {
   readonly moduleUrl: string | null;
   /** A free template's remix link. */
   readonly remixUrl: string | null;
-}
-
-export interface MarketplaceListing {
-  readonly items: readonly MarketplaceItem[];
-  /** Category slugs the page links to, for the next call. */
-  readonly categories: readonly string[];
 }
 
 /** A Marketplace item as its own page describes it. */

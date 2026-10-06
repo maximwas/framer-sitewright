@@ -10,7 +10,6 @@ import { registerColorTokenTools } from "./tools/color-tokens.ts";
 import { registerComponentTools } from "./tools/components.ts";
 import { registerDesignTools } from "./tools/design.ts";
 import { registerDocsTools } from "./tools/docs.ts";
-import { registerFontTools } from "./tools/fonts.ts";
 import { registerLinkStyleTools } from "./tools/link-styles.ts";
 import { registerLocalizationTools } from "./tools/localization.ts";
 import { registerMarketplaceTools } from "./tools/marketplace.ts";
@@ -35,7 +34,6 @@ export function createMcpServer(context: ToolContext, version: string): McpServe
   registerColorTokenTools(server, context);
   registerTextStyleTools(server, context);
   registerLinkStyleTools(server, context);
-  registerFontTools(server, context);
   registerNodeTools(server, context);
   registerDesignTools(server, context);
   registerAssetTools(server, context);

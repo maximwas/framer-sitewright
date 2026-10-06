@@ -41,7 +41,7 @@ export async function marketplaceItems(transports: TransportRouter, links: reado
       throw new OperationError(
         "INVALID_INPUT",
         `"${link}" is not a Marketplace item link.`,
-        "Pass a link like https://www.framer.com/marketplace/components/stacked-slider/, or a pageUrl from marketplace_browse.",
+        "Pass a link like https://www.framer.com/marketplace/components/stacked-slider/.",
       );
     }
 

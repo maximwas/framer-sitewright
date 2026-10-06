@@ -4,7 +4,6 @@ import {
   ActivityNoteSchema,
   fileUpload,
   iconsSearch,
-  imagesSearch,
   imageUpload,
   PRODUCT,
   shadersRead,
@@ -17,13 +16,6 @@ import type { ToolContext } from "../../types/mcp.ts";
 import { addOperationTool, addTool, operationAnnotations, runOperationTool } from "../add-tool.ts";
 
 export function registerAssetTools(server: McpServer, context: ToolContext): void {
-  addOperationTool(server, context, imagesSearch, {
-    name: "images_search",
-    title: "Search stock images",
-    description:
-      "Finds Unsplash photos for a section and returns their urls: put one in a frame's fill (fill=\"<url>\", with altText). Pass width as twice the frame's display width. Use photos where the design needs real-world imagery, not as decoration everywhere. Needs the project's Server API key (framer_status shows whether it is set).",
-  });
-
   addTool(server, {
     name: "image_upload",
     title: "Upload an image",

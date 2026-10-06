@@ -6,7 +6,7 @@ import { defineOperation } from "../define.ts";
 import { placeInParent, recordInserted } from "./placement.ts";
 
 /**
- * Inserts a component by its module URL: a free Marketplace component (marketplace_browse gives its moduleUrl), one of
+ * Inserts a component by its module URL: a free Marketplace component (marketplace_item gives its moduleUrl), one of
  * Framer's own (Video, YouTube…), or any URL copied from the Insert menu. The DSL cannot: it takes only the ids of the
  * project's components ("does not exist" for a URL).
  */

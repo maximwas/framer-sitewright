@@ -72,7 +72,7 @@ export const DETAIL_MAX_IMAGES = 12;
 export const DETAIL_MAX_TEXT = 160;
 
 /**
- * Where the panel's image previews may come from: uploads and fills on Framer's CDN, photos images_search finds. The
+ * Where the panel's image previews may come from: uploads and fills on Framer's CDN, and Unsplash photos. The
  * web journal's CSP lets images in from these origins only, so no other URL is kept for a preview.
  */
 export const PREVIEW_IMAGE_ORIGINS: readonly string[] = [
