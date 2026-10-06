@@ -24,7 +24,7 @@ export {
   NO_RECONNECT_CODES,
 } from "./constants/bridge.ts";
 export { ACTIVITY_VIEWS, PREVIEW_IMAGE_ORIGINS } from "./constants/history.ts";
-export { PRODUCT, SUPPORT_LINKS } from "./constants/product.ts";
+export { KEY_SETUP_HINT, PRODUCT, SUPPORT_LINKS } from "./constants/product.ts";
 export { SETTING_ITEMS } from "./constants/settings.ts";
 export { WEB_SOCKET_PATH, WebCloseCode } from "./constants/web.ts";
 export { findSection, searchSections, sliceContent, splitSections } from "./docs/sections.ts";

@@ -19,6 +19,7 @@ brief instead of asking again.
 | When | Topic |
 | --- | --- |
 | Before any new page, section set or redesign | `workflow` (always first, after `project_brief`) |
+| Before the first `design_apply` of a session: batches, breakpoints, clicks, springs, metadata | `dsl` |
 | Placing anything: stacks, grids, containers, spacing, breakpoints, buttons, images | `layout` |
 | Text styles, sizes, tracking, headings | `typography` |
 | Choosing the look, avoiding the generated look | `direction` |

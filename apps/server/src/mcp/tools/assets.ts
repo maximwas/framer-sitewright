@@ -20,7 +20,7 @@ export function registerAssetTools(server: McpServer, context: ToolContext): voi
     name: "images_search",
     title: "Search stock images",
     description:
-      "Finds Unsplash photos for a section and returns their urls: put one in a frame's fill (fill=\"<url>\", with altText). Pass width as twice the frame's display width. Use photos where the design needs real-world imagery, not as decoration everywhere.",
+      "Finds Unsplash photos for a section and returns their urls: put one in a frame's fill (fill=\"<url>\", with altText). Pass width as twice the frame's display width. Use photos where the design needs real-world imagery, not as decoration everywhere. Needs the project's Server API key (framer_status shows whether it is set).",
   });
 
   addTool(server, {
@@ -87,6 +87,6 @@ export function registerAssetTools(server: McpServer, context: ToolContext): voi
     name: "icons_search",
     title: "Search icons",
     description:
-      'Finds icons by name across Framer\'s icon sets (Phosphor, Lucide, Material, Feather, Logos for brand logos…) and returns the set ids, exact icon names and each set\'s controls. Insert with +IconNode set="<setId>" $control__icon="<exact name>"; never guess names. For an icon no set has, draw it as SVG (image_upload svg or svg_add).',
+      'Finds icons by name across Framer\'s icon sets (Phosphor, Lucide, Material, Feather, Logos for brand logos…) and returns the set ids, exact icon names and each set\'s controls. Insert with +IconNode set="<setId>" $control__icon="<exact name>"; never guess names. For an icon no set has, draw it as SVG (image_upload svg or svg_add). Needs the project\'s Server API key (framer_status shows whether it is set).',
   });
 }

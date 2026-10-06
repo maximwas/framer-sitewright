@@ -55,7 +55,7 @@ export function registerDocsTools(server: McpServer, { transports, docs, journal
     name: "framer_docs",
     title: "Framer DSL reference",
     description:
-      "Framer's official agent reference for the design DSL (commands, attributes, layout rules, CMS, variables, forms, effects). No arguments lists sections; pass section to read one, or query to search. guide reads one of Framer's implementation guides (FAQ, Navigations, Buttons, Effects, Overlays, Forms, Grids…): read the one for what you build before building it, they hold the recipes the reference lacks (e.g. how an accordion animates).",
+      "Framer's official agent reference for the design DSL (commands, attributes, layout rules, CMS, variables, forms, effects). No arguments lists sections; pass section to read one, or query to search. guide reads one of Framer's implementation guides (FAQ, Navigations, Buttons, Effects, Overlays, Forms, Grids…): read the one for what you build before building it, they hold the recipes the reference lacks (e.g. how an accordion animates). Needs the project's Server API key (framer_status shows whether it is set).",
     input: DocsInputSchema,
     output: DocsOutputSchema,
     annotations: {

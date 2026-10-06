@@ -1,6 +1,7 @@
 /** The design guide's topics, in reading order, with what each holds (the files in apps/server/knowledge). */
 export const GUIDE_TOPICS = {
   workflow: "the order of work for a new page or redesign, and the checks before calling it done",
+  dsl: "what Framer does without saying so: batches, breakpoints, components and clicks, which springs it keeps, metadata, assets",
   layout:
     "alignment, distribution, sizes by role, equal heights, grids, containers, spacing, breakpoints, buttons, images",
   typography: "families, scale, tracking, line height, balance, measure, labels, breakpoint sizes",

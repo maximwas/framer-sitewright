@@ -1,4 +1,5 @@
 import type * as z from "zod";
+import { KEY_SETUP_HINT } from "../constants/product.ts";
 import { OperationError } from "../errors.ts";
 import type { ViaSchema } from "../schemas/operations.ts";
 import type { FramerRuntime } from "../types/framer.ts";
@@ -16,8 +17,8 @@ export function resolveVia(runtime: FramerRuntime, requested: z.output<typeof Vi
   if (runtime.agent === null) {
     throw new OperationError(
       "UNSUPPORTED_TRANSPORT",
-      `via "dsl" needs framer.agent, which the ${runtime.transport} transport does not provide.`,
-      'Use via "plugin-api" or the Server API transport.',
+      'via "dsl" needs the project\'s Server API key.',
+      `Use via "plugin-api", or add the key. ${KEY_SETUP_HINT}`,
     );
   }
 

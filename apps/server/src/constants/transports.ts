@@ -1,6 +1,6 @@
-import { LOCAL_APP_PORT, PRODUCT } from "@sitewright/core";
+import { KEY_SETUP_HINT, LOCAL_APP_PORT, PRODUCT } from "@sitewright/core";
 
-export const SERVER_API_SETUP_HINT = `Add this project's Server API key (Framer: Site Settings → General → API Keys): in the journal page (Settings), or \`npx ${PRODUCT.packageName} key\` in a terminal.`;
+export const SERVER_API_SETUP_HINT = KEY_SETUP_HINT;
 
 export const OPEN_PLUGIN_HINT = `Open the ${PRODUCT.pluginTitle} plugin in the Framer editor and click Connect: it opens the bridge window (http://127.0.0.1:${LOCAL_APP_PORT}), which must stay open while the plugin works.`;
 

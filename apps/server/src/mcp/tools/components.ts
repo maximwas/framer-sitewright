@@ -8,7 +8,7 @@ export function registerComponentTools(server: McpServer, context: ToolContext):
     name: "components_read",
     title: "Read components",
     description:
-      'Lists the project\'s components with their exact controls ($control__variant options, $control__<name> for each variable) before you place or change instances. Control names are the ones listed here, e.g. $control__showIcon; do not derive them from variable names. Code components are listed in codeComponents: place one with +ComponentInstanceNode component="<id>".',
+      "Lists the project's components with their exact controls ($control__variant options, $control__<name> for each variable) before you place or change instances. Control names are the ones listed here, e.g. $control__showIcon; do not derive them from variable names. Code components are listed in codeComponents: place one with +ComponentInstanceNode component=\"<id>\". Needs the project's Server API key (framer_status shows whether it is set).",
   });
   addOperationTool(server, context, componentInsert, {
     name: "component_insert",

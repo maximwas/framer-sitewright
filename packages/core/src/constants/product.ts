@@ -15,3 +15,6 @@ export const PRODUCT = {
 
 /** Where people can support the project. Empty until the services are chosen; every support button hides then. */
 export const SUPPORT_LINKS: readonly SupportLink[] = [];
+
+/** What to do when a call needs the project's Server API key. */
+export const KEY_SETUP_HINT = `Add this project's Server API key (Framer: Site Settings → General → API Keys): in the journal page (Settings), or \`npx ${PRODUCT.packageName} key\` in a terminal.`;

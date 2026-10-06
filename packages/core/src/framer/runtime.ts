@@ -1,3 +1,4 @@
+import { KEY_SETUP_HINT } from "../constants/product.ts";
 import { OperationError } from "../errors.ts";
 import type { AgentPort, FramerRuntime, ScreenshotFn } from "../types/framer.ts";
 
@@ -5,8 +6,8 @@ export function requireAgent(runtime: FramerRuntime): AgentPort {
   if (runtime.agent === null) {
     throw new OperationError(
       "UNSUPPORTED_TRANSPORT",
-      `This operation needs framer.agent, which the ${runtime.transport} transport does not provide.`,
-      "Use the Server API transport.",
+      "This needs the project's Server API key: the plugin alone has no DSL, stock photos, icon and component catalogs or screenshots.",
+      KEY_SETUP_HINT,
     );
   }
 
@@ -17,8 +18,8 @@ export function requireScreenshot(runtime: FramerRuntime): ScreenshotFn {
   if (runtime.screenshot === null) {
     throw new OperationError(
       "UNSUPPORTED_TRANSPORT",
-      `Screenshots are not available on the ${runtime.transport} transport.`,
-      "Screenshots need the Server API transport.",
+      "Screenshots need the project's Server API key: the plugin alone cannot take them.",
+      KEY_SETUP_HINT,
     );
   }
 

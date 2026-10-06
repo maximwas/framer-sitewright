@@ -11,6 +11,7 @@ import { BriefStore } from "../src/brief/brief-store.ts";
 import { CapabilityTracker } from "../src/capabilities/capability-tracker.ts";
 import { parseConfig } from "../src/config/config.ts";
 import { BRIEF_QUESTIONS } from "../src/constants/brief.ts";
+import { SERVER_INSTRUCTIONS } from "../src/constants/mcp.ts";
 import { DocsCache } from "../src/docs/docs-cache.ts";
 import { handleActivityCall } from "../src/history/activity-api.ts";
 import { ActivityJournal } from "../src/history/activity-journal.ts";
@@ -464,6 +465,17 @@ describe("configured server (fake project)", () => {
       },
       { type: "text" },
     ]);
+  });
+});
+
+describe("what the client keeps", () => {
+  // Claude Code keeps the first 2,048 characters of the instructions and of each tool description.
+  it("regression: keeps the instructions and every tool description within 2,048 characters", async () => {
+    const { client } = await connect(await unconfiguredTransports());
+    const { tools } = await client.listTools();
+
+    expect(SERVER_INSTRUCTIONS.length).toBeLessThanOrEqual(2048);
+    expect(tools.filter((tool) => (tool.description ?? "").length > 2048).map((tool) => tool.name)).toEqual([]);
   });
 });
 

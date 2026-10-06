@@ -20,7 +20,7 @@ export function registerScreenshotTool(server: McpServer, { transports, journal 
     {
       title: "Screenshot a node",
       description:
-        "Renders a node (breakpoint, section, component variant) to PNG so you can verify the visual result. Server API transport only. Images longer than 2000 px on a side are refused: capture a region with clip, or use scale 0.5.",
+        "Renders a node (breakpoint, section, component variant) to PNG so you can verify the visual result. Needs the project's Server API key. Images longer than 2000 px on a side are refused: capture a region with clip, or use scale 0.5.",
       inputSchema: ScreenshotInputSchema,
       annotations: {
         readOnlyHint: true,
