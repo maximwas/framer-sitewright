@@ -24,3 +24,23 @@ export interface MarketplaceListing {
   /** Category slugs the page links to, for the next call. */
   readonly categories: readonly string[];
 }
+
+/** A Marketplace item as its own page describes it. */
+export interface MarketplaceItemDetail {
+  readonly title: string;
+  readonly slug: string;
+  readonly kind: "template" | "component";
+  readonly author: string;
+  /** null: free. */
+  readonly price: string | null;
+  readonly pageUrl: string;
+  readonly previewUrl: string | null;
+  /** A free component's module URL for component_insert. */
+  readonly moduleUrl: string | null;
+  readonly remixUrl: string | null;
+  readonly categories: readonly string[];
+  readonly updatedAt: string | null;
+  readonly publishedAt: string | null;
+  /** The author's description as plain text, clipped. */
+  readonly description: string;
+}

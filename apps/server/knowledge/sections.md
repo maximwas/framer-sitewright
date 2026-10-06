@@ -53,8 +53,8 @@ look follows `direction`.
   color. Believable numbers (47 clients, 4.8 rating), never round ones.
 - A testimonial card is one solid card (`layout`, Cards made of two pieces). On phone give the component a **Compact**
   variant: the quote, name and role only, no photo, 24px padding, the quote one style smaller.
-- A slider: offer a free Marketplace carousel (`marketplace_browse` components, `carousels`) or a native one with a
-  variant per slide; see `template`, Carousels with slots, for how slots and breakpoints work.
+- A slider: offer a free Marketplace carousel (`marketplace_browse` components, `carousels`, checked with
+  `marketplace_item` `inspect`) or a native one with a variant per slide; see `template`, Carousels with slots, for how slots and breakpoints work.
 
 ## Numbers
 

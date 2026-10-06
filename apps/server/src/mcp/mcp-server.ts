@@ -46,7 +46,7 @@ export function createMcpServer(context: ToolContext, version: string): McpServe
   registerPageTools(server, context);
   registerCheckTools(server, context);
   registerDocsTools(server, context);
-  registerMarketplaceTools(server);
+  registerMarketplaceTools(server, context);
   registerScreenshotTool(server, context);
   registerActivityTools(server, context);
 

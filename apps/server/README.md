@@ -105,7 +105,9 @@ sitewright --help
   component or one of Framer's own, by module URL), `icons_search`, `images_search`, `image_upload`, `file_upload`
   (videos, PDFs, fonts), `svg_add`.
 - **Marketplace:** `marketplace_browse` — templates and components in their current ranking, by category or name, to
-  see what sells before proposing a direction or to offer a component instead of building one.
+  see what sells before proposing a direction or to offer a component instead of building one. `marketplace_item` —
+  the items behind links you or the agent found: description, author, price, preview and last update, and for a free
+  component its controls, read from a copy placed on a temporary design page, to judge whether it fits.
 - **CMS:** `cms_collections_list`, `cms_collection_create`, `cms_collection_delete`, `cms_fields_set`,
   `cms_items_list`, `cms_items_upsert`, `cms_items_delete`, `cms_items_order`. Items are written by slug, values by
   field name. Undo does not restore CMS changes yet.

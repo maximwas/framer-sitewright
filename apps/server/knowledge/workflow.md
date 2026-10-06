@@ -23,7 +23,10 @@ and `no-key` when there is no Server API key.
   `saas`…). Open two or three previews and name what they do that the plan lacks: the scale of the type, how big the
   images are, the section rhythm, the motion. A page that is only clean and correct reads as unfinished next to them.
 - For a carousel, ticker or effect, offer the user two or three free Marketplace components (`marketplace_browse`
-  components, `freeOnly`) with their previews, or to build it natively with variants; insert the chosen one with
+  components, `freeOnly`) with their previews, or to build it natively with variants. Before offering one, and whenever
+  the user sends Marketplace links ("add this one, does it suit us?"), read them with `marketplace_item` `inspect`:
+  say for each whether it takes your own layers as slides, sizes to its container, can take the site's colors and
+  type, uses a tween you must replace with a spring, and was updated this year. Insert the chosen one with
   `component_insert`.
 
 ## 2. Direction before any node (write it out, then check it)

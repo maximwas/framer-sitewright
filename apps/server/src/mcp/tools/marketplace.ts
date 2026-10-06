@@ -1,9 +1,16 @@
 import type { McpServer } from "@modelcontextprotocol/server";
 import { browseMarketplace } from "../../marketplace/browse.ts";
-import { MarketplaceInputSchema, MarketplaceOutputSchema } from "../../schemas/marketplace.ts";
+import { marketplaceItems } from "../../marketplace/item.ts";
+import {
+  MarketplaceInputSchema,
+  MarketplaceItemInputSchema,
+  MarketplaceItemOutputSchema,
+  MarketplaceOutputSchema,
+} from "../../schemas/marketplace.ts";
+import type { ToolContext } from "../../types/mcp.ts";
 import { addTool } from "../add-tool.ts";
 
-export function registerMarketplaceTools(server: McpServer): void {
+export function registerMarketplaceTools(server: McpServer, { transports }: ToolContext): void {
   addTool(server, {
     name: "marketplace_browse",
     title: "Browse the Framer Marketplace",
@@ -17,5 +24,20 @@ export function registerMarketplaceTools(server: McpServer): void {
       openWorldHint: true,
     },
     run: (input) => browseMarketplace(input),
+  });
+  addTool(server, {
+    name: "marketplace_item",
+    title: "Look at Marketplace items",
+    description:
+      'Reads Marketplace item pages — links the user gives you ("add this one, does it suit us?"), or pageUrl values from marketplace_browse — and returns what each is: the author\'s description, author, price (null = free), preview, categories, when it was last updated, and for a free component the moduleUrl for component_insert. With inspect true, each free component is inserted on a temporary design page, its controls are read with their defaults and the page is deleted again. Judge the fit from that before inserting it: does it take your own components as slides (a control whose default is [] is a slot list: $control__slides.0="<layer id>"), does it size to its container or measure its first slide once (then one instance per breakpoint width), can its colors and type match the tokens, does it use a tween (set a spring with component_controls_set), was it updated recently. Open previewUrl with your browser tools to see it move.',
+    input: MarketplaceItemInputSchema,
+    output: MarketplaceItemOutputSchema,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
+    },
+    run: ({ links, inspect }) => marketplaceItems(transports, links, inspect),
   });
 }

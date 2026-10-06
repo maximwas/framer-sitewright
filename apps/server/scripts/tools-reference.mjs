@@ -80,6 +80,7 @@ const GROUPS = [
       "component_insert",
       "component_controls_set",
       "marketplace_browse",
+      "marketplace_item",
       "icons_search",
       "images_search",
       "image_upload",
@@ -151,7 +152,7 @@ const GROUPS = [
  */
 const NEEDS = {
   key: ["node_screenshot", "components_read", "icons_search", "images_search", "framer_docs", "cms_collection_delete"],
-  partial: ["nodes_read", "design_apply", "seo_audit", "links_check", "images_check"],
+  partial: ["nodes_read", "design_apply", "seo_audit", "links_check", "images_check", "marketplace_item"],
   editor: ["selection_get", "svg_add"],
   local: [
     "framer_status",

@@ -77,6 +77,7 @@ const EXPECTED_TOOLS = [
   "localization_get",
   "localization_set",
   "marketplace_browse",
+  "marketplace_item",
   "node_screenshot",
   "nodes_find",
   "nodes_read",

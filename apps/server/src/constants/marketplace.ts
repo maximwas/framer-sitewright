@@ -20,3 +20,16 @@ export const ITEM_START = /\{"id":"[A-Za-z0-9]+","title":"/g;
 
 /** Links to the categories of a listing. */
 export const CATEGORY_LINK = /\/marketplace\/(templates|components)\/categories\/([a-z0-9-]+)\//g;
+
+/** A Marketplace item page: https://www.framer.com/marketplace/components/<slug>/ (or templates). */
+export const ITEM_PAGE = /^https?:\/\/(?:www\.)?framer\.com\/marketplace\/(components|templates)\/([a-z0-9-]+)\/?/;
+
+/** Where the item of a detail page starts in the decoded data. */
+export const ITEM_RESOURCE = '"resource":{"id":"';
+
+/** At most this many item pages per call, and this much of an item's description. */
+export const MARKETPLACE_ITEMS_MAX = 5;
+export const ITEM_DESCRIPTION_MAX = 1500;
+
+/** The temporary design page a component is inserted on to read its controls, then deleted. */
+export const INSPECT_PAGE_NAME = "Sitewright component check";
