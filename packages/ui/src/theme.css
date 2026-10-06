@@ -100,6 +100,46 @@
   --color-sw-danger: var(--sw-danger);
   --color-sw-danger-soft: var(--sw-danger-soft);
   --shadow-sw: var(--sw-shadow);
+  --animate-sw-pulse: sw-pulse 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-sw-run: sw-run 1.4s ease-in-out infinite;
+}
+
+/* A dot running along a connection line, fading in and out at the ends. */
+@keyframes sw-run {
+  0% {
+    left: 0%;
+    opacity: 0;
+  }
+
+  30%,
+  70% {
+    opacity: 1;
+  }
+
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+/* A ring growing out of a status dot and fading; it starts under the dot, so the restart never shows. */
+@keyframes sw-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-sw-pulse,
+  .animate-sw-run {
+    animation: none;
+  }
 }
 
 /* The page under the panel takes the palette's background. */

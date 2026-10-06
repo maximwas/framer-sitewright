@@ -29,7 +29,7 @@ export function App({ link }: AppProps) {
           <ConnectionFlow live={connected} />
           <StatusNote state={status.state} detail={copy.detail} />
           <ActionButton link={link} />
-          <SetupGuide initiallyOpen={!connected} />
+          <SetupGuide />
           <SupportLinks />
         </div>
         <Toaster />

@@ -1,10 +1,10 @@
-import { motion } from "motion/react";
 import { FLOW_NODES } from "../constants/ui.ts";
 import type { ConnectionFlowProps } from "../types/ui.ts";
 
 /**
  * Claude Code → Sitewright → this project, as on the site: while connected, requests run along the lines; otherwise
- * the lines are dashed and still.
+ * the lines are dashed and still. The runs are CSS animations, which a re-render (the status, every second) never
+ * restarts.
  */
 export function ConnectionFlow({ live }: ConnectionFlowProps) {
   return (
@@ -17,19 +17,10 @@ export function ConnectionFlow({ live }: ConnectionFlowProps) {
                 className={`absolute inset-0 border-t ${live ? "border-sw-accent/40" : "border-sw-line-strong border-dashed"}`}
               />
               {live && (
-                <motion.span
+                <span
                   aria-hidden
-                  className="absolute top-[-2.5px] left-0 size-1.5 rounded-full bg-sw-accent"
-                  animate={{
-                    left: ["0%", "100%"],
-                    opacity: [0, 1, 1, 0],
-                  }}
-                  transition={{
-                    duration: 1.4,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                    delay: index * 0.7,
-                  }}
+                  className="absolute top-[-2.5px] left-0 size-1.5 animate-sw-run rounded-full bg-sw-accent"
+                  style={{ animationDelay: `${index * 0.7}s` }}
                 />
               )}
             </div>

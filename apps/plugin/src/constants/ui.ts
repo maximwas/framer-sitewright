@@ -4,13 +4,13 @@ import { Bot, Frame, Sparkles } from "lucide-react";
 import type { LinkStatus } from "../types/link.ts";
 import type { FlowNode, StatusCopy } from "../types/ui.ts";
 
-/** The plugin's window: small, top right, out of the way of the canvas; taller when the setup steps are open. */
+/** The plugin's window: top right, out of the way of the canvas, wide enough for the setup commands. */
 export const PLUGIN_WINDOW: UIOptions = {
   position: "top right",
-  width: 320,
-  height: 480,
+  width: 400,
+  height: 560,
   resizable: true,
-  minWidth: 280,
+  minWidth: 320,
   minHeight: 200,
   maxWidth: 560,
   maxHeight: 900,

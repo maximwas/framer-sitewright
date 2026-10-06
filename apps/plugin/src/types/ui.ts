@@ -22,11 +22,6 @@ export interface AppProps {
   readonly link: WindowLink;
 }
 
-export interface SetupGuideProps {
-  /** Unfolded at first while the plugin is not connected. */
-  readonly initiallyOpen: boolean;
-}
-
 export interface StatusNoteProps {
   readonly state: LinkStatus["state"];
   readonly detail: string;
