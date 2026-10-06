@@ -69,7 +69,7 @@ const GROUPS = [
     title: "Checks before handover",
     intro:
       "What looks fine in the editor and still fails on the published site: search titles and descriptions, broken links and anchors, the same photo twice, missing alt text, and text that does not stand out from its background.",
-    tools: ["seo_audit", "links_check", "images_check", "a11y_audit", "contrast_check"],
+    tools: ["seo_audit", "links_check", "images_check", "a11y_audit", "contrast_check", "template_audit", "live_check"],
   },
   {
     id: "assets",
@@ -166,7 +166,15 @@ const NEEDS = {
     "localization_get",
     "localization_set",
   ],
-  partial: ["nodes_read", "design_apply", "seo_audit", "links_check", "images_check", "marketplace_item"],
+  partial: [
+    "nodes_read",
+    "design_apply",
+    "seo_audit",
+    "links_check",
+    "images_check",
+    "marketplace_item",
+    "template_audit",
+  ],
   editor: ["selection_get", "svg_add"],
   local: [
     "framer_status",
@@ -175,6 +183,7 @@ const NEEDS = {
     "project_brief",
     "marketplace_browse",
     "fonts_discover",
+    "live_check",
     "activity_list",
     "activity_get",
     "activity_checkpoint",
