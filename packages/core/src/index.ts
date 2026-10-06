@@ -24,6 +24,7 @@ export {
   NO_RECONNECT_CODES,
 } from "./constants/bridge.ts";
 export { ACTIVITY_VIEWS, PREVIEW_IMAGE_ORIGINS } from "./constants/history.ts";
+export { MOTION_PRESET_NOTES, MOTION_PRESETS } from "./constants/motion.ts";
 export { KEY_SETUP_HINT, PRODUCT, SUPPORT_LINKS } from "./constants/product.ts";
 export { SETTING_ITEMS } from "./constants/settings.ts";
 export { WEB_SOCKET_PATH, WebCloseCode } from "./constants/web.ts";
@@ -70,6 +71,7 @@ export { fontsInLibrary } from "./operations/fonts/in-library.ts";
 export { fontsSearch } from "./operations/fonts/search.ts";
 export { historyRevert } from "./operations/history/revert.ts";
 export { localesList, localizationGet, localizationSet } from "./operations/localization/localization.ts";
+export { effectsSet } from "./operations/motion/effects-set.ts";
 export { layoutAudit } from "./operations/nodes/audit.ts";
 export { breakpointsAdd } from "./operations/nodes/breakpoints.ts";
 export { nodesFind } from "./operations/nodes/find.ts";

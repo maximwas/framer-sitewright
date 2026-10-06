@@ -62,6 +62,7 @@ const EXPECTED_TOOLS = [
   "deployments_list",
   "design_apply",
   "design_guide",
+  "effects_set",
   "file_upload",
   "fonts_discover",
   "fonts_search",

@@ -1,4 +1,4 @@
-import { PRODUCT } from "@sitewright/core";
+import { MOTION_PRESET_NOTES, PRODUCT } from "@sitewright/core";
 import { ErrorCode } from "framer-api";
 
 /** What to do about a Framer Server API error, appended to its message. */
@@ -39,6 +39,15 @@ export const DESIGN_APPLY_DESCRIPTION = [
   "Inside an existing rich text, blocks and runs without id are the ones at that position (as nodes_read prints them); give a new one a key.",
   'Text: plain text inside a RichTextNode, or <TextBlock tag="h1">…</TextBlock> blocks with <TextRun bold="true">…</TextRun> runs; write & and < as &amp; and &lt;. Nested attributes are dotted: hoverEffect.scale="1".',
   'With a key, color text with a token on the RichTextNode itself, textColor="var(--token-<id>)", not only through its text style: only then does the token show in Framer\'s Color field. Framer applies every command it can and skips the failed ones: send only the failed commands again, fixed, never the whole batch (it would create its nodes twice). Pass pagePath for a node that is not on the home page (nodes_find and selection_get give it). Read design_guide dsl before the first batch.',
+].join(" ");
+
+/** effects_set: the presets with what each is for, so the agent picks one instead of writing effect attributes. */
+export const EFFECTS_SET_DESCRIPTION = [
+  "Puts a motion preset on layers in one call: every value of the effect is written (Framer fills in its own otherwise: a hover scale of 1.1, a loop that spins, a scroll transform at half opacity), transitions are springs without bounce of the kind Framer keeps there, and delays grow along nodeIds. Prefer it to writing effect attributes with design_apply.",
+  `Presets: ${Object.entries(MOTION_PRESET_NOTES)
+    .map(([preset, note]) => `${preset} (${note})`)
+    .join("; ")}.`,
+  "Hover and press go on a plain layer or a layer inside a component, never on a variant or breakpoint root (Framer refuses there). Effects never run on the canvas or in screenshots: say so and check them in Preview. Undo takes a preset back. Needs the project's Server API key.",
 ].join(" ");
 
 /**

@@ -95,6 +95,8 @@ sitewright --help
   palette, theme, assets, copy, motion, CMS, languages…), with the answers saved per project for later sessions.
 - **Pages and nodes:** `project_overview`, `nodes_read`, `design_apply`, `layout_audit`, `selection_get`,
   `node_screenshot`, `breakpoints_add`, `framer_docs`.
+- **Motion:** `effects_set` — appear sequences, text reveals, hover and press, loops, scroll growth, parallax and
+  tickers in one call, with every value written and springs without bounce of the kind Framer keeps.
 - **Checks before handover:** `seo_audit` (titles, descriptions, one h1, noindex, social image, favicon),
   `links_check` (missing pages, anchors without a target, broken mailto and tel), `images_check` (the same photo twice,
   missing alt text), `a11y_audit` (text that does not stand out from its background, links without text),

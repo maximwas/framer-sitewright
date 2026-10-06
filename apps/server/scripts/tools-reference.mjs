@@ -55,6 +55,7 @@ const GROUPS = [
       "nodes_read",
       "nodes_find",
       "design_apply",
+      "effects_set",
       "text_replace",
       "layout_audit",
       "breakpoints_add",
@@ -151,7 +152,18 @@ const GROUPS = [
  * reaches Framer.
  */
 const NEEDS = {
-  key: ["node_screenshot", "components_read", "icons_search", "images_search", "framer_docs", "cms_collection_delete"],
+  key: [
+    "node_screenshot",
+    "components_read",
+    "icons_search",
+    "images_search",
+    "framer_docs",
+    "cms_collection_delete",
+    "effects_set",
+    "text_replace",
+    "localization_get",
+    "localization_set",
+  ],
   partial: ["nodes_read", "design_apply", "seo_audit", "links_check", "images_check", "marketplace_item"],
   editor: ["selection_get", "svg_add"],
   local: [

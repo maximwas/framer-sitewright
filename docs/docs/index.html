@@ -710,7 +710,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="pages" data-group>
-  <h3>Pages, layout and redirects <span>11</span></h3>
+  <h3>Pages, layout and redirects <span>12</span></h3>
   <p class="group-intro">Create and delete pages, read one as XML, find layers and replace text across pages, change pages, check what looks broken, adapt them to tablet and phone, look at them, and redirect old paths.</p>
   <article class="tool" id="page_create" data-tool="page_create Create a page creates an empty web page at a path (&quot;/about&quot;) or a design page (a canvas for drafts) by name. build its content with design_apply; add breakpoints with breakpoints_add. undo does not remove pages.">
     <header>
@@ -798,11 +798,29 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
+  <article class="tool" id="effects_set" data-tool="effects_set Set motion effects puts a motion preset on layers in one call: every value of the effect is written (framer fills in its own otherwise: a hover scale of 1.1, a loop that spins, a scroll transform at half opacity), transitions are springs without bounce of the kind framer keeps there, and delays grow along nodeids. prefer it to writing effect attributes with design_apply. presets: fade-up (cards and blocks below the fold appear on scroll, one after another); hero-sequence (the first screen's heading, text and media appear on load, 0.1s apart); text-reveal (a heading appears word by word as it enters); hover-lift (a card or button rises 4px on hover); hover-fade (a link or image dims slightly on hover); press (a button gives way to 97% when pressed); float (a badge or illustration drifts up and down); pulse (a dot or badge breathes in scale); spin (a badge or mark turns slowly); scroll-grow (an image or section grows from 86% as it scrolls in); parallax (an image moves against the scroll inside a clipped frame (put it on the inner layer)); ticker (a stack of logos or words runs as a marquee, slower on hover); remove (removes the effects named in options.effects (all of them without it)). hover and press go on a plain layer or a layer inside a component, never on a variant or breakpoint root (framer refuses there). effects never run on the canvas or in screenshots: say so and check them in preview. undo takes a preset back. needs the project's server api key.">
+    <header>
+      <h4><a href="#effects_set">effects_set</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Set motion effects</p>
+    <p>Puts a motion preset on layers in one call: every value of the effect is written (Framer fills in its own otherwise: a hover scale of 1.1, a loop that spins, a scroll transform at half opacity), transitions are springs without bounce of the kind Framer keeps there, and delays grow along nodeIds. Prefer it to writing effect attributes with <a href="#design_apply"><code>design_apply</code></a>. Presets: fade-up (cards and blocks below the fold appear on scroll, one after another); hero-sequence (the first screen's heading, text and media appear on load, 0.1s apart); text-reveal (a heading appears word by word as it enters); hover-lift (a card or button rises 4px on hover); hover-fade (a link or image dims slightly on hover); press (a button gives way to 97% when pressed); float (a badge or illustration drifts up and down); pulse (a dot or badge breathes in scale); spin (a badge or mark turns slowly); scroll-grow (an image or section grows from 86% as it scrolls in); parallax (an image moves against the scroll inside a clipped frame (put it on the inner layer)); ticker (a stack of logos or words runs as a marquee, slower on hover); remove (removes the effects named in options.effects (all of them without it)). Hover and press go on a plain layer or a layer inside a component, never on a variant or breakpoint root (Framer refuses there). Effects never run on the canvas or in screenshots: say so and check them in Preview. Undo takes a preset back. Needs the project's Server API key.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>preset</code></th><td><code class="type">&quot;fade-up&quot; | &quot;hero-sequence&quot; | &quot;text-reveal&quot; | &quot;hover-lift&quot; | &quot;hover-fade&quot; | &quot;press&quot; | &quot;float&quot; | &quot;pulse&quot; | &quot;spin&quot; | &quot;scroll-grow&quot; | &quot;parallax&quot; | &quot;ticker&quot; | &quot;remove&quot;</code></td><td>The effect to put on the layers. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>nodeIds</code></th><td><code class="type">string[]</code></td><td>The layers, in the order they should move (delays grow along this list). <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>The page the layers are on. <span class="def">default <code>&quot;/&quot;</code></span></td></tr>
+      <tr><th scope="row"><code>options</code></th><td><code class="type">object</code></td><td> <span class="def">default <code>{}</code></span><ul class="fields"><li><code>delay</code> <code class="type">number</code> <span class="opt">optional</span> — Seconds before the first layer starts.</li><li><code>stagger</code> <code class="type">number</code> <span class="opt">optional</span> — Seconds between layers in order.</li><li><code>distance</code> <code class="type">number</code> <span class="opt">optional</span> — Pixels of travel.</li><li><code>duration</code> <code class="type">number</code> <span class="opt">optional</span> — Seconds the spring takes.</li><li><code>effects</code> <code class="type">&quot;appearEffect&quot; | &quot;hoverEffect&quot; | &quot;tapEffect&quot; | &quot;loopEffect&quot; | &quot;styleTransformEffect&quot; | &quot;textEffect&quot; | &quot;tickerEffect&quot; | &quot;parallaxEffect&quot; | &quot;scrollVariantEffect&quot;[]</code> <span class="opt">optional</span> — For &quot;remove&quot;: which effects to take off; all of them when omitted.</li></ul></td></tr>
+      </tbody>
+    </table></div>
+  </article>
   <article class="tool" id="text_replace" data-tool="text_replace Replace text replaces text inside text layers across the site's pages (or one page), through design_apply, so the journal can undo it. run it with dryrun first and show the user what changes. a replaced text keeps its text style, but formatting inside it (bold words, links in the text) becomes plain.">
     <header>
       <h4><a href="#text_replace">text_replace</a></h4>
       <span class="badge write">Changes</span>
-      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
     </header>
     <p class="tool-title">Replace text</p>
     <p>Replaces text inside text layers across the site's pages (or one page), through <a href="#design_apply"><code>design_apply</code></a>, so the journal can undo it. Run it with dryRun first and show the user what changes. A replaced text keeps its text style, but formatting inside it (bold words, links in the text) becomes plain.</p>
@@ -1299,7 +1317,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
     <header>
       <h4><a href="#localization_get">localization_get</a></h4>
       <span class="badge read">Reads</span>
-      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
     </header>
     <p class="tool-title">Read translations</p>
     <p>Lists translatable texts (pages, CMS items, components, site settings) with their default-locale text and the translation for one locale. missing: true lists only what still needs translating. Page through with offset.</p>
@@ -1319,7 +1337,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
     <header>
       <h4><a href="#localization_set">localization_set</a></h4>
       <span class="badge write">Changes</span>
-      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
     </header>
     <p class="tool-title">Write translations</p>
     <p>Writes translations for one locale by source id from <a href="#localization_get"><code>localization_get</code></a> (null clears one, so the fallback shows), and can mark groups ready or excluded for the locale. Keep the markup of formattedText sources (the HTML tags) and translate only the text. Undo does not restore translations yet: the previous values are in the result.</p>

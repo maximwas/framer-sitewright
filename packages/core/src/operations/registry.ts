@@ -20,6 +20,7 @@ import { fontsInLibrary } from "./fonts/in-library.ts";
 import { fontsSearch } from "./fonts/search.ts";
 import { historyRevert } from "./history/revert.ts";
 import { localesList, localizationGet, localizationSet } from "./localization/localization.ts";
+import { effectsSet } from "./motion/effects-set.ts";
 import { layoutAudit } from "./nodes/audit.ts";
 import { breakpointsAdd } from "./nodes/breakpoints.ts";
 import { nodesFind } from "./nodes/find.ts";
@@ -98,6 +99,7 @@ const OPERATIONS: readonly AnyOperation[] = [
   a11yAudit,
   contrastCheck,
   fontsInLibrary,
+  effectsSet,
 ];
 
 const byName = new Map(OPERATIONS.map((operation) => [operation.name, operation]));
