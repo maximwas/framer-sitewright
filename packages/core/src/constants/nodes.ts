@@ -39,3 +39,21 @@ export const REDIRECTS_UNDO_NOTE = "Undo does not restore redirects yet; the pre
 /** Deployments deployments_list returns by default, and at most. */
 export const DEPLOYMENTS_LIMIT = 10;
 export const DEPLOYMENTS_LIMIT_MAX = 50;
+
+/** How many nodes one nodes_read call takes in nodeIds. */
+export const NODES_READ_MAX_IDS = 50;
+
+/** How many of those are read at once. */
+export const NODES_READ_BULK_CONCURRENCY = 8;
+
+/** How nodes_query compares an attribute with a value. */
+export const QUERY_OPERATORS = ["equals", "contains", "lessThan", "greaterThan", "exists", "notExists"] as const;
+
+/** How many conditions one nodes_query call takes; a layer must meet all of them. */
+export const QUERY_CONDITIONS_MAX = 10;
+
+/**
+ * How long selection_wait waits for the user to pick something: under the server's 30 s deadline for one plugin call.
+ */
+export const SELECTION_WAIT_MAX_SECONDS = 25;
+export const SELECTION_WAIT_DEFAULT_SECONDS = 20;

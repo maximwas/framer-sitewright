@@ -483,6 +483,26 @@ export interface FramerPort {
   /** The layers selected in the editor. Only the plugin has a selection; the Server API lacks the method. */
   getSelection?(): Promise<readonly { readonly id: string; readonly name?: string | null }[]>;
   setParent(nodeId: string, parentId: string, index?: number): Promise<void>;
+  /** The signed-in Framer user. */
+  getCurrentUser?(): Promise<{
+    readonly name: string;
+    readonly initials?: string;
+    readonly avatarUrl?: string | undefined;
+  }>;
+  /** Editor only (the plugin): selects layers on the canvas. */
+  setSelection?(nodeIds: string[]): Promise<void>;
+  /** Editor only: scrolls to a layer, a page or a CMS item, selecting and zooming as asked. */
+  navigateTo?(nodeId: string, options?: { select?: boolean; zoomIntoView?: boolean }): Promise<void>;
+  /** Editor only: zooms the canvas to fit the layers. */
+  zoomIntoView?(nodeIds: string[]): Promise<void>;
+  /** Editor only: calls back with the selection whenever it changes; returns the unsubscribe. */
+  subscribeToSelection?(
+    update: (nodes: readonly { readonly id: string; readonly name?: string | null }[]) => void,
+  ): () => void;
+  /** Editor only: the project's plugin data (this plugin's own keys). */
+  getPluginData?(key: string): Promise<string | null>;
+  setPluginData?(key: string, value: string | null): Promise<void>;
+  getPluginDataKeys?(): Promise<string[]>;
   getCustomCode(): Promise<
     Readonly<Record<CustomCodeLocation, { readonly disabled: boolean; readonly html: string | null }>>
   >;

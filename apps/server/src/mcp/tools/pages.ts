@@ -2,6 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/server";
 import {
   deploymentsList,
   nodesFind,
+  nodesQuery,
   pagesCreate,
   pagesDelete,
   pagesDuplicate,
@@ -44,6 +45,12 @@ export function registerPageTools(server: McpServer, context: ToolContext): void
     title: "Find layers",
     description:
       "Finds layers across the site's pages (or one page) by part of their name or text, and/or by type, on each page's main breakpoint. Returns their ids for nodes_read and design_apply.",
+  });
+  addOperationTool(server, context, nodesQuery, {
+    name: "nodes_query",
+    title: "Query layers by attributes",
+    description:
+      'Finds layers across the site\'s pages (or one page) whose DSL attributes meet every condition, e.g. all text smaller than 14px, every frame with an image fill, links with no link style: [{ attribute: "opacity", op: "lessThan", value: "1" }]. Operators: equals, contains, lessThan, greaterThan (numbers compare as numbers, 16px is 16), exists, notExists. Returns each layer with its page and the attributes the conditions name; change them with design_apply. Attributes are read as the Plugin API gives them, on each page\'s main breakpoint.',
   });
 
   addOperationTool(server, context, textReplace, {

@@ -34,4 +34,24 @@ describe("nodes.read", () => {
     await expect(runOperation(nodesRead, { runtime }, { format: "json" })).resolves.toMatchObject({ node: tree });
     await expect(runOperation(nodesRead, { runtime }, { nodeId: "x" })).rejects.toThrow(/Lower depth/);
   });
+
+  it("reads several nodes in one call and lists the ids it cannot find instead of failing", async () => {
+    const { runtime } = createFakeRuntime({
+      serializedNodes: {
+        a: {
+          type: "FrameNode",
+          id: "a",
+        },
+        b: {
+          type: "RichTextNode",
+          id: "b",
+        },
+      },
+    });
+
+    await expect(runOperation(nodesRead, { runtime }, { nodeIds: ["a", "gone", "b"] })).resolves.toMatchObject({
+      xml: '<FrameNode id="a" />\n<RichTextNode id="b" />',
+      missing: ["gone"],
+    });
+  });
 });

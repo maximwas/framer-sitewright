@@ -51,7 +51,9 @@ export type PluginPermission =
   | "addRedirects"
   | "removeRedirects"
   | "setRedirectOrder"
-  | "publish";
+  | "publish"
+  | "setPluginData"
+  | "Node.setPluginData";
 
 /** A unit of work with typed input and output that runs wherever the `framer` object lives. */
 export interface Operation<I extends z.ZodObject, O extends z.ZodObject> {

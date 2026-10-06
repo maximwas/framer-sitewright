@@ -489,7 +489,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
           <p class="search-empty" hidden>No tool matches.</p>
 <!-- tools:start -->
 <section class="tool-group" id="project" data-group>
-  <h3>Project and connection <span>8</span></h3>
+  <h3>Project and connection <span>15</span></h3>
   <p class="group-intro">Where the agent starts: which project is open, how it is reached, and publishing when you ask.</p>
   <article class="tool" id="framer_status" data-tool="framer_status Framer connection status shows the active transport (server api or the framer plugin), whether each one is configured and connected, what to do if not, the projects with a saved server api key (framer_connect { project } switches between them), and what the project's framer plan allows. call it when a framer tool fails.">
     <header>
@@ -538,6 +538,111 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
     <p>Returns the layers the user selected in the Framer editor (ids and names). Call it when the user says &quot;this&quot;, &quot;the selected one&quot; or &quot;what I picked&quot;, then read those ids with <a href="#nodes_read"><code>nodes_read</code></a> and change them with <a href="#design_apply"><code>design_apply</code></a>. Works through the Sitewright plugin only, open in this project.</p>
     <p class="no-params">No parameters.</p>
   </article>
+  <article class="tool" id="selection_wait" data-tool="selection_wait Wait for the user to pick layers waits (up to 25 s) for the user to select something new on the canvas and returns it: ask them to click the layer they mean, then call this. timedout true means nothing new was picked in time; ask again or use selection_get. works through the sitewright plugin only, open in this project.">
+    <header>
+      <h4><a href="#selection_wait">selection_wait</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-editor" title="Runs in the open editor, through the plugin">Plugin only</span>
+    </header>
+    <p class="tool-title">Wait for the user to pick layers</p>
+    <p>Waits (up to 25 s) for the user to select something new on the canvas and returns it: ask them to click the layer they mean, then call this. timedOut true means nothing new was picked in time; ask again or use <a href="#selection_get"><code>selection_get</code></a>. Works through the Sitewright plugin only, open in this project.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>seconds</code></th><td><code class="type">number</code></td><td>How long to wait for the user to select something new. <span class="def">default <code>20</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="nodes_select" data-tool="nodes_select Select layers in the editor selects layers on the framer canvas, to show the user what you changed or are about to change; [] clears the selection. works through the sitewright plugin only, open in this project.">
+    <header>
+      <h4><a href="#nodes_select">nodes_select</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-editor" title="Runs in the open editor, through the plugin">Plugin only</span>
+    </header>
+    <p class="tool-title">Select layers in the editor</p>
+    <p>Selects layers on the Framer canvas, to show the user what you changed or are about to change; [] clears the selection. Works through the Sitewright plugin only, open in this project.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>nodeIds</code></th><td><code class="type">string[]</code></td><td>The layers to select on the canvas; [] clears the selection. <span class="req">required</span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="node_show" data-tool="node_show Show a layer in the editor scrolls the framer editor to a layer, a page or a cms item, selecting it and zooming to it unless told not to: the way to point the user at a spot. works through the sitewright plugin only, open in this project.">
+    <header>
+      <h4><a href="#node_show">node_show</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-editor" title="Runs in the open editor, through the plugin">Plugin only</span>
+    </header>
+    <p class="tool-title">Show a layer in the editor</p>
+    <p>Scrolls the Framer editor to a layer, a page or a CMS item, selecting it and zooming to it unless told not to: the way to point the user at a spot. Works through the Sitewright plugin only, open in this project.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>A layer, a page or a CMS item. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>select</code></th><td><code class="type">boolean</code></td><td>Select it after scrolling to it. <span class="def">default <code>true</code></span></td></tr>
+      <tr><th scope="row"><code>zoom</code></th><td><code class="type">boolean</code></td><td>Zoom and center the canvas on it. <span class="def">default <code>true</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="nodes_zoom" data-tool="nodes_zoom Zoom to layers zooms the framer canvas so the layers fit on screen, without selecting them. works through the sitewright plugin only, open in this project.">
+    <header>
+      <h4><a href="#nodes_zoom">nodes_zoom</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-editor" title="Runs in the open editor, through the plugin">Plugin only</span>
+    </header>
+    <p class="tool-title">Zoom to layers</p>
+    <p>Zooms the Framer canvas so the layers fit on screen, without selecting them. Works through the Sitewright plugin only, open in this project.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>nodeIds</code></th><td><code class="type">string[]</code></td><td>The layers to fit on screen, without selecting them. <span class="req">required</span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="framer_user" data-tool="framer_user Who is signed in the framer user the connection works as: name, initials and avatar.">
+    <header>
+      <h4><a href="#framer_user">framer_user</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Who is signed in</p>
+    <p>The Framer user the connection works as: name, initials and avatar.</p>
+    <p class="no-params">No parameters.</p>
+  </article>
+  <article class="tool" id="plugin_data_get" data-tool="plugin_data_get Read plugin data reads the small notes sitewright keeps in the project or on a layer (plugin data): one key, or every key with its value. only this plugin's own data. works through the sitewright plugin only, open in this project.">
+    <header>
+      <h4><a href="#plugin_data_get">plugin_data_get</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-editor" title="Runs in the open editor, through the plugin">Plugin only</span>
+    </header>
+    <p class="tool-title">Read plugin data</p>
+    <p>Reads the small notes Sitewright keeps in the project or on a layer (plugin data): one key, or every key with its value. Only this plugin's own data. Works through the Sitewright plugin only, open in this project.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>A layer; omit for the project itself.</td></tr>
+      <tr><th scope="row"><code>key</code></th><td><code class="type">string</code></td><td>One key; omit to list every key with its value.</td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="plugin_data_set" data-tool="plugin_data_set Write plugin data keeps a small note in the project or on a layer as plugin data (framer allows 2 kb a key, 4 kb in all); null deletes the key. it never shows on the site: use it for state between sessions, e.g. when a sync last ran. works through the sitewright plugin only, open in this project.">
+    <header>
+      <h4><a href="#plugin_data_set">plugin_data_set</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-editor" title="Runs in the open editor, through the plugin">Plugin only</span>
+    </header>
+    <p class="tool-title">Write plugin data</p>
+    <p>Keeps a small note in the project or on a layer as plugin data (Framer allows 2 KB a key, 4 KB in all); null deletes the key. It never shows on the site: use it for state between sessions, e.g. when a sync last ran. Works through the Sitewright plugin only, open in this project.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>A layer; omit for the project itself.</td></tr>
+      <tr><th scope="row"><code>key</code></th><td><code class="type">string</code></td><td> <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>value</code></th><td><code class="type">string | null</code></td><td>The text to keep (Framer allows 2 KB a key, 4 KB in all); null deletes the key. <span class="req">required</span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
   <article class="tool" id="publish_status" data-tool="publish_status Publish status where the site is published (production and staging urls, when) and which pages changed since the last publish. publish with project_publish, only when the user asks.">
     <header>
       <h4><a href="#publish_status">publish_status</a></h4>
@@ -585,7 +690,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="design-system" data-group>
-  <h3>Design system <span>12</span></h3>
+  <h3>Design system <span>13</span></h3>
   <p class="group-intro">Color tokens with light and dark values, and text styles with their sizes per breakpoint.</p>
   <article class="tool" id="color_tokens_list" data-tool="color_tokens_list List color tokens lists framer color styles (tokens) as { id, path, light, dark }. path uses &quot;/&quot; folders like &quot;brand/primary&quot;.">
     <header>
@@ -784,9 +889,24 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
+  <article class="tool" id="fonts_used" data-tool="fonts_used Fonts in use lists every font family the project uses, with its weights and styles, the text styles that set it and how many layers carry it inline (on each page's main breakpoint): what to check before a font swap or a license question.">
+    <header>
+      <h4><a href="#fonts_used">fonts_used</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Fonts in use</p>
+    <p>Lists every font family the project uses, with its weights and styles, the text styles that set it and how many layers carry it inline (on each page's main breakpoint): what to check before a font swap or a license question.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>Look at one page's layers; omit for every web page.</td></tr>
+      </tbody>
+    </table></div>
+  </article>
 </section>
 <section class="tool-group" id="pages" data-group>
-  <h3>Pages, layout and redirects <span>16</span></h3>
+  <h3>Pages, layout and redirects <span>18</span></h3>
   <p class="group-intro">Create, duplicate and delete pages, read one as XML, find layers and replace text across pages, read and set the site's and pages' titles, descriptions, images and search settings, change pages and their motion, check what looks broken, adapt them to tablet and phone, look at them and at a reference, and redirect old paths.</p>
   <article class="tool" id="page_create" data-tool="page_create Create a page creates an empty web page at a path (&quot;/about&quot;) or a design page (a canvas for drafts) by name. build its content with design_apply; add breakpoints with breakpoints_add. undo does not remove pages.">
     <header>
@@ -839,18 +959,19 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="nodes_read" data-tool="nodes_read Read nodes reads a node (or the page root) with its children to a given depth, as xml by default: tags are node types, attributes are ids, names and dsl attributes, $-attributes are read-only metadata. blocks and runs of a rich text show no id: theirs follow from position (v:&lt;text id&gt;:&lt;n&gt;, then :&lt;m&gt;). edit the xml and send it back with design_apply xml. format &quot;json&quot; returns raw serialize(). keep depth low and filter attributes on big pages. without a server api key it reads through the plugin api: the same xml with fewer attributes, and the plain text of a rich text instead of blocks and runs.">
+  <article class="tool" id="nodes_read" data-tool="nodes_read Read nodes reads a node (or the page root, or up to 50 nodes at once with nodeids) with its children to a given depth, as xml by default: tags are node types, attributes are ids, names and dsl attributes, $-attributes are read-only metadata. blocks and runs of a rich text show no id: theirs follow from position (v:&lt;text id&gt;:&lt;n&gt;, then :&lt;m&gt;). edit the xml and send it back with design_apply xml. format &quot;json&quot; returns raw serialize(). keep depth low and filter attributes on big pages. without a server api key it reads through the plugin api: the same xml with fewer attributes, and the plain text of a rich text instead of blocks and runs.">
     <header>
       <h4><a href="#nodes_read">nodes_read</a></h4>
       <span class="badge read">Reads</span>
       <span class="badge needs-partial" title="Works without a key; a Server API key adds more">Plugin · more with a key</span>
     </header>
     <p class="tool-title">Read nodes</p>
-    <p>Reads a node (or the page root) with its children to a given depth, as XML by default: tags are node types, attributes are ids, names and DSL attributes, $-attributes are read-only metadata. Blocks and runs of a rich text show no id: theirs follow from position (v:&lt;text id&gt;:&lt;n&gt;, then :&lt;m&gt;). Edit the XML and send it back with <a href="#design_apply"><code>design_apply</code></a> xml. format &quot;json&quot; returns raw serialize(). Keep depth low and filter attributes on big pages. Without a Server API key it reads through the Plugin API: the same XML with fewer attributes, and the plain text of a rich text instead of blocks and runs.</p>
+    <p>Reads a node (or the page root, or up to 50 nodes at once with nodeIds) with its children to a given depth, as XML by default: tags are node types, attributes are ids, names and DSL attributes, $-attributes are read-only metadata. Blocks and runs of a rich text show no id: theirs follow from position (v:&lt;text id&gt;:&lt;n&gt;, then :&lt;m&gt;). Edit the XML and send it back with <a href="#design_apply"><code>design_apply</code></a> xml. format &quot;json&quot; returns raw serialize(). Keep depth low and filter attributes on big pages. Without a Server API key it reads through the Plugin API: the same XML with fewer attributes, and the plain text of a rich text instead of blocks and runs.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
       <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>Node id. Omit to read the page root of pagePath.</td></tr>
+      <tr><th scope="row"><code>nodeIds</code></th><td><code class="type">string[]</code></td><td>Several nodes in one call instead of nodeId: their XML one after another; ids not found go to missing.</td></tr>
       <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>Page path, e.g. &quot;/&quot; or &quot;/about&quot;. <span class="def">default <code>&quot;/&quot;</code></span></td></tr>
       <tr><th scope="row"><code>depth</code></th><td><code class="type">number</code></td><td>How many child levels to include. <span class="def">default <code>2</code></span></td></tr>
       <tr><th scope="row"><code>attributes</code></th><td><code class="type">string[]</code></td><td>Only these attributes, e.g. [&quot;fill&quot;, &quot;layout&quot;, &quot;$rect&quot;]. [] returns structure only.</td></tr>
@@ -871,6 +992,24 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <tbody>
       <tr><th scope="row"><code>query</code></th><td><code class="type">string</code></td><td>Part of a layer's name or text, in any case.</td></tr>
       <tr><th scope="row"><code>type</code></th><td><code class="type">string</code></td><td>Only layers of this type, e.g. &quot;RichTextNode&quot;, &quot;FrameNode&quot;, &quot;ComponentInstanceNode&quot;.</td></tr>
+      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>One page; omit to look through every web page.</td></tr>
+      <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>50</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="nodes_query" data-tool="nodes_query Query layers by attributes finds layers across the site's pages (or one page) whose dsl attributes meet every condition, e.g. all text smaller than 14px, every frame with an image fill, links with no link style: [{ attribute: &quot;opacity&quot;, op: &quot;lessthan&quot;, value: &quot;1&quot; }]. operators: equals, contains, lessthan, greaterthan (numbers compare as numbers, 16px is 16), exists, notexists. returns each layer with its page and the attributes the conditions name; change them with design_apply. attributes are read as the plugin api gives them, on each page's main breakpoint.">
+    <header>
+      <h4><a href="#nodes_query">nodes_query</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Query layers by attributes</p>
+    <p>Finds layers across the site's pages (or one page) whose DSL attributes meet every condition, e.g. all text smaller than 14px, every frame with an image fill, links with no link style: [{ attribute: &quot;opacity&quot;, op: &quot;lessThan&quot;, value: &quot;1&quot; }]. Operators: equals, contains, lessThan, greaterThan (numbers compare as numbers, 16px is 16), exists, notExists. Returns each layer with its page and the attributes the conditions name; change them with <a href="#design_apply"><code>design_apply</code></a>. Attributes are read as the Plugin API gives them, on each page's main breakpoint.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>where</code></th><td><code class="type">object[]</code></td><td>A layer must meet every condition. <span class="req">required</span><ul class="fields"><li><code>attribute</code> <code class="type">string</code> — A DSL attribute as nodes_read shows it, e.g. &quot;opacity&quot;, &quot;fill&quot;, &quot;link&quot;, &quot;textStylePreset&quot;.</li><li><code>op</code> <code class="type">&quot;equals&quot; | &quot;contains&quot; | &quot;lessThan&quot; | &quot;greaterThan&quot; | &quot;exists&quot; | &quot;notExists&quot;</code></li><li><code>value</code> <code class="type">string</code> <span class="opt">optional</span> — What to compare with, not for exists and notExists. Numbers compare as numbers (16px is 16).</li></ul></td></tr>
+      <tr><th scope="row"><code>type</code></th><td><code class="type">string</code></td><td>Only layers of this type, e.g. &quot;FrameNode&quot;, &quot;RichTextNode&quot;.</td></tr>
       <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>One page; omit to look through every web page.</td></tr>
       <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>50</code></span></td></tr>
       </tbody>
@@ -990,6 +1129,21 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <tbody>
       <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>Page to add them to, e.g. &quot;/&quot;. <span class="def">default <code>&quot;/&quot;</code></span></td></tr>
       <tr><th scope="row"><code>breakpoints</code></th><td><code class="type">object[]</code></td><td>E.g. [{ &quot;name&quot;: &quot;Tablet&quot;, &quot;width&quot;: 810 }, { &quot;name&quot;: &quot;Phone&quot;, &quot;width&quot;: 390 }]. <span class="req">required</span><ul class="fields"><li><code>name</code> <code class="type">string</code> — Shown on the frame, e.g. &quot;Tablet&quot; or &quot;Phone&quot;.</li><li><code>width</code> <code class="type">number</code> — Window width in px where the breakpoint starts, e.g. 810 for tablets and 390 for phones.</li></ul></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="breakpoints_suggest" data-tool="breakpoints_suggest Suggest breakpoints lists the breakpoints framer suggests for a web page that it does not have yet (usually tablet 810 and phone 390), with their widths: check before breakpoints_add.">
+    <header>
+      <h4><a href="#breakpoints_suggest">breakpoints_suggest</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Suggest breakpoints</p>
+    <p>Lists the breakpoints Framer suggests for a web page that it does not have yet (usually Tablet 810 and Phone 390), with their widths: check before <a href="#breakpoints_add"><code>breakpoints_add</code></a>.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>The web page, e.g. &quot;/about&quot;. <span class="def">default <code>&quot;/&quot;</code></span></td></tr>
       </tbody>
     </table></div>
   </article>
@@ -1162,7 +1316,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="assets" data-group>
-  <h3>Components and assets <span>12</span></h3>
+  <h3>Components and assets <span>13</span></h3>
   <p class="group-intro">Components and their controls, components from the Marketplace, icon sets, stock photos, your own images, files and SVG.</p>
   <article class="tool" id="components_read" data-tool="components_read Read components lists the project's components with their exact controls ($control__variant options, $control__&lt;name&gt; for each variable) before you place or change instances. control names are the ones listed here, e.g. $control__showicon; do not derive them from variable names. code components are listed in codecomponents and framer's own (video, google maps, embed, slideshow, carousel, countdown, cookie banner, search…) in framer: place any of them with +componentinstancenode component=&quot;&lt;id&gt;&quot;, and pass its id in ids to read its controls first. needs the project's server api key (framer_status shows whether it is set).">
     <header>
@@ -1240,6 +1394,22 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
       <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>The instance of a project component (ComponentInstanceNode) to replace with its layers. <span class="req">required</span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="component_instances" data-tool="component_instances Find a component's instances lists every instance of one component across the site's pages (or one page), each with its id, name and page: what a change to the component reaches, or which placements to tune with component_controls_set. pass the component's id from components_read or its name (&quot;content/card&quot;).">
+    <header>
+      <h4><a href="#component_instances">component_instances</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Find a component's instances</p>
+    <p>Lists every instance of one component across the site's pages (or one page), each with its id, name and page: what a change to the component reaches, or which placements to tune with <a href="#component_controls_set"><code>component_controls_set</code></a>. Pass the component's id from <a href="#components_read"><code>components_read</code></a> or its name (&quot;Content/Card&quot;).</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>component</code></th><td><code class="type">string</code></td><td>The component's id (components_read lists it) or its name, e.g. &quot;Content/Card&quot;. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>One page; omit to look through every web page.</td></tr>
       </tbody>
     </table></div>
   </article>

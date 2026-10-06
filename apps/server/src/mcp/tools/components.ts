@@ -3,6 +3,7 @@ import {
   componentControlsSet,
   componentDetach,
   componentInsert,
+  componentInstances,
   componentMakeLocal,
   componentsRead,
 } from "@sitewright/core";
@@ -10,6 +11,12 @@ import type { ToolContext } from "../../types/mcp.ts";
 import { addOperationTool } from "../add-tool.ts";
 
 export function registerComponentTools(server: McpServer, context: ToolContext): void {
+  addOperationTool(server, context, componentInstances, {
+    name: "component_instances",
+    title: "Find a component's instances",
+    description:
+      "Lists every instance of one component across the site's pages (or one page), each with its id, name and page: what a change to the component reaches, or which placements to tune with component_controls_set. Pass the component's id from components_read or its name (\"Content/Card\").",
+  });
   addOperationTool(server, context, componentsRead, {
     name: "components_read",
     title: "Read components",

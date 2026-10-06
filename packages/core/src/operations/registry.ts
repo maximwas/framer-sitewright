@@ -17,10 +17,13 @@ import { componentsRead } from "./components/components-read.ts";
 import { componentControlsSet } from "./components/controls-set.ts";
 import { componentDetach } from "./components/detach.ts";
 import { componentInsert } from "./components/insert.ts";
+import { componentInstances } from "./components/instances.ts";
 import { componentMakeLocal } from "./components/make-local.ts";
 import { designApply } from "./design/apply.ts";
+import { editorNavigate, editorSelect, editorZoom, selectionWait } from "./editor/editor.ts";
 import { fontsInLibrary } from "./fonts/in-library.ts";
 import { fontsSearch } from "./fonts/search.ts";
+import { fontsUsed } from "./fonts/used.ts";
 import { historyRevert } from "./history/revert.ts";
 import { linkStylesDelete } from "./link-styles/delete.ts";
 import { linkStylesList } from "./link-styles/list.ts";
@@ -29,11 +32,14 @@ import { localeAdd, localesList, localizationGet, localizationSet } from "./loca
 import { effectsSet } from "./motion/effects-set.ts";
 import { layoutAudit } from "./nodes/audit.ts";
 import { breakpointsAdd } from "./nodes/breakpoints.ts";
+import { breakpointsSuggest } from "./nodes/breakpoints-suggest.ts";
 import { nodesFind } from "./nodes/find.ts";
+import { nodesQuery } from "./nodes/query.ts";
 import { nodesRead } from "./nodes/read.ts";
 import { selectionGet } from "./nodes/selection.ts";
 import { textReplace } from "./nodes/text-replace.ts";
 import { pagesCreate, pagesDelete, pagesDuplicate } from "./pages/pages.ts";
+import { pluginDataGet, pluginDataSet } from "./plugin-data/plugin-data.ts";
 import { projectCapabilities } from "./project/capabilities.ts";
 import { projectEditorUrl } from "./project/editor-url.ts";
 import { projectInfo } from "./project/info.ts";
@@ -41,6 +47,7 @@ import { projectOverview } from "./project/overview.ts";
 import { projectPublish } from "./project/publish.ts";
 import { publishPreview } from "./project/publish-preview.ts";
 import { deploymentsList, publishStatus } from "./project/publish-status.ts";
+import { currentUser } from "./project/user.ts";
 import { redirectsList, redirectsSet } from "./redirects/redirects.ts";
 import { a11yAudit, contrastCheck, imagesCheck, linksCheck, seoAudit } from "./site/checks.ts";
 import { referenceScreenshot } from "./site/reference-screenshot.ts";
@@ -82,6 +89,7 @@ export const OPERATIONS: readonly AnyOperation[] = [
   svgAdd,
   iconsSearch,
   componentsRead,
+  componentInstances,
   componentControlsSet,
   componentInsert,
   componentMakeLocal,
@@ -106,6 +114,16 @@ export const OPERATIONS: readonly AnyOperation[] = [
   pagesCreate,
   pagesDelete,
   nodesFind,
+  nodesQuery,
+  breakpointsSuggest,
+  editorSelect,
+  editorNavigate,
+  editorZoom,
+  selectionWait,
+  pluginDataGet,
+  pluginDataSet,
+  currentUser,
+  fontsUsed,
   textReplace,
   redirectsList,
   redirectsSet,
