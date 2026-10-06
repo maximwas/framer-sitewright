@@ -101,40 +101,24 @@
   --color-sw-danger-soft: var(--sw-danger-soft);
   --shadow-sw: var(--sw-shadow);
   --animate-sw-pulse: sw-pulse 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
-  --animate-sw-comet: sw-comet 2.8s cubic-bezier(0.45, 0, 0.25, 1) infinite;
-  --animate-sw-arrive: sw-arrive 2.8s cubic-bezier(0.2, 0.7, 0.3, 1) infinite;
+  --animate-sw-sheen: sw-sheen 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-/* A request crossing one line of the flow in the first half of the cycle, then waiting for the other line. */
-@keyframes sw-comet {
+/* A soft light passing along a live line of the flow, then a rest before the next pass. */
+@keyframes sw-sheen {
   0% {
-    left: 0;
+    transform: translateX(-100%);
     opacity: 0;
   }
 
-  10%,
-  40% {
+  12% {
     opacity: 1;
   }
 
-  50%,
+  55%,
   100% {
-    left: calc(100% - 2rem);
+    transform: translateX(250%);
     opacity: 0;
-  }
-}
-
-/* A ring opening on the tile the request reaches. */
-@keyframes sw-arrive {
-  0% {
-    opacity: 0.9;
-    transform: scale(1);
-  }
-
-  30%,
-  100% {
-    opacity: 0;
-    transform: scale(1.4);
   }
 }
 
@@ -153,8 +137,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .animate-sw-pulse,
-  .animate-sw-comet,
-  .animate-sw-arrive {
+  .animate-sw-sheen {
     animation: none;
   }
 }

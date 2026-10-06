@@ -81,15 +81,15 @@ export const STOPPED_COPY: StatusCopy = {
   tone: "neutral",
 };
 
-/** The links the plugin's window draws, from Claude Code to this project. */
-/** How long a request takes along one line of the flow; the whole run (two lines) repeats every two steps. */
-export const FLOW_STEP_SECONDS = 1.4;
+/** How far behind the first line's sheen the second one starts, so the light passes from Claude Code to the project. */
+export const FLOW_SHEEN_DELAY_SECONDS = 0.5;
 
-/** The streak a request leaves along a line: fading in from behind, bright at its head, with a glow. */
-export const FLOW_COMET_STYLE = {
-  background: "linear-gradient(90deg, transparent, var(--sw-accent))",
-  boxShadow: "0 0 10px 1px color-mix(in srgb, var(--sw-accent) 55%, transparent)",
+/** The soft light that sweeps along a live line. */
+export const FLOW_SHEEN_STYLE = {
+  background: "linear-gradient(90deg, transparent, color-mix(in srgb, var(--sw-accent) 70%, transparent), transparent)",
 } as const;
+
+/** The links the plugin's window draws, from Claude Code to this project. */
 
 export const FLOW_NODES: readonly FlowNode[] = [
   {
