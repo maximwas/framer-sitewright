@@ -18,7 +18,7 @@ cleanup) are the only places to step outside the DSL.
   shows no color. Take ids from `renamedIds` or the project's tokens; never type them.
 - **A surface that keeps its color in both themes** (a paper ticket, a label, a receipt, a brand-colored band) needs
   text tokens that also keep theirs: give its ink the same light and dark value. A shared ink token turns light on it
-  in the dark theme (seen; Framer's linter flags the contrast).
+  in the dark theme, and Framer's linter flags the contrast.
 - **Dark values apply only through the visitor's system theme** (`prefers-color-scheme`): Framer has no theme switch
   and no action that changes the theme. A switch needs a code override that writes the tokens' values on
   `document.body` (code, so only when the user asks, and every new token must be added to it). Screenshots show the
@@ -58,15 +58,14 @@ cleanup) are the only places to step outside the DSL.
 
 - **Check that a font exists before using it:** the project inventory lists the project's fonts, and the reference's
   `font-search` query finds library fonts. If Framer has no such font, tell the user where to get it; they upload it.
-- **Check the script and the signs before the look.** Framer draws a missing glyph in another face without a warning
-  (seen: ₴ in Sofia Sans, which has full Cyrillic, came out wider and bolder). Check every letter the site's languages
-  use (Ukrainian ґ є і ї) and every sign the copy uses (₴, №, °, ±, →) in the specimen, then on a screenshot of real
-  copy. Write prices with a code (UAH, EUR) when the face lacks the sign. Satoshi, General Sans, Switzer and Instrument
+- **Check the script and the signs before the look.** Framer draws a missing glyph in another face without a warning,
+  and a family with full Cyrillic can still lack a sign such as ₴. Check every letter the site's languages use
+  (Ukrainian ґ є і ї) and every sign the copy uses (₴, №, °, ±, →) in the specimen, then on a screenshot of real copy. Write prices with a code (UAH, EUR) when the face lacks the sign. Satoshi, General Sans, Switzer and Instrument
   Sans have no Cyrillic, nor does any of Fontshare's closed-source families; about 294 of 1,950 Google families do.
 - **`font-search` by `query` spends the workspace's AI credits.** Without them it fails with "workspace AI credit
   balance exhausted". Search by `name` (`{ type: "font-search", name: "Geist" }`) still works.
-- **The DSL sometimes refuses a library family that font search lists** ("No available font variant"; seen with Inter
-  Tight). Set it through the plugin API:
+- **The DSL sometimes refuses a library family that font search lists** ("No available font variant"). Set it through
+  the plugin API:
 
   ```js
   const style = (await framer.getTextStyles()).find((s) => s.path === "/Heading 1");
@@ -75,7 +74,7 @@ cleanup) are the only places to step outside the DSL.
   ```
 
 - **Fonts uploaded to the project work through the DSL** (`fontName`). A weight the project lacks is swapped silently
-  (Sofia Pro 300 became 400). Read the style back and tell the user which weight file to upload.
+  for another (a missing 300 renders as 400). Read the style back and tell the user which weight file to upload.
 - **Fonts that sit high** (Sofia Pro capitals):
   - in a button, put the label in a wrapper with `padding-top` of about 4px, and keep the button's own padding
     symmetric;

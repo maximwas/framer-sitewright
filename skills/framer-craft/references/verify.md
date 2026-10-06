@@ -16,7 +16,7 @@
   - a non-primary variant that holds a Repeat shows the first item in every row, while the same variant renders
     correctly on an instance: judge Repeat lists on a page instance.
 
-  Check those on the published or preview site in a browser.
+  Check those in a real browser (Behaviour in a real browser, below).
 - **Stale lint:** right after creating, moving or overriding nodes (big replica overrides, a breakpoint set to
   `height="auto"`, an Open variant with `height="auto"`), Framer's linter judges old sizes: "Visible siblings… too
   close" with negative spacing (even between sections that are not neighbours), "Text sits at the bottom edge of a
@@ -41,8 +41,8 @@
 Read these back after writing:
 
 - **An attribute or effect field Framer does not know is accepted and ignored**, and the batch still reports
-  "applied cleanly": `borderRadius="999px"` left the corners square, because the name is `radius`; seen with effect
-  fields too (`appearEffect.direction`, `scrollVariantEffect.variant`, `scrollVariantEffect.transition`,
+  "applied cleanly": `borderRadius="999px"` leaves the corners square, because the name is `radius`; effect fields
+  too (`appearEffect.direction`, `scrollVariantEffect.variant`, `scrollVariantEffect.transition`,
   `tickerEffect.transition`). Copy attribute names from a read of a similar node or from Framer's reference, never from
   CSS, and read every effect back after writing it.
 - **Springs** in variant transitions and appear effects (see [motion.md](motion.md)).
@@ -71,23 +71,19 @@ Read these back after writing:
   repeat a create, or the nodes duplicate.
 - **Deleted nodes:** their descendants can still be read through `serializeNodes`, under their old parents.
 
-## What a buyer saw in a finished template
+## Behaviour in a real browser
 
-From the review of a template that looked done in the editor (06.10.2026). Check each before handover:
+A screenshot shows one state of the canvas, where no effect runs; it never proves how something moves or responds.
+For every part with a states list ([motion.md](motion.md), States first), open the published site (or Preview) in a
+real browser and go through every row: first load, each step and the steps already done, the loop back to the start,
+the interrupted paths, touch and mouse, reduced motion. A browser MCP such as Playwright, when you have one, can script
+it (a phone width with touch, `prefers-reduced-motion`); without one, ask the user to go through the list. Then, on
+every breakpoint:
 
-- Tap every link of the open phone menu: the menu closes and the section shows below the header
-  ([sections.md](sections.md)).
-- Section links scroll smoothly and stop below the sticky header: `link.smoothScroll` on every link frame (inside
-  button and nav link components too) and `scrollMarginTop` on each target.
-- Scroll to the very bottom at every breakpoint: an appear with a `y` offset inside a clipped block at the end of the
-  page (a footer wordmark) never reached its threshold on tablet and phone and stayed invisible. Use opacity only there.
-- Marketplace sliders: `stackOffset` leaves slivers at the edge and the transition defaults to a tween: offset 0
-  unless a stack is meant, a spring, slides sized so the next one peeks to the content edge, one height for all.
-- No instructions for the buyer in the page copy: they go on the guide page ([marketplace-template.md](marketplace-template.md)).
-- Hover states and a pointer cursor only on clickable layers.
-- Button labels: white on a bright accent failed AA (3.47:1 on #F0561D): check every button variant's contrast.
-- Client logos as grey company names read as placeholders: draw fictional SVG wordmarks.
-- The same person in two different photos: look at all photos on one contact sheet.
-- In a hero reel switched by variants, every clip loads and plays: `$control__playing="false"` on hidden clips, a
-  poster on each, one clip or the poster on phones.
-- Bars that grow by `scale` get thinner: slide them out of a clipped track ([scroll.md](scroll.md)).
+- scroll every page to its very end: no layer stays invisible, nothing scrolls sideways;
+- use every link once: section links land with their heading below the sticky header ([sections.md](sections.md),
+  Navigation), and a link inside something that opens also closes it;
+- only clickable layers react to hover or show a pointer;
+- media that a state does not show neither loads nor plays ([components.md](components.md), Framer's own
+  components);
+- third-party components carry no leftover defaults ([components.md](components.md), Code components).

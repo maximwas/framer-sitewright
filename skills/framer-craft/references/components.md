@@ -78,8 +78,8 @@
     variant ("Variant 3"), which Framer refuses: take variant names and ids from `serialize` of the component.
   - Names are camelCase, like `$control__showIcon`. Do not derive them from the variable name.
   - **One invalid `$control__` value drops every `$control__` of that command**, and the error names only the invalid
-    one: a link to an anchor that did not exist yet took the title with it. Put each risky control (an anchor link, a
-    variant) in a `SET` of its own, and read the instance back after any error on it.
+    one (a link to an anchor that does not exist yet takes the title with it). Put each risky control (an anchor link,
+    a variant) in a `SET` of its own, and read the instance back after any error on it.
 
 ## Interactions
 
@@ -138,8 +138,11 @@
 - **Background video:** `$control__source="Upload" $control__file="<uploaded mp4 url>" $control__loop="true"
   $control__muted="true" $control__playing="true" $control__controls="false" $control__fit="cover"
   $control__poster="true" $control__image.src="<poster url>"`, pinned `0px` on four sides with `width="100%"
-  height="100%"`. Re-encode the file first (H.264, no audio, faststart, under 4 MB: 7.7 MB became 3.3 MB) and upload it
-  with `framer.uploadFile`.
+  height="100%"`. Re-encode the file first (H.264, no audio, faststart, under 4 MB) and upload it with
+  `framer.uploadFile`.
+- **Media a state does not show still loads and plays:** in a reel or slider that switches clips by variants, every
+  clip loads at once. Set `$control__playing="false"` on the clips a variant does not show, give each clip a poster
+  (its first frame, so nothing flashes), and show one clip or the poster on phones.
 - **Slideshow and Carousel** slots (`$control__content.<i>`) take frames that are direct children of the page, next to
   the breakpoints. A **Countdown** `$control__date` must be midnight (`T00:00:00.000Z`) while `displayTime` is false.
 
@@ -166,8 +169,8 @@ Use them only when the user asks, or when the canvas cannot do the task.
   });
   ```
 
-- **`node.controls` keys are the component's prop names, not the `$control__` names** (Stacking Slider:
-  `$control__buttonGap` is `arrowGap` there), and nested fields can differ from the docs (`serviceRadius` is stored as
+- **`node.controls` keys are the component's prop names, not the `$control__` names** (a `$control__buttonGap` can be
+  `arrowGap` there), and nested fields can differ from the docs (`serviceRadius` is stored as
   `radius`). An unknown key gives no error and has no effect: read `node.controls` first and write only the keys it
   has.
 - **Arrays of objects in an instance** (a Repeat's items) take the same route, keyed by ids:
@@ -175,8 +178,8 @@ Use them only when the user asks, or when the canvas cannot do the task.
 - **Images inside an array or object control** (most carousels: `slides: [{ image, caption }]`) are refused by the DSL
   ("unsupported array item type"). `setAttributes` drops an image there silently when it is a URL or the
   `{ id, url, thumbnailUrl }` object Framer reads back, and the component keeps its demo photos. Upload each image with
-  `framer.uploadImage`, put the asset it returns in the array (a Depth Carousel then kept its photos), and read
-  `node.controls` back. A default of `[]` does not mean slot: check the control's type.
+  `framer.uploadImage`, put the asset it returns in the array, and read `node.controls` back. A default of `[]` does
+  not mean slot: check the control's type.
 - **Single image and file controls take an https URL in the DSL**, and Framer uploads it: `$control__image="https://…"`
   on a code component, `$control__image.src="…" $control__image.alt="…"` on an image variable,
   `$control__videoFile="<uploaded mp4 url>"` on a file control. An image variable's `initialValue` URL is uploaded the
@@ -185,13 +188,17 @@ Use them only when the user asks, or when the canvas cannot do the task.
   outside the breakpoints). Park slot content next to the Desktop frame.
 - **Text in a slot item needs a text style without balance:** with balance, its auto-width frame measures wrong and
   ticker items overlap. Give slot labels a style of their own (`Ticker`).
-- **One carousel per width.** Many carousels measure the first slide once and never resize it (Stacking Slider), and
-  the canvas renders a breakpoint copy with the primary's slots. Build one instance per width with its own slides
-  (desktop 1120, tablet 680, phone 300 wide) and show each on its breakpoints only with `visible`.
+- **One carousel per width.** Many carousels measure the first slide once and never resize it, and the canvas renders
+  a breakpoint copy with the primary's slots. Build one instance per width with its own slides (desktop 1120, tablet
+  680, phone 300 wide) and show each on its breakpoints only with `visible`.
+- **A component's defaults are its author's design, not the site's:** go through every control that shapes it. Turn
+  off debug aids (hit-area guides), calm loud effects (a grain overlay above about 0.12 opacity dirties text), replace
+  a tween with a spring, set offsets that show slivers of other slides to 0 unless a stack is meant, size the slides
+  so the next one peeks to the content edge, and give them one height.
 - **Object controls on copies:** setting a carousel's object controls on the primary instance does not reach its
-  breakpoint copies. Set each copy too, and replace a `tween` default `transition` with a spring. Read the
-  `transition` back after setting it: on Stacking Slider a spring object was not stored and the tween default (500/60)
-  stayed, with no error. Then ask the user to set the spring in the component's panel, and list it at handoff.
+  breakpoint copies. Set each copy too. Read the `transition` back after setting it: a spring object can be refused
+  without an error, leaving the tween default. Then ask the user to set the spring in the component's panel, and list
+  it at handoff.
 - **In the canvas, slot content is Framer's internal renderer**, not your component. Props that a carousel injects
   (for example `variant` for the active card) do not reach it there, only on the site. Set the cards' variants by hand
   for the canvas.

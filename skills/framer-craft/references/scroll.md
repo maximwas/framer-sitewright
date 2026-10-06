@@ -48,8 +48,8 @@
   `appearEffect.trigger="onScrollDirection"` keeps `enter` and `exit` but no direction (`appearEffect.direction` is
   accepted and dropped), and Framer's runtime skips the effect without one. A header that hides on scroll down needs a
   code override: say so before promising it.
-- **A header that changes after the hero:** a header component with `Top` and `Scrolled` variants. Its instance (seen
-  on the page itself) gets `position="sticky"`, `scrollVariantEffect.trigger="onScrollTarget"`,
+- **A header that changes after the hero:** a header component with `Top` and `Scrolled` variants. Its instance on
+  the page gets `position="sticky"`, `scrollVariantEffect.trigger="onScrollTarget"`,
   `sections.0.variant="<Top id>"`, `sections.1.target="<first section after the hero>"` (or an invisible trigger frame
   there, with no fill) and `sections.1.variant="<Scrolled id>"`, written when the instance is created. The switch
   animates with the component's variant `transition`. Check it in Preview.
@@ -72,7 +72,7 @@ Structure of the section (the section itself has no zIndex):
    Hide them on the site with a `styleTransformEffect` whose states are `opacity 0`, and `pointerEvents="none"`.
    Opacity 0 and `pointerEvents="none"` hide them from the eye and the mouse, not from screen readers or the Tab key.
    Put the step's links and buttons behind a boolean variable that the copies turn off.
-   Read the states back: opacity only. A `scale` left in a state (seen: `scale 0.5`) shrinks the invisible track, so
+   Read the states back: opacity only. A `scale` left in a state (the preset's 0.5) shrinks the invisible track, so
    the targets sit elsewhere on screen than in the layout: steps switch at the wrong scroll, and code that measures
    them gets wrong positions. Reset it with `scale="1"`; `null` is refused.
 
@@ -147,4 +147,4 @@ Verify each on the published site: the canvas does not run effects.
   - the circles in it: `width="100%"`, `aspectRatio="1"`, pinned `bottom="0px"`;
   - the moving dot: `centerAnchorY="50%"` with no `top`.
 
-  A fixed 2035px frame showed the arc's ends mid-screen on a 2K display.
+  A frame with a fixed px width shows the arc's ends mid-screen on windows wider than the one it was sized for.

@@ -57,12 +57,11 @@ edits after launch and the deadline (someone new to Framer: clear names, compone
   with variants, and let the user choose.
 - **Before offering a Marketplace component, check it without a cursor and without the canvas.** Trails, tilts and
   magnetic effects do nothing on touch: give their area a background of its own and hide cursor hints on phone. On the
-  canvas, counters show 00 and reveals show their end state: check them in Preview. Turn off debug defaults (Circular
-  Spin Text ships `showHitAreaGuide` on) and calm loud ones (Noise Grain at its default opacity 0.5 dirties text;
-  0.1–0.12 works). Scroll-pinned carousels take over the scroll: not for product lists. A smart component keeps its own
-  fonts, colors and transition: make it local and restyle it (`framer.agent.makeExternalComponentLocal`; Sitewright
-  `component_make_local`), or build it natively. Marketplace components expose no events, so they cannot set page
-  variables or drive each other.
+  canvas, counters show 00 and reveals show their end state: check them in Preview. Scroll-pinned carousels take over
+  the scroll: not for product lists. Go through its defaults before offering it ([components.md](components.md), a
+  component's defaults). A smart component keeps its own fonts, colors and transition: make it local and restyle it
+  (`framer.agent.makeExternalComponentLocal`; Sitewright `component_make_local`), or build it natively. Marketplace
+  components expose no events, so they cannot set page variables or drive each other.
 - Offer a motion level too (subtle, balanced, expressive) with the effects per section ([motion.md](motion.md)).
 
 ## 2. Concept before style

@@ -59,7 +59,9 @@ ready". Read [design-process.md](design-process.md) first; this adds what change
 - **A "Start here" design page,** unpublished: one board with a heading and six to nine cards, one per thing a buyer
   edits: colors (which token rebrands the accent), type, hero media, the home page components, carousel slides (where
   each width's slides sit on the canvas), CMS collections, contact details (every place they appear), motion, and what
-  to set before publishing. Name the panels as Framer shows them (Assets → Colors, Page Settings).
+  to set before publishing. Name the panels as Framer shows them (Assets → Colors, Page Settings). Every note for the
+  buyer lives there or in the buyer documents, never in the page copy ("each card is a CMS item you can replace"): the
+  published pages speak to the buyer's visitors.
 - **AI-ready:** a project skill for Framer's agent with the template's conventions (`+SkillNode` with `description`,
   `instruction`, `trigger`; its title becomes the slash command), a short `.md` brief for external agents, and prompts
   for a rebrand, a logo swap and form wiring.

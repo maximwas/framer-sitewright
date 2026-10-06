@@ -51,6 +51,7 @@ Container > Content); motion follows [motion.md](motion.md). **Practice** unless
   collection so the client can add more.
 - **A Marketplace template** uses invented marks, never real brands (Framer: no company logos without permission), and
   lists its placeholder reviews on the Start here page. Logos sit in one neutral color, from the project's vector set.
+- **Every logo is a drawn mark** (SVG, [assets.md](assets.md)): company names set in text read as placeholders.
 - **Numbers** use tabular figures when they sit in columns. On a text node that has a text style,
   `openTypeFontFeatures.tnum` is refused ("Cannot apply preset-controlled text properties"): give the figures a text
   style of their own (`Figure`) and set the feature on that style.
@@ -80,8 +81,8 @@ Container > Content); motion follows [motion.md](motion.md). **Practice** unless
 
 - **Closing CTA:** one sentence restating the value, the same primary button as the hero. Add the person who answers:
   a round 56–64px portrait, name, role and when they reply.
-- **404:** a small story from the site's subject (an operations studio's page "got lost in a handoff", told with its
-  own Step cards), a photo of an empty place, and two actions: home, and report the broken link.
+- **404:** a small story from the site's subject, built from its own components and photography (a delivery service:
+  the page lost in transit, shown on its own tracking steps), and two actions: home, and report the broken link.
 - **Footer:** logo, short navigation groups, contact, social icons, legal links, the year. Part of the layout template
   with the header.
 
@@ -99,11 +100,16 @@ Container > Content); motion follows [motion.md](motion.md). **Practice** unless
   navigation. The open menu lies over the page rather than pushing the content down (Framer Help). Links that are
   component instances take no `onTap`: give the link component an `EventHandlerVariable` fired by
   `onTap.0.action="TRIGGER_EVENT"`, and on each instance in the open variant set `onClick.0.action="SET_VARIANT"` to
-  the closed variant ([components.md](components.md)). Seen: the menu stayed open over the section a link scrolled
-  to. Tap every link of the open menu on a phone in Preview.
-- **Section links** need the targets' `elementId` first, `link.smoothScroll` on every link frame (inside the button
-  and nav link components too) and `scrollMarginTop` on each target, so the sticky header never covers the heading
-  (SKILL.md). Click every navigation link in Preview at each breakpoint.
+  the closed variant ([components.md](components.md)). The menu's states list ([motion.md](motion.md), States first)
+  has a row for every link of the open menu: each closes it and lands its section below the header.
+- **Section links (Field-tested):** a link to `/#id` needs the target to have `elementId` and
+  `scrollTargetEnabled="true"` first; setting them earlier in the same batch works. Without the target the command
+  errors, but the node keeps the link cut to the page (`/page`, no `#id`): set it again once the target exists, so
+  build navigation last. Give every frame that links to `#id` `link.smoothScroll="true"`, inside the button and nav
+  link components too, and each target section `scrollMarginTop` = sticky header height + gap − the section's top
+  padding, or the header covers its heading.
+- **External links start with `https://`** (Field-tested): `link.href="www.example.com"` is stored as is, without a
+  warning, and on the site it is the relative path `/www.example.com`.
 
 ## Portfolio, editorial and inner pages
 

@@ -38,10 +38,13 @@ Build every page as Main > Section > Container > Content:
 - **`gap` with `stackDistribution="space-between"` is an error** (the node is created and the gap ignored), and
   without a gap the linter then asks for one. Use `stackDistribution="start"` with a `1fr` spacer child and the gap you
   want.
+- **Cards of one set share one height** wherever they appear, together or in turn. Separate instances (slides, a
+  stacked deck) get it from the card component's `minHeight`.
 - **No stretch alignment.** For equal-height columns, give the children `height="1fr"` in a horizontal stack with
   `height="auto"`: they stretch to the tallest sibling.
 - **A wrapping stack collapses with `width="auto"`.** With `stackWrapEnabled="true"` it silently becomes one column.
   Give it `1fr` or `100%`.
+- **`height="1fr"` in a wrapping stack fills its row,** not the parent's `minHeight`.
 - **`gap="A B"`:** A is the gap between rows, B the gap between columns.
 - **Padding goes on containers**, not on text nodes.
 
@@ -51,7 +54,7 @@ Build every page as Main > Section > Container > Content:
   row. Use it for multi-column grids.
 - **A button at the bottom of every card:** the card (`height="1fr"` in an `auto` row) holds, as direct children, the
   content group (`height="auto"`), a spacer (`height="1fr"`) and the button. A `height="1fr"` body wrapper between the
-  card and them adds nothing to the row's height: the cards were clipped to their photo, with no error.
+  card and them adds nothing to the row's height and clips the cards, with no error.
 - **One column:** on a breakpoint where the grid becomes one column, switch to `fit`, or short cells leave empty bands.
   In multi-column rows, `fit` shows the grid's fill under short cells.
 - **Bento with rows of different heights:** build separate grids in a vertical stack with `gap`. In one grid, a tall
@@ -61,12 +64,18 @@ Build every page as Main > Section > Container > Content:
 - **Grid lines without double borders:** give the parent a fill in the line color and `gap="1px"`, and fill the cells
   with the page background.
 - **Masonry:** `gridMasonry="true"` puts each item in the column that is shortest at that point (the left one on a
-  tie), so the order of items decides whether the columns end level: landscape, landscape, portrait, portrait,
-  portrait, landscape ended three columns evenly. Turn it off on phone with `gridMasonry="null"`.
+  tie), so the order of items decides whether the columns end level: order them so each column's heights add up the
+  same. Turn it off on phone with `gridMasonry="null"`.
 
 ## Absolute layers
 
-- **Pins are px only.** A `%` pin fails with "Expected a pixel value". Width and height take px or %.
+- **Pins are px only.** A `%` pin fails with "Expected a pixel value". Width and height take px or %, never `fr`.
+- **Stretch over the parent:** pin all four sides to `0px`. Not width and height 100%, and never `auto`: the layer
+  collapses. **A component instance is the exception:** pinned, it keeps its own size (`auto` by default) and
+  collapses to its content; give it `width="100%" height="100%"` with the pins.
+- **Center:** `centerAnchorX="50%"` (or `centerAnchorY`) with no pins on that axis. Framer refuses to create an
+  absolute node without pins, so create it pinned; then, in a second `SET`, set those pins to `null` and add the
+  anchor.
 - **Full width with its own height:** pin `left="0px"` and `right="0px"`, and set the height.
 - **Text in an absolute layer pinned left and right** gets `width auto` and does not wrap. Give it `width="100%"`.
 
@@ -76,18 +85,17 @@ Build every page as Main > Section > Container > Content:
   `CREATE_VARIANT tablet from="<primary id>"; SET tablet name="Tablet" width="810px" left="<x>px" top="0px";`
   - Always give `width`: without it the replica copies 1200 and breaks the media query.
   - Place replicas side by side without overlap.
-  - `$rect` can be stale: a primary just set to `width="1440px"` still read `width:1200`, and a replica placed from it
-    overlapped Desktop ("Ground nodes overlap each other"). Place each replica from the widths you wrote (previous
-    `left` + its width + 100). Nodes inside stacks carry no `$rect`, so judge sizes from screenshots.
+  - `$rect` can be stale: right after a size change it still shows the old size, and a replica placed from it overlaps
+    Desktop ("Ground nodes overlap each other"). Place each replica from the widths you wrote (previous `left` + its
+    width + 100). Nodes inside stacks carry no `$rect`, so judge sizes from screenshots.
 - **Read the project's breakpoints first.** A new page has only Desktop 1200. The set to build is Desktop 1440
   (primary), Laptop 1280, Tablet 810 and Phone 390.
-- **All breakpoints before text style sizes.** A style's breakpoint slots start at the page breakpoints that exist when
-  they are written; a breakpoint added later leaves the old starts in place, and the style must be recreated to follow
-  it. Read every style's sizes back before handoff: a leftover slot (starting at 1200) left tablet sizes smaller than
-  phone ones (display 38 on tablet, 44 on phone; body 14 on tablet, 18 on phone). Tablet sits between laptop and phone.
-  Give every page the final set first, the home page (`/`) included: slots count the site's breakpoints, not only the
-  page you style. Seen: `/` still at Desktop 1200 next to a page at 1440 / 810 / 390 gave a style the slots 1200 / 810
-  / 0, so from 1200 to 1439 the tablet layout showed desktop type.
+- **All breakpoints on every page before text style sizes.** A style's breakpoint slots start at the breakpoints that
+  exist when they are written, counted over every page of the site, the home page (`/`) included, not only the page
+  you style. A breakpoint added later, or one page left at another width, leaves slot starts that put desktop type on
+  the tablet layout or tablet sizes below phone ones, and the style must be recreated to follow the new set. Give
+  every page the final set first, and read every style's sizes back before handoff: tablet sits between laptop and
+  phone.
 - **A page on a layout template takes its breakpoints' fill and layout from the template:** a `fill` or `layout` on
   the page breakpoint is refused; set it on the template's breakpoints.
 - **Override a node on a replica** with the compound id `<replica id><node id>`, written with no separator.
@@ -95,10 +103,10 @@ Build every page as Main > Section > Container > Content:
     override it in the next.
   - Temp-plus-temp compounds inside a new component do work.
 - **An override cannot be reset to inherit** through the DSL. Writing the primary's value only pins that value.
-- **Reordering on a breakpoint:** Framer's reference says to `MOVE` a replica descendant within its parent. Seen: the
-  `MOVE` was accepted and `serialize` showed the new order, but the breakpoint still rendered the primary's order. What
-  worked: a second copy of the layer at the new position in the primary, hidden there (`visible="false"`) and shown on
-  the replicas that need it, with the original hidden on those replicas. Check the order in a screenshot.
+- **Reordering on a breakpoint:** Framer's reference says to `MOVE` a replica descendant within its parent. The `MOVE`
+  is accepted and `serialize` shows the new order, but the breakpoint keeps rendering the primary's order. Instead,
+  put a second copy of the layer at the new position in the primary, hidden there (`visible="false"`) and shown on the
+  replicas that need it, with the original hidden on those replicas. Check the order in a screenshot.
 - **A row turned into a column keeps its `fr` weights.** Children with `width="7fr"` and `"5fr"` in a row switched to
   `stackDirection="vertical"` stay on one line and clip. Set `width="1fr"` on those children's copies too.
 - **On phone**, grids usually become vertical stacks. Check text wrapping and overflow on every replica. Cards that

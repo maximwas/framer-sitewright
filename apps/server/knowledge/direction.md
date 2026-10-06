@@ -35,7 +35,7 @@ something on the list, the brief wins.
   Small accent text gets its own darker token of the same hue (`Accent/Text`, 5 : 1).
 - A surface that keeps its color in both themes (a paper ticket, a label, a receipt, a brand-colored band) needs text
   tokens that also keep theirs: give its ink the same light and dark value. A shared ink token turns light on it in
-  the dark theme (seen; Framer's linter flags the contrast).
+  the dark theme, and Framer's linter flags the contrast.
 - Make a boundary between sections an event when the concept has one: sticky panels that stack over each other, a
   pinned crossfade, full-height color panels, a graphic layer between sections. Otherwise a change of background, not
   a border.
@@ -52,11 +52,11 @@ something on the list, the brief wins.
 - Asset order: the client's own material, then stock (`images_search` with a key, or `image_upload` by URL), then a
   clearly named placeholder frame with the size it needs — and tell the user. Never fill the gap with icons.
 - **Photos from the subject's world, in one art direction:** warm, natural light, candid shots of the places and people
-  the client serves (for an operations studio: depots, warehouses, bakeries, workshops, real desks). Never posed studio
-  portraits, corporate headshots against glass, gadgets on a bed, or brand logos (browser and app icons) in a
-  template. A picture set between words shows those exact words.
+  the client serves, at work. Never posed studio portraits, corporate headshots against glass, gadgets on a bed, or
+  brand logos (browser and app icons) in a template. A picture set between words shows those exact words.
 - **Choose by looking, not by captions:** pull about eight candidates per slot, put their thumbnails side by side (one
-  contact sheet) and pick; one shoot per slot, so two cards never show the same people.
+  contact sheet) and pick; one shoot per slot, so two cards never show the same people. Before handover look at every
+  photo of the site together: the same person in two different files passes every file check.
 - **People must read:** a testimonial or a contact block shows the person plainly, in a setting that fits their role.
   Crop portraits tight (an Unsplash URL takes `&rect=x,y,w,h` or `&crop=faces`) and look at the crop at its real size.
 
@@ -81,7 +81,7 @@ something on the list, the brief wins.
 - Effects: glows and blurred blobs behind the hero, pulsing dots and scanning lines, the same fade-up on every section.
 - Copy: H2s that all start the same way ("Everything you need to…", "Built for…"); confident but empty lines that fit
   any company; generic names (Acme), filler verbs (elevate, seamless, unleash); a different label for the same action;
-  "© 2024" on a 2026 site.
+  a past year in the footer.
 - Copy tells: "not X but Y" and "not only… but also"; lists of three by habit; em dashes and bold everywhere; puffery
   (nestled, in the heart of, groundbreaking, vibrant, pivotal, delve); Title Case Headings. Test each headline: can a
   reader picture it, could it be proven false, could nobody else say it? Three no's: rewrite it from the claim and the

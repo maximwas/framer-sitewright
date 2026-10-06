@@ -30,8 +30,8 @@ look follows `direction`.
   iOS can drop the navigation. The open menu lies over the page rather than pushing the content down (Framer Help).
   When the links are component instances (a Nav Link, a Button), they take no `onTap`: give that component an event
   (`dsl`, Components and interactions) and set `onClick.0.action="SET_VARIANT"` to the closed variant on each instance
-  in the open variant. Seen on a template: the menu stayed open over the section a link scrolled to. Tap every link of
-  the open menu on a phone in Preview.
+  in the open variant. The menu's states list (`motion`, States first) has a row for every link of the open menu:
+  each closes it and lands its section below the header.
 
 ## Hero
 
@@ -72,7 +72,7 @@ look follows `direction`.
 - Testimonials with a full name, photo, role and a specific outcome, in the concept's unit. On a client's site only
   real ones the client gives (invented reviews are illegal: FTC rule since 2024, EU since 2022); mark placeholders and
   list them at handoff. Client logos only with permission, in one neutral color; a Marketplace template uses invented
-  marks, never real brands.
+  marks, never real brands. Every logo is a drawn mark (`svg_add`): company names set in text read as placeholders.
 - A testimonial card is one solid card (`layout`, Cards made of two pieces). On phone give the component a **Compact**
   variant: the quote, name and role only, no photo, 24px padding, the quote one style smaller.
 - A slider: offer a free Marketplace carousel (`marketplace_browse` components, `carousels`, checked with
@@ -116,6 +116,6 @@ look follows `direction`.
 
 ## 404
 
-- Tell a small story from the site's subject instead of "Oops": an operations studio lost the page "in a handoff" and
-  shows the trail with its own Step component (link clicked → handed off → lost here), next to a photo of an empty
-  place. Two actions: back home, and report the broken link (`mailto:` with a subject).
+- Tell a small story from the site's subject instead of "Oops", built from the site's own components and photography
+  (a delivery service: the page lost in transit, shown on its own tracking steps). Two actions: back home, and report
+  the broken link (`mailto:` with a subject).

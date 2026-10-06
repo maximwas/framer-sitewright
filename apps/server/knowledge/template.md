@@ -75,6 +75,8 @@ adds what changes when the site is a product.
   — colors (which token rebrands the accent), type (the families and where sizes live), hero media, the components on
   the home page, slider slides, the CMS collections, contact details (every place they appear), motion, and what to
   set before publishing. Plain words, with the panel names Framer shows (Assets → Colors, Page Settings).
+- Every note for the buyer lives there or in the buyer documents, never in the page copy ("each card is a CMS item you
+  can replace"): the published pages speak to the buyer's visitors.
 
 ## Ready for buyers and their agents
 
@@ -89,8 +91,7 @@ adds what changes when the site is a product.
 
 ## Site metadata
 
-- Site-wide values live on the root node: `SET rootNode metadata.title="…" metadata.description="…"
-  metadata.favicon="…" metadata.faviconDark="…" metadata.appleTouchIcon="…" metadata.socialImage="…";`. Pages
+- Site-wide values live on the root node (`site_settings_set`; the attributes are in `dsl`, Pages and layers). Pages
   override them only when they differ (the 404 sets `noIndex`).
 - Favicon: the brand mark as SVG, a light and a dark one; Apple touch icon: a 180×180 PNG of the mark on the base
   color; social image: 1200×630, a screenshot of the hero (`node_screenshot` with `clip`). Update them whenever the
@@ -103,11 +104,12 @@ adds what changes when the site is a product.
   the slides there with `parent="<page id>"`, name them, and place them beside the breakpoints).
 - Text in a slot item needs a text style without balance: with balance, its auto-width frame measures wrong and ticker
   items overlap. Give slot labels a style of their own (`Ticker`).
-- Many carousels measure the first slide and never resize it (Stacking Slider), and Framer's canvas renders a
-  breakpoint copy with the primary's slots. So build one carousel per width with its own slides (desktop 1120, tablet
-  680, phone 300) and show each on its breakpoints only (`visible`), instead of overriding the slots on a copy.
+- Many carousels measure the first slide once and never resize it, and Framer's canvas renders a breakpoint copy with
+  the primary's slots. So build one carousel per width with its own slides (desktop 1120, tablet 680, phone 300) and
+  show each on its breakpoints only (`visible`), instead of overriding the slots on a copy.
 - Object controls of a code component (its `transition`, arrow styles) go through `component_controls_set`, once per
-  instance and once per breakpoint copy: setting the primary does not reach the copies. A tween default becomes a
-  spring there too. A transition Framer refuses comes back in `notStored` (seen: Stacking Slider kept its tween
-  default): then ask the user to set the spring in the component's panel, and list it at handoff.
+  instance and once per breakpoint copy: setting the primary does not reach the copies. Replace a tween default with a
+  spring there, and go through the rest of its defaults (`workflow`, 1b). A transition Framer refuses comes back in
+  `notStored` and the tween stays: then ask the user to set the spring in the component's panel, and list it at
+  handoff.
 

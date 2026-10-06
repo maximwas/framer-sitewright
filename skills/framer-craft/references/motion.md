@@ -3,6 +3,34 @@
 Before building an animated pattern, read Framer's implementation guide for it through the task map: "Effects", "FAQ"
 (accordions), "Navigations" (menus), "Overlays" or "Buttons". The rules below correct and extend those guides.
 
+## States first: anything that moves or responds
+
+Before building a menu, carousel or slider, timer or progress indicator, reel, scroll effect, accordion, tabs or any
+other part that moves or responds, write its states and transitions as a list, then build every row of it:
+
+- the first load, before anything is touched;
+- each step, and each step already completed;
+- the loop back to the start;
+- the interrupted paths: the page opened mid-way (a link to an anchor, a reload), scrolled away and back, a link inside
+  the part used, another page and back;
+- touch and mouse (touch has no hover);
+- reduced motion (Performance and accessibility, below).
+
+Every list keeps these:
+
+- **A progress indicator moves at the speed of the time it shows,** and finished steps stay finished until the loop
+  starts again. It is the one transition that is not a spring: a linear tween (`tween 0,0,1,1 <duration> 0s`) whose
+  duration is the time it tracks (the autoplay delay).
+- **What opens over the page** (a menu, a modal, a dropdown) never changes the page's layout or scroll position, and
+  closes when one of its own links is used.
+- **An invisible layer never takes taps:** a layer that is transparent or covered in a state gets
+  `pointerEvents="none"` there, or it blocks what lies under it.
+- **A scroll-triggered effect starts when its element enters the screen,** on every breakpoint and down to the last
+  block of the page (Appear, below).
+
+Then go through every row in a real browser ([verify.md](verify.md), Behaviour in a real browser): a screenshot shows
+one state, never the change between them.
+
 ## Motion system (Practice)
 
 Decide the motion once per site, like a design token set, and reuse it everywhere.
@@ -20,13 +48,14 @@ Decide the motion once per site, like a design token set, and reuse it everywher
   | Text reveal, total | ≤ 1.5 s |
   | Loader | < 1 s |
 
-- **Springs only, no bounce, never `tween` or a bezier** (Maxim's rule), even when a reference copies CSS easing.
-  Critically damped physics, damping = 2·√(stiffness·mass): `1000 63 1` for hover and press (settles in 0.3s),
-  `400 40 1` for buttons, tabs and menus (0.45s), `200 28 1` for larger moves (0.65s), `120 22 1` for slow scroll
-  motion. More damping makes a spring creep (`200 40 1` lands after about 1s).
+- **Springs only, no bounce, never `tween` or a bezier** (a firm rule, not only Practice), even when a reference
+  copies CSS easing; the one exception is a progress indicator that shows time (States first, above). Critically
+  damped physics, damping = 2·√(stiffness·mass): `1000 63 1` for hover and press (settles in 0.3s), `400 40 1` for
+  buttons, tabs and menus (0.45s), `200 28 1` for larger moves (0.65s), `120 22 1` for slow scroll motion. More
+  damping makes a spring creep (`200 40 1` lands after about 1s).
 - **Where Framer keeps only time springs** (see the table below), write the same feel as `spring-duration <time> 0
-  <delay>`: `0.3s`, `0.45s`, `0.65s`. Sitewright's `design_apply` converts a written `spring-physics` itself; with the
-  Framer CLI, convert by hand, and tell Maxim which transitions to switch to Physics in the editor.
+  <delay>`: `0.3s`, `0.45s`, `0.65s`. Convert by hand, and tell the user which transitions to switch to Physics in the
+  editor if they want physics there.
 - **Distances:** fade-up `y` 8–24 px (up to 40 for large media); scale-in from 0.96–0.98, never 0.5; hover lift `y`
   −2 to −4 px; image zoom 1.03–1.05 inside a frame with `overflow="clip"`. Buttons and nav links do not scale on
   hover.
@@ -72,21 +101,28 @@ Decide the motion once per site, like a design token set, and reuse it everywher
 - **An appear needs a layer that is in view in its start state.** The layer is measured with its start state applied:
   one that the start state moves fully out of a clipped parent (a bar at `x -720` inside an `overflow="clip"` track)
   never counts as in view, never plays, and stays hidden on the site. Put the effect on the visible parent.
+- **The end of the page is the same trap:** a layer in the last block whose start offset pushes it under a clipped
+  edge, or whose threshold the page's end cannot reach, never plays on the breakpoints where it sits lowest. Reveal
+  such a layer with opacity only, and scroll every page to its end on every breakpoint.
 
 ## Hover and press
 
 - **Surfaces:** `hoverEffect.backgroundColor` or `hoverEffect.opacity`, always with `hoverEffect.scale="1"`. Scale
   only when the user asks for it.
 - **Components:** use gesture variants (`gesture="hover"`, `"pressed"`). Effects on a variant root are refused.
-- **One change per hover:** a color, or a small directional cue. Users called a label that rolls up (a second copy in
-  a clipped mask), a pill popping in behind a nav link, or a scale jump glitches. Nav links change only their text
+- **One change per hover:** a color, or a small directional cue. People read a label that rolls up (a second copy in
+  a clipped mask), a pill popping in behind a nav link, or a scale jump as glitches. Nav links change only their text
   color.
 - **An arrow cue without layout shift:** after the label, an `Arrow` frame (`overflow="clip"`, `width="0px"`,
   `stackDistribution="end"`) holds "→" in the button's text style. The hover variant sets it to `22px` and takes 11px
   off each side padding (37 → 26), so the button keeps its width and the label slides left as the arrow arrives.
 - **Nothing lives only on hover** (Practice): phones have none, so content or actions shown on hover need a tap or
-  always-visible equivalent, and a slider is draggable on touch. A hover effect promises a click: an image zooms on
-  hover only inside a clickable card.
+  always-visible equivalent, and a slider is draggable on touch. A hover effect or a pointer cursor promises a click:
+  only clickable layers get them, and an image zooms on hover only inside a clickable card.
+- **Change a size by moving, not by sizing or scaling.** Framer snaps a height that goes to 0 instead of animating it,
+  and `scale` is uniform (there is no `scaleX`), so a bar that grows by scale also gets thinner while it moves. Keep
+  the bar at its full size inside a clipped track and move it in and out (`x` or `top`) between the states
+  ([scroll.md](scroll.md), Progress bar).
 
 ## Springs: which survive where
 
@@ -131,8 +167,8 @@ it. Instead:
 2. **Open variant:** `height="auto"`, `overflow="clip"`, opacity 1. Both variants get the same `transition`.
 3. **Icon:** swap or rotate it in the same variants. Put `userSelect="none"` on clickable text.
 4. **`flowEffect.transition`** goes on the stack that holds the items **and** on the page's primary breakpoint, with
-   the same transition. Then the items and the sections below glide. Measured: without the page-level one, the next
-   block jumps 74px in a single frame.
+   the same transition. Then the items and the sections below glide; without the page-level one, the blocks below jump
+   in a single frame.
 
 **Mobile menu:** a Phone variant of 64px and a Phone Open variant with height `auto`, as in the "Navigations" guide.
 
@@ -182,8 +218,8 @@ Small, consistent feedback on everything clickable. Build each once, inside a co
   old-look filters. After: `width="1fr"`, the same image with `fillImagePositionX="right"`. Crop the image to the
   root's exact aspect, so both halves render at one scale and the seam disappears; put `aspectRatio` on the instance.
   On top, a Zones layer of five transparent frames: zone i sets Split i on `onMouseEnter` and on `onTap`. `dragEffect`
-  cannot drive it: a drag only moves the layer and fires no event, so it changes no variant or variable. Seen on the
-  canvas; check the scrub in Preview.
+  cannot drive it: a drag only moves the layer and fires no event, so it changes no variant or variable. Check the
+  scrub in Preview.
 - **3D tilt:** a hover variant with a small `rotateX` / `rotateY` (≤ 8deg). `perspective` is refused on a variant
   root: put it on a child frame (`perspective="1000px"`) that holds the tilting layer. Use on one hero object at most.
 - **Custom cursor:** a small component (a "View" pill), then on the layer `customCursor.componentNodeId="<component
@@ -202,9 +238,9 @@ Small, consistent feedback on everything clickable. Build each once, inside a co
   with `mask.angle`). Framer keeps only `spring-physics` there and ignores a `spring-duration`: `400 40 1 0s` for a
   fade or a short slide on content sites, masks and `200 28 1 0s` on portfolios only. Agency and portfolio sites treat
   one global transition as standard.
-- **Check them on the published site:** which page's effect plays in which direction is not documented, so try both
-  directions. Set every page breakpoint's `fill`: it shows during the transition. Page Effects run on View Transitions,
-  so check Safari and Firefox too.
+- **Check them on the published site in a real browser:** which page's effect plays in which direction is not
+  documented, so try both directions. Set every page breakpoint's `fill`: it shows during the transition. Page
+  Effects run on View Transitions, so check Safari and Firefox too.
 - **Loaders:** only when the site really needs one, under one second, a simple mark or bar. A loader that waits for a
   fixed timer only delays the content.
 

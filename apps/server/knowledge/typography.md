@@ -62,5 +62,5 @@ Honorable Mentions, framer.com) at 1440, 810 and 390.
 
 ## Breakpoints
 
-- Display styles get slots for the narrower breakpoints: ×0.75 on tablet, ×0.4–0.67 on phone (framer.com 54 → 42 →
-  36, Vectura 80 → 64 → 48, Essentia 64 → 46 → 36). Body stays 16–18.
+- Display styles get slots for the narrower breakpoints: ×0.75 on tablet, ×0.4–0.67 on phone (framer.com: 54 → 42 →
+  36). Body stays 16–18.

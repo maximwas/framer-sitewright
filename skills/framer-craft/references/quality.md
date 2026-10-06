@@ -33,11 +33,14 @@ marked otherwise; how to check visuals is in [verify.md](verify.md).
 
 ## Accessibility
 - **Contrast:** at least 4.5 : 1 for body text, 3 : 1 for large text (24 px, or 19 px bold) and for icons and borders
-  that carry meaning. Check both light and dark token values.
+  that carry meaning, for every text on every fill it sits on, in every state: button variants, hover, light and dark
+  token values. A bright accent takes a dark label when a white one fails. Every surface reads apart from what lies
+  under it (a tone step, a border or a shadow), in every state.
 - **Keyboard and screen readers:** real `button` / link semantics on clickable frames (`htmlTag="button"` or
   `link.href`), `ariaLabel` on icon-only buttons, a visible hover and focus state.
 - **Motion:** the site's Reduced Motion setting is on ([motion.md](motion.md)); nothing flashes more than three times a
-  second; anything that moves by itself for more than 5 s can be paused.
+  second; anything that moves by itself for more than 5 s can be paused; every row of every states list passes in a
+  real browser ([verify.md](verify.md), Behaviour in a real browser).
 - **Forms:** every field has a visible label, errors in words, not only in color; the submit button has Pending,
   Success, Error and Incomplete variants; the user has set where the form sends and a test went through on the
   published site ([cms-forms.md](cms-forms.md)). Every modal has a close button with `ariaLabel`: a modal does not
@@ -45,6 +48,10 @@ marked otherwise; how to check visuals is in [verify.md](verify.md).
 
 ## Content
 - No placeholder text, no lorem ipsum, no stock photo that contradicts the copy.
+- Page copy speaks to the site's visitors only: notes for whoever edits the site go on a guide page or into the
+  handoff ([marketplace-template.md](marketplace-template.md), Start here).
+- Every photo of the site seen together on one contact sheet: no person, place or shoot twice, one art direction
+  ([assets.md](assets.md)).
 - Typography: curly quotes and real apostrophes (Framer converts straight ones, Field-tested), no widows in headlines
   (`textWrap="balance"`).
 - Every link and button goes somewhere real; forms submit and show success.

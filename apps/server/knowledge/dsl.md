@@ -69,12 +69,12 @@ something else; every rule here was seen on a live project.
 - A link to `/#id` needs the target section to have `elementId` and `scrollTargetEnabled` first. Without it the call
   errors, but the node keeps the link cut to the page path (no `#id`), which `links_check` does not flag: set it again
   once the target exists (build navigation last).
-- A section link needs two more things than its target, or it jumps and hides the heading (seen on a template,
-  06.10.2026): `link.smoothScroll="true"` on every frame that carries a link to `#id`, inside components too (the
-  button and nav link variants: the instance's link control does not carry it), and `scrollMarginTop` on each target
-  section, the sticky header's height plus a gap minus the section's top padding (header 84px, padding 40px:
-  `scrollMarginTop="76px"`), with its own value on breakpoints where the header or padding differ. Component changes
-  after a publish reach the live site only with the next publish, and `publish_status` lists only changed pages.
+- A section link needs two more things than its target, or it jumps and the header hides the heading:
+  `link.smoothScroll="true"` on every frame that carries a link to `#id`, inside components too (the button and nav
+  link variants: the instance's link control does not carry it), and `scrollMarginTop` on each target section, the
+  sticky header's height plus a gap minus the section's top padding (header 84, gap 32, padding 40: `76px`), with its
+  own value on breakpoints where the header or padding differ. Component changes after a publish reach the live site
+  only with the next publish, and `publish_status` lists only changed pages.
 - External links start with `https://`: `link.href="www.example.com"` is stored as is, without a warning, and becomes
   the relative path `/www.example.com`. `links_check` does not catch it.
 - Site and page settings: read them with `site_settings_get` and change them with `site_settings_set`, which writes
@@ -90,18 +90,18 @@ something else; every rule here was seen on a live project.
 
 - A page is a primary breakpoint frame plus copies (replicas): add them with `breakpoints_add` (Tablet 810, Phone 390;
   with a key `CREATE_VARIANT` works too) before giving text styles breakpoint sizes.
-- `$rect` in `nodes_read` can be stale (a primary just set to 1440 read 1200×1080) and is missing on nodes inside
-  stacks: judge sizes from screenshots. After widening the primary, `breakpoints_add` placed Tablet from the old width,
-  on top of Desktop. When the lint says "Ground nodes overlap each other", set the copies' `left` (1540, 2450…).
+- `$rect` in `nodes_read` can be stale (right after a size change it still shows the old size) and is missing on nodes
+  inside stacks: judge sizes from screenshots. After the primary is widened, `breakpoints_add` places Tablet from the
+  old width, on top of Desktop: when the lint says "Ground nodes overlap each other", set the copies' `left` (1540,
+  2450…).
 - Build and delete layers in the primary breakpoint only. Adapt a breakpoint by overriding its copy of a node, by the
   compound id `<breakpoint id><node id>` (real ids, not temp ids from the same batch). A copy takes overrides only: no
   new layers inside it; a layer that should not show there gets `visible="false"` on its copy.
-- A different order on a breakpoint: a `MOVE` of a copy is accepted and `nodes_read` shows it, but the breakpoint was
-  seen to keep the primary's order. Add a second layer at the new position in the primary, hidden there and shown on
+- A different order on a breakpoint: a `MOVE` of a copy is accepted and `nodes_read` shows it, but the breakpoint keeps
+  rendering the primary's order. Add a second layer at the new position in the primary, hidden there and shown on
   that breakpoint, and hide the original on that breakpoint. Check it with `node_screenshot`.
-- Breakpoints take only `flowEffect` and `pageEffects`. `layout_audit` reports what a narrow breakpoint kept from
-  desktop (narrow-* findings).
-- `breakpoints_add` works on pages only. A layout template gets its breakpoints with `design_apply` dsl (`layout`,
+- Breakpoints take only `flowEffect` and `pageEffects`.
+- `breakpoints_add` works on pages only; a layout template gets its breakpoints with `design_apply` dsl (`layout`,
   Breakpoints).
 
 ## Silent pitfalls
@@ -232,7 +232,9 @@ something else; every rule here was seen on a live project.
 
 ## Springs: what Framer stores
 
-Every transition is a spring (design_guide motion), but which spring Framer keeps depends on the attribute:
+Every transition is a spring (`motion`, Transitions), except a progress indicator that shows time, which is a linear
+`tween 0,0,1,1 <duration> 0s` that `design_apply` leaves as written (`motion`, States first). Which spring Framer
+keeps depends on the attribute:
 
 - `styleTransformEffect.transition` keeps `spring-physics <stiffness> <damping> <mass> <delay>`; a `spring-duration`
   written there turns into Framer's default physics 500 60 1.
@@ -260,7 +262,8 @@ Every transition is a spring (design_guide motion), but which spring Framer keep
   for fade-ins), write a spring without bounce instead.
 - Appear: `appearEffect` `onMount` above the fold, `onInView` below it, from opacity 0 and a small y (8–24), a spring
   without bounce (`spring-duration 0.5s 0 <delay>`), delays in steps for a sequence. `appearEffect.replay="false"`
-  makes `onInView` play once. An appear on a layer fully clipped in its start state never plays.
+  makes `onInView` play once. An appear on a layer fully clipped in its start state never plays (`motion`, Appear
+  needs a visible layer).
 - Page transitions are `pageEffects` on a page's primary breakpoint (`design_guide` motion, Page transitions).
 - Hover on surfaces: `hoverEffect.backgroundColor` or `opacity`, and always `hoverEffect.scale="1"` with it: Framer
   fills in 1.1 by itself, which jumps. Scale only when asked.
@@ -296,19 +299,9 @@ Every transition is a spring (design_guide motion), but which spring Framer keep
   is refused ("Expected a ComponentNode id"). Framer adds the primary variant, and `offsetY` defaults to 20px, so write
   it. Leave `customCursor.transition` unset, as Framer's guide advises. Touch screens show no cursor; check it in
   Preview.
-- A scroll-pinned step section: the section (no zIndex) holds an absolute Background block z0 with its own gradient,
-  then a transparent `position="sticky"` stage of 100vh (zIndex 2), then static copies of the later steps, 100vh each
-  (instances of the step component, `scrollTargetEnabled` + `elementId`): they give the section its height, show every
-  step in the editor and are the scroll targets. Hide the copies on the site with a `styleTransformEffect` whose states
-  have opacity 0.
-- `scrollVariantEffect` switches when a target's top crosses threshold × viewport height (0.5 = the middle) and keeps
-  the last target's variant after it. Write its sections when the node is created: a `SET` of its sections on an
-  existing node is ignored, so recreate the instance to change them.
-- `styleTransformEffect` `onScrollTarget` follows the scroll linearly from the previous state to each target's state
-  while the target passes the viewport line; the transition only smooths it. A continuous change (a progress arc, a
-  bar) needs one target over the whole range. A new one starts from a preset with `opacity 0.5` and `scale 0.5` in its
-  first section: write `sections.0.opacity` and `sections.0.scale` (1 unless wanted). List item numbers go unquoted:
-  `sections.0.opacity=0.15`.
+- Scroll effects (`styleTransformEffect`, `scrollVariantEffect`, pinned step sections, horizontal galleries): `motion`.
+  A new `styleTransformEffect` starts from a preset with `opacity 0.5` and `scale 0.5`, and `scrollVariantEffect`
+  takes its sections only when its node is created.
 
 ## Assets
 
@@ -331,9 +324,9 @@ Every transition is a spring (design_guide motion), but which spring Framer keep
   `components_read`'s `framer` list and read its controls first (`components_read` with that id).
 - Video as a background: `$control__source="Upload"` `$control__file="<file_upload url>"`, loop, muted, playing,
   `fit` cover and a poster image, pinned to all sides with width and height 100%. Re-encode it first (H.264, no audio,
-  faststart, under 4 MB). In a reel that switches clips by variants, every clip loads and plays at once (seen: 7.6 MB
-  on a phone's first load with three clips): set `$control__playing="false"` on the clips a variant does not show,
-  give each clip a poster (its first frame, so nothing flashes), and show one clip or the poster on phones.
+  faststart, under 4 MB). Media a state does not show still loads and plays: in a reel or slider that switches clips
+  by variants, every clip loads at once. Set `$control__playing="false"` on the clips a variant does not show, give
+  each clip a poster (its first frame, so nothing flashes), and show one clip or the poster on phones.
 - Slideshow and Carousel slots take layers that are direct children of the page (beside the breakpoints). A Countdown
   date takes midnight only. A font control: `$control__font.fontSelector="GF;<Family>-<weight>"` and `fontSize`; one
   invalid field drops the whole font. Its `lineHeight` and `letterSpacing` are `[value, unit]` pairs (`[1.16,"em"]`),

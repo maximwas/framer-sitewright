@@ -17,7 +17,8 @@
   client serves. No posed studio portraits, corporate headshots, gadgets on a bed, or brand logos (browser and app
   icons) in a template. A photo set between words shows those words.
 - **Pick by looking:** query about eight candidates per slot, view the thumbnails side by side, and take each slot from
-  a different shoot.
+  a different shoot. Before handover look at every photo of the site together: the same person in two different files
+  passes every file check.
 - **People must read:** testimonials and contact blocks show the face plainly, in a setting that fits the role. Crop
   tight (Unsplash URLs take `&rect=x,y,w,h` or `&crop=faces`) and look at the crop at its real size.
 
@@ -28,8 +29,8 @@
 - **Place:** an absolute `Background` frame pinned `0px` on four sides with `pointerEvents="none"`, holding the
   `+ShaderNode` pinned the same way, with a gradient shade above it for text. Colors go one per index
   (`$control__colors.0="#04161A"` …; up to 8 on liquid-gradient, 4 on wave-gradient); a color token is accepted there.
-- **Color:** the palette's base and ink tones and one second hue, never the action accent: an orange accent flooded
-  half a hero and broke the button's contrast.
+- **Color:** the palette's base and ink tones and one second hue, never the action accent: the accent then floods
+  the background and the buttons lose their contrast.
 - **Image shaders** (fluted-glass and others) take `$control__texture.src` and `$control__texture.alt` (any https
   image; Framer re-uploads it).
 - **`shader` cannot change** through `SET`: delete the node and add a new one. Its controls can change. Screenshots
@@ -45,7 +46,8 @@
 - **Place:** `+IconNode i1 parent="…" set="<set id>" $control__icon="<exact name>";` plus the set's own controls
   (`$control__color`, Lucide's `$control__width`).
 - **Phosphor icons are outlines until `$control__alpha="1"`:** a filled star for a rating needs it.
-- **One icon set per site.** Lucide gives clean arrows. Phosphor "Arrow Right" rendered on the web as "–▷".
+- **One icon set per site,** and check its arrows on the published site: some sets draw them differently on the web
+  than on the canvas (Phosphor's "Arrow Right" as "–▷"). Lucide gives clean arrows.
 - **A new item in a project vector set** that the session cannot see ("does not exist in set") needs a new session
   (see [verify.md](verify.md)).
 
@@ -56,8 +58,8 @@
   - The API reads vector sets but cannot add to them. Ask the user to add the SVG there.
   - Then place it as an `IconNode` of that set, in a wrapper with `width="1fr"` and `aspectRatio`. For full width, pin
     the wrapper `left`, `right`, `top` 0 and give it `aspectRatio`.
-  - A fixed-size IconNode (1144×229px) in a wrapper without stack layout rendered 100px tall on the site, although the
-    canvas looked right.
+  - A fixed-size IconNode in a wrapper without stack layout can render at another size on the site than on the
+    canvas: size it through a stack wrapper with `aspectRatio`.
   - A set item's canvas is 40×40 until the user crops it to the logo.
 - **`framer.addSVG` failed through the Server API** with "Failed to optimize SVG", with and without width and height.
   Fallbacks:

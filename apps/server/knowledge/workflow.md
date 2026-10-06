@@ -33,8 +33,7 @@ and `no-key` when there is no Server API key.
   languages, features, SEO and handoff; then plan, screens, analytics and accessibility.
 - Ask in rounds of up to four questions, with each question's options. Where it says `propose`, make the proposals
   for this project: three concepts (step 2), each implying its own palette and type, rather than palettes and font
-  pairings as separate options. `marketplace_browse` shows the category's conventions and production level, never
-  the idea.
+  pairings as separate options.
 - Ask for positioning too, even where the brief has no question for it: what the visitor would use instead (the
   alternatives), what is genuinely different, the proof that exists (cases, numbers, reviews) and how success is
   measured. Ask for the voice as three "X but not Y" pairs (warm but not cute) plus words to use and avoid: mood
@@ -61,11 +60,14 @@ and `no-key` when there is no Server API key.
   `component_insert`.
 - Before offering a Marketplace component, check it without a cursor and without the canvas. Trails, tilts and
   magnetic effects do nothing on touch: give their area a background of its own and hide cursor hints on phone. On the
-  canvas, counters show 00 and reveals show their end state: check them in Preview. Turn off debug defaults (Circular
-  Spin Text ships `showHitAreaGuide` on) and calm loud ones (Noise Grain at its default opacity 0.5 dirties text;
-  0.1–0.12 works). Scroll-pinned carousels take over the scroll: not for product lists. A smart component keeps its
-  own fonts, colors and transition: make it local and restyle it (`component_make_local`), or build it natively.
-  Marketplace components expose no events, so they cannot set page variables or drive each other.
+  canvas, counters show 00 and reveals show their end state: check them in Preview. Scroll-pinned carousels take over
+  the scroll: not for product lists. Marketplace components expose no events, so they cannot set page variables or
+  drive each other.
+- A component's defaults are its author's design, not the site's: go through every control that shapes it. Turn off
+  debug aids (hit-area guides), calm loud effects (a grain overlay above about 0.12 opacity dirties text), replace a
+  tween with a spring, set offsets that show slivers of other slides to 0 unless a stack is meant, size the slides so
+  the next one peeks to the content edge, and give them one height. A smart component keeps its own fonts, colors and
+  transition: make it local and restyle it (`component_make_local`), or build it natively.
 
 ## 2. Concept before any style (write it out, then check it)
 
@@ -106,8 +108,8 @@ type come after it and cite it.
 Write a compact plan in the conversation, each choice with its source in the concept:
 
 1. **Palette:** 4–6 named values with hex: two or three neutrals from the world's materials and one accent that exists
-   in that world ("stamp red: the station stamp"). Pick the photos first, on one contact sheet (`images_search`, eight
-   or more per slot): they decide the light, the crop and the accent. Sample the accent from them and name the token
+   in that world (`direction`, Color). Pick the photos first, on one contact sheet (`images_search`, eight or more
+   per slot): they decide the light, the crop and the accent. Sample the accent from them and name the token
    after its source.
 2. **Type:** one workhorse and at most two voices, each with a job (quotes, data, the maker's hand); display size,
    weight, tracking and line height; body size. Check the script the site's language needs (Cyrillic, accents).
@@ -143,6 +145,8 @@ Then read `direction` ("Looks that read as generated") and change every part tha
   same side padding) — the header and footer too.
 - One `design_apply` batch per section. Set `stackAlignment` and `stackDistribution` explicitly on every stack you
   create; never rely on Framer's defaults (a stack centers its children by default).
+- Before building anything that moves or responds (a menu, slider, tabs, accordion, reel, scroll effect), write its
+  states and transitions and build every row (`motion`, States first).
 - Read `design_apply`'s `audit` after every batch and fix every `defect` before the next section.
 
 ## 5. Breakpoints
@@ -150,18 +154,14 @@ Then read `direction` ("Looks that read as generated") and change every part tha
 - The set is Desktop 1440 (primary), Laptop 1280, Tablet 810 and Phone 390: set the primary's `width` to 1440, then
   add the others with `breakpoints_add` (no key needed). A layout template gets the same set through `design_apply`
   (`layout`, Breakpoints): `breakpoints_add` takes pages only.
-- Add every breakpoint **before** giving text styles their sizes (`text_styles_upsert` breakpoints): a style's slots
-  start at the page's breakpoints as they are when you write them. A breakpoint added later leaves the old slot
-  starts, and `text_styles_upsert` then refuses new slots ("would not start in order") until the style is recreated.
-  Give every page the set first, the home page included: slots count the site's breakpoints, not only the page you
-  style (seen: `/` at Desktop 1200 next to a page at 1440/810/390 gave slots 1200/810/0, so 1200–1439 showed desktop
-  type on the tablet layout). Read the starts back with `text_styles_list`.
-- Adapt each breakpoint by overriding its copies with `design_apply` xml, by compound id
-  `<breakpoint id><node id>` (`nodes_read` on the breakpoint lists them): section padding ×0.5 on phone, side padding
-  16–24px, grids of 3+ columns become one column (`layout="stack" stackDirection="vertical"`), columns side by side
-  stack vertically, images keep their `aspectRatio`, the header keeps the wordmark and one action (the other links get
-  `visible="false"` on their copies) unless there is a menu component.
-- New layers go into the primary breakpoint; a copy takes overrides, not children.
+- Give every page the set, the home page included, **before** giving text styles their sizes (`text_styles_upsert`
+  breakpoints). A style's slots start at the site's breakpoints as they are when you write them, counted over every
+  page, not only the one you style: a breakpoint added later, or a page left at another width, leaves slot starts
+  that put desktop type on the tablet layout, and `text_styles_upsert` then refuses new slots ("would not start in
+  order") until the style is recreated. Read the starts back with `text_styles_list`.
+- Adapt each breakpoint by overriding its copies with `design_apply` xml, by compound id `<breakpoint id><node id>`
+  (`nodes_read` on the breakpoint lists them; mechanics in `dsl`, Breakpoints), with the changes `layout`,
+  Breakpoints lists. New layers go into the primary breakpoint; a copy takes overrides, not children.
 - `layout_audit` lists what a narrow breakpoint kept from desktop (`narrow-grid`, `narrow-row`, `narrow-padding`,
   `narrow-type`): fix them all.
 
@@ -170,6 +170,8 @@ Then read `direction` ("Looks that read as generated") and change every part tha
 - `layout_audit` on the page: fix every defect, then the likely ones; weigh the taste ones against the direction.
 - Look at it: with a key, `node_screenshot` of every breakpoint; without one, ask the user to look, or publish only
   when they ask. Run the checklist in `verify`.
+- Go through every states list on the published site (or Preview) in a real browser (`verify`, Behaviour in a real
+  browser): a static screenshot is not enough for anything that moves or responds.
 - Tell the user what is still needed from them (images, copy, fonts) and which taste findings you kept on purpose,
   and what only they can set, with where to click (no tool reaches it): each form's Send To destination (email, Google
   Sheets or a webhook, a redirect after submit) and its spam protection; the site's language; connecting a domain;
