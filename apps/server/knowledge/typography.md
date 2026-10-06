@@ -8,8 +8,16 @@ Honorable Mentions, framer.com) at 1440, 810 and 390.
 - One or two families. A monospace for small metadata or a display face for numbers is the only third voice.
 - **Inter is fine; Inter on defaults is not.** Top sites set Inter at display sizes with tracking −0.035…−0.07em, line
   height 0.77–1.0, left-aligned. The generated look is Inter at 48–64px, tracking 0, line height 1.2, weight 600–700,
-  centered. Pick a family for the brief with `fonts_search` (Geist, Satoshi, General Sans, Switzer, Manrope, Instrument
-  Sans, a serif for an editorial brief) and set it on purpose.
+  centered.
+- **Pick the family from the concept, not from the usual list.** Satoshi, General Sans, Switzer and Inter are the most
+  common free picks; reach past them with `fonts_search` and `fonts_discover` (Google Fonts and Fontshare by category,
+  trend and novelty). A workhorse plus at most two voices, each with a job (quotes, data, the maker's hand); say why
+  each fits.
+- **Check the language before the look.** `fonts_discover` `script` (cyrillic for Ukrainian) and the specimen for the
+  site's own signs: a family can cover Cyrillic and still lack ₴, and Framer silently draws a missing sign in another
+  face. Display line heights under 0.9 make accents and Cyrillic descenders collide: check a real heading.
+- **License:** Google Fonts and Framer's built-in library are free everywhere. Fontshare's files (ITF FFL v2.0) may be
+  uploaded only to the user's own site: for a client's site or a sold template use the family from Framer's library.
 
 ## Scale and hierarchy
 
