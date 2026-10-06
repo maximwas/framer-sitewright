@@ -16,6 +16,8 @@ export const WebFontSchema = z.object({
   variable: z.boolean(),
   license: z.string(),
   specimen: z.string(),
+  /** Writing systems it covers (latin, cyrillic, greek…). A currency sign such as ₴ may still be missing: check it in the specimen. */
+  scripts: z.array(z.string()),
   /** Whether Framer's font library has the family, so text styles can use it without an upload; null: no project to ask. */
   inFramer: z.boolean().nullable(),
   /** woff2 files to upload with file_upload when Framer's library lacks the family (only when files was asked for). */
@@ -25,6 +27,11 @@ export const WebFontSchema = z.object({
 export const FontsDiscoverInputSchema = z.strictObject({
   query: z.string().min(2).exactOptional().describe('Words of a family name, e.g. "grotesk" or "satoshi".'),
   category: z.enum(FONT_CATEGORIES).exactOptional(),
+  script: z
+    .string()
+    .min(2)
+    .exactOptional()
+    .describe('Only families that cover this script, e.g. "cyrillic" for a Ukrainian site, "greek", "vietnamese".'),
   source: z
     .enum([...FONT_SOURCES, "all"])
     .default("all")

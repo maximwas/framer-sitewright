@@ -4,7 +4,7 @@ import { rankFonts } from "../src/utils/fonts-web.ts";
 
 const GOOGLE = `)]}'
 {"familyMetadataList":[
-  {"family":"Inter","category":"Sans Serif","fonts":{"400":{},"700":{},"400i":{}},"axes":[{"tag":"wght"}],"popularity":3,"trending":40,"dateAdded":"2017-01-01","isNoto":false},
+  {"family":"Inter","category":"Sans Serif","fonts":{"400":{},"700":{},"400i":{}},"axes":[{"tag":"wght"}],"popularity":3,"trending":40,"dateAdded":"2017-01-01","isNoto":false,"subsets":["menu","cyrillic","latin"]},
   {"family":"Fraunces","category":"Serif","fonts":{"300":{},"900":{}},"axes":[],"popularity":220,"trending":5,"dateAdded":"2020-06-01","isNoto":false},
   {"family":"Noto Sans Tamil","category":"Sans Serif","fonts":{"400":{}},"axes":[],"popularity":900,"trending":900,"dateAdded":"2019-01-01","isNoto":true},
   {"family":"Google Sans","category":"Sans Serif","fonts":{"400":{}},"axes":[],"popularity":1,"trending":1,"dateAdded":"2025-01-01","isNoto":false,"isBrandFont":true}
@@ -15,6 +15,7 @@ const FONTSHARE = JSON.stringify({
     {
       name: "Satoshi",
       slug: "satoshi",
+      script: "Latin",
       category: "Sans",
       license_type: "itf_ffl",
       views: 4_000_000,
@@ -84,6 +85,19 @@ describe("web font catalogs", () => {
     expect(satoshi?.license).toMatch(/ITF Free Font License/);
     expect(zodiak).toMatchObject({ category: "serif" });
     expect(zodiak?.license).toMatch(/Open Font License/);
+  });
+
+  it("regression: says which scripts a family covers and finds those for the site's language (seen: no ₴ in a Latin-first pick)", () => {
+    const fonts = [...parseGoogleFonts(GOOGLE), ...parseFontshare(FONTSHARE)];
+
+    expect(fonts.find(({ family }) => family === "Inter")?.scripts).toEqual(["cyrillic", "latin"]);
+    expect(fonts.find(({ family }) => family === "Satoshi")?.scripts).toEqual(["latin"]);
+    expect(
+      rankFonts(fonts, {
+        sort: "popular",
+        script: "cyrillic",
+      }).map(({ family }) => family),
+    ).toEqual(["Inter"]);
   });
 
   it("takes the woff2 file of each @font-face rule with its weight and style", () => {

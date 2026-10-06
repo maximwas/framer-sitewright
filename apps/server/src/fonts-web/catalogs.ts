@@ -79,6 +79,10 @@ export function parseGoogleFonts(body: string): CatalogFont[] {
         popularity: numberOr(entry["popularity"], Number.MAX_SAFE_INTEGER),
         trending: numberOr(entry["trending"], Number.MAX_SAFE_INTEGER),
         added: String(entry["dateAdded"] ?? ""),
+        // "menu" is the subset of the family's own name, not a script.
+        scripts: Array.isArray(entry["subsets"])
+          ? entry["subsets"].filter((subset): subset is string => typeof subset === "string" && subset !== "menu")
+          : [],
         slug: null,
       },
     ];
@@ -124,6 +128,7 @@ export function parseFontshare(body: string): CatalogFont[] {
         popularity: popularity(entry),
         trending: trending(entry),
         added: String(entry["inserted_at"] ?? "").slice(0, 10) || String(index),
+        scripts: typeof entry["script"] === "string" ? [entry["script"].toLowerCase()] : ["latin"],
         slug: entry["slug"],
       },
     ];

@@ -34,6 +34,7 @@ export async function discoverFonts(transports: TransportRouter, input: FontsDis
       variable: font.variable,
       license: font.license,
       specimen: font.specimen,
+      scripts: [...font.scripts],
       inFramer,
       files:
         input.files && inFramer !== true && font.slug !== null ? await fontshareFiles(font.slug, font.weights) : [],

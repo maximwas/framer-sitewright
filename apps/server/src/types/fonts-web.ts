@@ -26,6 +26,8 @@ export interface CatalogFont {
   readonly trending: number;
   /** When the catalog added it, ISO date. */
   readonly added: string;
+  /** Writing systems it covers, lower case: latin, cyrillic, greek… */
+  readonly scripts: readonly string[];
   /** Fontshare's slug, for its CSS API. */
   readonly slug: string | null;
 }
