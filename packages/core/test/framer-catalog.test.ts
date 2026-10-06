@@ -12,6 +12,12 @@ it("lists Framer's own components with their ids, which design_apply places like
         displayName: "Video",
         keywords: "video player",
       },
+      // Framer gives some of its own components no keywords (seen: components_read failed on the whole catalog).
+      {
+        id: "o1PI5S8YtkA5bP5g4dFz",
+        displayName: "Embed",
+        keywords: null as never,
+      },
     ],
   });
   const result = await runOperation(componentsRead, { runtime }, { ids: [] });
@@ -21,6 +27,11 @@ it("lists Framer's own components with their ids, which design_apply places like
       id: "lRDHiNWNVWmE0lqtoVHP",
       name: "Video",
       keywords: "video player",
+    },
+    {
+      id: "o1PI5S8YtkA5bP5g4dFz",
+      name: "Embed",
+      keywords: null,
     },
   ]);
 });
