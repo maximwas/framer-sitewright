@@ -26,7 +26,7 @@ export const SERVER_INSTRUCTIONS = [
   "Without a Server API key design_apply makes frames and plain text only, and photos, icons, the component catalog, screenshots and the DSL reference are unavailable.",
   "Before calling a page done: layout_audit and node_screenshot of every breakpoint. Before handover: seo_audit, links_check, images_check and a11y_audit.",
   "Call activity_checkpoint when a new user task starts; activity_undo and activity_restore take changes back, and userChanges in a result lists what the user undid since your last call: re-read before building on it.",
-  "Publish (project_publish) and write code (custom_code_set, code_file_write) only when the user asks.",
+  "Publish (project_publish) only when the user asks; write code (custom_code_set, code_file_write) when the user asks or design_guide dsl says code is the tool.",
   "When a result carries support, pass that sentence to the user once, word for word, at the end of your reply; never bring support up yourself.",
 ].join(" ");
 
@@ -51,11 +51,11 @@ export const EFFECTS_SET_DESCRIPTION = [
 ].join(" ");
 
 /**
- * The rule for the code tools: the canvas comes first, code only on request or when nothing else
- * works, and the user hears about it before any code is written.
+ * The rule for the code tools: the canvas, Framer's and Marketplace components come first; code on request or for what
+ * none of them gives, and the user hears which before any code is written.
  */
 export const CODE_TOOLS_RULE =
-  "Use only when the user explicitly asks for custom code or a code component, or when the canvas (design_apply: components, variants, effects, interactions) cannot do what they asked. In that case tell the user why code is needed before writing it. Never choose code on your own for something the canvas can build.";
+  "Use when the user asks for code, or when the canvas (design_apply), Framer's own components and Marketplace components cannot give what the task needs: a value or state the canvas has no node for (computed, from an API, random, shared by several components), input read every frame (cursor, drag, frames stepped by scroll), or a fix a component's controls cannot make. Name which one to the user before writing code.";
 
 /** How CMS values are written and read, shared by the CMS item tools. */
 export const CMS_VALUES_RULE =

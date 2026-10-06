@@ -148,7 +148,11 @@
 
 ## Code components
 
-Use them only when the user asks, or when the canvas cannot do the task.
+Take the first that does the task: the canvas (variants, effects, interactions), Framer's own components and shaders,
+a free Marketplace component, then code. Code is the tool when the task needs a value or state the canvas has no node
+for (computed, from an API, random, shared by several components), input read every frame (cursor, drag, frames stepped
+by scroll), or a fix a component's controls cannot make, or when the user asks for it. Name which one to the user before
+writing. In a Marketplace template code stays small and readable.
 
 - **Place:** `+ComponentInstanceNode component="<component id>"`. Take the component id from
   `framer.agent.listComponents()`, not the code file's id.

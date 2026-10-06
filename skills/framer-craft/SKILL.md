@@ -63,8 +63,8 @@ experienced Framer creators and Framer's help center.
 - **Visuals:** photos in one warm, candid art direction from the subject's world, picked side by side
   ([assets.md](references/assets.md)); icons are interface, never a section's visual (**Practice**,
   [distinct-design.md](references/distinct-design.md)).
-- **Code** (code components, custom code, overrides) only when the user asks or the canvas cannot do the task: say why
-  first.
+- **Code** (code components, custom code, overrides): only in the cases [components.md](references/components.md),
+  Code components, names, and say which one first.
 
 ## References
 
