@@ -37,6 +37,10 @@ export interface AgentPort {
   /** Components by group: `{ project: { canvas, code }, external, additional }`. */
   listComponents(): Promise<unknown>;
   readComponentControls(input: { componentIds: string[] }): Promise<unknown>;
+  /** The project context Framer's own agent starts with: fonts, `<available-shaders>`, the site map… */
+  getContext(): Promise<string>;
+  /** Shader control definitions by shader name: `{ <name>: { <control>: … } }`. */
+  readShaderControls(input: { shaderNames: readonly string[] }): Promise<unknown>;
   /** Project queries, e.g. `{ type: "implementation-guide-from-index", name: "FAQ" }`: `{ results }`, one per query. */
   readProject(queries: Record<string, unknown>[], options?: PageScope): Promise<unknown>;
 }

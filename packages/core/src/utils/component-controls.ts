@@ -10,11 +10,16 @@ export function withComponentFacts(controls: unknown, node: unknown): unknown {
     return controls;
   }
 
-  const variants = Array.isArray(node.$variants)
-    ? node.$variants.flatMap((variant) =>
-        isPlainObject(variant) && typeof variant.name === "string" ? [variant.name] : [],
-      )
-    : [];
+  // A hover or pressed variant carries its base's name: each name is one option.
+  const variants = [
+    ...new Set(
+      Array.isArray(node.$variants)
+        ? node.$variants.flatMap((variant) =>
+            isPlainObject(variant) && typeof variant.name === "string" ? [variant.name] : [],
+          )
+        : [],
+    ),
+  ];
   const variables = new Map(
     (Array.isArray(node.variables) ? node.variables : []).flatMap((variable) =>
       isPlainObject(variable) && typeof variable.key === "string" ? [[variable.key, variable] as const] : [],

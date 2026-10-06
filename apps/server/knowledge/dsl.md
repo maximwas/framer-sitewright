@@ -180,6 +180,24 @@ Every transition is a spring (design_guide motion), but which spring Framer keep
   a project vector set given to an instance's icon control is ignored by Framer (design_apply warns): bind it inside
   the component, or give the component a variant per icon.
 
+## Framer's own components and shaders
+
+- Framer's own components (Video, YouTube, Google Maps, Embed, Slideshow, Carousel, Countdown, Locale Selector, Cookie
+  Banner, Search…) are placed with `<ComponentInstanceNode component="<id>">` like the project's: take the id from
+  `components_read`'s `framer` list and read its controls first (`components_read` with that id).
+- Video as a background: `$control__source="Upload"` `$control__file="<file_upload url>"`, loop, muted, playing,
+  `fit` cover and a poster image, pinned to all sides with width and height 100%. Re-encode it first (H.264, no audio,
+  faststart, under 4 MB).
+- Slideshow and Carousel slots take layers that are direct children of the page (beside the breakpoints). A Countdown
+  date takes midnight only. A font control: `$control__font.fontSelector="GF;<Family>-<weight>"` and `fontSize`; one
+  invalid field drops the whole font.
+- Shaders (`shaders_read`): one per page, as a hero or section background: an absolute Background frame with the
+  `ShaderNode` pinned to all sides and a shade above it for text. Gradient shaders take up to 8 colors: the palette's
+  base and ink tones and one second hue, never the action accent; a token follows dark mode.
+- `codeOverride` takes a code override's full id `codeFile/<fileId>:<export>` (only while code is switched on).
+- `onKeyDown` keeps its action but drops the key (`controls.key` is not stored): a handler without a key fires on any
+  key, Tab included. A lightbox closes on Escape by itself; a modal does not.
+
 ## Checking
 
 - Verify visual changes with `node_screenshot` on every breakpoint; a component is captured through its primary

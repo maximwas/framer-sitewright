@@ -93,6 +93,7 @@ const EXPECTED_TOOLS = [
   "redirects_set",
   "selection_get",
   "seo_audit",
+  "shaders_read",
   "svg_add",
   "text_replace",
   "text_styles_delete",

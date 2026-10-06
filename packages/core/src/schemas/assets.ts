@@ -42,6 +42,15 @@ export const ComponentCatalogSchema = z.looseObject({
       canvas: [],
       code: {},
     }),
+  /** Framer's own components (Video, Google Maps, Embed, Slideshow, Carousel…), placed like the project's by id. */
+  additional: z.array(CatalogEntrySchema.extend({ keywords: z.string().optional() })).default([]),
+});
+
+/** One shader as getContext()'s <available-shaders> lists it. */
+export const ShaderEntrySchema = z.object({
+  name: z.string(),
+  title: z.string().optional(),
+  keywords: z.string().optional(),
 });
 
 /** One component's controls as readComponentControls answers: `{ controls: { $control__icon: { type, set } } }`. */

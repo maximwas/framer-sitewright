@@ -38,6 +38,11 @@ it("regression: lists the variants and option values the component really has (s
         id: "mKXefQ77h",
         name: "Slide 3",
       },
+      // A hover variant carries its base's name: it is no option of its own (seen: ["Default", "Active", "Default"]).
+      {
+        id: "hov1",
+        name: "Slide 1",
+      },
     ],
     variables: [
       {

@@ -8,13 +8,13 @@ export function registerComponentTools(server: McpServer, context: ToolContext):
     name: "components_read",
     title: "Read components",
     description:
-      "Lists the project's components with their exact controls ($control__variant options, $control__<name> for each variable) before you place or change instances. Control names are the ones listed here, e.g. $control__showIcon; do not derive them from variable names. Code components are listed in codeComponents: place one with +ComponentInstanceNode component=\"<id>\". Needs the project's Server API key (framer_status shows whether it is set).",
+      "Lists the project's components with their exact controls ($control__variant options, $control__<name> for each variable) before you place or change instances. Control names are the ones listed here, e.g. $control__showIcon; do not derive them from variable names. Code components are listed in codeComponents and Framer's own (Video, Google Maps, Embed, Slideshow, Carousel, Countdown, Cookie Banner, Search…) in framer: place any of them with +ComponentInstanceNode component=\"<id>\", and pass its id in ids to read its controls first. Needs the project's Server API key (framer_status shows whether it is set).",
   });
   addOperationTool(server, context, componentInsert, {
     name: "component_insert",
     title: "Insert a component",
     description:
-      "Inserts a component by its module URL (framer.com/m/…): a free Marketplace component from marketplace_browse (moduleUrl), one of Framer's own like Video or YouTube, or a URL the user copied from the Insert menu. design_apply cannot: it takes only the project's own component ids. Then set its controls with design_apply ($control__…) or component_controls_set. Undo does not remove it.",
+      "Inserts a component by its module URL (framer.com/m/…): a free Marketplace component from marketplace_browse (moduleUrl), or a URL the user copied from the Insert menu. design_apply cannot take a URL; Framer's own components (Video, YouTube, Google Maps, Embed, Slideshow, Carousel, Countdown…) it places by the ids components_read lists in framer. Then set its controls with design_apply ($control__…) or component_controls_set. Undo does not remove it.",
   });
   addOperationTool(server, context, componentControlsSet, {
     name: "component_controls_set",

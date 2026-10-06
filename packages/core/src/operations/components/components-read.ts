@@ -36,6 +36,14 @@ export const componentsRead = defineOperation({
         file: z.string(),
       }),
     ),
+    /** Framer's own components: place one with +ComponentInstanceNode component="<id>", read its controls by id. */
+    framer: z.array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        keywords: z.string().nullable(),
+      }),
+    ),
   }),
   async run({ runtime }, { ids }) {
     const agent = requireAgent(runtime);
@@ -86,6 +94,11 @@ export const componentsRead = defineOperation({
       }),
       codeFiles: Object.keys(catalog.project.code),
       codeComponents,
+      framer: catalog.additional.map(({ id, displayName, keywords }) => ({
+        id,
+        name: displayName,
+        keywords: keywords ?? null,
+      })),
     };
   },
   describe({ ids }, { components, codeComponents }) {

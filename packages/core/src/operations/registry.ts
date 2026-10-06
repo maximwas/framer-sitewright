@@ -3,6 +3,7 @@ import { fileUpload } from "./assets/file-upload.ts";
 import { iconsSearch } from "./assets/icons-search.ts";
 import { imageUpload } from "./assets/image-upload.ts";
 import { imagesSearch } from "./assets/images-search.ts";
+import { shadersRead } from "./assets/shaders-read.ts";
 import { svgAdd } from "./assets/svg-add.ts";
 import { cmsCollectionCreate, cmsCollectionDelete, cmsCollectionsList } from "./cms/collections.ts";
 import { cmsFieldsSet } from "./cms/fields.ts";
@@ -100,6 +101,7 @@ const OPERATIONS: readonly AnyOperation[] = [
   contrastCheck,
   fontsInLibrary,
   effectsSet,
+  shadersRead,
 ];
 
 const byName = new Map(OPERATIONS.map((operation) => [operation.name, operation]));

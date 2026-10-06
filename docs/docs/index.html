@@ -688,14 +688,14 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="fonts_discover" data-tool="fonts_discover Discover fonts finds fonts beyond framer's library search, in google fonts and fontshare: by words of the name, category (sans, serif, display, slab, mono, handwriting) and order (popular, trending, new). each comes with its license in plain words (all are free for client sites and sold templates; fontshare's itf license forbids selling the font files themselves), its weights, a specimen link, and whether framer's library has it (inframer). propose two or three pairings from it, not only inter-like defaults. a family the library lacks: pass files true for its woff2 files, upload each with file_upload, then use the family in text_styles_upsert.">
+  <article class="tool" id="fonts_discover" data-tool="fonts_discover Discover fonts finds fonts beyond framer's library search, in google fonts and fontshare: by words of the name, category (sans, serif, display, slab, mono, handwriting) and order (popular, trending, new). each comes with its license in plain words, its weights, a specimen link, and whether framer's library has it (inframer). propose two or three pairings from it, not only inter-like defaults, and check the script the site needs (most fontshare families are latin only). google fonts (ofl) may be uploaded anywhere: pass files true for its woff2 files, upload each with file_upload, then use the family in text_styles_upsert. fontshare's license (itf ffl v2.0) allows uploading its files only to the user's own site: for a client's site or a sold template use a family with inframer true from framer's library.">
     <header>
       <h4><a href="#fonts_discover">fonts_discover</a></h4>
       <span class="badge read">Reads</span>
       <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
     </header>
     <p class="tool-title">Discover fonts</p>
-    <p>Finds fonts beyond Framer's library search, in Google Fonts and Fontshare: by words of the name, category (sans, serif, display, slab, mono, handwriting) and order (popular, trending, new). Each comes with its license in plain words (all are free for client sites and sold templates; Fontshare's ITF license forbids selling the font files themselves), its weights, a specimen link, and whether Framer's library has it (inFramer). Propose two or three pairings from it, not only Inter-like defaults. A family the library lacks: pass files true for its woff2 files, upload each with <a href="#file_upload"><code>file_upload</code></a>, then use the family in <a href="#text_styles_upsert"><code>text_styles_upsert</code></a>.</p>
+    <p>Finds fonts beyond Framer's library search, in Google Fonts and Fontshare: by words of the name, category (sans, serif, display, slab, mono, handwriting) and order (popular, trending, new). Each comes with its license in plain words, its weights, a specimen link, and whether Framer's library has it (inFramer). Propose two or three pairings from it, not only Inter-like defaults, and check the script the site needs (most Fontshare families are Latin only). Google Fonts (OFL) may be uploaded anywhere: pass files true for its woff2 files, upload each with <a href="#file_upload"><code>file_upload</code></a>, then use the family in <a href="#text_styles_upsert"><code>text_styles_upsert</code></a>. Fontshare's license (ITF FFL v2.0) allows uploading its files only to the user's own site: for a client's site or a sold template use a family with inFramer true from Framer's library.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
@@ -992,16 +992,16 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="assets" data-group>
-  <h3>Components and assets <span>10</span></h3>
+  <h3>Components and assets <span>11</span></h3>
   <p class="group-intro">Components and their controls, components from the Marketplace, icon sets, stock photos, your own images, files and SVG.</p>
-  <article class="tool" id="components_read" data-tool="components_read Read components lists the project's components with their exact controls ($control__variant options, $control__&lt;name&gt; for each variable) before you place or change instances. control names are the ones listed here, e.g. $control__showicon; do not derive them from variable names. code components are listed in codecomponents: place one with +componentinstancenode component=&quot;&lt;id&gt;&quot;. needs the project's server api key (framer_status shows whether it is set).">
+  <article class="tool" id="components_read" data-tool="components_read Read components lists the project's components with their exact controls ($control__variant options, $control__&lt;name&gt; for each variable) before you place or change instances. control names are the ones listed here, e.g. $control__showicon; do not derive them from variable names. code components are listed in codecomponents and framer's own (video, google maps, embed, slideshow, carousel, countdown, cookie banner, search…) in framer: place any of them with +componentinstancenode component=&quot;&lt;id&gt;&quot;, and pass its id in ids to read its controls first. needs the project's server api key (framer_status shows whether it is set).">
     <header>
       <h4><a href="#components_read">components_read</a></h4>
       <span class="badge read">Reads</span>
       <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
     </header>
     <p class="tool-title">Read components</p>
-    <p>Lists the project's components with their exact controls ($control__variant options, $control__&lt;name&gt; for each variable) before you place or change instances. Control names are the ones listed here, e.g. $control__showIcon; do not derive them from variable names. Code components are listed in codeComponents: place one with +ComponentInstanceNode component=&quot;&lt;id&gt;&quot;. Needs the project's Server API key (<a href="#framer_status"><code>framer_status</code></a> shows whether it is set).</p>
+    <p>Lists the project's components with their exact controls ($control__variant options, $control__&lt;name&gt; for each variable) before you place or change instances. Control names are the ones listed here, e.g. $control__showIcon; do not derive them from variable names. Code components are listed in codeComponents and Framer's own (Video, Google Maps, Embed, Slideshow, Carousel, Countdown, Cookie Banner, Search…) in framer: place any of them with +ComponentInstanceNode component=&quot;&lt;id&gt;&quot;, and pass its id in ids to read its controls first. Needs the project's Server API key (<a href="#framer_status"><code>framer_status</code></a> shows whether it is set).</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
@@ -1009,14 +1009,14 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="component_insert" data-tool="component_insert Insert a component inserts a component by its module url (framer.com/m/…): a free marketplace component from marketplace_browse (moduleurl), one of framer's own like video or youtube, or a url the user copied from the insert menu. design_apply cannot: it takes only the project's own component ids. then set its controls with design_apply ($control__…) or component_controls_set. undo does not remove it.">
+  <article class="tool" id="component_insert" data-tool="component_insert Insert a component inserts a component by its module url (framer.com/m/…): a free marketplace component from marketplace_browse (moduleurl), or a url the user copied from the insert menu. design_apply cannot take a url; framer's own components (video, youtube, google maps, embed, slideshow, carousel, countdown…) it places by the ids components_read lists in framer. then set its controls with design_apply ($control__…) or component_controls_set. undo does not remove it.">
     <header>
       <h4><a href="#component_insert">component_insert</a></h4>
       <span class="badge write">Changes</span>
       <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
     </header>
     <p class="tool-title">Insert a component</p>
-    <p>Inserts a component by its module URL (framer.com/m/…): a free Marketplace component from <a href="#marketplace_browse"><code>marketplace_browse</code></a> (moduleUrl), one of Framer's own like Video or YouTube, or a URL the user copied from the Insert menu. <a href="#design_apply"><code>design_apply</code></a> cannot: it takes only the project's own component ids. Then set its controls with <a href="#design_apply"><code>design_apply</code></a> ($control__…) or <a href="#component_controls_set"><code>component_controls_set</code></a>. Undo does not remove it.</p>
+    <p>Inserts a component by its module URL (framer.com/m/…): a free Marketplace component from <a href="#marketplace_browse"><code>marketplace_browse</code></a> (moduleUrl), or a URL the user copied from the Insert menu. <a href="#design_apply"><code>design_apply</code></a> cannot take a URL; Framer's own components (Video, YouTube, Google Maps, Embed, Slideshow, Carousel, Countdown…) it places by the ids <a href="#components_read"><code>components_read</code></a> lists in framer. Then set its controls with <a href="#design_apply"><code>design_apply</code></a> ($control__…) or <a href="#component_controls_set"><code>component_controls_set</code></a>. Undo does not remove it.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
@@ -1109,6 +1109,21 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <tr><th scope="row"><code>count</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>4</code></span></td></tr>
       <tr><th scope="row"><code>orientation</code></th><td><code class="type">&quot;landscape&quot; | &quot;portrait&quot; | &quot;squarish&quot;</code></td><td></td></tr>
       <tr><th scope="row"><code>width</code></th><td><code class="type">number</code></td><td>Twice the display width of the frame the image fills, for sharp images on dense screens.</td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="shaders_read" data-tool="shaders_read List shaders lists framer's shaders, animated backgrounds placed as a shadernode (liquid-gradient, mesh, wave-gradient, fluted-glass over a photo, particles…): which the site uses (onsite) and which it may add. pass names to read their controls (colors up to 8, speed, scale, seed…) before placing one: &lt;shadernode shader=&quot;&lt;name&gt;&quot; $control__colors.0=&quot;var(--token-&lt;id&gt;)&quot; …/&gt; in an absolute background frame pinned to all sides, with a shade above it for text. tint it with the palette's base and ink tones and one second hue, never the action accent; a token follows dark mode. one shader per page. needs the project's server api key.">
+    <header>
+      <h4><a href="#shaders_read">shaders_read</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">List shaders</p>
+    <p>Lists Framer's shaders, animated backgrounds placed as a ShaderNode (liquid-gradient, mesh, wave-gradient, fluted-glass over a photo, particles…): which the site uses (onSite) and which it may add. Pass names to read their controls (colors up to 8, speed, scale, seed…) before placing one: &lt;ShaderNode shader=&quot;&lt;name&gt;&quot; $control__colors.0=&quot;var(--token-&lt;id&gt;)&quot; …/&gt; in an absolute Background frame pinned to all sides, with a shade above it for text. Tint it with the palette's base and ink tones and one second hue, never the action accent; a token follows dark mode. One shader per page. Needs the project's Server API key.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>names</code></th><td><code class="type">string[]</code></td><td>Shader names to read the controls of; omit to list every shader.</td></tr>
       </tbody>
     </table></div>
   </article>

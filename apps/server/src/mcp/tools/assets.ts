@@ -7,6 +7,7 @@ import {
   imagesSearch,
   imageUpload,
   PRODUCT,
+  shadersRead,
   svgAdd,
 } from "@sitewright/core";
 import * as z from "zod";
@@ -88,5 +89,12 @@ export function registerAssetTools(server: McpServer, context: ToolContext): voi
     title: "Search icons",
     description:
       'Finds icons by name across Framer\'s icon sets (Phosphor, Lucide, Material, Feather, Logos for brand logos…) and returns the set ids, exact icon names and each set\'s controls. Insert with +IconNode set="<setId>" $control__icon="<exact name>"; never guess names. For an icon no set has, draw it as SVG (image_upload svg or svg_add). Needs the project\'s Server API key (framer_status shows whether it is set).',
+  });
+
+  addOperationTool(server, context, shadersRead, {
+    name: "shaders_read",
+    title: "List shaders",
+    description:
+      'Lists Framer\'s shaders, animated backgrounds placed as a ShaderNode (liquid-gradient, mesh, wave-gradient, fluted-glass over a photo, particles…): which the site uses (onSite) and which it may add. Pass names to read their controls (colors up to 8, speed, scale, seed…) before placing one: <ShaderNode shader="<name>" $control__colors.0="var(--token-<id>)" …/> in an absolute Background frame pinned to all sides, with a shade above it for text. Tint it with the palette\'s base and ink tones and one second hue, never the action accent; a token follows dark mode. One shader per page. Needs the project\'s Server API key.',
   });
 }

@@ -9,7 +9,7 @@ const BLOCKS = ["if", "for", "while", "do", "switch", "try"];
 
 export default [
   {
-    ignores: ["**/dist/**", "**/node_modules/**", "**/public/**", "agent/**"],
+    ignores: ["**/dist/**", "**/node_modules/**", "**/public/**", "agent/**", ".claude/**"],
   },
   {
     files: ["**/*.ts", "**/*.tsx"],

@@ -26,6 +26,15 @@ describe("springs Framer keeps", () => {
     expect(dsl).toBe('SET bp pageEffects.enter.transition="spring-physics 341 37 1 0s";');
   });
 
+  it("regression: leaves a drag's transition alone: Framer takes only inertia there and refuses any spring", () => {
+    const dsl = 'SET d dragEffect.transition="spring-physics 400 40 1 0s";';
+
+    expect(keptSprings(dsl)).toEqual({
+      dsl,
+      converted: [],
+    });
+  });
+
   it("measures how long a spring takes to settle", () => {
     // A critically damped spring (damping 2√(stiffness·mass)) settles in about 9.23 / √stiffness seconds.
     expect(settleSeconds(400, 40, 1)).toBeCloseTo(0.46, 1);

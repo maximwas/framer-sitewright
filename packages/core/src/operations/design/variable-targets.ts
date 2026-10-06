@@ -15,10 +15,25 @@ export async function loadVariableTargets(
   agent: AgentPort,
   pagePath: string,
   commands: readonly DslCommand[],
+  pageRoot: () => Promise<string | null> = async () => null,
 ): Promise<ReadonlySet<string>> {
-  const ids = planCapture(commands).targets.flatMap((target) =>
-    target.change === "updated" || target.change === "deleted" ? [target.id] : [],
+  const created = new Set(commands.flatMap((command) => (command.verb === "ADD" ? [command.id] : [])));
+  // A variable used in a value (var(--variable-<id>)) needs its scope loaded as much as one that is set.
+  const referenced = commands.flatMap((command) =>
+    Object.values(command.attributes).flatMap((value) =>
+      [...value.matchAll(/var\(--variable-([^)\s]+)\)/g)].flatMap(([, id]) =>
+        id === undefined || created.has(id) ? [] : [id],
+      ),
+    ),
   );
+  const ids = [
+    ...new Set([
+      ...planCapture(commands).targets.flatMap((target) =>
+        target.change === "updated" || target.change === "deleted" ? [target.id] : [],
+      ),
+      ...referenced,
+    ]),
+  ];
 
   if (ids.length === 0) {
     return new Set();
@@ -39,11 +54,28 @@ export async function loadVariableTargets(
     0,
   );
 
-  return new Set(
+  const found = new Set(
     [...scopes.values()].flatMap((scope) => {
       const declared = SerializedVariablesSchema.safeParse(scope.variables);
 
       return declared.success ? declared.data.flatMap(({ id }) => (missing.has(id) ? [id] : [])) : [];
     }),
   );
+
+  if ([...missing].every((id) => found.has(id))) {
+    return found;
+  }
+
+  // Not a component's: the page's own variables, whose scope is the page itself (read in full, not by structure).
+  const rootId = await pageRoot();
+  const root = rootId === null ? undefined : (await readNodes(agent, pagePath, [rootId], 0)).get(rootId);
+  const declared = SerializedVariablesSchema.safeParse(root?.variables);
+
+  for (const { id } of declared.success ? declared.data : []) {
+    if (missing.has(id)) {
+      found.add(id);
+    }
+  }
+
+  return found;
 }

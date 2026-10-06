@@ -23,6 +23,7 @@ import { withinTime } from "../../utils/time.ts";
 import { resolveKeyReferences } from "../../xml/xml-keys.ts";
 import { xmlToDsl } from "../../xml/xml-to-dsl.ts";
 import { defineOperation } from "../define.ts";
+import { pageRootId } from "../nodes/read-tree.ts";
 import { auditTouched } from "./audit-touched.ts";
 import { fractionalPxWarnings } from "./fractional-px.ts";
 import { projectIconControlWarnings } from "./icon-controls.ts";
@@ -128,7 +129,9 @@ async function applyBatch(
   const parsed = parseDsl(commands);
   // The reads around applyChanges only help: none may fail the batch. After it, a failure would make the model retry a
   // batch Framer applied already, and design_apply is not idempotent.
-  const variables = await loadVariableTargets(agent, pagePath, parsed).catch(() => new Set<string>());
+  const variables = await loadVariableTargets(agent, pagePath, parsed, () =>
+    pageRootId(runtime, pagePath).catch(() => null),
+  ).catch(() => new Set<string>());
   const apply = async () => {
     try {
       return normalizeDslResult(await agent.applyChanges(commands, { pagePath }));

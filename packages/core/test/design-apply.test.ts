@@ -108,6 +108,28 @@ describe("design.apply", () => {
     expect(variables[0]?.initialValue).toBe("Prism");
   });
 
+  it("regression: finds a page's own variables after a reconnect (seen: target does not exist, Expected an existing variable)", async () => {
+    const { runtime, state } = createFakeRuntime();
+    const home = state.webPages.find((page) => page.path === "/")?.id ?? "";
+
+    state.serializedNodes[home] = {
+      type: "WebPageNode",
+      id: home,
+      variables: [
+        {
+          id: "plan-var",
+          name: "Plan",
+          initialValue: "monthly",
+        },
+      ],
+    };
+    state.unloadedScopes = [home];
+
+    const result = await runOperation(designApply, { runtime }, { dsl: 'SET plan-var initialValue="yearly";' });
+
+    expect(result.errors).toEqual([]);
+  });
+
   it("creates a centred absolute layer with a temporary pin and drops it right after", () => {
     expect(
       deferAbsoluteCentering(

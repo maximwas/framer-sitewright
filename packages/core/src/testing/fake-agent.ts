@@ -65,7 +65,13 @@ export function createFakeAgent(state: FakeFramerState, nextId: (prefix: string)
         })),
         code: {},
       },
+      additional: state.builtinComponents,
     }),
+    getContext: async () => state.agentContext,
+    readShaderControls: async ({ shaderNames }) =>
+      Object.fromEntries(
+        shaderNames.flatMap((name) => (name in state.shaderControls ? [[name, state.shaderControls[name]]] : [])),
+      ),
     readComponentControls: async ({ componentIds }) =>
       Object.fromEntries(componentIds.map((id) => [id, state.componentControls[id] ?? { error: `Unknown ${id}` }])),
     readProject: async (queries) => ({ results: queries.map(() => ({ error: "The fake has no project queries." })) }),

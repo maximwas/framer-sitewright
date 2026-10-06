@@ -78,6 +78,12 @@ export interface FakeFramerState {
   appliedDsl: string[];
   serializedNodes: Record<string, unknown>;
   systemPrompt: string;
+  /** What framer.agent.getContext() answers. */
+  agentContext: string;
+  /** readShaderControls' answers by shader name. */
+  shaderControls: Record<string, unknown>;
+  /** listComponents' additional group: Framer's own components. */
+  builtinComponents: { id: string; displayName: string; keywords?: string }[];
   /** Returned by the next applyChanges call instead of running it. */
   nextApplyResult: unknown;
   uploadedImages: { id: string; url: string; name: string | null }[];

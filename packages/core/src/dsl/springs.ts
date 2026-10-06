@@ -22,7 +22,8 @@ export function keptSprings(dsl: string): { dsl: string; converted: SpringConver
     const command = parseDslCommand(raw);
 
     return Object.entries(command.attributes).reduce((text, [attribute, value]) => {
-      if (attribute !== "transition" && !attribute.endsWith(".transition")) {
+      // A drag takes only inertia: Framer refuses any spring there, so it is left for Framer to say so.
+      if ((attribute !== "transition" && !attribute.endsWith(".transition")) || attribute.startsWith("dragEffect.")) {
         return text;
       }
 

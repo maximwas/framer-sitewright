@@ -34,6 +34,9 @@ export const linksCheck = defineOperation({
   effect: "read",
   idempotent: true,
   permissions: [],
+  // With a key the checks read through the Server API: the plugin's read lacks the colors, tokens and text
+  // blocks they judge by (a11y_audit flagged light text on dark sections at 1.08:1 through it).
+  needsAgent: true,
   input: SiteChecksInputSchema,
   output: z.object({
     links: z.array(SiteLinkSchema),
@@ -76,6 +79,7 @@ export const seoAudit = defineOperation({
   effect: "read",
   idempotent: true,
   permissions: [],
+  needsAgent: true,
   input: SiteChecksInputSchema,
   output: z.object({
     findings: z.array(SiteFindingSchema),
@@ -114,6 +118,7 @@ export const imagesCheck = defineOperation({
   effect: "read",
   idempotent: true,
   permissions: [],
+  needsAgent: true,
   input: SiteChecksInputSchema,
   output: z.object({
     images: z.array(SiteImageSchema),
@@ -146,6 +151,7 @@ export const a11yAudit = defineOperation({
   effect: "read",
   idempotent: true,
   permissions: [],
+  needsAgent: true,
   input: SiteChecksInputSchema,
   output: z.object({
     findings: z.array(SiteFindingSchema),

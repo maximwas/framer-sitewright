@@ -2,6 +2,7 @@ import { mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
+  a11yAudit,
   cmsCollectionCreate,
   cmsFieldsSet,
   codeFileWrite,
@@ -206,6 +207,13 @@ describe("TransportRouter auto", () => {
         ],
       }),
     ).toBe("server-api");
+  });
+
+  it("regression: runs the site checks through the Server API when the project has a key", () => {
+    // Seen: a11y_audit ran through the plugin, whose read lacks the colors, and flagged 1.08:1 contrast that was fine.
+    const { plugin } = fakePlugin("project-1");
+
+    expect(new TransportRouter(serverApi(), plugin, "auto").routeOf(a11yAudit, {})).toBe("server-api");
   });
 
   it("regression: opens a fresh Server API session after code changes, once Framer has compiled them", async () => {
