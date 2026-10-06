@@ -572,7 +572,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="design-system" data-group>
-  <h3>Design system <span>7</span></h3>
+  <h3>Design system <span>8</span></h3>
   <p class="group-intro">Color tokens with light and dark values, and text styles with their sizes per breakpoint.</p>
   <article class="tool" id="color_tokens_list" data-tool="color_tokens_list List color tokens lists framer color styles (tokens) as { id, path, light, dark }. path uses &quot;/&quot; folders like &quot;brand/primary&quot;.">
     <header>
@@ -685,6 +685,26 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <tbody>
       <tr><th scope="row"><code>query</code></th><td><code class="type">string</code></td><td>Part of a font family name, e.g. &quot;inter&quot; or &quot;serif display&quot;. <span class="req">required</span></td></tr>
       <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>10</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="fonts_discover" data-tool="fonts_discover Discover fonts finds fonts beyond framer's library search, in google fonts and fontshare: by words of the name, category (sans, serif, display, slab, mono, handwriting) and order (popular, trending, new). each comes with its license in plain words (all are free for client sites and sold templates; fontshare's itf license forbids selling the font files themselves), its weights, a specimen link, and whether framer's library has it (inframer). propose two or three pairings from it, not only inter-like defaults. a family the library lacks: pass files true for its woff2 files, upload each with file_upload, then use the family in text_styles_upsert.">
+    <header>
+      <h4><a href="#fonts_discover">fonts_discover</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
+    </header>
+    <p class="tool-title">Discover fonts</p>
+    <p>Finds fonts beyond Framer's library search, in Google Fonts and Fontshare: by words of the name, category (sans, serif, display, slab, mono, handwriting) and order (popular, trending, new). Each comes with its license in plain words (all are free for client sites and sold templates; Fontshare's ITF license forbids selling the font files themselves), its weights, a specimen link, and whether Framer's library has it (inFramer). Propose two or three pairings from it, not only Inter-like defaults. A family the library lacks: pass files true for its woff2 files, upload each with <a href="#file_upload"><code>file_upload</code></a>, then use the family in <a href="#text_styles_upsert"><code>text_styles_upsert</code></a>.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>query</code></th><td><code class="type">string</code></td><td>Words of a family name, e.g. &quot;grotesk&quot; or &quot;satoshi&quot;.</td></tr>
+      <tr><th scope="row"><code>category</code></th><td><code class="type">&quot;sans&quot; | &quot;serif&quot; | &quot;display&quot; | &quot;slab&quot; | &quot;mono&quot; | &quot;handwriting&quot;</code></td><td></td></tr>
+      <tr><th scope="row"><code>source</code></th><td><code class="type">&quot;google&quot; | &quot;fontshare&quot; | &quot;all&quot;</code></td><td>google: Google Fonts; fontshare: Fontshare (ITF). <span class="def">default <code>&quot;all&quot;</code></span></td></tr>
+      <tr><th scope="row"><code>sort</code></th><td><code class="type">&quot;popular&quot; | &quot;trending&quot; | &quot;new&quot;</code></td><td> <span class="def">default <code>&quot;popular&quot;</code></span></td></tr>
+      <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>12</code></span></td></tr>
+      <tr><th scope="row"><code>files</code></th><td><code class="type">boolean</code></td><td>Add the woff2 files of families Framer's library lacks, for file_upload. <span class="def">default <code>false</code></span></td></tr>
       </tbody>
     </table></div>
   </article>

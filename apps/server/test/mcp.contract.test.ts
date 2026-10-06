@@ -62,6 +62,7 @@ const EXPECTED_TOOLS = [
   "design_apply",
   "design_guide",
   "file_upload",
+  "fonts_discover",
   "fonts_search",
   "framer_connect",
   "framer_docs",

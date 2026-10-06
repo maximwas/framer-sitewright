@@ -41,6 +41,7 @@ const GROUPS = [
       "text_styles_upsert",
       "text_styles_delete",
       "fonts_search",
+      "fonts_discover",
     ],
   },
   {
@@ -158,6 +159,7 @@ const NEEDS = {
     "design_guide",
     "project_brief",
     "marketplace_browse",
+    "fonts_discover",
     "activity_list",
     "activity_get",
     "activity_checkpoint",

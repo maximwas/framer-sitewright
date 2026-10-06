@@ -66,6 +66,7 @@ export { componentControlsSet } from "./operations/components/controls-set.ts";
 export { componentInsert } from "./operations/components/insert.ts";
 export { needsAgent, runOperation } from "./operations/define.ts";
 export { designApply } from "./operations/design/apply.ts";
+export { fontsInLibrary } from "./operations/fonts/in-library.ts";
 export { fontsSearch } from "./operations/fonts/search.ts";
 export { historyRevert } from "./operations/history/revert.ts";
 export { localesList, localizationGet, localizationSet } from "./operations/localization/localization.ts";

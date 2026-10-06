@@ -16,6 +16,7 @@ import { componentsRead } from "./components/components-read.ts";
 import { componentControlsSet } from "./components/controls-set.ts";
 import { componentInsert } from "./components/insert.ts";
 import { designApply } from "./design/apply.ts";
+import { fontsInLibrary } from "./fonts/in-library.ts";
 import { fontsSearch } from "./fonts/search.ts";
 import { historyRevert } from "./history/revert.ts";
 import { localesList, localizationGet, localizationSet } from "./localization/localization.ts";
@@ -96,6 +97,7 @@ const OPERATIONS: readonly AnyOperation[] = [
   imagesCheck,
   a11yAudit,
   contrastCheck,
+  fontsInLibrary,
 ];
 
 const byName = new Map(OPERATIONS.map((operation) => [operation.name, operation]));
