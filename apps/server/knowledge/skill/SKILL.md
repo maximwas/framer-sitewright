@@ -12,19 +12,23 @@ description: >
 
 The full guide is served by the MCP server, so it always matches the installed version. Read it with `design_guide`:
 
+Tell the request apart first (`workflow`, step 0): a new site or a redesign goes through the whole order; help with
+one part reads the site and builds only that part in its own styles; a fix changes exactly what was asked and checks
+that spot on every breakpoint; when unsure, ask.
+
 Before a new site or a redesign, call `project_brief`: ask the user its open questions in rounds of up to four, make
-the proposals it asks for (palettes, font pairings, directions), and save the answers. On later work, read the saved
-brief instead of asking again.
+the proposals it asks for (three concepts first; palette and fonts follow the chosen one), and save the answers. On
+later work, read the saved brief instead of asking again.
 
 | When | Topic |
 | --- | --- |
 | Before any new page, section set or redesign | `workflow` (always first, after `project_brief`) |
-| Before the first `design_apply` of a session: batches, breakpoints, clicks, springs, metadata | `dsl` |
-| Placing anything: stacks, grids, containers, spacing, breakpoints, buttons, images | `layout` |
+| Before the first `design_apply` of a session: batches, breakpoints, clicks, forms, overlays, CMS lists, springs, metadata | `dsl` |
+| Placing anything: stacks, grids, containers, spacing, breakpoints, layout templates, buttons, images | `layout` |
 | Text styles, sizes, tracking, headings | `typography` |
 | Choosing the look, avoiding the generated look | `direction` |
 | Hero, navigation, features, proof, pricing, FAQ, footer | `sections` |
-| Motion to offer (subtle, balanced, expressive), pinned scroll sections, tabs, links on components | `motion` |
+| Motion to offer (subtle, balanced, expressive), pinned scroll sections, scroll headers, horizontal galleries, page transitions, tabs, links on components | `motion` |
 | Before saying a page is done | `verify` |
 | A template for the Framer Marketplace | `template` |
 | No Server API key (plugin only) | `no-key` |
@@ -41,9 +45,10 @@ brief instead of asking again.
   property, never a wrapper frame around its instance.
 - **Headings:** `balance: true` on their text styles; display tracking negative, line height ≤ 1.1.
 - **Spacing from the scale** (4…128), grouped by distance; one section padding; text never touches a visible edge.
-- **Real images,** never icons as the visual; a page without images is unfinished. One warm, candid art direction
-  from the subject's world; pick each photo from a contact sheet of candidates; people in testimonials and contact
-  blocks must read.
+- **Real visuals, never icons as the visual:** a page needs a visual system (the client's photos, the product UI with
+  believable data, one protagonist object, or a graphic system); text alone reads unfinished. One warm, candid art
+  direction from the subject's world; pick each photo from a contact sheet of candidates; people in testimonials and
+  contact blocks must read.
 - **Cards of two pieces** (text panel + photo) are one solid card: fill, radius and clip on the root, no gap.
 - **Hover changes one thing:** a color or an arrow cue; never a label that rolls up or a pill behind a nav link.
 - **After every `design_apply`, read its `audit`** and fix every defect before the next section; run `layout_audit`

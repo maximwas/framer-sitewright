@@ -11,7 +11,7 @@ export function registerBriefTools(server: McpServer, { transports, journal, bri
     name: "project_brief",
     title: "Project brief",
     description:
-      "The questions to ask the user before building or redesigning a Framer site, and the answers saved for this project. Call it first on any new site or redesign: it returns the questions still open (purpose and main action, whose site it is, name, pages, references, mood, palettes to propose, light or dark theme, assets, copy, motion level, audience, fonts, imagery, CMS collections, languages, features, SEO, handoff, plan, screens, analytics, accessibility), each with options, what to propose and a fallback, and how to ask them. Save answers with answers after every round; the brief stays with the project, so read it before later work on the same site instead of asking again.",
+      "The questions to ask the user before building or redesigning a Framer site, and the answers saved for this project. Call it first on any new site or redesign, not for a fix or one part of an existing site (read the saved answers there if it has them): it returns the questions still open (purpose and main action, whose site it is, name, pages, references, mood, palettes to propose, light or dark theme, assets, copy, motion level, audience, fonts, imagery, CMS collections, languages, features, SEO, handoff, plan, screens, analytics, accessibility), each with options, what to propose and a fallback, and how to ask them. Save answers with answers after every round; the brief stays with the project, so read it before later work on the same site instead of asking again.",
     input: BriefInputSchema,
     output: BriefOutputSchema,
     annotations: {

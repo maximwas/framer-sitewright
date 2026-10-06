@@ -22,16 +22,21 @@ The `framer` skill gives you the CLI, the DSL grammar and Framer's design rules:
 
 ## Workflow
 
+0. **Tell the request apart.** A new site or a redesign goes through every step below and
+   [design-process.md](references/design-process.md). Help with one part (a section, the CMS, motion) reads the
+   project and builds only that part in its existing tokens, styles and components. A fix changes exactly what was
+   asked, nothing around it, and is read back and checked on every breakpoint. When unsure which, ask.
 1. Connect and read the project's `index.md` task map, as the `framer` skill says. For a new site or a redesign,
-   follow [design-process.md](references/design-process.md): brief, 2–3 directions, design system, grayscale
-   wireframe, then style.
+   follow [design-process.md](references/design-process.md): brief, three concepts shown as style tiles (one chosen),
+   design system, grayscale wireframe, then style.
 2. Read before you write: `framer.agent.serialize({ id, depth })` for the part you change,
    `framer.agent.readComponentControls` for control names, `listIconSets` + `readIcons` for icons. Never guess ids,
    control names or icon names.
 3. Build in order: design system (tokens, text styles), then the page frame and breakpoints, then sections with one
    `applyChanges` batch per section, then motion.
-4. After each batch, fix every entry in `errors` and send only those commands again: the rest of the batch is already
-   applied, and re-sending all of it duplicates new nodes. Read `warnings` and `linter` too.
+4. After each batch, fix every entry in `errors`: the rest of the batch is already applied. A `+` command in `errors`
+   usually still created its node, sometimes without its attributes: read it back and fix it with `SET` on its real
+   id. Re-sending a `+` command, or the whole batch, duplicates nodes. Read `warnings` and `linter` too.
 5. Read back what matters. Framer rewrites or drops some values without an error (see
    [verify.md](references/verify.md)).
 6. Screenshot every breakpoint. The canvas and screenshots never run effects: appear, hover, loop and scroll motion can
@@ -45,7 +50,8 @@ The `framer` skill gives you the CLI, the DSL grammar and Framer's design rules:
 - **No fixed widths on content.** Use `width="1fr"` with `maxWidth`. Use `aspectRatio` with a px height for
   proportions.
 - **Text color is a token on the text node.** Set `textColor="var(--token-<id>)"` on the `RichTextNode` itself, even
-  when its text style already has the color. Only then does the token show in the editor's Color field.
+  when its text style already has the color. Only then does the token show in the editor's Color field. Setting
+  `textStylePreset` later drops the node's `textColor` without an error: write both in the same `SET`.
 - **The text style owns typography.** With `textStylePreset` set, `fontSize`, `letterSpacing`, `textDecoration` and
   other style properties are refused.
 - **New nodes go last in their parent.** Give `index` whenever order matters, or a new section lands after the footer.
@@ -57,11 +63,18 @@ The `framer` skill gives you the CLI, the DSL grammar and Framer's design rules:
   refuses to create an absolute node without pins, so create it pinned. Then, in a second `SET`, set those pins to
   `null` and add the anchor.
 - **Anchor links:** a link to `/#id` needs the target to have `elementId` and `scrollTargetEnabled="true"` first.
-  Setting them earlier in the same batch works.
+  Setting them earlier in the same batch works. Without the target the command errors, but the node keeps the link
+  cut to the page (`/page`, no `#id`): set it again once the target exists. Give every link frame that points at
+  `#id` `link.smoothScroll="true"` (in button and nav link components too), and each target section
+  `scrollMarginTop` = sticky header height + gap − the section's top padding, or the header covers its heading.
+- **External links start with `https://`.** `link.href="www.example.com"` is stored as is, without a warning, and on
+  the site it is the relative path `/www.example.com`.
 - **Text on a variant or breakpoint copy:** setting `text` silently drops its text style. Repeat `textStylePreset` in
-  the same `SET`.
-- **No effects or `scale` on a variant root or a breakpoint root.** Framer refuses them there. Use a hover or pressed
-  gesture variant, or put the effect on a child. Breakpoints take only `flowEffect` and `pageEffects`.
+  the same `SET`. Text bound to a variable stores the variable's name on the first such `SET`: send it twice and read
+  it back ([verify.md](references/verify.md)).
+- **No effects or `scale` on a variant root or a breakpoint root, and no `aspectRatio` on a variant root.** Framer
+  refuses them there. Use a hover or pressed gesture variant, or put the effect on a child; give a component's
+  `aspectRatio` to its instance. Breakpoints take only `flowEffect` and `pageEffects`.
 - **Hover:** always add `hoverEffect.scale="1"`. Without it Framer fills in 1.1 and the element jumps.
 - **Loop:** always add `loopEffect.rotate="0"`. A new loop starts from a preset that spins 360°.
 - **Things that open** (accordion, menu, dropdown) animate their height, not `visible`. Framer's own FAQ example uses
@@ -83,16 +96,16 @@ Before writing DSL, read the reference that matches the task:
 
 | Task | Read |
 | --- | --- |
-| A new site or redesign: the brief questions, proposing 2–3 directions, design system, wireframe, handoff | [design-process.md](references/design-process.md) |
+| A new site or redesign: the brief questions, three concepts shown as style tiles, page outline, design system, wireframe, handoff | [design-process.md](references/design-process.md) |
 | Making it look designed, not generated: subject-led direction, AI-default looks to avoid, type, color, real images instead of icons, copy | [distinct-design.md](references/distinct-design.md) |
 | Page anatomy and blocks: hero, features, proof, pricing, FAQ, CTA, footer, navigation | [sections.md](references/sections.md) |
 | Page structure, widths, stacks, grids, breakpoints, z-index, sticky | [layout.md](references/layout.md) |
 | Color tokens, text styles, fonts, folders, deleting styles | [design-system.md](references/design-system.md) |
-| Components, variants, controls, clicks, code-component controls, slots | [components.md](references/components.md) |
-| Motion system (durations, easing, stagger), micro-interactions, page transitions, accordions, menus, springs | [motion.md](references/motion.md) |
+| Components, variants, controls, clicks, page state without code, Framer's own components, code-component controls, slots | [components.md](references/components.md) |
+| Motion system (durations, springs, stagger), micro-interactions, custom cursor, page transitions, accordions, menus, overlays | [motion.md](references/motion.md) |
 | Scroll scenes (zoom, horizontal scroll, stacking cards, text reveal), scroll transforms and variants, pinned steps | [scroll.md](references/scroll.md) |
 | CMS collections and lists, forms, Repeat (array variables) | [cms-forms.md](references/cms-forms.md) |
-| Photos, icons, logos and SVG, favicon and site metadata | [assets.md](references/assets.md) |
+| Photos, shaders, icons, logos and SVG, favicon and site metadata | [assets.md](references/assets.md) |
 | Moving a Figma design into Framer | [figma.md](references/figma.md) |
 | Checking results, values Framer rewrites, a stale session | [verify.md](references/verify.md) |
 | Before launch: responsive, speed, SEO, accessibility, content, handoff | [quality.md](references/quality.md) |
