@@ -4,6 +4,7 @@ import type { FramerPort, FramerRuntime, PluginInfo, PluginPermission } from "@s
 import { toastStore } from "@sitewright/ui";
 import { version as pluginVersion } from "../../package.json";
 import { NEW_TEXT_PLACEHOLDER, PLUGIN_WINDOW, REVEAL_MAX_ZOOM } from "../constants/ui.ts";
+import { revealNode } from "./reveal.ts";
 
 // Compile-time conformance: if @framer/plugin drifts from the structural port, this line stops compiling.
 const framerPort: FramerPort = framer;
@@ -124,12 +125,19 @@ export function revealOnRequest(name: string, data: unknown): void {
   const { id } = data;
 
   if (typeof id === "string") {
-    framer
-      .navigateTo(id, {
-        select: true,
-        zoomIntoView: { maxZoom: REVEAL_MAX_ZOOM },
-      })
-      .catch(() => framer.notify(`Could not open ${id} in the editor.`, { variant: "warning" }));
+    void revealNode(
+      {
+        navigateTo: (nodeId) =>
+          framer.navigateTo(nodeId, {
+            select: true,
+            zoomIntoView: { maxZoom: REVEAL_MAX_ZOOM },
+          }),
+        getParent: (nodeId) => framer.getParent(nodeId),
+        getNode: (nodeId) => framer.getNode(nodeId),
+        notify: (message, variant) => framer.notify(message, { variant }),
+      },
+      id,
+    );
   }
 }
 
