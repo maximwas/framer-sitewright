@@ -1,9 +1,9 @@
 import { spawnSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { PRODUCT } from "@sitewright/core";
-import { CURSOR_CONFIG_PATH } from "../constants/clients.ts";
+import { BROWSER_SERVER, BROWSER_SERVER_PATTERN, CODEX_CONFIG_PATH, CURSOR_CONFIG_PATH } from "../constants/clients.ts";
 import type { Invocation, McpClient } from "../types/cli.ts";
 import { mergeMcpServer } from "../utils/mcp-config.ts";
 
@@ -57,7 +57,59 @@ export function addToClaudeCode(server: Invocation, replace: () => Promise<boole
 }
 
 /** Adds the server to Cursor's user config (~/.cursor/mcp.json); the old file is kept as mcp.json.bak. */
-export async function addToCursor(server: Invocation, homeDir: string): Promise<string> {
+export function addToCursor(server: Invocation, homeDir: string): Promise<string> {
+  return addServerToCursor(PRODUCT.packageName, server, homeDir);
+}
+
+/** Whether a client has a browser MCP server (Playwright) already: in Claude Code's list, Cursor's or Codex's config. */
+export function hasBrowserServer(client: McpClient, homeDir: string): boolean {
+  const read = (path: readonly string[]) => {
+    const file = join(homeDir, ...path);
+
+    return existsSync(file) ? readFileSync(file, "utf8") : "";
+  };
+
+  switch (client) {
+    case "claude-code": {
+      const listed = spawnSync("claude", ["mcp", "list"], { encoding: "utf8" });
+
+      return BROWSER_SERVER_PATTERN.test(`${listed.stdout ?? ""}`);
+    }
+    case "cursor":
+      return BROWSER_SERVER_PATTERN.test(read(CURSOR_CONFIG_PATH));
+    case "codex":
+      return BROWSER_SERVER_PATTERN.test(read(CODEX_CONFIG_PATH));
+    case "other":
+      return true;
+  }
+}
+
+/** Adds the browser MCP server to Claude Code for every folder. */
+export function addBrowserToClaudeCode(): string {
+  const result = spawnSync(
+    "claude",
+    ["mcp", "add", BROWSER_SERVER.name, "--scope", "user", "--", BROWSER_SERVER.command, ...BROWSER_SERVER.args],
+    { encoding: "utf8" },
+  );
+
+  if (result.status !== 0 && !/already exists/i.test(`${result.stderr}${result.stdout}`)) {
+    throw new Error(`claude mcp add failed: ${(result.stderr || result.stdout).trim()}`);
+  }
+
+  return "Added the Playwright MCP server to Claude Code.";
+}
+
+/** Adds the browser MCP server to Cursor's user config. */
+export function addBrowserToCursor(homeDir: string): Promise<string> {
+  return addServerToCursor(BROWSER_SERVER.name, BROWSER_SERVER, homeDir);
+}
+
+/** What to add to Codex's config.toml for the browser MCP server. */
+export function codexBrowserBlock(): string {
+  return codexServerBlock(BROWSER_SERVER.name, BROWSER_SERVER);
+}
+
+async function addServerToCursor(name: string, server: Invocation, homeDir: string): Promise<string> {
   const file = join(homeDir, ...CURSOR_CONFIG_PATH);
   let current: unknown = null;
 
@@ -72,13 +124,13 @@ export async function addToCursor(server: Invocation, homeDir: string): Promise<
     }
   }
 
-  const { config, changed } = mergeMcpServer(current, PRODUCT.packageName, {
+  const { config, changed } = mergeMcpServer(current, name, {
     command: server.command,
     args: [...server.args],
   });
 
   if (!changed) {
-    return "Cursor has the server already.";
+    return `Cursor has ${name} already.`;
   }
 
   await mkdir(dirname(file), { recursive: true });
@@ -89,15 +141,19 @@ export async function addToCursor(server: Invocation, homeDir: string): Promise<
 
   await writeFile(file, `${JSON.stringify(config, null, 2)}\n`);
 
-  return `Added to Cursor (${file}). Restart Cursor to load it.`;
+  return `Added ${name} to Cursor (${file}). Restart Cursor to load it.`;
 }
 
 /** What to add to Codex's config.toml: the wizard does not edit TOML. */
 export function codexBlock(server: Invocation): string {
+  return codexServerBlock(PRODUCT.packageName, server);
+}
+
+function codexServerBlock(name: string, server: Invocation): string {
   const quoted = (value: string) => JSON.stringify(value);
 
   return [
-    `[mcp_servers.${PRODUCT.packageName}]`,
+    `[mcp_servers.${name}]`,
     `command = ${quoted(server.command)}`,
     `args = [${server.args.map(quoted).join(", ")}]`,
   ].join("\n");

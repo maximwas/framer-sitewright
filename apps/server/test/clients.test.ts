@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { addToCursor } from "../src/cli/clients.ts";
+import { addBrowserToCursor, addToCursor, hasBrowserServer } from "../src/cli/clients.ts";
 import { mergeMcpServer } from "../src/utils/mcp-config.ts";
 import { parseCliArgs } from "../src/utils/parse-cli.ts";
 import { selfInvocation } from "../src/utils/self-invocation.ts";
@@ -99,5 +99,22 @@ it("takes switches from a script, and refuses ones it does not know", () => {
   expect(parseCliArgs(["settings", "magic=on"])).toEqual({
     kind: "unknown",
     argument: "magic=on",
+  });
+});
+
+it("offers the Playwright MCP only to clients that do not have a browser server yet", async () => {
+  const home = await mkdtemp(join(tmpdir(), "sitewright-home-"));
+
+  await mkdir(join(home, ".cursor"), { recursive: true });
+  await writeFile(join(home, ".cursor", "mcp.json"), JSON.stringify({ mcpServers: { other: { command: "x" } } }));
+  await mkdir(join(home, ".codex"), { recursive: true });
+  await writeFile(join(home, ".codex", "config.toml"), '[mcp_servers.playwright]\ncommand = "npx"\n');
+
+  expect(hasBrowserServer("cursor", home)).toBe(false);
+  expect(hasBrowserServer("codex", home)).toBe(true);
+  expect(await addBrowserToCursor(home)).toContain("Added");
+  expect(hasBrowserServer("cursor", home)).toBe(true);
+  expect(JSON.parse(await readFile(join(home, ".cursor", "mcp.json"), "utf8")).mcpServers.other).toEqual({
+    command: "x",
   });
 });

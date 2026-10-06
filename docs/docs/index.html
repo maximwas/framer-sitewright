@@ -116,7 +116,11 @@
             <li>which clients to connect: Claude Code, Cursor, Codex;</li>
             <li>the Server API keys of your projects, one per project (you can skip it and add them later);</li>
             <li>what the agent may do: custom code, code components;</li>
-            <li>whether to add the Claude Code hooks that show the skills Claude uses in the journal.</li>
+            <li>whether to add the Claude Code hooks that show the skills Claude uses in the journal;</li>
+            <li>
+              whether to add the Playwright MCP server, when a chosen client has no browser server yet: with it your
+              agent checks the published site in a real browser (the phone menu, section links, hover and motion).
+            </li>
           </ol>
           <p>To set it up by hand instead, add the server to Claude Code:</p>
           <pre><code>claude mcp add sitewright -- npx -y sitewright@latest</code></pre>

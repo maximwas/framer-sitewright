@@ -7,7 +7,17 @@ import type { KeyStore } from "../keys/key-store.ts";
 import type { McpClient } from "../types/cli.ts";
 import type { WizardContext } from "../types/wizard.ts";
 import { answered } from "./cancel.ts";
-import { addToClaudeCode, addToCursor, clientConfigBlock, codexBlock, detectClients } from "./clients.ts";
+import {
+  addBrowserToClaudeCode,
+  addBrowserToCursor,
+  addToClaudeCode,
+  addToCursor,
+  clientConfigBlock,
+  codexBlock,
+  codexBrowserBlock,
+  detectClients,
+  hasBrowserServer,
+} from "./clients.ts";
 import { installSkill } from "./install-skill.ts";
 import { addKeyFlow } from "./key-flow.ts";
 import { chooseSettings } from "./settings-flow.ts";
@@ -25,6 +35,8 @@ export async function runWizard(context: WizardContext): Promise<void> {
   for (const client of clients) {
     await connectClient(client, context);
   }
+
+  await offerBrowser(clients, context);
 
   await addKeys(context.keys, context.bridgeFile);
   await chooseSettings(context.settings);
@@ -165,5 +177,56 @@ async function offerHooks({ hookCommand, homeDir }: WizardContext): Promise<void
     log.success(await setupHooks(hookCommand, true, homeDir));
   } catch (error) {
     log.error(errorMessage(error));
+  }
+}
+
+/**
+ * A browser MCP server (Playwright) lets the agent check the published site the way a visitor uses it. Offered only to
+ * the chosen clients that do not have one yet.
+ */
+async function offerBrowser(clients: readonly McpClient[], { homeDir }: WizardContext): Promise<void> {
+  const missing = clients.filter((client) => !hasBrowserServer(client, homeDir));
+
+  if (missing.length === 0) {
+    return;
+  }
+
+  note(
+    [
+      "The Playwright MCP server lets your agent open the published site in a real browser: open the phone menu,",
+      "follow section links, watch hover and motion. A screenshot of the canvas cannot show those.",
+    ].join("\n"),
+    "Browser checks",
+  );
+
+  const wanted = answered(
+    await confirm({
+      message: "Add the Playwright MCP server too?",
+      initialValue: true,
+    }),
+  );
+
+  if (!wanted) {
+    return;
+  }
+
+  for (const client of missing) {
+    try {
+      switch (client) {
+        case "claude-code":
+          log.success(addBrowserToClaudeCode());
+          break;
+        case "cursor":
+          log.success(await addBrowserToCursor(homeDir));
+          break;
+        case "codex":
+          note(codexBrowserBlock(), `Add to ${join(homeDir, ...CODEX_CONFIG_PATH)}`);
+          break;
+        case "other":
+          break;
+      }
+    } catch (error) {
+      log.error(errorMessage(error));
+    }
   }
 }
