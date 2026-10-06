@@ -647,4 +647,202 @@ describe("layout audit", () => {
     expect(collapsed("auto")).toHaveLength(1);
     expect(collapsed("100%")).toEqual([]);
   });
+
+  it("regression: component instances filling a row that hugs them size it with their own content (seen: Steps, Plans)", () => {
+    const step = () =>
+      node("ComponentInstanceNode", "Step", {
+        width: "1fr",
+        height: "1fr",
+      });
+    const row = node(
+      "FrameNode",
+      "Steps",
+      {
+        layout: "stack",
+        stackDirection: "horizontal",
+        stackAlignment: "start",
+        stackDistribution: "start",
+        width: "1fr",
+        height: "auto",
+      },
+      [step(), step(), step()],
+    );
+
+    expect(rulesOf(auditTree(row, context()))).not.toContain("fit-parent-fill-child");
+  });
+
+  it("regression: a full-bleed ticker is not a section that ignores the container width (seen: a client logo ticker)", () => {
+    const contained = node(
+      "FrameNode",
+      "Services",
+      {
+        layout: "stack",
+        width: "1fr",
+      },
+      [
+        node(
+          "FrameNode",
+          "Container",
+          {
+            layout: "stack",
+            width: "1fr",
+            maxWidth: "1440px",
+          },
+          [text("Title", "Heading 2", "What we do")],
+        ),
+      ],
+    );
+    const ticker = {
+      ...node(
+        "FrameNode",
+        "Ticker",
+        {
+          layout: "stack",
+          stackDirection: "horizontal",
+          width: "1fr",
+        },
+        [text("Client", "Body", "Kessler Logistik", { width: "auto" })],
+      ),
+    };
+    const tickerNode = {
+      ...ticker,
+      attributes: {
+        ...ticker.attributes,
+        tickerEffect: { velocity: 50 },
+      },
+    };
+    const clients = node(
+      "FrameNode",
+      "Clients",
+      {
+        layout: "stack",
+        width: "1fr",
+      },
+      [tickerNode],
+    );
+    const desktop = {
+      ...node(
+        "FrameNode",
+        "Desktop",
+        {
+          layout: "stack",
+          width: "1440px",
+        },
+        [contained, clients, contained],
+      ),
+      $isPrimary: true,
+    };
+
+    expect(rulesOf(auditTree(node("WebPageNode", "Home", {}, [desktop]), context()))).not.toContain("container-width");
+  });
+
+  it("regression: photos set between words and hidden layers are no cards of uneven height (seen: a statement, a compact variant)", () => {
+    const pill = () =>
+      node("FrameNode", "Pill", {
+        fill: "https://framerusercontent.com/images/a.jpg",
+        width: "112px",
+        height: "56px",
+      });
+    const words = node(
+      "FrameNode",
+      "Words",
+      {
+        layout: "stack",
+        stackDirection: "horizontal",
+        stackWrapEnabled: "true",
+        stackAlignment: "center",
+        stackDistribution: "center",
+        width: "1fr",
+        height: "auto",
+      },
+      [
+        text("Words", "Body", "Most companies", { width: "auto" }),
+        pill(),
+        text("Words", "Body", "need fewer handoffs", { width: "auto" }),
+        pill(),
+      ],
+    );
+    const card = (attributes: Record<string, string>) =>
+      node(
+        "FrameNode",
+        "Card",
+        {
+          layout: "stack",
+          fill: "#ffffff",
+          padding: "24px",
+          width: "1fr",
+          ...attributes,
+        },
+        [text("Quote", "Body", "One form instead of four calls")],
+      );
+    const compact = node(
+      "FrameNode",
+      "Compact",
+      {
+        layout: "stack",
+        stackDirection: "horizontal",
+        stackAlignment: "start",
+        stackDistribution: "start",
+        width: "1fr",
+        height: "auto",
+      },
+      [
+        card({ height: "1fr" }),
+        card({
+          height: "auto",
+          visible: "false",
+        }),
+      ],
+    );
+
+    expect(rulesOf(auditTree(words, context()))).not.toContain("uneven-row-cards");
+    expect(rulesOf(auditTree(compact, context()))).not.toContain("uneven-row-cards");
+  });
+
+  it("regression: a page breakpoint takes its fill from the layout template, and a design page board keeps its width", () => {
+    const desktop = {
+      ...node(
+        "FrameNode",
+        "Desktop",
+        {
+          layout: "stack",
+          width: "1440px",
+          fill: "rgb(243, 241, 236)",
+        },
+        [text("Title", "Heading 1", "Page not found")],
+      ),
+      $isPrimary: true,
+    };
+    const page = (template: boolean) =>
+      auditTree(
+        {
+          ...node("WebPageNode", "404", {}, [desktop]),
+          ...(template ? { $layoutTemplateId: "Dik9INLUw" } : {}),
+        },
+        context(),
+      ).filter((found) => found.rule === "raw-color");
+    const board = node(
+      "FrameNode",
+      "Start here",
+      {
+        layout: "stack",
+        width: "1440px",
+      },
+      [text("Title", "Heading 2", "Read me first")],
+    );
+
+    expect(page(true)).toEqual([]);
+    expect(page(false)).toHaveLength(1);
+    expect(
+      rulesOf(
+        auditTree(
+          {
+            ...board,
+            $groundNodeId: board.id,
+          },
+          context(),
+        ),
+      ),
+    ).not.toContain("fixed-width");
+  });
 });

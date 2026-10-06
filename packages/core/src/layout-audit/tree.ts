@@ -13,9 +13,24 @@ export function attr(node: SerializedNode, name: string): string | null {
   return typeof value === "number" || typeof value === "boolean" ? String(value) : null;
 }
 
-/** The node's children that are nodes (a truncated read has none). */
+/** The node's children that are nodes and show (a truncated read has none; a hidden layer renders nothing). */
 export function childrenOf(node: SerializedNode): SerializedNode[] {
-  return (node.children ?? []).filter(isNode);
+  return (node.children ?? []).filter(isNode).filter((child) => attr(child, "visible") !== "false");
+}
+
+/** A top-level frame on the canvas: a breakpoint, a board on a design page, a slot item next to a page. */
+export function isGround(node: SerializedNode): boolean {
+  return node.$groundNodeId === node.id;
+}
+
+/** Whether a node has an effect, read nested (serialize) or dotted (an XML read turned back into attributes). */
+export function hasEffect(node: SerializedNode, effect: string): boolean {
+  return Object.keys(node.attributes ?? {}).some((name) => name === effect || name.startsWith(`${effect}.`));
+}
+
+/** Something with its own content to size it: children, text, or a component instance (its component's layers). */
+export function hasOwnContent(node: SerializedNode): boolean {
+  return childrenOf(node).length > 0 || isText(node) || node.type === "ComponentInstanceNode";
 }
 
 export function isNode(value: unknown): value is SerializedNode {

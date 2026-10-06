@@ -48,3 +48,6 @@ export const DSL_VAR_REFERENCE = /^var\(/;
 
 /** Node types of variables (`+Variable`, `+IconVariable`, `+ArrayVariable`…): not canvas nodes, and undo keeps them. */
 export const VARIABLE_NODE_TYPE = /Variable$/;
+
+/** An attribute inside a list item: `styleTransformEffect.sections.0.opacity`, `$control__slides.1`. */
+export const DSL_LIST_ITEM_KEY = /\.\d+(?:\.|$)/;

@@ -33,6 +33,8 @@ import {
   childrenOf,
   crossAlignmentOf,
   directionOf,
+  hasEffect,
+  hasOwnContent,
   hasSurface,
   inFlow,
   isFrame,
@@ -131,8 +133,14 @@ const unevenRowCards: NodeRule = (node) => {
     return [];
   }
 
+  // A card holds content: a filled frame without children is a photo or a swatch, as in a line of words with photos.
   const cards = childrenOf(node).filter(
-    (child) => inFlow(child) && isFrame(child) && hasSurface(child) && attr(child, "link") === null,
+    (child) =>
+      inFlow(child) &&
+      isFrame(child) &&
+      hasSurface(child) &&
+      attr(child, "link") === null &&
+      childrenOf(child).length > 0,
   );
   const loose = cards.filter((card) => attr(card, "height") !== "1fr");
 
@@ -301,7 +309,8 @@ const nestedRadius: NodeRule = (node) => {
 /**
  * A parent that hugs its content with a child that fills it: neither has a size, and Framer silently fixes one. Along
  * a stack's direction any filling child does it. Across it, children that fill a hugging row stretch to the tallest
- * one's content (how cards get equal heights): only children with nothing inside leave the parent without a size.
+ * one's content (how cards get equal heights): only children with nothing inside leave the parent without a size. A
+ * component instance has its component's layers inside, though a read shows none.
  */
 const fitParentFillChild: NodeRule = (node) =>
   (["width", "height"] as const).flatMap((axis) => {
@@ -315,7 +324,7 @@ const fitParentFillChild: NodeRule = (node) =>
     const filling = flow.filter((child) => attr(child, axis)?.endsWith("fr") && !(axis === "width" && isText(child)));
     const conflict = along
       ? filling.length > 0
-      : filling.length === flow.length && filling.every((child) => childrenOf(child).length === 0);
+      : filling.length === flow.length && filling.every((child) => !hasOwnContent(child));
 
     return filling.length === 0 || !conflict
       ? []
@@ -544,9 +553,12 @@ function contentWidthOf(section: SerializedNode): number | null {
   return inner.length === 0 ? null : Math.max(...inner);
 }
 
-/** Header, sections and footer keep their content within one container width. */
+/** Header, sections and footer keep their content within one container width; a ticker runs edge to edge on purpose. */
 const containerWidths: PageRule = (breakpoint) => {
-  const sections = sectionsOf(breakpoint).filter((section) => sizeKind(attr(section, "width")) === "fill");
+  const sections = sectionsOf(breakpoint).filter(
+    (section) =>
+      sizeKind(attr(section, "width")) === "fill" && !walk(section).some((node) => hasEffect(node, "tickerEffect")),
+  );
   const widths = sections.map((section) => ({
     section,
     width: contentWidthOf(section),

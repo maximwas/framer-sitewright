@@ -1,14 +1,24 @@
+import { DSL_LIST_ITEM_KEY } from "../constants/dsl.ts";
 import { OperationError } from "../errors.ts";
 import type { DslAttributes, DslValue } from "../types/dsl.ts";
 import { dslId, dslKey, dslString } from "./escape.ts";
 
 function formatAttributes(attributes: DslAttributes): string {
   return Object.entries(attributes)
-    .flatMap(([key, value]) => (value === undefined ? [] : [`${dslKey(key)}=${dslString(formatValue(value))}`]))
+    .flatMap(([key, value]) => (value === undefined ? [] : [formatPair(key, value)]))
     .join(" ");
 }
 
-/** The DSL writes every value as a quoted string; null clears an attribute. */
+/**
+ * The DSL writes every value as a quoted string; null clears an attribute. A list item's number or boolean
+ * (`sections.0.opacity`) goes unquoted: Framer checks values inside lists strictly and refuses "0.15" there.
+ */
+function formatPair(key: string, value: DslValue): string {
+  const raw = (typeof value === "number" || typeof value === "boolean") && DSL_LIST_ITEM_KEY.test(key);
+
+  return `${dslKey(key)}=${raw ? String(value) : dslString(formatValue(value))}`;
+}
+
 function formatValue(value: DslValue): string {
   return value === null ? "null" : String(value);
 }
@@ -56,7 +66,7 @@ export function formatDslAttributes(attributes: DslAttributes): { text: string; 
     }
 
     try {
-      parts.push(`${dslKey(key)}=${dslString(formatValue(value))}`);
+      parts.push(formatPair(key, value));
     } catch {
       skipped.push(key);
     }

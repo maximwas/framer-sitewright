@@ -94,5 +94,8 @@ export const AUTO_TEXT_CHARS = 30;
 /** Size rules a breakpoint frame is exempt from: its width is where the breakpoint starts. */
 export const BREAKPOINT_SIZE_RULES: ReadonlySet<string> = new Set(["fixed-width", "fixed-height"]);
 
+/** What a page breakpoint cannot change when a layout template owns it: Framer takes its fill from the template. */
+export const TEMPLATE_RULES: ReadonlySet<string> = new Set(["raw-color"]);
+
 /** Positions that take a viewport height on purpose: a sticky stage, a fixed overlay. */
 export const VIEWPORT_POSITIONS: ReadonlySet<string> = new Set(["sticky", "fixed"]);

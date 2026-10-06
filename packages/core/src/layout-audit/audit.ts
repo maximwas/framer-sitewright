@@ -1,9 +1,14 @@
-import { AUDIT_MAX_ISSUES, AUDIT_SEVERITIES, BREAKPOINT_SIZE_RULES } from "../constants/layout-audit.ts";
+import {
+  AUDIT_MAX_ISSUES,
+  AUDIT_SEVERITIES,
+  BREAKPOINT_SIZE_RULES,
+  TEMPLATE_RULES,
+} from "../constants/layout-audit.ts";
 import type { SerializedNode } from "../types/dsl.ts";
 import type { FramerPort, TextStyleData } from "../types/framer-port.ts";
 import type { AuditContext, AuditIssue, AuditTextStyle } from "../types/layout-audit.ts";
 import { BREAKPOINT_RULES, CONTENT_RULES, NODE_RULES, projectIssues } from "./rules.ts";
-import { childrenOf, isNode, walk } from "./tree.ts";
+import { childrenOf, isGround, isNode, walk } from "./tree.ts";
 
 /**
  * Finds classes of layout defects in a node tree, as nodes_read reads it (the same through the plugin and the Server
@@ -17,15 +22,27 @@ export function auditTree(root: SerializedNode, context: AuditContext): AuditIss
   }
 
   const breakpoints = childrenOf(root);
-  // A breakpoint's width is the window it starts at and its height comes from a layout template: not content sizes.
+  // A breakpoint's width is the window it starts at and its height comes from a layout template, and a board on a
+  // design page is as wide as its author drew it: not content sizes.
   const frames = new Set(
-    [...(root.type === "WebPageNode" ? breakpoints : []), ...(root.$isPrimary || root.$isReplica ? [root] : [])].map(
-      (node) => node.id,
-    ),
+    [
+      ...(root.type === "WebPageNode" ? breakpoints : []),
+      ...walk(root).filter((node) => node.$isPrimary || node.$isReplica || isGround(node)),
+    ].map((node) => node.id),
+  );
+  // On a page with a layout template the breakpoints' fill is the template's, set on its breakpoints.
+  const templated = new Set(
+    root.type === "WebPageNode" && typeof root["$layoutTemplateId"] === "string"
+      ? breakpoints.map((breakpoint) => breakpoint.id)
+      : [],
   );
   const nodeIssues = walk(root)
     .flatMap((node) => NODE_RULES.flatMap((rule) => rule(node, context)))
-    .filter((found) => !(frames.has(found.nodeId) && BREAKPOINT_SIZE_RULES.has(found.rule)));
+    .filter(
+      (found) =>
+        !(frames.has(found.nodeId) && BREAKPOINT_SIZE_RULES.has(found.rule)) &&
+        !(templated.has(found.nodeId) && TEMPLATE_RULES.has(found.rule)),
+    );
   const primary = breakpoints.find((breakpoint) => breakpoint.$isPrimary) ?? breakpoints[0];
   const pageIssues =
     root.type === "WebPageNode"

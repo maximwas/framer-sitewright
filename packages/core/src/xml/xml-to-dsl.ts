@@ -1,6 +1,7 @@
 import { DSL_VARIABLE_TYPE } from "../constants/dsl.ts";
 import { XML_RUN_CONTAINER_TYPES } from "../constants/xml.ts";
 import { addNode, deleteNode, setNode } from "../dsl/commands.ts";
+import type { DslValue } from "../types/dsl.ts";
 import type { XmlCompiled, XmlElementNode, XmlParent, XmlVariable } from "../types/xml.ts";
 import { positionalChildId } from "../utils/text-ids.ts";
 import { parseXml } from "./parse-xml.ts";
@@ -8,6 +9,7 @@ import { attributesOfElement, ownProp } from "./xml-attributes.ts";
 import { invalidXml } from "./xml-errors.ts";
 import { assignKeys, resolveKeyReferences } from "./xml-keys.ts";
 import { existingContentId, joinAdjacentText, textAttribute } from "./xml-text.ts";
+import { expandListAttribute } from "./xml-values.ts";
 
 /**
  * XML as DSL commands, in tree order. An element without `id` is created under its enclosing element (a top-level one
@@ -137,7 +139,7 @@ class XmlCompiler {
     const tempId = this.#tempIdFor(element);
     const runs = XML_RUN_CONTAINER_TYPES.has(element.type);
     const text = runs ? null : textAttribute(element);
-    const attributes: Record<string, string> = {
+    const attributes: Record<string, DslValue> = {
       ...this.#placement(element, parent),
       ...this.#attributes(element, ["parent"]),
     };
@@ -185,10 +187,14 @@ class XmlCompiler {
     return written === undefined ? {} : { parent: this.keys[written] ?? this.#resolve(written) };
   }
 
-  /** An element's attributes with `@key` references resolved. */
-  #attributes(element: XmlElementNode, omit: readonly string[] = []): Record<string, string> {
+  /** An element's attributes with `@key` references resolved, lists written item by item. */
+  #attributes(element: XmlElementNode, omit: readonly string[] = []): Record<string, DslValue> {
     return Object.fromEntries(
-      Object.entries(attributesOfElement(element, omit)).map(([name, value]) => [name, this.#resolve(value)]),
+      Object.entries(attributesOfElement(element, omit)).flatMap(([name, value]) => {
+        const resolved = this.#resolve(value);
+
+        return expandListAttribute(name, resolved) ?? [[name, resolved]];
+      }),
     );
   }
 
@@ -196,11 +202,11 @@ class XmlCompiler {
     return resolveKeyReferences(value, this.keys);
   }
 
-  #noteVariable(element: XmlElementNode, tempId: string, attributes: Readonly<Record<string, string>>): void {
+  #noteVariable(element: XmlElementNode, tempId: string, attributes: Readonly<Record<string, DslValue>>): void {
     const key = ownProp(element, "key");
     const { name, scope } = attributes;
 
-    if (DSL_VARIABLE_TYPE.test(element.type) && key !== null && name !== undefined && scope !== undefined) {
+    if (DSL_VARIABLE_TYPE.test(element.type) && key !== null && typeof name === "string" && typeof scope === "string") {
       this.variables.push({
         key,
         tempId,

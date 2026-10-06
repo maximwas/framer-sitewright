@@ -205,4 +205,15 @@ describe("XML: writing nodes", () => {
     expect(component).toBeLessThan(variable);
     expect(variable).toBeLessThan(text);
   });
+
+  it("regression: a list read back as JSON is written item by item, numbers unquoted (seen: a scroll effect's sections)", () => {
+    const { commands } = xmlToDsl(
+      '<RichTextNode id="a1" styleTransformEffect.sections="[{&quot;opacity&quot;:0.15,&quot;scale&quot;:1},{}]" $control__slides="[&quot;s1&quot;,&quot;s2&quot;]" />',
+      tempIds,
+    );
+
+    expect(commands).toEqual([
+      'SET a1 styleTransformEffect.sections.0.opacity=0.15 styleTransformEffect.sections.0.scale=1 $control__slides.0="s1" $control__slides.1="s2";',
+    ]);
+  });
 });
