@@ -23,7 +23,13 @@ const ICONS = {
 
 /** What the agent keeps doing in the hero's journal, with the chips of what each change touched. */
 const FEED = [
-  { icon: "globe", title: "Translations", tag: "plugin", meta: "Dutch · 48 written", chips: [["text", "globe", "Dutch"]] },
+  {
+    icon: "globe",
+    title: "Translations",
+    tag: "plugin",
+    meta: "Dutch · 48 written",
+    chips: [["text", "globe", "Dutch"]],
+  },
   {
     icon: "devices",
     title: "Breakpoints",
@@ -41,7 +47,13 @@ const FEED = [
     meta: "Hover and pressed variants · 3 created",
     chips: [["components", "component", "Buttons/Button"]],
   },
-  { icon: "image", title: "Images", tag: "server", meta: "3 photos uploaded · Gallery", chips: [["layout", "image", "Gallery"]] },
+  {
+    icon: "image",
+    title: "Images",
+    tag: "server",
+    meta: "3 photos uploaded · Gallery",
+    chips: [["layout", "image", "Gallery"]],
+  },
   { icon: "audit", title: "Layout audit", tag: "plugin", meta: "Page / · no defects", chips: [] },
   {
     icon: "section",
@@ -50,7 +62,13 @@ const FEED = [
     meta: "22 layers created · audit: no defects",
     chips: [["layout", "section", "Pricing"]],
   },
-  { icon: "cms", title: "CMS fields", tag: "plugin", meta: "Blog · Cover, Author added", chips: [["content", "cms", "Blog"]] },
+  {
+    icon: "cms",
+    title: "CMS fields",
+    tag: "plugin",
+    meta: "Blog · Cover, Author added",
+    chips: [["content", "cms", "Blog"]],
+  },
 ];
 
 (() => {
