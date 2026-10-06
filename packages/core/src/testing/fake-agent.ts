@@ -74,7 +74,38 @@ export function createFakeAgent(state: FakeFramerState, nextId: (prefix: string)
       ),
     readComponentControls: async ({ componentIds }) =>
       Object.fromEntries(componentIds.map((id) => [id, state.componentControls[id] ?? { error: `Unknown ${id}` }])),
-    readProject: async (queries) => ({ results: queries.map(() => ({ error: "The fake has no project queries." })) }),
+    readProject: async (queries) => ({
+      results: queries.map((query) =>
+        query.type === "screenshot" ? screenshotResult(query, session) : { error: "The fake has no such query." },
+      ),
+    }),
+    // Records every call; answers each with the preview, and publishes nothing.
+    publish: async (input = {}) => {
+      state.agentPublishes.push({ ...input });
+
+      return JSON.parse(JSON.stringify(state.publishPreview)) as unknown;
+    },
+  };
+}
+
+/** Like Framer's "screenshot" query of a URL: an image URL on its CDN, or an error for a page it cannot load. */
+function screenshotResult(query: Record<string, unknown>, { state, nextId }: FakeAgentSession): unknown {
+  const url = String(query.url);
+
+  if (state.unreachableUrls.includes(url) || !/^https?:\/\//.test(url)) {
+    return {
+      type: "screenshot",
+      url,
+      error: "Failed to capture screenshot",
+    };
+  }
+
+  return {
+    type: "screenshot",
+    url,
+    image_url: `https://framerusercontent.com/screenshots/on-demand/${nextId("shot")}.jpg`,
+    ...(query.viewport === undefined ? {} : { viewport: query.viewport }),
+    theme: query.theme ?? "light",
   };
 }
 

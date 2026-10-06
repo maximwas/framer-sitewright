@@ -72,7 +72,12 @@ it("regression: uploads the images a carousel's list takes, which Framer drops a
     {
       nodeId: "carousel",
       controls: {
-        slides: [{ image: "https://images.unsplash.com/photo-1?w=1200", caption: "Cup 1" }],
+        slides: [
+          {
+            image: "https://images.unsplash.com/photo-1?w=1200",
+            caption: "Cup 1",
+          },
+        ],
         imageUrl: "https://example.com/plain-string.jpg",
       },
     },
@@ -80,9 +85,14 @@ it("regression: uploads the images a carousel's list takes, which Framer drops a
   const slides = state.instanceControls.carousel?.slides as { image: unknown; caption: string }[];
 
   expect(state.uploadedImages.map(({ url }) => url)).toEqual(["https://images.unsplash.com/photo-1?w=1200"]);
-  expect(slides[0]).toEqual({ image: { id: state.uploadedImages[0]?.id, url: "https://images.unsplash.com/photo-1?w=1200" }, caption: "Cup 1" });
+  expect(slides[0]).toEqual({
+    image: {
+      id: state.uploadedImages[0]?.id,
+      url: "https://images.unsplash.com/photo-1?w=1200",
+    },
+    caption: "Cup 1",
+  });
   // A control that takes the URL as text keeps it as text.
   expect(state.instanceControls.carousel?.imageUrl).toBe("https://example.com/plain-string.jpg");
   expect(result.notStored).toEqual([]);
 });
-

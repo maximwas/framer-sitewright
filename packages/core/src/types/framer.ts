@@ -43,6 +43,11 @@ export interface AgentPort {
   readShaderControls(input: { shaderNames: readonly string[] }): Promise<unknown>;
   /** Project queries, e.g. `{ type: "implementation-guide-from-index", name: "FAQ" }`: `{ results }`, one per query. */
   readProject(queries: Record<string, unknown>[], options?: PageScope): Promise<unknown>;
+  /**
+   * The publish flow: `{ action: "preview" }` only reads what a publish would do. Sitewright never sends the other
+   * actions (confirm_publish, deploy_to_production): the user publishes.
+   */
+  publish(input?: Record<string, unknown>): Promise<unknown>;
 }
 
 export type TransportKind = "server-api" | "plugin";

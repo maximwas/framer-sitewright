@@ -17,7 +17,7 @@ import { registerMarketplaceTools } from "./tools/marketplace.ts";
 import { registerNodeTools } from "./tools/nodes.ts";
 import { registerPageTools } from "./tools/pages.ts";
 import { registerProjectTools } from "./tools/project.ts";
-import { registerScreenshotTool } from "./tools/screenshot.ts";
+import { registerScreenshotTools } from "./tools/screenshot.ts";
 import { registerStatusTools } from "./tools/status.ts";
 import { registerTextStyleTools } from "./tools/text-styles.ts";
 
@@ -47,7 +47,7 @@ export function createMcpServer(context: ToolContext, version: string): McpServe
   registerCheckTools(server, context);
   registerDocsTools(server, context);
   registerMarketplaceTools(server, context);
-  registerScreenshotTool(server, context);
+  registerScreenshotTools(server, context);
   registerActivityTools(server, context);
 
   return server;

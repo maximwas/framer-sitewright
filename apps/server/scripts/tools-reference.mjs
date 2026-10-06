@@ -26,6 +26,7 @@ const GROUPS = [
       "selection_get",
       "publish_status",
       "deployments_list",
+      "publish_preview",
       "project_publish",
     ],
   },
@@ -52,6 +53,7 @@ const GROUPS = [
     tools: [
       "page_create",
       "page_delete",
+      "page_duplicate",
       "nodes_read",
       "nodes_find",
       "design_apply",
@@ -60,6 +62,7 @@ const GROUPS = [
       "layout_audit",
       "breakpoints_add",
       "node_screenshot",
+      "reference_screenshot",
       "redirects_list",
       "redirects_set",
     ],
@@ -109,7 +112,7 @@ const GROUPS = [
     id: "localization",
     title: "Localization",
     intro: "What still needs translating, and the translations, one locale at a time. Locales are added in the editor.",
-    tools: ["locales_list", "localization_get", "localization_set"],
+    tools: ["locales_list", "localization_get", "localization_set", "locale_add"],
   },
   {
     id: "code",
@@ -165,6 +168,9 @@ const NEEDS = {
     "text_replace",
     "localization_get",
     "localization_set",
+    "locale_add",
+    "reference_screenshot",
+    "publish_preview",
   ],
   partial: [
     "nodes_read",

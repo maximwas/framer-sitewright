@@ -84,6 +84,22 @@ export const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
 /** "IHDR" as a chunk type: always the first chunk, it holds the image size. */
 export const PNG_IHDR_CHUNK = 0x49484452;
 
+/** JPEG markers of a frame header (SOF0 to SOF15, except DHT, JPG and DAC), which holds the image size. */
+export const JPEG_FRAME_MARKERS: ReadonlySet<number> = new Set([
+  0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7, 0xc9, 0xca, 0xcb, 0xcd, 0xce, 0xcf,
+]);
+
+/** JPEG markers that stand alone, without a length: TEM, SOI and the restart markers RST0 to RST7. */
+export const JPEG_STANDALONE_MARKERS: ReadonlySet<number> = new Set([
+  0x01, 0xd0, 0xd1, 0xd2, 0xd3, 0xd4, 0xd5, 0xd6, 0xd7, 0xd8,
+]);
+
+/** Framer's image CDN serves an image scaled down so its longer side is at most this query parameter's px. */
+export const CDN_SCALE_DOWN_PARAM = "scale-down-to";
+
+/** How long fetching a screenshot from Framer's CDN may take. */
+export const SCREENSHOT_FETCH_TIMEOUT_MS = 30_000;
+
 /** Annotations of a tool that only reads the activity journal. */
 export const READ_ONLY_ANNOTATIONS = {
   readOnlyHint: true,

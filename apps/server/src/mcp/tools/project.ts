@@ -24,6 +24,6 @@ export function registerProjectTools(server: McpServer, context: ToolContext): v
     name: "project_publish",
     title: "Publish the site",
     description:
-      "Publishes the site as it is in the editor: to staging when the project has staging on, otherwise live to visitors. Only when the user asks to publish. Returns the deployment's first status (optimization goes on after it) and the address; a failed status means Framer could not publish, tell the user.",
+      "Publishes the site as it is in the editor: to staging when the project has staging on, otherwise live to visitors. Only when the user asks to publish; with the Server API key, check first with publish_preview. Returns the deployment's first status (optimization goes on after it) and the address; a failed status means Framer could not publish, tell the user.",
   });
 }

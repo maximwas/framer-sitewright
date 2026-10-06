@@ -1,14 +1,17 @@
 import * as z from "zod";
 import {
   CANVAS_MODE_REFUSAL,
+  LOCALE_UNDO_NOTE,
   LOCALIZATION_GROUP_TYPES,
   LOCALIZATION_PAGE,
   LOCALIZATION_PAGE_MAX,
   LOCALIZATION_SET_MAX,
   LOCALIZATION_UNDO_NOTE,
+  REGIONAL_LOCALE_CODE,
 } from "../../constants/localization.ts";
+import { KEY_SETUP_HINT } from "../../constants/product.ts";
 import { OperationError } from "../../errors.ts";
-import { findLocale, siteLocales } from "../../localization/locales.ts";
+import { findLanguage, findLocale, findRegion, matchLanguage, siteLocales } from "../../localization/locales.ts";
 import { LocaleSummarySchema, LocalizedSourceSchema } from "../../schemas/localization.ts";
 import type { FramerPort, LocalizedValueUpdate } from "../../types/framer-port.ts";
 import { errorMessage } from "../../utils/errors.ts";
@@ -44,6 +47,110 @@ export const localesList = defineOperation({
   },
   describe(_input, { locales }) {
     return { summary: countOf(locales.length, "locale") };
+  },
+});
+
+/**
+ * Adds a locale with Framer's createLocale, which is alpha and exists only in the Server API. A draft locale (the
+ * default) stays off the published site until the user turns it on, so translating can start before it goes live.
+ */
+export const localeAdd = defineOperation({
+  name: "localization.addLocale",
+  effect: "write",
+  idempotent: false,
+  // createLocale is `@alpha` and Server API only: framer.isAllowedTo does not list it, Framer checks the write itself.
+  permissions: [],
+  needsAgent: true,
+  input: z.strictObject({
+    language: z
+      .string()
+      .min(1)
+      .describe('Language by code or English name, e.g. "nl" or "Dutch"; "nl-BE" also gives the region.'),
+    region: z
+      .string()
+      .min(1)
+      .exactOptional()
+      .describe('Region by code or name for a regional variant, e.g. "BE" or "Belgium" for nl-BE.'),
+    fallback: LocaleInput.exactOptional().describe(
+      "The site locale shown where a translation is missing, by code or name. Default: Framer's.",
+    ),
+    slug: z.string().min(1).exactOptional().describe('URL segment, e.g. "nl". Default: from the code.'),
+    name: z.string().min(1).exactOptional().describe('Name in the editor, e.g. "Nederlands". Default: from the code.'),
+    draft: z
+      .boolean()
+      .default(true)
+      .describe("A draft locale stays off the published site until the user turns it on."),
+  }),
+  output: z.object({
+    id: z.string(),
+    code: z.string(),
+    name: z.string(),
+    slug: z.string(),
+    draft: z.boolean(),
+    /** The fallback locale's code, or null when Framer set none. */
+    fallback: z.string().nullable(),
+  }),
+  async run({ runtime, history }, input) {
+    const { port } = runtime;
+
+    if (port.createLocale === undefined || port.getLocaleLanguages === undefined) {
+      throw new OperationError(
+        "UNSUPPORTED_TRANSPORT",
+        "Adding a locale needs the project's Server API key: Framer offers createLocale only there.",
+        KEY_SETUP_HINT,
+      );
+    }
+
+    const [languages, site] = await Promise.all([port.getLocaleLanguages(), siteLocales(port)]);
+    // "nl-BE" without a region is the language and the region, unless Framer knows the whole code as a language.
+    const parts =
+      input.region === undefined && matchLanguage(languages, input.language) === null
+        ? REGIONAL_LOCALE_CODE.exec(input.language.trim())
+        : null;
+    const language = findLanguage(languages, parts?.[1] ?? input.language);
+    const regionQuery = input.region ?? parts?.[2];
+    const region =
+      regionQuery === undefined
+        ? undefined
+        : findRegion((await port.getLocaleRegions?.(language.code)) ?? [], regionQuery, language);
+    const code = region === undefined ? language.code : `${language.code}-${region.code}`;
+    const existing = site.locales.find((locale) => locale.code.toLowerCase() === code.toLowerCase());
+
+    if (existing !== undefined) {
+      throw new OperationError(
+        "INVALID_INPUT",
+        `The site has ${existing.name} (${existing.code}) already.`,
+        "locales_list shows the site's locales.",
+      );
+    }
+
+    const fallback = input.fallback === undefined ? undefined : findLocale(site.locales, input.fallback);
+
+    history?.markIncomplete(LOCALE_UNDO_NOTE);
+
+    const created = await port.createLocale({
+      language: language.code,
+      ...(region === undefined ? {} : { region: region.code }),
+      ...(fallback === undefined ? {} : { fallbackLocaleId: fallback.id }),
+      ...(input.slug === undefined ? {} : { slug: input.slug }),
+      ...(input.name === undefined ? {} : { name: input.name }),
+      draft: input.draft,
+    });
+
+    return {
+      id: created.id,
+      code: created.code,
+      name: created.name,
+      slug: created.slug,
+      draft: input.draft,
+      fallback: site.locales.find(({ id }) => id === created.fallbackLocaleId)?.code ?? null,
+    };
+  },
+  describe(_input, { name, code, draft }) {
+    return {
+      subject: `${name} (${code})`,
+      summary: draft ? "Added as a draft" : "Added",
+    };
   },
 });
 

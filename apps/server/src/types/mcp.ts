@@ -30,9 +30,17 @@ export interface OperationToolInfo extends Pick<ToolMetadata, "name" | "title" |
   readonly before?: () => Promise<void>;
 }
 
-export interface PngSize {
+export interface ImageSize {
   readonly width: number;
   readonly height: number;
+}
+
+/** A screenshot from Framer's CDN as the model gets it: `size` is the capture's, `shown` the image's; null if unread. */
+export interface ScreenshotImage {
+  readonly data: Uint8Array;
+  readonly mimeType: string;
+  readonly size: ImageSize | null;
+  readonly shown: ImageSize | null;
 }
 
 /** What tools work with: the transports that reach Framer, the DSL reference, the activity journal and the plan. */

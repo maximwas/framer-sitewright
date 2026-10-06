@@ -67,6 +67,52 @@ export function defaultState(): FakeFramerState {
       slug: "",
     },
     locales: [],
+    // A few of the languages and regions Framer lists (getLocaleLanguages, getLocaleRegions).
+    localeLanguages: [
+      {
+        code: "nl",
+        name: "Dutch",
+      },
+      {
+        code: "en",
+        name: "English",
+      },
+      {
+        code: "fr",
+        name: "French",
+      },
+      {
+        code: "uk",
+        name: "Ukrainian",
+      },
+    ],
+    localeRegions: {
+      en: [
+        {
+          code: "GB",
+          name: "United Kingdom",
+          isCommon: true,
+        },
+        {
+          code: "US",
+          name: "United States",
+          isCommon: true,
+        },
+      ],
+      nl: [
+        {
+          code: "BE",
+          name: "Belgium",
+          isCommon: true,
+        },
+        {
+          code: "NL",
+          name: "Netherlands",
+          isCommon: true,
+        },
+      ],
+    },
+    localeCreates: [],
     localizationGroups: [],
     branching: true,
     breakpoints: [
@@ -124,6 +170,21 @@ export function defaultState(): FakeFramerState {
     unloadedScopes: [],
     instanceControls: {},
     publishes: 0,
+    // Framer's preview of a project with nothing to publish.
+    publishPreview: {
+      action: "preview",
+      status: "ready",
+      stagingEnabled: false,
+      publishTarget: "production",
+      confirmationHash: "fake01",
+      errors: [],
+      warnings: [],
+      changes: [],
+      changesCount: 0,
+      urls: { production: "https://sandbox.framer.website" },
+    },
+    agentPublishes: [],
+    unreachableUrls: [],
   };
 }
 

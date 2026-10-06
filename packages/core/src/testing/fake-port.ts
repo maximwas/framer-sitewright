@@ -476,6 +476,42 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
     listDeployments: (limit) => deploymentsOf(state.deployments.slice(0, limit)),
     getLocales: async () => state.locales.map((locale) => ({ ...locale })),
     getDefaultLocale: async () => ({ ...state.defaultLocale }),
+    // Like Framer: only codes it lists, a fallback among the site's locales, and no second locale with one code.
+    createLocale: async (input) => {
+      const { language, region, fallbackLocaleId, slug, name } = input;
+      const known = state.localeLanguages.find(({ code }) => code === language);
+      const regionName = state.localeRegions[language]?.find(({ code }) => code === region)?.name;
+      const code = region === undefined ? language : `${language}-${region}`;
+      const site = [state.defaultLocale, ...state.locales];
+
+      if (known === undefined || (region !== undefined && regionName === undefined)) {
+        throw new Error(`Invalid locale ${code}.`);
+      }
+
+      if (site.some((locale) => locale.code === code)) {
+        throw new Error(`A locale ${code} already exists.`);
+      }
+
+      if (fallbackLocaleId !== undefined && !site.some(({ id }) => id === fallbackLocaleId)) {
+        throw new Error(`No fallback locale ${fallbackLocaleId}.`);
+      }
+
+      const locale = {
+        id: nextId("locale"),
+        code,
+        name: name ?? (regionName === undefined ? known.name : `${known.name} (${regionName})`),
+        slug: slug ?? code.toLowerCase(),
+        ...(fallbackLocaleId === undefined ? {} : { fallbackLocaleId }),
+      };
+
+      state.localeCreates.push({ ...input });
+      state.locales.push(locale);
+
+      return { ...locale };
+    },
+    getLocaleLanguages: async () => state.localeLanguages.map((language) => ({ ...language })),
+    getLocaleRegions: async (languageCode) =>
+      (state.localeRegions[languageCode] ?? []).map((region) => ({ ...region })),
     getLocalizationGroups: async () =>
       JSON.parse(JSON.stringify(state.localizationGroups)) as FakeFramerState["localizationGroups"],
     setLocalizationData: async ({ valuesBySource = {}, statusByLocaleByGroup = {} }) => {
@@ -614,13 +650,59 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
     },
     getNode: async (nodeId) => {
       const page = state.webPages.find((candidate) => candidate.id === nodeId);
+      const designPage = state.designPages.find((candidate) => candidate.id === nodeId);
       const breakpoint = state.breakpoints.find((candidate) => candidate.id === nodeId);
       const controls = state.instanceControls[nodeId];
+
+      if (designPage !== undefined) {
+        return {
+          ...designPage,
+          __class: "DesignPageNode",
+          // Like Framer: a name that is taken gets a number.
+          clone: async ({ name }: { name?: string } = {}) => {
+            const copy = {
+              id: nextId("design-page"),
+              name: freeName(
+                name ?? `${designPage.name ?? "Page"} Copy`,
+                state.designPages.map((candidate) => candidate.name),
+              ),
+            };
+
+            state.designPages.push(copy);
+
+            return {
+              ...copy,
+              __class: "DesignPageNode",
+            };
+          },
+        };
+      }
 
       if (page !== undefined) {
         return {
           ...page,
           __class: "WebPageNode",
+          // Like Framer (06.10.2026): the copy keeps the page's draft state, though the typings promise a draft, and a
+          // path that is taken gets a number.
+          clone: async ({ path }: { path?: string } = {}) => {
+            const copy = {
+              id: nextId("page"),
+              path: freeName(
+                path ?? page.path ?? "/",
+                state.webPages.map((candidate) => candidate.path),
+                "-",
+              ),
+              draft: page.draft,
+              collectionId: page.collectionId,
+            };
+
+            state.webPages.push(copy);
+
+            return {
+              ...copy,
+              __class: "WebPageNode",
+            };
+          },
           addBreakpoint: async (basedOn: string, { name, width }: { name: string; width: number }) => {
             const added = {
               id: nextId("breakpoint"),
@@ -679,8 +761,20 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
     createFrameNode: async () => {
       throw new Error("The fake project has no Plugin API canvas nodes.");
     },
-    setAttributes: async () => {
-      throw new Error("The fake project has no Plugin API canvas nodes.");
+    // Only a web page's draft: other node writes go through the fake framer.agent.
+    setAttributes: async (nodeId, attributes) => {
+      const page = state.webPages.find((candidate) => candidate.id === nodeId);
+
+      if (page === undefined || typeof attributes.draft !== "boolean") {
+        throw new Error("The fake project has no Plugin API canvas nodes.");
+      }
+
+      Object.assign(page, { draft: attributes.draft });
+
+      return {
+        ...page,
+        __class: "WebPageNode",
+      };
     },
     setParent: async (nodeId, parentId, index) => {
       state.moves.push({
@@ -726,6 +820,17 @@ function framerSlug(slug: string): string {
     .toLowerCase()
     .replace(/[\s!?,'&/]+/g, "-")
     .replace(/^-+|-+$/g, "");
+}
+
+/** `wanted`, or with the first number that makes it unique among `taken`. */
+function freeName(wanted: string, taken: readonly (string | null)[], separator = " "): string {
+  let candidate = wanted;
+
+  for (let number = 2; taken.includes(candidate); number += 1) {
+    candidate = `${wanted}${separator}${number}`;
+  }
+
+  return candidate;
 }
 
 /** Like Framer: attributes merge, except `breakpoints`, which replaces the whole list. */

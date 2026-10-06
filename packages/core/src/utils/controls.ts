@@ -1,5 +1,5 @@
-import type { ControlledNode } from "../types/framer-port.ts";
 import { IMAGE_CONTROL_KEYS } from "../constants/assets.ts";
+import type { ControlledNode } from "../types/framer-port.ts";
 import { isPlainObject } from "./guards.ts";
 
 /** A component instance whose control values setAttributes can change. */

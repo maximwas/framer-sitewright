@@ -193,6 +193,31 @@ export interface LocaleData {
   readonly fallbackLocaleId?: string;
 }
 
+/** A locale to add: a language code from getLocaleLanguages, and a region code from getLocaleRegions for a variant. */
+export interface LocaleCreate {
+  language: string;
+  region?: string;
+  /** Must be a locale of the site. */
+  fallbackLocaleId?: string;
+  slug?: string;
+  name?: string;
+  /** A draft locale stays off the published site. */
+  draft?: boolean;
+}
+
+/** A language Framer can add a locale for, e.g. { code: "nl", name: "Dutch" }. */
+export interface LocaleLanguageData {
+  readonly code: string;
+  readonly name: string;
+}
+
+/** A region of one language, e.g. { code: "BE", name: "Belgium", isCommon: true } for Dutch. */
+export interface LocaleRegionData {
+  readonly code: string;
+  readonly name: string;
+  readonly isCommon: boolean;
+}
+
 /** A translatable value: the text in the default locale and its translations by locale id. */
 export interface LocalizationSourceData {
   readonly id: string;
@@ -409,6 +434,12 @@ export interface FramerPort {
   listDeployments?(limit?: number): AsyncIterable<DeploymentData>;
   getLocales(): Promise<readonly LocaleData[]>;
   getDefaultLocale(): Promise<LocaleData>;
+  /** Alpha, Server API only: adds a locale to the site. */
+  createLocale?(input: LocaleCreate): Promise<LocaleData>;
+  /** Alpha: the languages createLocale takes, sorted by name. */
+  getLocaleLanguages?(): Promise<readonly LocaleLanguageData[]>;
+  /** Alpha: the regions createLocale takes for a language. */
+  getLocaleRegions?(languageCode: string): Promise<readonly LocaleRegionData[]>;
   getLocalizationGroups(): Promise<readonly LocalizationGroupData[]>;
   setLocalizationData(update: LocalizationUpdate): Promise<LocalizationWriteResult>;
   getChildren(nodeId: string): Promise<readonly CanvasNodeData[]>;

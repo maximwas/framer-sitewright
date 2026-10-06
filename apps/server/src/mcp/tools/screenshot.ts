@@ -4,17 +4,25 @@ import {
   type FramerRuntime,
   nodeNameOf,
   OperationError,
+  referenceScreenshot,
   requireScreenshot,
   type ScreenshotOptions,
 } from "@sitewright/core";
+import { fetchScreenshotImage } from "../../assets/screenshot-image.ts";
 import { COMPONENT_EXPORT_ERROR, MAX_IMAGE_SIDE_PX } from "../../constants/mcp.ts";
 import { ScreenshotInputSchema } from "../../schemas/mcp.ts";
-import type { ToolContext } from "../../types/mcp.ts";
+import type { ImageSize, ToolContext } from "../../types/mcp.ts";
+import { operationAnnotations } from "../add-tool.ts";
 import { describeError } from "../describe-error.ts";
 import { readPngSize } from "../png-size.ts";
 
 /** No outputSchema on purpose: Claude Code would drop the image block and show only structuredContent. */
-export function registerScreenshotTool(server: McpServer, { transports, journal }: ToolContext): void {
+export function registerScreenshotTools(server: McpServer, context: ToolContext): void {
+  registerNodeScreenshotTool(server, context);
+  registerReferenceScreenshotTool(server, context);
+}
+
+function registerNodeScreenshotTool(server: McpServer, { transports, journal }: ToolContext): void {
   server.registerTool(
     "node_screenshot",
     {
@@ -92,6 +100,59 @@ export function registerScreenshotTool(server: McpServer, { transports, journal 
       }
     },
   );
+}
+
+/** A screenshot of a public web page, taken by Framer's browser: the operation asks Framer, this fetches the JPEG. */
+function registerReferenceScreenshotTool(server: McpServer, { journal }: ToolContext): void {
+  server.registerTool(
+    "reference_screenshot",
+    {
+      title: "Screenshot a web page",
+      description: `Screenshots any public web page in Framer's browser: a reference site the user likes, a competitor's, or the published site (its URL is in publish_preview or publish_status). Use it to study a reference's layout, spacing, type and rhythm before designing, or to check the live site after a publish. The capture is the whole page at the window width given (390 for a phone, 810 for a tablet, default 1200), light or dark. A page longer than ${MAX_IMAGE_SIDE_PX} px comes scaled down to fit (a tall page gets narrow), and the text gives the full size and the full-size image's URL to open in a browser. Local, private and login-only pages cannot be captured: ask the user for a screenshot instead. Needs the project's Server API key. Returns the image and a line with its sizes and URL.`,
+      inputSchema: referenceScreenshot.input,
+      annotations: operationAnnotations(referenceScreenshot),
+    },
+    async (args) => {
+      try {
+        const { output } = await journal.run("reference_screenshot", referenceScreenshot, args);
+        const image = await fetchScreenshotImage(output.imageUrl);
+
+        return {
+          content: [
+            {
+              type: "image",
+              data: Buffer.from(image.data).toString("base64"),
+              mimeType: image.mimeType,
+            },
+            {
+              type: "text",
+              text: referenceLine(output.url, output.viewport.width, image.size, image.shown, output.imageUrl),
+            },
+          ],
+        };
+      } catch (error) {
+        throw new Error(describeError(error), { cause: error });
+      }
+    },
+  );
+}
+
+/** What the model needs to read the image: the page's real size, how it is shown, and where the full size is. */
+function referenceLine(
+  url: string,
+  width: number,
+  size: ImageSize | null,
+  shown: ImageSize | null,
+  imageUrl: string,
+): string {
+  const sizeText = (value: ImageSize) => `${value.width}×${value.height} px`;
+  const whole = size === null ? "the whole page" : `the whole page, ${sizeText(size)}`;
+  const scaled =
+    size !== null && shown !== null && (shown.width !== size.width || shown.height !== size.height)
+      ? `, shown scaled down to ${sizeText(shown)}`
+      : "";
+
+  return `Screenshot of ${url} in a ${width} px wide window: ${whole}${scaled}. Full size: ${imageUrl}`;
 }
 
 /** Framer cannot export a component node itself, only its variants: the first one is the primary. */

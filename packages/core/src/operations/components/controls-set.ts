@@ -41,7 +41,10 @@ export const componentControlsSet = defineOperation({
     }
 
     const uploaded = await withUploadedImages(controls, (url, alt) =>
-      runtime.port.uploadImage({ image: url, ...(alt === null ? {} : { altText: alt }) }),
+      runtime.port.uploadImage({
+        image: url,
+        ...(alt === null ? {} : { altText: alt }),
+      }),
     );
     const next = mergeControls(node.controls, uploaded);
 

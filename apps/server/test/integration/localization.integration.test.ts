@@ -26,7 +26,7 @@ describe.skipIf(config === null)("localization on the sandbox project", () => {
 
     const other = locales.find((locale) => !locale.default);
 
-    // Locales are added in the editor only: a sandbox without a second one can only be read.
+    // A sandbox without a second locale can only be read (locale_add adds one, for good: no API removes it).
     if (other === undefined) {
       const read = await transports.run(localizationGet, {
         locale: primary?.code ?? "",
@@ -62,22 +62,25 @@ describe.skipIf(config === null)("localization on the sandbox project", () => {
       ],
     });
 
-    expect(written).toMatchObject({
-      written: 1,
-      errors: [],
-    });
+    try {
+      expect(written).toMatchObject({
+        written: 1,
+        errors: [],
+      });
 
-    const after = await transports.run(localizationGet, {
-      locale: other.code,
-      group: source.group,
-      limit: 500,
-    });
+      const after = await transports.run(localizationGet, {
+        locale: other.code,
+        group: source.group,
+        limit: 500,
+      });
 
-    expect(after.sources.find(({ id }) => id === source.id)?.translation).toBe("mcp-test translation");
-
-    await transports.run(localizationSet, {
-      locale: other.code,
-      translations: written.previous,
-    });
+      // A formattedText source keeps its markup: Framer stores the text as <p dir="auto">…</p>.
+      expect(after.sources.find(({ id }) => id === source.id)?.translation).toContain("mcp-test translation");
+    } finally {
+      await transports.run(localizationSet, {
+        locale: other.code,
+        translations: written.previous,
+      });
+    }
   });
 });

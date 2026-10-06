@@ -115,11 +115,13 @@ sitewright --help
 - **CMS:** `cms_collections_list`, `cms_collection_create`, `cms_collection_delete`, `cms_fields_set`,
   `cms_items_list`, `cms_items_upsert`, `cms_items_delete`, `cms_items_order`. Items are written by slug, values by
   field name. Undo does not restore CMS changes yet.
-- **Pages and the whole site:** `page_create`, `page_delete`, `nodes_find` (layers by name, text or type across
+- **Pages and the whole site:** `page_create`, `page_delete`, `page_duplicate` (a copy with its breakpoints, as a
+  draft), `reference_screenshot` (any public page, e.g. a reference the user names), `publish_preview` (what a publish
+  would change and what blocks it, without publishing), `nodes_find` (layers by name, text or type across
   pages), `text_replace` (with a dry run; undoable), `redirects_list`, `redirects_set`, `publish_status` (what changed
   since the last publish), `deployments_list`.
-- **Localization:** `locales_list`, `localization_get` (what still needs translating), `localization_set`. Locales
-  themselves are added in the Framer editor.
+- **Localization:** `locales_list`, `locale_add` (a new language, as a draft), `localization_get` (what still needs
+  translating), `localization_set`.
 - **Code** (off until you allow it): `custom_code_get`, `custom_code_set`, `code_files_list`, `code_file_read`,
   `code_file_write`, `code_file_delete`.
 - **Journal:** `activity_list`, `activity_get`, `activity_checkpoint`, `activity_undo`, `activity_redo`,

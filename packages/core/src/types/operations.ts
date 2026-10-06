@@ -44,6 +44,8 @@ export type PluginPermission =
   | "setLocalizationData"
   | "createWebPage"
   | "createDesignPage"
+  | "WebPageNode.clone"
+  | "DesignPageNode.clone"
   | "removeNodes"
   | "addRedirects"
   | "removeRedirects"

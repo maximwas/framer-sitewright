@@ -8,7 +8,10 @@ import type {
   DesignPageData,
   FileBytes,
   FontData,
+  LocaleCreate,
   LocaleData,
+  LocaleLanguageData,
+  LocaleRegionData,
   ProjectInfoData,
   PublishInfoData,
   TextStyleData,
@@ -58,6 +61,11 @@ export interface FakeFramerState {
   /** The default locale: Framer's getLocales lists only the locales added to it. */
   defaultLocale: LocaleData;
   locales: LocaleData[];
+  /** What getLocaleLanguages lists, and getLocaleRegions by language code. */
+  localeLanguages: LocaleLanguageData[];
+  localeRegions: Record<string, LocaleRegionData[]>;
+  /** createLocale calls, as Framer got them. */
+  localeCreates: LocaleCreate[];
   localizationGroups: {
     id: string;
     name: string;
@@ -107,6 +115,12 @@ export interface FakeFramerState {
   unloadedScopes: string[];
   /** How many times the project was published. */
   publishes: number;
+  /** What framer.agent.publish({ action: "preview" }) answers. */
+  publishPreview: unknown;
+  /** Every framer.agent.publish call's input, in order. */
+  agentPublishes: Record<string, unknown>[];
+  /** URLs the screenshot query fails on, as Framer fails on a page behind a login or one that blocks bots. */
+  unreachableUrls: string[];
   /** Component instances' control values, by node id (getNode, setAttributes). */
   instanceControls: Record<string, Record<string, unknown>>;
 }

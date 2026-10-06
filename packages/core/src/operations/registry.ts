@@ -20,7 +20,7 @@ import { designApply } from "./design/apply.ts";
 import { fontsInLibrary } from "./fonts/in-library.ts";
 import { fontsSearch } from "./fonts/search.ts";
 import { historyRevert } from "./history/revert.ts";
-import { localesList, localizationGet, localizationSet } from "./localization/localization.ts";
+import { localeAdd, localesList, localizationGet, localizationSet } from "./localization/localization.ts";
 import { effectsSet } from "./motion/effects-set.ts";
 import { layoutAudit } from "./nodes/audit.ts";
 import { breakpointsAdd } from "./nodes/breakpoints.ts";
@@ -28,15 +28,17 @@ import { nodesFind } from "./nodes/find.ts";
 import { nodesRead } from "./nodes/read.ts";
 import { selectionGet } from "./nodes/selection.ts";
 import { textReplace } from "./nodes/text-replace.ts";
-import { pagesCreate, pagesDelete } from "./pages/pages.ts";
+import { pagesCreate, pagesDelete, pagesDuplicate } from "./pages/pages.ts";
 import { projectCapabilities } from "./project/capabilities.ts";
 import { projectEditorUrl } from "./project/editor-url.ts";
 import { projectInfo } from "./project/info.ts";
 import { projectOverview } from "./project/overview.ts";
 import { projectPublish } from "./project/publish.ts";
+import { publishPreview } from "./project/publish-preview.ts";
 import { deploymentsList, publishStatus } from "./project/publish-status.ts";
 import { redirectsList, redirectsSet } from "./redirects/redirects.ts";
 import { a11yAudit, contrastCheck, imagesCheck, linksCheck, seoAudit } from "./site/checks.ts";
+import { referenceScreenshot } from "./site/reference-screenshot.ts";
 import { templateAudit } from "./site/template-audit.ts";
 import { textStylesDelete } from "./text-styles/delete.ts";
 import { textStylesList } from "./text-styles/list.ts";
@@ -104,6 +106,10 @@ const OPERATIONS: readonly AnyOperation[] = [
   fontsInLibrary,
   effectsSet,
   shadersRead,
+  pagesDuplicate,
+  localeAdd,
+  referenceScreenshot,
+  publishPreview,
 ];
 
 const byName = new Map(OPERATIONS.map((operation) => [operation.name, operation]));

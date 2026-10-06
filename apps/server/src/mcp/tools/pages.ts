@@ -4,6 +4,8 @@ import {
   nodesFind,
   pagesCreate,
   pagesDelete,
+  pagesDuplicate,
+  publishPreview,
   publishStatus,
   redirectsList,
   redirectsSet,
@@ -26,6 +28,13 @@ export function registerPageTools(server: McpServer, context: ToolContext): void
     title: "Delete a page",
     description:
       "Deletes a web page by path or a design page by name, with everything on it. Undo cannot bring it back: delete only pages the user asked to remove or you created yourself. The home page cannot be deleted.",
+  });
+
+  addOperationTool(server, context, pagesDuplicate, {
+    name: "page_duplicate",
+    title: "Duplicate a page",
+    description:
+      'Copies a page with everything on it: a web page (path) to a new path (newPath, e.g. "/about-b"), keeping its breakpoints, their overrides and its settings; or a design page (designPage) under a new name (newName). Use it for a variant of a page (an A/B version, a landing page from an existing one) instead of rebuilding it with design_apply. The new path must be free. A web page copy is a draft by default, which publishing leaves out until the user turns the draft off; draft: false publishes it with the site. Works with or without the Server API key. Returns the copy\'s id, path or name, and whether it is a draft. Undo does not remove the copy: delete it with page_delete.',
   });
 
   addOperationTool(server, context, nodesFind, {
@@ -60,6 +69,13 @@ export function registerPageTools(server: McpServer, context: ToolContext): void
     title: "Publish status",
     description:
       "Where the site is published (production and staging URLs, when) and which pages changed since the last publish. Publish with project_publish, only when the user asks.",
+  });
+
+  addOperationTool(server, context, publishPreview, {
+    name: "publish_preview",
+    title: "Preview a publish",
+    description:
+      "Shows what publishing would do, without publishing: whether it is blocked, the blocking errors and the warnings (with the layer's id when Framer names one), the pages (with their paths), components and other parts changed since the last publish, where it would go (production, staging or a branch preview) and the site's URLs. Use it before the user publishes, to fix what blocks or warns first, and to find the live URL for reference_screenshot. It never publishes: the user does, or project_publish when they ask. Needs the project's Server API key.",
   });
 
   addOperationTool(server, context, deploymentsList, {
