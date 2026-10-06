@@ -1014,4 +1014,18 @@ describe("layout audit", () => {
 
     expect(rulesOf(auditTree(node("WebPageNode", "/lab-site", {}, [plain]), context()))).toContain("h1-count");
   });
+
+  it("regression: a link Framer reads back as an object is still a link (seen: text links passed the audit)", () => {
+    // serialize() gives link as { href, … }; read as a string it was missing, so text-link never fired.
+    const linked = text("Read more", "Body", "Read more", {
+      link: {
+        href: "/about",
+        openInNewTab: false,
+      } as never,
+    });
+
+    expect(rulesOf(auditTree(node("FrameNode", "Row", { layout: "stack" }, [linked]), context()))).toContain(
+      "text-link",
+    );
+  });
 });

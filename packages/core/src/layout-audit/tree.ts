@@ -13,6 +13,19 @@ export function attr(node: SerializedNode, name: string): string | null {
   return typeof value === "number" || typeof value === "boolean" ? String(value) : null;
 }
 
+/** The node's link target, whether the read gives it as a string or, as serialize() does, as { href, … }. */
+export function linkOf(node: SerializedNode): string | null {
+  const link = node.attributes?.["link"];
+
+  if (typeof link === "string") {
+    return link === "" ? null : link;
+  }
+
+  return typeof link === "object" && link !== null && "href" in link && typeof link.href === "string"
+    ? link.href
+    : null;
+}
+
 /** The node's children that are nodes and show (a truncated read has none; a hidden layer renders nothing). */
 export function childrenOf(node: SerializedNode): SerializedNode[] {
   return (node.children ?? []).filter(isNode).filter((child) => attr(child, "visible") !== "false");

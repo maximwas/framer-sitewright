@@ -43,6 +43,7 @@ import {
   isText,
   label,
   layoutOf,
+  linkOf,
   paddingOf,
   px,
   sizeKind,
@@ -139,11 +140,7 @@ const unevenRowCards: NodeRule = (node) => {
   // A card holds content: a filled frame without children is a photo or a swatch, as in a line of words with photos.
   const cards = childrenOf(node).filter(
     (child) =>
-      inFlow(child) &&
-      isFrame(child) &&
-      hasSurface(child) &&
-      attr(child, "link") === null &&
-      childrenOf(child).length > 0,
+      inFlow(child) && isFrame(child) && hasSurface(child) && linkOf(child) === null && childrenOf(child).length > 0,
   );
   const loose = cards.filter((card) => attr(card, "height") !== "1fr");
 
@@ -164,7 +161,7 @@ const unevenRowCards: NodeRule = (node) => {
 
 /** A link on a text node gets Framer's link style (blue by default), over the text style's color. */
 const textLink: NodeRule = (node) =>
-  isText(node) && attr(node, "link") !== null && attr(node, "linkStylePreset") === null
+  isText(node) && linkOf(node) !== null && attr(node, "linkStylePreset") === null
     ? [
         issue(
           "text-link",
@@ -510,7 +507,7 @@ const fixedViewportHeight: NodeRule = (node) =>
 const buttonPadding: NodeRule = (node) => {
   const [top, right, bottom, left] = paddingOf(node);
 
-  return isFrame(node) && attr(node, "link") !== null && hasSurface(node) && (top !== bottom || left !== right)
+  return isFrame(node) && linkOf(node) !== null && hasSurface(node) && (top !== bottom || left !== right)
     ? [
         issue(
           "button-padding",
