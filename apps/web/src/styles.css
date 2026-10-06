@@ -5,6 +5,21 @@
 @import "@framer/plugin/framer.css" layer(base);
 @import "@sitewright/ui/theme.css";
 
+/*
+ * dark: follows the palette, not the system alone: Framer's theme once the plugin sends it, the system's until then
+ * (`.sw-system`). Otherwise a dark Mac would put dark-mode badge colors on the light journal.
+ */
+@custom-variant dark {
+  &:where([data-framer-theme="dark"], [data-framer-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(.sw-system, .sw-system *) {
+      @slot;
+    }
+  }
+}
+
 /* framer.css styles inputs and checkboxes with Framer's variables: here they take Sitewright's palette. */
 :root {
   --framer-color-bg: var(--sw-surface);
