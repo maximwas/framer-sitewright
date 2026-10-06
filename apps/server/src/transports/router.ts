@@ -10,6 +10,7 @@ import type * as z from "zod";
 import {
   CODE_COMPILE_MS,
   LEARN_PROJECT_COOLDOWN_MS,
+  OPEN_PLUGIN_HINT,
   SERVER_API_SETUP_HINT,
   SERVER_API_STALE_AFTER,
 } from "../constants/transports.ts";
@@ -89,14 +90,24 @@ export class TransportRouter {
     const serverApi = (this.#serverApi ?? unconfiguredServerApi).status();
     const plugin = this.#plugin.status();
     const selected = this.#selectedKind() === "plugin" ? plugin : serverApi;
-    const active = selected.configured ? selected.transport : null;
+    // In auto nothing runs while the plugin is away (#assertPluginPresent): no transport is active then.
+    const waiting = this.#mode === "auto" && plugin.configured && !this.#plugin.isConnected();
+    const active = !waiting && selected.configured ? selected.transport : null;
+    const current = active === null ? null : (selected.project?.id ?? null);
 
     return {
       mode: this.#mode,
       active,
       transports: [serverApi, plugin],
-      hint: active === null ? selected.hint : this.#otherProjectHint(),
-      projects: this.#serverApis.projects(),
+      hint: waiting
+        ? `Nothing runs until the plugin is back. ${OPEN_PLUGIN_HINT}`
+        : active === null
+          ? selected.hint
+          : this.#otherProjectHint(),
+      projects: this.#serverApis.projects().map((project) => ({
+        ...project,
+        current: project.id === current,
+      })),
     };
   }
 

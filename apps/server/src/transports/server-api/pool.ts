@@ -68,7 +68,7 @@ export class ServerApiPool {
   }
 
   /** The projects with a saved key, without their keys, and which one framer_connect chose. */
-  projects(): SavedProject[] {
+  projects(): Omit<SavedProject, "current">[] {
     const chosen = this.#chosenProject(this.#pluginProject())?.id ?? null;
 
     return (this.#keys?.list() ?? []).map(({ id, name }) => ({

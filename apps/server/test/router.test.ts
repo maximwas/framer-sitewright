@@ -113,6 +113,15 @@ describe("TransportRouter auto", () => {
     await expect(router.run(colorTokensList, {})).resolves.toBeDefined();
   });
 
+  it("regression: shows no active transport while the plugin is away, since nothing runs then", () => {
+    // Seen: framer_status said active "server-api" while every call was refused for the missing plugin.
+    const { plugin } = absentPlugin();
+    const status = new TransportRouter(serverApi(), plugin, "auto").status();
+
+    expect(status.active).toBeNull();
+    expect(status.hint).toMatch(/Connect/);
+  });
+
   it("puts the plugin first, and sends only what needs the DSL to the Server API", async () => {
     const { plugin, ran } = fakePlugin("project-1");
     const router = new TransportRouter(serverApi(), plugin, "auto");

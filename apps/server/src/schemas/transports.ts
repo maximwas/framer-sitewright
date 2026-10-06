@@ -14,6 +14,8 @@ export const ProjectRefSchema = z.object({
 export const SavedProjectSchema = ProjectRefSchema.extend({
   /** framer_connect { project } chose it: the Server API stays on it until the plugin opens another project. */
   chosen: z.boolean(),
+  /** The project the tools edit now. */
+  current: z.boolean(),
 });
 
 export const TransportStatusSchema = z.object({
