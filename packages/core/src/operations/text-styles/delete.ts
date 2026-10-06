@@ -14,7 +14,9 @@ export const textStylesDelete = defineOperation({
   effect: "destructive",
   idempotent: true,
   permissions: ["TextStyle.remove"],
-  needsAgent: ({ via }) => via === "dsl",
+  // "auto" writes through the DSL whenever the project has a key: design_apply does not see a style the Plugin API
+  // made until a DSL write touches it.
+  needsAgent: ({ via }) => via !== "plugin-api",
   input: z.strictObject({
     paths: z.array(z.string().min(1)).max(100).default([]).describe("Style paths; every style at a path goes."),
     folders: z

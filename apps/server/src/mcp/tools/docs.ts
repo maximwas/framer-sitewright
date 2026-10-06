@@ -1,12 +1,5 @@
 import type { McpServer } from "@modelcontextprotocol/server";
-import {
-  type DocSection,
-  findSection,
-  OperationError,
-  requireAgent,
-  searchSections,
-  sliceContent,
-} from "@sitewright/core";
+import { type DocSection, findSection, requireAgent, searchSections, sliceContent } from "@sitewright/core";
 import * as z from "zod";
 import { GUIDE_TOPICS } from "../../constants/knowledge.ts";
 import { guideNames, readGuide, resolveGuideName } from "../../docs/guides.ts";
@@ -164,12 +157,9 @@ function guideResult(name: string, guide: string, offset: number, limit: number)
 function sectionResult(sections: DocSection[], section: string, offset: number, limit: number): DocsOutput {
   const found = findSection(sections, section);
 
+  // No section by that name: the sections that talk about it, to pick one from.
   if (found === undefined) {
-    throw new OperationError(
-      "NOT_FOUND",
-      `No reference section matches "${section}".`,
-      "Call framer_docs without arguments to list sections.",
-    );
+    return searchResult(sections, section);
   }
 
   const { text, nextOffset } = sliceContent(found.content, offset, limit);

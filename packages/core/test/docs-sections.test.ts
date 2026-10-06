@@ -32,4 +32,9 @@ describe("DSL reference sections", () => {
     expect(findSection(sections, "variables")?.id).toBe("updating-the-project-variables");
     expect(searchSections(sections, "bind text")[0]?.id).toBe("updating-the-project-variables");
   });
+
+  it("regression: takes no section whose title only ends with the word (seen: Interactions gave Illegal Replica Interactions)", () => {
+    expect(findSection(sections, "project")).toBeUndefined();
+    expect(findSection(sections, "updating")?.id).toBe("updating-the-project");
+  });
 });

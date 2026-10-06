@@ -83,7 +83,8 @@ export function findSection(sections: readonly DocSection[], idOrTitle: string):
   return (
     sections.find((section) => section.id === wanted) ??
     sections.find((section) => section.title.toLowerCase() === wanted) ??
-    sections.find((section) => section.title.toLowerCase().includes(wanted))
+    // A title that only contains the word elsewhere is another topic: "Interactions" is not "Illegal Replica Interactions".
+    sections.find((section) => section.title.toLowerCase().startsWith(wanted))
   );
 }
 

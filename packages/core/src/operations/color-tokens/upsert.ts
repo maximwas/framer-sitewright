@@ -16,7 +16,9 @@ export const colorTokensUpsert = defineOperation({
   effect: "write",
   idempotent: true,
   permissions: ["createColorStyle", "ColorStyle.setAttributes"],
-  needsAgent: ({ via }) => via === "dsl",
+  // "auto" writes through the DSL whenever the project has a key: design_apply does not see a style the Plugin API
+  // made until a DSL write touches it.
+  needsAgent: ({ via }) => via !== "plugin-api",
   input: z.strictObject({
     tokens: z.array(ColorTokenInputSchema).min(1).max(200),
     dryRun: z.boolean().default(false).describe("Only return the plan, change nothing."),

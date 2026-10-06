@@ -57,7 +57,7 @@ export const DESIGN_APPLY_DESCRIPTION = [
   'An element with id gets a SET of only the attributes it lists; $delete="true" deletes it. Nesting existing nodes only addresses them: nothing moves and omitted children stay.',
   "Inside an existing rich text, blocks and runs without id are the ones at that position (as nodes_read prints them); give a new one a key.",
   'Text: plain text inside a RichTextNode, or <TextBlock tag="h1">…</TextBlock> blocks with <TextRun bold="true">…</TextRun> runs; write & and < as &amp; and &lt;. Nested attributes are dotted: hoverEffect.scale="1".',
-  'Color text with a token on the RichTextNode itself, textColor="var(--token-<id>)", not only through its text style: only then does the token show in Framer\'s Color field. Fix every error and re-apply.',
+  'Color text with a token on the RichTextNode itself, textColor="var(--token-<id>)", not only through its text style: only then does the token show in Framer\'s Color field. Framer applies every command it can and skips the failed ones: send only the failed commands again, fixed, never the whole batch (it would create its nodes twice).',
 ].join(" ");
 
 /**
@@ -129,3 +129,6 @@ export const ACTIVITY_GET_MAX_CHARS = 40_000;
 
 /** Longest image side the model gets: bigger images are refused by the API or cost a lot of tokens. */
 export const MAX_IMAGE_SIDE_PX = 2000;
+
+/** What Framer answers when asked to export a component node instead of one of its variants. */
+export const COMPONENT_EXPORT_ERROR = /exportable ground node/i;

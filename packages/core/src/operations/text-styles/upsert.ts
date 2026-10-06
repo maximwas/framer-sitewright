@@ -19,7 +19,9 @@ export const textStylesUpsert = defineOperation({
   effect: "write",
   idempotent: true,
   permissions: ["createTextStyle", "TextStyle.setAttributes"],
-  needsAgent: ({ via }) => via === "dsl",
+  // "auto" writes through the DSL whenever the project has a key: design_apply does not see a style the Plugin API
+  // made until a DSL write touches it.
+  needsAgent: ({ via }) => via !== "plugin-api",
   input: z.strictObject({
     styles: z.array(TextStyleInputSchema).min(1).max(100),
     dryRun: z.boolean().default(false).describe("Only return the plan, change nothing."),

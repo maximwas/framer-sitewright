@@ -30,7 +30,8 @@ The `framer` skill gives you the CLI, the DSL grammar and Framer's design rules:
    control names or icon names.
 3. Build in order: design system (tokens, text styles), then the page frame and breakpoints, then sections with one
    `applyChanges` batch per section, then motion.
-4. After each batch, fix every entry in `errors` and apply again. Read `warnings` and `linter` too.
+4. After each batch, fix every entry in `errors` and send only those commands again: the rest of the batch is already
+   applied, and re-sending all of it duplicates new nodes. Read `warnings` and `linter` too.
 5. Read back what matters. Framer rewrites or drops some values without an error (see
    [verify.md](references/verify.md)).
 6. Screenshot every breakpoint. The canvas and screenshots never run effects: appear, hover, loop and scroll motion can

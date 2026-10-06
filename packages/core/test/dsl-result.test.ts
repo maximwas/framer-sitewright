@@ -21,6 +21,19 @@ describe("normalizeDslResult", () => {
     });
   });
 
+  it("says that the commands without errors were applied, so only the failed ones go again", () => {
+    // Framer applies every command it can: re-sending the whole batch would create its nodes a second time.
+    const result = normalizeDslResult({
+      message: "Commands: 1 error. Design: 22 created.",
+      errors: { 'Invalid value `textStylePreset="Lab/Heading"`.': ["+RichTextNode tTitle"] },
+      renamedIds: { tCard: "DuWoDInOY" },
+    });
+
+    expect(result.message).toContain("Commands: 1 error. Design: 22 created.");
+    expect(result.message).toMatch(/applied every command without an error/);
+    expect(result.message).toMatch(/only the failed commands/);
+  });
+
   it("keeps warnings and linter findings without failing", () => {
     const result = normalizeDslResult({
       message: "Commands: 1 warning. Lint: 1 warning.",

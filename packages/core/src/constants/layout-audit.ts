@@ -49,6 +49,10 @@ export const SEQUENCE_NUMBER = /^\s*0?\d{1,2}\.?\s*$/;
 /** A color written out rather than taken from a token. */
 export const RAW_COLOR = /#[\da-f]{3,8}\b|\brgba?\(|\bhsla?\(|\boklch\(/i;
 
+/** A color with zero alpha: no color at all, so no token can stand for it. */
+export const TRANSPARENT_COLOR =
+  /^\s*(?:transparent|#[\da-f]{3}0|#[\da-f]{6}00|(?:rgba|hsla)\([^)]*,\s*0(?:\.0+)?\s*\))\s*$/i;
+
 /** From this size up a text style is display type: tracking goes negative and lines get tight. */
 export const DISPLAY_SIZE_PX = 40;
 

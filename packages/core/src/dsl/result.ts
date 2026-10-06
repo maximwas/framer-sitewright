@@ -1,3 +1,4 @@
+import { DSL_PARTIAL_APPLY_HINT } from "../constants/dsl.ts";
 import { RawDslResultSchema } from "../schemas/dsl.ts";
 import type { DslIssue, DslLintIssue, DslResult } from "../types/dsl.ts";
 
@@ -50,6 +51,7 @@ export function normalizeDslResult(raw: unknown): DslResult {
 
   const result = parsed.data;
   const errors = toIssues(result.errors);
+  const partial = errors.length > 0 && isEmpty(result.parseErrors);
 
   if (!isEmpty(result.parseErrors)) {
     errors.push({
@@ -60,7 +62,7 @@ export function normalizeDslResult(raw: unknown): DslResult {
 
   return {
     ok: errors.length === 0,
-    message: result.message ?? "",
+    message: partial ? `${result.message ?? ""} ${DSL_PARTIAL_APPLY_HINT}`.trim() : (result.message ?? ""),
     errors,
     warnings: toIssues(result.warnings),
     lint: [...toLint(result.linter?.errors, "error"), ...toLint(result.linter?.warnings, "warning")],

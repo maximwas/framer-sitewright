@@ -16,7 +16,9 @@
 
 ## Diagnostics
 
-- **`errors`:** fix every one and apply again.
+- **`errors`:** Framer applied every command without an error and skipped only the failed ones. Send only the failed
+  commands again, fixed, with the real ids from `renamedIds` for nodes the batch created. Re-sending the whole batch
+  creates its nodes twice.
 - **`warnings` and `linter`:** clipping, overflow, mid-word wraps, dark-mode contrast.
 - **Quotes:** an unclosed quote is auto-repaired with a warning. Fix your string anyway.
 - **Escaping:** inside a value escape only `"` as `\"`. Backslashes are not unescaped, and a value ending in `\` eats

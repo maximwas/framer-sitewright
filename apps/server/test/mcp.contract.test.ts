@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Client } from "@modelcontextprotocol/client";
 import { InMemoryTransport } from "@modelcontextprotocol/server";
-import type { FramerRuntime } from "@sitewright/core";
+import { type FramerRuntime, requireScreenshot } from "@sitewright/core";
 import { createFakeRuntime } from "@sitewright/core/testing";
 import type { Framer } from "framer-api";
 import { afterEach, describe, expect, it } from "vitest";
@@ -464,6 +464,58 @@ describe("configured server (fake project)", () => {
       },
       { type: "text" },
     ]);
+  });
+});
+
+describe("node_screenshot", () => {
+  it("regression: captures a component through its primary variant, since Framer cannot export the component itself", async () => {
+    const { runtime } = createFakeRuntime({
+      canvas: [
+        {
+          id: "comp1",
+          parentId: "page1",
+          className: "SmartComponentNode",
+          name: "Button",
+        },
+        {
+          id: "var1",
+          parentId: "comp1",
+          className: "FrameNode",
+          name: "Primary",
+        },
+        {
+          id: "var2",
+          parentId: "comp1",
+          className: "FrameNode",
+          name: "Hover",
+        },
+      ],
+    });
+    const captured: string[] = [];
+    const withComponent: FramerRuntime = {
+      ...runtime,
+      screenshot: async (nodeId, options) => {
+        if (nodeId === "comp1") {
+          throw new Error(
+            "Assertion Error: An exportable ground node must either support x,y position or be pinnable: comp1 SmartComponentNode",
+          );
+        }
+
+        captured.push(nodeId);
+
+        return requireScreenshot(runtime)(nodeId, options);
+      },
+    };
+
+    const { client } = await connect(fakeProjectTransports(withComponent));
+    const shot = await client.callTool({
+      name: "node_screenshot",
+      arguments: { nodeId: "comp1" },
+    });
+
+    expect(shot.isError).toBeFalsy();
+    expect(captured).toEqual(["var1"]);
+    expect(JSON.stringify(shot.content)).toContain("var1");
   });
 });
 

@@ -1,6 +1,13 @@
 import type { McpServer } from "@modelcontextprotocol/server";
-import { nodeNameOf, OperationError, requireScreenshot, type ScreenshotOptions } from "@sitewright/core";
-import { MAX_IMAGE_SIDE_PX } from "../../constants/mcp.ts";
+import {
+  errorMessage,
+  type FramerRuntime,
+  nodeNameOf,
+  OperationError,
+  requireScreenshot,
+  type ScreenshotOptions,
+} from "@sitewright/core";
+import { COMPONENT_EXPORT_ERROR, MAX_IMAGE_SIDE_PX } from "../../constants/mcp.ts";
 import { ScreenshotInputSchema } from "../../schemas/mcp.ts";
 import type { ToolContext } from "../../types/mcp.ts";
 import { describeError } from "../describe-error.ts";
@@ -29,7 +36,7 @@ export function registerScreenshotTool(server: McpServer, { transports, journal 
       };
 
       try {
-        const { shot } = await journal.read(
+        const { shot, capturedId } = await journal.read(
           "node_screenshot",
           "Screenshot",
           "server-api",
@@ -48,7 +55,7 @@ export function registerScreenshotTool(server: McpServer, { transports, journal 
           () =>
             transports.withServerApi(
               async (runtime) => {
-                const taken = await requireScreenshot(runtime)(nodeId, options);
+                const { taken, capturedId } = await capture(runtime, nodeId, options);
 
                 // Inside the read, so a refused screenshot is journaled as failed.
                 assertFitsModel(taken.data);
@@ -56,6 +63,7 @@ export function registerScreenshotTool(server: McpServer, { transports, journal 
                 // The panel names the node; an id alone means nothing to the user.
                 return {
                   shot: taken,
+                  capturedId,
                   name: nodeNameOf(await runtime.port.getNode(nodeId).catch(() => null)),
                 };
               },
@@ -72,7 +80,10 @@ export function registerScreenshotTool(server: McpServer, { transports, journal 
             },
             {
               type: "text",
-              text: `Screenshot of node ${nodeId} (${shot.data.length} bytes, scale ${scale}).`,
+              text:
+                capturedId === nodeId
+                  ? `Screenshot of node ${nodeId} (${shot.data.length} bytes, scale ${scale}).`
+                  : `A component cannot be captured whole: this is its primary variant ${capturedId} (${shot.data.length} bytes, scale ${scale}). Capture another variant by its id; nodes_read on the component lists them.`,
             },
           ],
         };
@@ -81,6 +92,29 @@ export function registerScreenshotTool(server: McpServer, { transports, journal 
       }
     },
   );
+}
+
+/** Framer cannot export a component node itself, only its variants: the first one is the primary. */
+async function capture(runtime: FramerRuntime, nodeId: string, options: ScreenshotOptions) {
+  const screenshot = requireScreenshot(runtime);
+
+  try {
+    return {
+      taken: await screenshot(nodeId, options),
+      capturedId: nodeId,
+    };
+  } catch (error) {
+    const [primary] = COMPONENT_EXPORT_ERROR.test(errorMessage(error)) ? await runtime.port.getChildren(nodeId) : [];
+
+    if (primary === undefined) {
+      throw error;
+    }
+
+    return {
+      taken: await screenshot(primary.id, options),
+      capturedId: primary.id,
+    };
+  }
 }
 
 function assertFitsModel(png: Uint8Array): void {

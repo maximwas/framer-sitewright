@@ -153,6 +153,11 @@ export function walk(node: SerializedNode): SerializedNode[] {
   return [node, ...childrenOf(node).flatMap(walk)];
 }
 
+/** The node and the descendants that take part in its size: absolute and fixed layers sit outside it. */
+export function walkInFlow(node: SerializedNode): SerializedNode[] {
+  return [node, ...childrenOf(node).filter(inFlow).flatMap(walkInFlow)];
+}
+
 /** Plain text of a text node, when the read carried it. */
 export function textContent(node: SerializedNode): string | null {
   const text = node.attributes?.["text"];

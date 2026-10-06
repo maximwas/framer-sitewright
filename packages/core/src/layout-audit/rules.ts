@@ -24,6 +24,7 @@ import {
   TABLET_GRID_MAX_COLUMNS,
   TABLET_MAX_WIDTH_PX,
   TEMPLATE_REPEAT,
+  TRANSPARENT_COLOR,
   VIEWPORT_POSITIONS,
 } from "../constants/layout-audit.ts";
 import type { SerializedNode } from "../types/dsl.ts";
@@ -48,6 +49,7 @@ import {
   textAnchorOf,
   textContent,
   walk,
+  walkInFlow,
 } from "./tree.ts";
 
 /**
@@ -191,7 +193,11 @@ const rawColor: NodeRule = (node, context) => {
     return [];
   }
 
-  const raw = ["fill", "textColor", "border"].filter((name) => RAW_COLOR.test(attr(node, name) ?? ""));
+  const raw = ["fill", "textColor", "border"].filter((name) => {
+    const value = attr(node, name) ?? "";
+
+    return RAW_COLOR.test(value) && !TRANSPARENT_COLOR.test(value);
+  });
 
   return raw.length === 0
     ? []
@@ -234,12 +240,15 @@ const fixedWidthContent: NodeRule = (node) => {
 
 const fixedHeightContainer: NodeRule = (node) => {
   const height = attr(node, "height");
+  // A layer pinned to the top and the bottom of its parent takes its height from the pins, whatever height it stores.
+  const pinned = !inFlow(node) && attr(node, "top") !== null && attr(node, "bottom") !== null;
 
   if (
     !isFrame(node) ||
     sizeKind(height) !== "fixed" ||
+    pinned ||
     attr(node, "aspectRatio") !== null ||
-    !walk(node).slice(1).some(isText)
+    !walkInFlow(node).slice(1).some(isText)
   ) {
     return [];
   }

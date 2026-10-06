@@ -51,3 +51,10 @@ export const VARIABLE_NODE_TYPE = /Variable$/;
 
 /** An attribute inside a list item: `styleTransformEffect.sections.0.opacity`, `$control__slides.1`. */
 export const DSL_LIST_ITEM_KEY = /\.\d+(?:\.|$)/;
+
+/**
+ * Framer applies every command of a batch it can and skips the failed ones: re-sending the whole batch would create
+ * its nodes a second time.
+ */
+export const DSL_PARTIAL_APPLY_HINT =
+  "Framer applied every command without an error; only the failed commands were skipped. Send only the failed commands again, fixed, with the real ids from renamedIds and keys for nodes this batch created: the whole batch again would create them twice.";

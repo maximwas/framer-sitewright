@@ -4,10 +4,12 @@ import { join } from "node:path";
 import {
   codeFileWrite,
   colorTokensList,
+  colorTokensUpsert,
   designApply,
   type Operation,
   runOperation,
   selectionGet,
+  textStylesUpsert,
 } from "@sitewright/core";
 import { createFakeRuntime } from "@sitewright/core/testing";
 import type { Framer } from "framer-api";
@@ -116,6 +118,43 @@ describe("TransportRouter auto", () => {
 
     expect(ran).toEqual(["colorTokens.list"]);
     expect(router.status().active).toBe("plugin");
+  });
+
+  it("regression: writes styles and tokens through the DSL when the project has a key, so design_apply finds them", async () => {
+    // A text style the Plugin API created was refused by design_apply's textStylePreset until a DSL write touched it.
+    const { plugin } = fakePlugin("project-1");
+    const style = textStylesUpsert.input.parse({
+      styles: [
+        {
+          path: "Lab/Heading",
+          font: { family: "Inter" },
+        },
+      ],
+    });
+    const token = colorTokensUpsert.input.parse({
+      tokens: [
+        {
+          path: "Ink",
+          light: "#111111",
+        },
+      ],
+    });
+    const router = new TransportRouter(serverApi(), plugin, "auto");
+
+    expect(router.routeOf(textStylesUpsert, style)).toBe("server-api");
+    expect(router.routeOf(colorTokensUpsert, token)).toBe("server-api");
+    expect(
+      router.routeOf(textStylesUpsert, {
+        ...style,
+        via: "plugin-api",
+      }),
+    ).toBe("plugin");
+
+    // A project without a key keeps them on the plugin, through the Plugin API.
+    const { pool } = await poolWithKeys();
+
+    pool.followPlugin(() => plugin.status().project);
+    expect(new TransportRouter(pool, plugin, "auto").routeOf(textStylesUpsert, style)).toBe("plugin");
   });
 
   it("regression: opens a fresh Server API session after code changes, once Framer has compiled them", async () => {

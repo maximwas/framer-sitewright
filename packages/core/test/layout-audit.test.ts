@@ -900,4 +900,65 @@ describe("layout audit", () => {
       ),
     ).toHaveLength(1);
   });
+
+  it("regression: a layer pinned to the top and bottom of its parent takes its height from the pins (seen: slides, panels)", () => {
+    const slide = (pins: Record<string, string>) =>
+      node(
+        "FrameNode",
+        "Slide",
+        {
+          position: "absolute",
+          left: "0px",
+          right: "0px",
+          width: "100%",
+          height: "100px",
+          layout: "stack",
+          stackDirection: "vertical",
+          stackAlignment: "start",
+          stackDistribution: "start",
+          ...pins,
+        },
+        [text("Quote", "Body", "Every route in the morning")],
+      );
+    const fixed = (target: SerializedNode) =>
+      auditTree(
+        node(
+          "FrameNode",
+          "Slides",
+          {
+            layout: "stack",
+            width: "1fr",
+            height: "480px",
+          },
+          [target],
+        ),
+        context(),
+      ).filter((found) => found.rule === "fixed-height");
+
+    expect(
+      fixed(
+        slide({
+          top: "0px",
+          bottom: "0px",
+        }),
+      ),
+    ).toEqual([]);
+    expect(fixed(slide({ top: "0px" }))).toHaveLength(1);
+  });
+
+  it("regression: a fully transparent fill is no written-out color (seen: a gesture variant's inherited fill)", () => {
+    const colors = (fill: string) =>
+      auditTree(
+        node("FrameNode", "Hover", {
+          fill,
+          width: "1fr",
+          height: "auto",
+        }),
+        context(),
+      ).filter((found) => found.rule === "raw-color");
+
+    expect(colors("rgba(0, 0, 0, 0)")).toEqual([]);
+    expect(colors("#ffffff00")).toEqual([]);
+    expect(colors("rgba(0, 0, 0, 0.4)")).toHaveLength(1);
+  });
 });
