@@ -2,6 +2,8 @@ import { mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
+  cmsCollectionCreate,
+  cmsFieldsSet,
   codeFileWrite,
   colorTokensList,
   colorTokensUpsert,
@@ -172,6 +174,25 @@ describe("TransportRouter auto", () => {
           {
             id: "s1",
             value: "Привіт",
+          },
+        ],
+      }),
+    ).toBe("server-api");
+  });
+
+  it("regression: writes CMS collections and fields in the DSL's own session, so a list can bind them at once", async () => {
+    // Seen: fields the plugin created stayed unknown to the DSL for minutes ("Expected an existing variable").
+    const { plugin } = fakePlugin("project-1");
+    const router = new TransportRouter(serverApi(), plugin, "auto");
+
+    expect(router.routeOf(cmsCollectionCreate, { name: "Journal" })).toBe("server-api");
+    expect(
+      router.routeOf(cmsFieldsSet, {
+        collection: "Journal",
+        add: [
+          {
+            name: "Body",
+            type: "formattedText",
           },
         ],
       }),

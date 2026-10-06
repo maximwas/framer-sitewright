@@ -13,6 +13,7 @@ export const cmsCollectionsList = defineOperation({
   effect: "read",
   idempotent: true,
   permissions: [],
+  needsAgent: true,
   input: z.strictObject({
     collection: z.string().min(1).exactOptional().describe("One collection by name or id; omit for all of them."),
   }),
@@ -38,6 +39,8 @@ export const cmsCollectionCreate = defineOperation({
   effect: "write",
   idempotent: false,
   permissions: ["createCollection", "Collection.addFields"],
+  // In the DSL's own session whenever the project has a key: the DSL did not see fields the plugin made for minutes.
+  needsAgent: true,
   input: z.strictObject({
     name: z.string().min(1).describe("Collection name, e.g. Blog."),
     fields: z

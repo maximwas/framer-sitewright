@@ -18,6 +18,7 @@ export const cmsItemsList = defineOperation({
   effect: "read",
   idempotent: true,
   permissions: [],
+  needsAgent: true,
   input: z.strictObject({
     collection: CollectionInput,
     offset: z.number().int().min(0).default(0),
@@ -53,6 +54,7 @@ export const cmsItemsUpsert = defineOperation({
   effect: "write",
   idempotent: true,
   permissions: ["Collection.addItems"],
+  needsAgent: true,
   input: z.strictObject({
     collection: CollectionInput,
     items: z
@@ -140,6 +142,7 @@ export const cmsItemsDelete = defineOperation({
   effect: "destructive",
   idempotent: true,
   permissions: ["Collection.removeItems"],
+  needsAgent: true,
   input: z.strictObject({
     collection: CollectionInput,
     slugs: z.array(z.string().min(1)).min(1),
@@ -192,6 +195,7 @@ export const cmsItemsOrder = defineOperation({
   effect: "write",
   idempotent: true,
   permissions: ["Collection.setItemOrder"],
+  needsAgent: true,
   input: z.strictObject({
     collection: CollectionInput,
     slugs: z

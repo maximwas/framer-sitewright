@@ -11,6 +11,7 @@ export const cmsFieldsSet = defineOperation({
   effect: "destructive",
   idempotent: true,
   permissions: ["Collection.addFields", "Collection.removeFields", "Collection.setFieldOrder"],
+  needsAgent: true,
   input: z.strictObject({
     collection: z.string().min(1).describe("Collection name or id."),
     add: z
