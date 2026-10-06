@@ -52,7 +52,16 @@ export interface FakeFramerState {
   designPages: DesignPageData[];
   redirects: { id: string; from: string; to: string | null; expandToAllLocales: boolean }[];
   /** Layers under the home page's breakpoints, for the Plugin API's tree reads; text layers have text. */
-  canvas: { id: string; parentId: string; className: string; name: string | null; text?: string }[];
+  /** Layers by parent; a page's own breakpoints (pages other than "/") are layers with isBreakpoint and a px width. */
+  canvas: {
+    id: string;
+    parentId: string;
+    className: string;
+    name: string | null;
+    text?: string;
+    isBreakpoint?: boolean;
+    width?: string;
+  }[];
   publishInfo: PublishInfoData;
   unpublishedChanges: UnpublishedChangeData[];
   deployments: DeploymentData[];

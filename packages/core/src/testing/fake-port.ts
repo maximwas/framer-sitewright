@@ -262,6 +262,8 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
       id: layer.id,
       name: layer.name,
       __class: layer.className,
+      ...(layer.isBreakpoint === undefined ? {} : { isBreakpoint: layer.isBreakpoint }),
+      ...(layer.width === undefined ? {} : { width: layer.width }),
       ...(layer.text === undefined
         ? {}
         : {

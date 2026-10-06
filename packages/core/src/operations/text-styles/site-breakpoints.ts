@@ -3,17 +3,13 @@ import type { CanvasNodeData, FramerPort } from "../../types/framer-port.ts";
 
 /**
  * The widths of the site's page breakpoints, widest first (e.g. 1440, 1280, 810, 390): text style slots start at them
- * (see pluginApiSlots). Read from the home page, or the first page; [] without any page.
+ * (see pluginApiSlots). Every page's, as the DSL counts them: pages may have more breakpoints than the home page.
  */
 export async function siteBreakpointWidths(port: FramerPort): Promise<number[]> {
   const pages = await port.getNodesWithType("WebPageNode");
-  const page = pages.find((candidate) => candidate.path === "/") ?? pages[0];
+  const children = await Promise.all(pages.map((page) => port.getChildren(page.id)));
 
-  if (page === undefined) {
-    return [];
-  }
-
-  return [...new Set((await port.getChildren(page.id)).flatMap(breakpointWidth))].sort((a, b) => b - a);
+  return [...new Set(children.flat().flatMap(breakpointWidth))].sort((a, b) => b - a);
 }
 
 /** A breakpoint frame's width in px; nothing for any other node. */

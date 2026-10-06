@@ -3,6 +3,7 @@ import { HistoryRecorder } from "../src/history/recorder.ts";
 import { runOperation } from "../src/operations/define.ts";
 import { textStylesDelete } from "../src/operations/text-styles/delete.ts";
 import { textStylesList } from "../src/operations/text-styles/list.ts";
+import { siteBreakpointWidths } from "../src/operations/text-styles/site-breakpoints.ts";
 import { pluginApiSlots, slotLabels, slotsOf } from "../src/operations/text-styles/slots.ts";
 import { textStylesUpsert } from "../src/operations/text-styles/upsert.ts";
 import { newTextStyle } from "../src/testing/fake-state.ts";
@@ -120,6 +121,42 @@ describe("textStyles.upsert", () => {
         id: "text-1",
       },
     ]);
+  });
+
+  it("regression: counts the breakpoints of every page, not only the home page's (seen: 1 page breakpoint where /lab had 3)", async () => {
+    const { runtime, state } = createFakeRuntime(
+      {},
+      {
+        withAgent: false,
+        transport: "plugin",
+      },
+    );
+
+    state.webPages.push({
+      id: "lab",
+      path: "/lab",
+    } as never);
+    state.canvas.push(
+      {
+        id: "lab-desktop",
+        parentId: "lab",
+        className: "FrameNode",
+        name: "Desktop",
+        isBreakpoint: true,
+        width: "1440px",
+      },
+      {
+        id: "lab-laptop",
+        parentId: "lab",
+        className: "FrameNode",
+        name: "Laptop",
+        isBreakpoint: true,
+        width: "1280px",
+      },
+    );
+
+    // The home page has 1200, 810 and 390: with /lab's 1440 and 1280 the site has five slot starts.
+    expect(await siteBreakpointWidths(runtime.port)).toEqual([1440, 1280, 1200, 810, 390]);
   });
 
   it("writes through the Plugin API with font and token handles, slots where the site's breakpoints start", async () => {
