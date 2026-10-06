@@ -271,6 +271,15 @@ export class ActivityJournal extends EventEmitter<{ appended: [ActivityEntry]; c
 
     const cleared = await this.#log(store, project.id).clear(new Date(this.#now()));
 
+    // A cleared journal cannot be undone from: the log keeps when and for which project, to tell it from a bug.
+    this.#options.logger.info(
+      {
+        project: project.name,
+        cleared,
+        session: this.#session,
+      },
+      "Journal cleared from the journal window; the old one is in history/archive",
+    );
     this.#toldAi.delete(project.id);
     this.emit("cleared");
 
