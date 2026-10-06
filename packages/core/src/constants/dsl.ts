@@ -58,3 +58,6 @@ export const DSL_LIST_ITEM_KEY = /\.\d+(?:\.|$)/;
  */
 export const DSL_PARTIAL_APPLY_HINT =
   "Framer applied every command without an error; only the failed commands were skipped. Send only the failed commands again, fixed, with the real ids from renamedIds and keys for nodes this batch created: the whole batch again would create them twice.";
+
+/** Framer's refusal when it cannot download an image URL of a batch; nothing of the batch is applied then. */
+export const DSL_ASSET_FAILURE = /Assets upload from URL (\S+) to \S+ failed\.?\s*(.*)/is;

@@ -6,6 +6,8 @@ import {
   colorTokensList,
   colorTokensUpsert,
   designApply,
+  localizationGet,
+  localizationSet,
   type Operation,
   runOperation,
   selectionGet,
@@ -155,6 +157,25 @@ describe("TransportRouter auto", () => {
 
     pool.followPlugin(() => plugin.status().project);
     expect(new TransportRouter(pool, plugin, "auto").routeOf(textStylesUpsert, style)).toBe("plugin");
+  });
+
+  it("regression: reads and writes translations through the Server API: the plugin on the canvas may not", async () => {
+    // Framer: "Method: getLocalizationGroups, is not allowed while in mode: canvas".
+    const { plugin } = fakePlugin("project-1");
+    const router = new TransportRouter(serverApi(), plugin, "auto");
+
+    expect(router.routeOf(localizationGet, { locale: "uk" })).toBe("server-api");
+    expect(
+      router.routeOf(localizationSet, {
+        locale: "uk",
+        translations: [
+          {
+            id: "s1",
+            value: "Привіт",
+          },
+        ],
+      }),
+    ).toBe("server-api");
   });
 
   it("regression: opens a fresh Server API session after code changes, once Framer has compiled them", async () => {

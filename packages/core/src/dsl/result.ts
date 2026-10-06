@@ -1,4 +1,4 @@
-import { DSL_PARTIAL_APPLY_HINT } from "../constants/dsl.ts";
+import { DSL_ASSET_FAILURE, DSL_PARTIAL_APPLY_HINT } from "../constants/dsl.ts";
 import { RawDslResultSchema } from "../schemas/dsl.ts";
 import type { DslIssue, DslLintIssue, DslResult } from "../types/dsl.ts";
 
@@ -67,5 +67,33 @@ export function normalizeDslResult(raw: unknown): DslResult {
     warnings: toIssues(result.warnings),
     lint: [...toLint(result.linter?.errors, "error"), ...toLint(result.linter?.warnings, "warning")],
     renamedIds: result.renamedIds ?? {},
+  };
+}
+
+/**
+ * applyChanges throws, instead of answering, when it cannot download an image URL of the batch: the answer it would
+ * have given, without Framer's internal ids. Null for any other error.
+ */
+export function assetFailureResult(error: string): DslResult | null {
+  const failure = DSL_ASSET_FAILURE.exec(error);
+
+  if (failure === null) {
+    return null;
+  }
+
+  const [, url = "", reason = ""] = failure;
+
+  return {
+    ok: false,
+    message: "Nothing was applied: Framer could not download an image of the batch.",
+    errors: [
+      {
+        message: `Framer could not download ${url}${reason === "" ? "" : ` (${reason.trim()})`}. Use an https image URL that answers, or upload the file with image_upload and use the URL it returns.`,
+        targets: [url],
+      },
+    ],
+    warnings: [],
+    lint: [],
+    renamedIds: {},
   };
 }

@@ -397,8 +397,11 @@ export interface FramerPort {
   uploadImage(image: { image: string; name?: string; altText?: string }): Promise<ImageAssetInfo>;
   /** Any file (a video, a PDF, a font): an https URL Framer fetches, or the file's bytes (Framer fetches no data URL). */
   uploadFile(file: { file: string | FileBytes; name?: string }): Promise<FileAssetInfo>;
-  /** Inserts an instance of a component by its module URL (framer.com/m/…); returns the instance node. */
-  addComponentInstance(options: { url: string }): Promise<unknown>;
+  /**
+   * Inserts an instance of a component by its module URL (framer.com/m/…); returns the instance node. Without parentId
+   * (alpha) Framer puts it where the editor's selection is.
+   */
+  addComponentInstance(options: { url: string; parentId?: string }): Promise<unknown>;
   /** Inserts an SVG as a vector layer (the plugin); the Server API refuses it ("Failed to optimize SVG"). */
   addSVG(svg: { svg: string; name?: string }): Promise<void>;
   /** The layers selected in the editor. Only the plugin has a selection; the Server API lacks the method. */

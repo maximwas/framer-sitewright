@@ -961,4 +961,57 @@ describe("layout audit", () => {
     expect(colors("#ffffff00")).toEqual([]);
     expect(colors("rgba(0, 0, 0, 0.4)")).toHaveLength(1);
   });
+
+  it("regression: an h1 that its text block gives, without a text style, is the page's h1 (seen: lab-site)", () => {
+    const title = node(
+      "RichTextNode",
+      "Title",
+      {
+        text: "Lab Site",
+        width: "1fr",
+      },
+      [node("TextBlock", "", { tag: "h1" })],
+    );
+    const desktop = {
+      ...node(
+        "FrameNode",
+        "Desktop",
+        {
+          layout: "stack",
+          width: "1440px",
+          height: "auto",
+        },
+        [title],
+      ),
+      $isPrimary: true,
+    };
+    const issues = auditTree(node("WebPageNode", "/lab-site", {}, [desktop]), context());
+
+    expect(rulesOf(issues)).not.toContain("h1-count");
+
+    // A paragraph block of the same text is no heading at all.
+    const paragraph = node(
+      "RichTextNode",
+      "Title",
+      {
+        text: "Lab Site",
+        width: "1fr",
+      },
+      [node("TextBlock", "", { tag: "p" })],
+    );
+    const plain = {
+      ...node(
+        "FrameNode",
+        "Desktop",
+        {
+          layout: "stack",
+          width: "1440px",
+        },
+        [paragraph],
+      ),
+      $isPrimary: true,
+    };
+
+    expect(rulesOf(auditTree(node("WebPageNode", "/lab-site", {}, [plain]), context()))).toContain("h1-count");
+  });
 });

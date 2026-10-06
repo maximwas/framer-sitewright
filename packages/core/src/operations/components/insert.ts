@@ -35,7 +35,15 @@ export const componentInsert = defineOperation({
     let node: unknown;
 
     try {
-      node = await port.addComponentInstance({ url });
+      // Straight into its parent: otherwise Framer first drops it wherever the user's selection is.
+      node = await port.addComponentInstance(
+        parentId === undefined
+          ? { url }
+          : {
+              url,
+              parentId,
+            },
+      );
     } catch (error) {
       throw new OperationError(
         "WRITE_FAILED",
@@ -50,6 +58,7 @@ export const componentInsert = defineOperation({
       throw new OperationError("WRITE_FAILED", "Framer inserted the component but did not say which layer it is.");
     }
 
+    // The plugin may not know the alpha parentId yet: the move puts it there anyway, and at its index.
     if (parentId !== undefined) {
       await port.setParent(nodeId, parentId, index);
     }

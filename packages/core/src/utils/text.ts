@@ -17,5 +17,6 @@ export function isPreviewImage(url: string): boolean {
 
 /** Image URLs from Framer's CDN or Unsplash inside `text`, e.g. the fills of a design_apply batch, without repeats. */
 export function previewImagesIn(text: string): string[] {
-  return [...new Set(text.match(PREVIEW_IMAGE_URL) ?? [])];
+  // URLs in XML attributes are escaped: the image is at the URL with "&", not "&amp;".
+  return [...new Set((text.match(PREVIEW_IMAGE_URL) ?? []).map((url) => url.replaceAll("&amp;", "&")))];
 }

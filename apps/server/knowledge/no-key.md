@@ -16,7 +16,8 @@ how to get the same result anyway.
 - Tokens and text styles (`color_tokens_upsert`, `text_styles_upsert`, including alignment, `balance` and breakpoint
   sizes), SVG (`svg_add`), image upload (`image_upload`), component controls, code files when allowed.
 - CMS: collections, fields and items (`cms_*` tools); only deleting a whole collection needs a key.
-- Translations: `locales_list`, `localization_get`, `localization_set` (the user adds locales in the editor).
+- Translations need the key: Framer gives a plugin the translations only in its Localization mode, and the Sitewright
+  plugin runs on the canvas. `locales_list` works without one.
 - Breakpoints: `breakpoints_add`, then overrides on their copies by compound id `<breakpoint id><node id>`; undo
   brings a deleted breakpoint back with its overrides.
 

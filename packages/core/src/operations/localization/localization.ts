@@ -1,5 +1,6 @@
 import * as z from "zod";
 import {
+  CANVAS_MODE_REFUSAL,
   LOCALIZATION_GROUP_TYPES,
   LOCALIZATION_PAGE,
   LOCALIZATION_PAGE_MAX,
@@ -9,7 +10,8 @@ import {
 import { OperationError } from "../../errors.ts";
 import { findLocale, siteLocales } from "../../localization/locales.ts";
 import { LocaleSummarySchema, LocalizedSourceSchema } from "../../schemas/localization.ts";
-import type { LocalizedValueUpdate } from "../../types/framer-port.ts";
+import type { FramerPort, LocalizedValueUpdate } from "../../types/framer-port.ts";
+import { errorMessage } from "../../utils/errors.ts";
 import { countOf } from "../../utils/text.ts";
 import { defineOperation } from "../define.ts";
 
@@ -50,6 +52,9 @@ export const localizationGet = defineOperation({
   effect: "read",
   idempotent: true,
   permissions: [],
+  // Through the Server API whenever the project has a key: Framer gives a plugin the translations only in its
+  // Localization mode, and the Sitewright plugin runs on the canvas.
+  needsAgent: true,
   input: z.strictObject({
     locale: LocaleInput,
     type: z.enum(LOCALIZATION_GROUP_TYPES).exactOptional().describe("Only pages, CMS items, components…"),
@@ -73,7 +78,7 @@ export const localizationGet = defineOperation({
   async run({ runtime }, { locale: query, type, group, missing, offset, limit }) {
     const locale = findLocale((await siteLocales(runtime.port)).locales, query);
     const wanted = group?.toLowerCase();
-    const groups = (await runtime.port.getLocalizationGroups()).filter(
+    const groups = (await localizationGroups(runtime.port)).filter(
       (entry) =>
         (type === undefined || entry.type === type) &&
         (wanted === undefined || entry.name.toLowerCase().includes(wanted)) &&
@@ -114,6 +119,7 @@ export const localizationSet = defineOperation({
   effect: "write",
   idempotent: true,
   permissions: ["setLocalizationData"],
+  needsAgent: true,
   input: z.strictObject({
     locale: LocaleInput,
     translations: z
@@ -151,7 +157,7 @@ export const localizationSet = defineOperation({
   }),
   async run({ runtime, history }, { locale: query, translations, needsReview, groups }) {
     const { port } = runtime;
-    const [{ primary, locales }, existing] = await Promise.all([siteLocales(port), port.getLocalizationGroups()]);
+    const [{ primary, locales }, existing] = await Promise.all([siteLocales(port), localizationGroups(port)]);
     const locale = findLocale(locales, query);
 
     if (locale.id === primary.id) {
@@ -245,3 +251,20 @@ export const localizationSet = defineOperation({
     return errors.length > 0 && written + cleared === 0 ? errors.join("; ") : null;
   },
 });
+
+/** The translation groups, with Framer's refusal on the canvas put in words the user can act on. */
+async function localizationGroups(port: FramerPort) {
+  try {
+    return await port.getLocalizationGroups();
+  } catch (error) {
+    if (CANVAS_MODE_REFUSAL.test(errorMessage(error))) {
+      throw new OperationError(
+        "UNSUPPORTED_TRANSPORT",
+        "Framer gives a plugin the translations only in its Localization mode, and the Sitewright plugin runs on the canvas.",
+        "Add the project's Server API key (npx sitewright key): translations then go through the Server API.",
+      );
+    }
+
+    throw error;
+  }
+}

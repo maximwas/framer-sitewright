@@ -162,6 +162,47 @@ describe("site checks", () => {
     ]);
   });
 
+  it("regression: a page Framer keeps out of site search after noIndex was turned off is still reported (seen: lab-site)", () => {
+    // noIndex=true turns noIndexSite on as well, and noIndex=false leaves it on.
+    const content = node("FrameNode", "Desktop", {}, [node("RichTextNode", "Title", { textStylePreset: "Display" })]);
+    const findings = seoFindings(
+      [
+        page("/about", content, {
+          metadata: {
+            title: "About the studio | Plain",
+            noIndex: false,
+            noIndexSite: true,
+          },
+        }),
+      ],
+      {
+        title: null,
+        description: null,
+        socialImage: "https://x/s.png",
+        favicon: "https://x/f.svg",
+      },
+      context,
+    );
+
+    expect(findings.find(({ rule }) => rule === "no-index")?.fix).toMatch(/noIndexSite/);
+  });
+
+  it("regression: counts an h1 that its text block gives, without a text style (seen: lab-site)", () => {
+    const title = node("RichTextNode", "Title", {}, [node("TextBlock", "", { tag: "h1" })]);
+    const findings = seoFindings(
+      [page("/", node("FrameNode", "Desktop", {}, [title]), { metadata: { title: "Plain Operation | Studio" } })],
+      {
+        title: null,
+        description: null,
+        socialImage: "https://x/s.png",
+        favicon: "https://x/f.svg",
+      },
+      context,
+    );
+
+    expect(rules(findings)).not.toContain("h1-count");
+  });
+
   it("finds text that does not stand out from a solid background, and leaves text over photos alone", () => {
     const content = node("FrameNode", "Desktop", { fill: "var(--token-paper)" }, [
       node("FrameNode", "Band", { fill: "var(--token-signal)" }, [

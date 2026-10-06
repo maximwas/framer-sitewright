@@ -153,6 +153,20 @@ export function walk(node: SerializedNode): SerializedNode[] {
   return [node, ...childrenOf(node).flatMap(walk)];
 }
 
+/**
+ * The HTML tags a rich text renders: its blocks' own tags, which follow its text style's and can be set without one,
+ * or the style's tag when the read holds no blocks (the Plugin API, a shallow read).
+ */
+export function textTags(node: SerializedNode, styleTag: string | undefined): string[] {
+  const blocks = (node.children ?? []).filter(isNode).flatMap((child) => {
+    const tag = child.type === "TextBlock" ? attr(child, "tag") : null;
+
+    return tag === null ? [] : [tag];
+  });
+
+  return blocks.length > 0 ? blocks : [styleTag ?? "p"];
+}
+
 /** The node and the descendants that take part in its size: absolute and fixed layers sit outside it. */
 export function walkInFlow(node: SerializedNode): SerializedNode[] {
   return [node, ...childrenOf(node).filter(inFlow).flatMap(walkInFlow)];

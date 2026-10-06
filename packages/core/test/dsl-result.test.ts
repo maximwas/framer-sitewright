@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizeDslResult } from "../src/dsl/result.ts";
+import { assetFailureResult, normalizeDslResult } from "../src/dsl/result.ts";
 
 describe("normalizeDslResult", () => {
   it("marks command errors as not ok and keeps their targets", () => {
@@ -32,6 +32,19 @@ describe("normalizeDslResult", () => {
     expect(result.message).toContain("Commands: 1 error. Design: 22 created.");
     expect(result.message).toMatch(/applied every command without an error/);
     expect(result.message).toMatch(/only the failed commands/);
+  });
+
+  it("regression: an image URL Framer cannot download refuses the batch in words, without Framer's own ids", () => {
+    const result = assetFailureResult(
+      "Assets upload from URL https://example.com/missing.png to YAlYa1ydRLCwxtlTcmns failed. could not get asset, response code 404",
+    );
+
+    expect(result).toMatchObject({
+      ok: false,
+      errors: [{ targets: ["https://example.com/missing.png"] }],
+    });
+    expect(JSON.stringify(result)).not.toContain("YAlYa1ydRLCwxtlTcmns");
+    expect(assetFailureResult("Something else broke")).toBeNull();
   });
 
   it("keeps warnings and linter findings without failing", () => {

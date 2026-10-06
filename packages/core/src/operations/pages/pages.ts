@@ -83,8 +83,12 @@ export const pagesDelete = defineOperation({
       throw new OperationError("INVALID_INPUT", "The home page cannot be deleted.");
     }
 
+    // Framer stores "/Lab Site" as "/lab-site" (page_create shows it): take either spelling.
+    const stored = path?.toLowerCase().replaceAll(/\s+/g, "-");
     const web =
-      path === undefined ? undefined : (await port.getNodesWithType("WebPageNode")).find((page) => page.path === path);
+      path === undefined
+        ? undefined
+        : (await port.getNodesWithType("WebPageNode")).find((page) => page.path === path || page.path === stored);
     const design =
       designPage === undefined
         ? undefined

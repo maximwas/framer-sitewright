@@ -1,5 +1,5 @@
 import { NOT_FOUND_PATH, SEO_DESCRIPTION_RANGE, SEO_TITLE_RANGE } from "../constants/site-checks.ts";
-import { isText, walk } from "../layout-audit/tree.ts";
+import { isText, textTags, walk } from "../layout-audit/tree.ts";
 import type { CheckedPage, SiteCheckContext, SiteFinding } from "../types/site-checks.ts";
 import { finding } from "./values.ts";
 
@@ -57,15 +57,18 @@ export function seoFindings(
         titles.set(title, [...(titles.get(title) ?? []), page.path]);
       }
 
-      if (pageMeta(page.attributes, "noIndex") === true && page.path !== NOT_FOUND_PATH) {
+      const hidden = ["noIndex", "noIndexSite"].filter((key) => pageMeta(page.attributes, key) === true);
+
+      // Framer turns noIndexSite on together with noIndex, and noIndex=false leaves it on.
+      if (hidden.length > 0 && page.path !== NOT_FOUND_PATH) {
         findings.push(
           finding(
             "no-index",
             "defect",
             page.path,
             null,
-            `${page.path} is hidden from search engines (noIndex).`,
-            "Set metadata.noIndex to false unless the page must stay out of search.",
+            `${page.path} is hidden from ${hidden.includes("noIndex") ? "search engines" : "the site's search"} (${hidden.join(", ")}).`,
+            "Set metadata.noIndex and metadata.noIndexSite to false unless the page must stay out of search: Framer turns both on with noIndex and keeps noIndexSite on after noIndex is turned off.",
           ),
         );
       }
@@ -74,9 +77,10 @@ export function seoFindings(
     const h1 =
       page.content === null
         ? []
-        : walk(page.content).filter(
-            (node) => isText(node) && context.textStyle(node.attributes?.["textStylePreset"])?.tag === "h1",
-          );
+        : walk(page.content)
+            .filter(isText)
+            .flatMap((node) => textTags(node, context.textStyle(node.attributes?.["textStylePreset"])?.tag))
+            .filter((tag) => tag === "h1");
 
     if (page.content !== null && h1.length !== 1) {
       findings.push(

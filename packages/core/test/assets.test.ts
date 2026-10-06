@@ -87,6 +87,27 @@ describe("svg.add", () => {
 });
 
 describe("components.insert", () => {
+  it("regression: asks Framer to insert the instance into its parent, so it never lands in the user's selection first", async () => {
+    const { runtime, state } = createFakeRuntime(
+      {},
+      {
+        withAgent: false,
+        transport: "plugin",
+      },
+    );
+
+    await runOperation(
+      componentInsert,
+      { runtime },
+      {
+        url: "https://framer.com/m/Carousel-TC0BVf.js@NX0Ibe5BZmuZM0cYmZOE",
+        parentId: "testimonials",
+      },
+    );
+
+    expect(state.instances[0]?.parentId).toBe("testimonials");
+  });
+
   it("inserts a component by its module URL and moves the instance where asked", async () => {
     const { runtime, state } = createFakeRuntime(
       {},
@@ -110,6 +131,7 @@ describe("components.insert", () => {
       {
         id: result.nodeId,
         url,
+        parentId: "testimonials",
       },
     ]);
     expect(state.moves).toEqual([

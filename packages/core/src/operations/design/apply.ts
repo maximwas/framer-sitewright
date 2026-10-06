@@ -4,7 +4,7 @@ import { deferAbsoluteCentering } from "../../dsl/absolute-centering.ts";
 import { joinCommands } from "../../dsl/commands.ts";
 import { deferIconInitialValues } from "../../dsl/icon-variables.ts";
 import { parseDsl } from "../../dsl/parse.ts";
-import { normalizeDslResult } from "../../dsl/result.ts";
+import { assetFailureResult, normalizeDslResult } from "../../dsl/result.ts";
 import { nextTempId } from "../../dsl/temp-ids.ts";
 import { OperationError } from "../../errors.ts";
 import { withDslHistory } from "../../history/dsl/dsl-history.ts";
@@ -123,7 +123,19 @@ async function applyBatch(
   // The reads around applyChanges only help: none may fail the batch. After it, a failure would make the model retry a
   // batch Framer applied already, and design_apply is not idempotent.
   const variables = await loadVariableTargets(agent, pagePath, parsed).catch(() => new Set<string>());
-  const apply = async () => normalizeDslResult(await agent.applyChanges(commands, { pagePath }));
+  const apply = async () => {
+    try {
+      return normalizeDslResult(await agent.applyChanges(commands, { pagePath }));
+    } catch (error) {
+      const refused = assetFailureResult(errorMessage(error));
+
+      if (refused === null) {
+        throw error;
+      }
+
+      return refused;
+    }
+  };
   const applied =
     history === undefined
       ? await apply()

@@ -48,6 +48,7 @@ import {
   sizeKind,
   textAnchorOf,
   textContent,
+  textTags,
   walk,
   walkInFlow,
 } from "./tree.ts";
@@ -625,10 +626,12 @@ const sectionRhythm: PageRule = (breakpoint) => {
 const headings: PageRule = (breakpoint, context) => {
   const tags = walk(breakpoint)
     .filter(isText)
-    .map((node) => ({
-      node,
-      tag: context.textStyle(node.attributes?.["textStylePreset"])?.tag ?? "p",
-    }));
+    .flatMap((node) =>
+      textTags(node, context.textStyle(node.attributes?.["textStylePreset"])?.tag).map((tag) => ({
+        node,
+        tag,
+      })),
+    );
   const h1 = tags.filter(({ tag }) => tag === "h1");
   const levels = tags.flatMap(({ node, tag }) => {
     const level = (HEADING_TAGS as readonly string[]).indexOf(tag);
