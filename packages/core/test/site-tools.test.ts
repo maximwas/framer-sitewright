@@ -313,3 +313,41 @@ it("regression: reads a page's layers a level at a time, not one round trip per 
   expect(preview.rounds).toBeLessThan(12);
   expect(preview.result.changes.map(({ id }) => id)).toEqual(["text-29"]);
 });
+
+it('regression: finds layers when a non-text layer\'s getText throws (seen live: "Node is not a text node")', async () => {
+  const { runtime } = createFakeRuntime({
+    canvas: [
+      {
+        id: "card",
+        parentId: "breakpoint-desktop",
+        className: "FrameNode",
+        name: "Card",
+      },
+      {
+        id: "title",
+        parentId: "card",
+        className: "TextNode",
+        name: null,
+        text: "Book a call",
+      },
+    ],
+  });
+  const strict = {
+    ...runtime,
+    port: {
+      ...runtime.port,
+      getChildren: async (nodeId: string) =>
+        (await runtime.port.getChildren(nodeId)).map((child) =>
+          (child as { id: string }).id === "card"
+            ? {
+                ...child,
+                getText: () => Promise.reject(new Error("Node is not a text node")),
+              }
+            : child,
+        ),
+    },
+  };
+  const found = await runOperation(nodesFind, { runtime: strict }, { query: "book" });
+
+  expect(found.matches.map(({ id }) => id)).toEqual(["title"]);
+});

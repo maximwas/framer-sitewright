@@ -13,7 +13,16 @@ export function nodeRecord(value: unknown): PluginNodeRecord | null {
 export async function textOf(node: PluginNodeRecord): Promise<string | null> {
   const getText = node.getText;
 
-  return typeof getText === "function" ? ((await getText.call(node)) as string | null) : null;
+  if (typeof getText !== "function") {
+    return null;
+  }
+
+  try {
+    return (await getText.call(node)) as string | null;
+  } catch {
+    // Framer gives some layers that hold no text a getText that throws ("Node is not a text node").
+    return null;
+  }
 }
 
 /** Sets a text node's plain text; false when the node takes no text. */
