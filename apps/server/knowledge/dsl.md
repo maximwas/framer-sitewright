@@ -116,6 +116,32 @@ something else; every rule here was seen on a live project.
 - An autoplaying carousel: `onAppear.0.action="SET_VARIANT"` `onAppear.0.controls.variant="cycle"` with a delay on the
   primary variant's root; every variant inherits it.
 
+## Page state without code: variables and clicks
+
+- A page variable, a click that sets it and computed values that read it give page-level state with no code:
+  `<Variable key="fleet" name="Fleet" type="string" scope="<page id>" initialValue="All" queryParam="fleet"/>`.
+  `design_apply` loads the page's variables before each batch; `nodes_read` by a node's id may still hide attributes
+  bound to them, so read the page root to check.
+- Set it from an instance event: `onClick.0.action="SET_VARIABLE_VALUE"` `onClick.0.controls.variable="var(--variable-<id>)"`
+  `onClick.0.controls.value="Keelboat"`. Toggle a boolean: `onClick.0.controls.value.from="var(--variable-<id>)"`
+  `onClick.0.controls.value.transforms.0.name="negate"`. A plain frame takes the same action on `onTap`.
+- Make an instance follow it: `$control__variant.from="var(--variable-<id>)"`, then transforms `equals` (value
+  "Keelboat") and `convertFromBoolean` (outputType "option", truthy and falsy variant names). Many values:
+  `convertFromString` with cases and a default.
+- Show and hide layers: `visible.from=…` with `convertFromString` (outputType "boolean", cases, default "false"), and
+  `flowEffect.transition` on the parent so the rest glides. Text (outputType string) and fill (outputType color)
+  follow too; `textColor` cannot be computed: recolor text through component variants.
+- There is no arithmetic: count with a lookup (`numberToString`, then `convertFromString` to a number with cases
+  "1"→"2", "2"→"3", the maximum as default).
+- A nested instance can fire several actions on one event (`onClick.0` TRIGGER_EVENT for its parent's own event,
+  `onClick.1` SET_VARIANT). Variants made from the primary inherit actions wired on the primary.
+- A hover tooltip: `onMouseEnter` SET_VARIANT Open and `onMouseLeave` SET_VARIANT Closed with the variant ids, not
+  cycle. An overlay inside a component: a `RelativeOverlayNode` under the trigger frame and `onTap.0.action="SHOW_OVERLAY"`
+  `onTap.0.controls.overlay="<id>"`. Images open in Framer's lightbox: `lightboxEffect.padding`, `maxWidth`,
+  `backdrop`, `transition` on the image frame.
+- A component that changes with the breakpoint: override `$control__variant` on the breakpoint copy of the instance.
+  `aspectRatio` goes on the instance, never on a variant root.
+
 ## Springs: what Framer stores
 
 Every transition is a spring (design_guide motion), but which spring Framer keeps depends on the attribute:
