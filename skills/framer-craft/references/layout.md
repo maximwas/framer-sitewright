@@ -35,8 +35,9 @@ Build every page as Main > Section > Container > Content:
 
 ## Stacks
 
-- **`gap` with `stackDistribution="space-between"` is an error.** The node is created and the gap ignored, so pick one
-  of the two.
+- **`gap` with `stackDistribution="space-between"` is an error** (the node is created and the gap ignored), and
+  without a gap the linter then asks for one. Use `stackDistribution="start"` with a `1fr` spacer child and the gap you
+  want.
 - **No stretch alignment.** For equal-height columns, give the children `height="1fr"` in a horizontal stack with
   `height="auto"`: they stretch to the tallest sibling.
 - **A wrapping stack collapses with `width="auto"`.** With `stackWrapEnabled="true"` it silently becomes one column.
@@ -48,6 +49,9 @@ Build every page as Main > Section > Container > Content:
 
 - **`gridRowHeightType="auto"`** makes every row as tall as the tallest one. Cells with `height="1fr"` then fill their
   row. Use it for multi-column grids.
+- **A button at the bottom of every card:** the card (`height="1fr"` in an `auto` row) holds, as direct children, the
+  content group (`height="auto"`), a spacer (`height="1fr"`) and the button. A `height="1fr"` body wrapper between the
+  card and them adds nothing to the row's height: the cards were clipped to their photo, with no error.
 - **One column:** on a breakpoint where the grid becomes one column, switch to `fit`, or short cells leave empty bands.
   In multi-column rows, `fit` shows the grid's fill under short cells.
 - **Bento with rows of different heights:** build separate grids in a vertical stack with `gap`. In one grid, a tall
@@ -56,6 +60,9 @@ Build every page as Main > Section > Container > Content:
   3, then 1).
 - **Grid lines without double borders:** give the parent a fill in the line color and `gap="1px"`, and fill the cells
   with the page background.
+- **Masonry:** `gridMasonry="true"` puts each item in the column that is shortest at that point (the left one on a
+  tie), so the order of items decides whether the columns end level: landscape, landscape, portrait, portrait,
+  portrait, landscape ended three columns evenly. Turn it off on phone with `gridMasonry="null"`.
 
 ## Absolute layers
 
@@ -69,19 +76,31 @@ Build every page as Main > Section > Container > Content:
   `CREATE_VARIANT tablet from="<primary id>"; SET tablet name="Tablet" width="810px" left="<x>px" top="0px";`
   - Always give `width`: without it the replica copies 1200 and breaks the media query.
   - Place replicas side by side without overlap.
+  - `$rect` can be stale: a primary just set to `width="1440px"` still read `width:1200`, and a replica placed from it
+    overlapped Desktop ("Ground nodes overlap each other"). Place each replica from the widths you wrote (previous
+    `left` + its width + 100). Nodes inside stacks carry no `$rect`, so judge sizes from screenshots.
 - **Read the project's breakpoints first.** A new page has only Desktop 1200. The set to build is Desktop 1440
   (primary), Laptop 1280, Tablet 810 and Phone 390.
 - **All breakpoints before text style sizes.** A style's breakpoint slots start at the page breakpoints that exist when
   they are written; a breakpoint added later leaves the old starts in place, and the style must be recreated to follow
   it. Read every style's sizes back before handoff: a leftover slot (starting at 1200) left tablet sizes smaller than
   phone ones (display 38 on tablet, 44 on phone; body 14 on tablet, 18 on phone). Tablet sits between laptop and phone.
-- **A page on a layout template takes its breakpoints' fill from the template:** a `fill` on the page breakpoint is
-  refused; set it on the template's breakpoints.
+  Give every page the final set first, the home page (`/`) included: slots count the site's breakpoints, not only the
+  page you style. Seen: `/` still at Desktop 1200 next to a page at 1440 / 810 / 390 gave a style the slots 1200 / 810
+  / 0, so from 1200 to 1439 the tablet layout showed desktop type.
+- **A page on a layout template takes its breakpoints' fill and layout from the template:** a `fill` or `layout` on
+  the page breakpoint is refused; set it on the template's breakpoints.
 - **Override a node on a replica** with the compound id `<replica id><node id>`, written with no separator.
   - Use real ids. A real replica id joined with a temp id from the same batch fails: create the node in one batch, then
     override it in the next.
   - Temp-plus-temp compounds inside a new component do work.
 - **An override cannot be reset to inherit** through the DSL. Writing the primary's value only pins that value.
+- **Reordering on a breakpoint:** Framer's reference says to `MOVE` a replica descendant within its parent. Seen: the
+  `MOVE` was accepted and `serialize` showed the new order, but the breakpoint still rendered the primary's order. What
+  worked: a second copy of the layer at the new position in the primary, hidden there (`visible="false"`) and shown on
+  the replicas that need it, with the original hidden on those replicas. Check the order in a screenshot.
+- **A row turned into a column keeps its `fr` weights.** Children with `width="7fr"` and `"5fr"` in a row switched to
+  `stackDirection="vertical"` stay on one line and clip. Set `width="1fr"` on those children's copies too.
 - **On phone**, grids usually become vertical stacks. Check text wrapping and overflow on every replica. Cards that
   stick and stack go `position="relative"` on phone when they are taller than the screen, or their bottoms can never
   be read. A card laid over the hero media is hidden on tablet and phone (a boolean variable), where it covers the
@@ -98,6 +117,8 @@ Build every page as Main > Section > Container > Content:
   it. The DSL cannot remove it: only numbers up to 10 are accepted, and `null` or `auto` are errors.
 - **A section with any zIndex traps its children.** A page-level overlay (grid lines) then ends up under or over all of
   its content. Keep sections without zIndex: background layers z0, overlay z1, content z2.
+- **`position="fixed"` works only on a direct child of the page breakpoint** (Framer Help). A floating button or a
+  fixed bar lives there, not inside a section.
 - **Sticky:** `position="sticky"` with `positionStickyTop`. A sticky layer creates its own stacking context, so it
   carries its own background and does not show a parent's gradient through.
 - **A translucent card over an overlay** lets the overlay show through. Make the card root opaque (the section color)
@@ -113,10 +134,17 @@ Build every page as Main > Section > Container > Content:
 - **`/` in a node name** keeps only the last segment. (For styles and components, `/` makes folders instead.)
 - **Names:** `SET x name=""` removes a name; `name="null"` sets the literal word.
 - **`MOVE x parent="…" index="n"`:** n is the final position among the children.
-- **Pages:** DSL `DEL` does not delete a `WebPageNode`; use `framer.removeNodes([id])`. A page's path cannot be
-  changed.
+- **Pages:** DSL `DEL` does not delete a `WebPageNode`; use `framer.removeNodes([id])`. The plugin API cannot change a
+  page's path, but the DSL can: `SET <page id> path="/new-path";`. Address the page by its new path afterwards, and
+  redirect the old one if the site was published.
 - **Layout templates:** a `LayoutTemplateNode` (shared header and footer) is edited like any node, by id. On a page
   that uses a template, the page-level `flowEffect` goes on the template's breakpoint.
+  - **Create:** `+LayoutTemplateNode lt name="Site Template";` makes a Desktop breakpoint (1200×1000) holding a
+    `PlaceholderNode`. Add Tablet and Phone with `CREATE_VARIANT ltTab from="<template Desktop id>"; SET ltTab
+    name="Tablet" width="810px";`. The header is a child of the template Desktop at `index="0"`, before the placeholder;
+    the footer goes after it. Adapt them per breakpoint by compound id `<template breakpoint id><node id>`.
+  - **Join a page:** `SET <page id> layoutTemplate="<template id>";`. The page still needs its own breakpoints, and they
+    then refuse `fill` and `layout` ("Apply it to the corresponding breakpoint of layout template").
   - **A template breakpoint needs a fixed px height** (`height="800px"`). `height="auto"` is refused: "Layout template
     breakpoints require a fixed pixel height".
   - Give the pages that use the template the same breakpoints (Desktop 1440, Laptop 1280, Tablet 810, Phone 390),

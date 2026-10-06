@@ -6,6 +6,14 @@
   - `onScroll` and `onInView` take at most 2 states;
   - `onScrollTarget` takes any number of states, each with its own `sections.<i>.target` (a frame with
     `scrollTargetEnabled="true"` and `elementId`); `target="null"` is the initial state.
+  - `viewport` (start by default) applies only to `onScrollTarget`. `onInView` runs from the layer's top entering at
+    the bottom of the window until its bottom reaches the bottom of the window, then stops, so an `onInView` parallax
+    moves only while the layer comes in. `onScroll` spans the whole page, 0 at the top and 1 at the bottom.
+- **Create a target before the effect that names it.** A `sections.<i>.target` that points at a node created later in
+  the same batch is refused ("Every target section must be a scroll target in the same scope"), and the rest of the
+  batch is applied. Create the target, with `elementId` and `scrollTargetEnabled="true"`, earlier in the batch (a
+  parent created before its child works). A scroll transform can also get its sections in a later `SET`; a scroll
+  variant cannot (a `SET` of its sections is ignored), so create its instance after its targets.
 - **Write every value of a state.** A state without explicit values gets Framer's defaults (opacity 0.5, scale 0.5),
   so always write `opacity 1`, `scale 1` and the rest. An identity state is stored as `{}`.
 - **Write `sections.<i>.*` attribute by attribute,** numbers without quotes (`sections.0.opacity=0.15`): a quoted
@@ -35,6 +43,16 @@
 - **Write `sections` when you create the instance.** A `SET` of the sections on an existing node is silently ignored
   ("0 changes"), so recreate the instance to change them.
 - **`serialize` may show temporary names** (`s1`) in the sections even though real ids were written. The site works.
+- **Scroll direction does not work through the DSL.** `scrollVariantEffect.trigger="onScrollDirection"` keeps
+  `direction` and drops `fromVariant`, `toVariant` and `sections.0.variant` without an error.
+  `appearEffect.trigger="onScrollDirection"` keeps `enter` and `exit` but no direction (`appearEffect.direction` is
+  accepted and dropped), and Framer's runtime skips the effect without one. A header that hides on scroll down needs a
+  code override: say so before promising it.
+- **A header that changes after the hero:** a header component with `Top` and `Scrolled` variants. Its instance (seen
+  on the page itself) gets `position="sticky"`, `scrollVariantEffect.trigger="onScrollTarget"`,
+  `sections.0.variant="<Top id>"`, `sections.1.target="<first section after the hero>"` (or an invisible trigger frame
+  there, with no fill) and `sections.1.variant="<Scrolled id>"`, written when the instance is created. The switch
+  animates with the component's variant `transition`. Check it in Preview.
 
 ## Pinned step section, without code
 
@@ -52,9 +70,16 @@ Structure of the section (the section itself has no zIndex):
    - are the scroll targets.
 
    Hide them on the site with a `styleTransformEffect` whose states are `opacity 0`, and `pointerEvents="none"`.
+   Opacity 0 and `pointerEvents="none"` hide them from the eye and the mouse, not from screen readers or the Tab key.
+   Put the step's links and buttons behind a boolean variable that the copies turn off.
    Read the states back: opacity only. A `scale` left in a state (seen: `scale 0.5`) shrinks the invisible track, so
    the targets sit elsewhere on screen than in the layout: steps switch at the wrong scroll, and code that measures
    them gets wrong positions. Reset it with `scale="1"`; `null` is refused.
+
+**On phone**, unpin the scene on the Phone copies: the stage `position="relative"`, its instance
+`scrollVariantEffect="null"`, and the copies' hiding `styleTransformEffect="null"`, so step 1 and the copies read as a
+stack. Where a scene stays pinned, keep each step's content out of the bottom 15% of the stage: Framer has no
+`svh`/`dvh`, and on iOS Safari `100vh` is taller than the visible area while the toolbar shows.
 
 **Keeping the editor readable:**
 
@@ -84,12 +109,22 @@ Verify each on the published site: the canvas does not run effects.
 
 - **Image zoom:** in a sticky stage, an image frame goes from `scale` 0.6 (or a smaller width in a clipped frame) to
   1 over one target. Text fades out with opacity in the same range.
-- **Horizontal scroll:** a sticky stage with a horizontal stack of cards wider than the screen; one
-  `styleTransformEffect` target over the whole section moves the stack's `x` from 0 to minus the overflow. The
-  overflow depends on the screen width, so set it per breakpoint (replica overrides) and check every breakpoint.
+- **Horizontal scroll:** the section holds a sticky `Stage` (`height="100vh"`, `overflow="clip"`) with a horizontal
+  stack `Track`, then, right after the stage, a `Timeline` frame (`elementId`, `scrollTargetEnabled="true"`,
+  `pointerEvents="none"`) as tall as the travel (track width minus window width), so the track moves 1 px across per
+  1 px down. On `Track`: `styleTransformEffect.trigger="onScrollTarget"`, `viewport="end"`, state 0 `x=0px`, state 1
+  targeting the Timeline with `x=-<travel>px`, opacity and scale 1 in both, `spring-physics 300 35 1 0s`. A target
+  right after a 100vh stage with `viewport` end starts exactly when the section reaches the top, so its height is the
+  pin length; a target over the whole section slides the first or last cards while the stage is not pinned.
+  Breakpoint copies take their own `styleTransformEffect` (another `x`, with the Timeline's height to match). On
+  phone, set the Track copy's `styleTransformEffect="null"`, give the stage's copy `position="relative"` and
+  `overflow="auto"` for a native swipe, and hide the Timeline.
 - **Stacking cards:** cards in a vertical stack, each `position="sticky"` with a growing `positionStickyTop` (for
-  example 96, 120, 144 px); every card is opaque, so the next one covers the previous. Optionally scale the earlier
-  card down slightly (0.95) as the next arrives.
+  example 96, 120, 144 px); every card is opaque, so the next one covers the previous. To shrink the card underneath
+  (0.94–0.96) as the next arrives, give it `styleTransformEffect.trigger="onScrollTarget"` with `viewport="end"` and the
+  next card as its target (`elementId`, `scrollTargetEnabled="true"`), state 1 `scale=0.94`, opacity 1 in both. Use
+  `end`: a sticky target moves with the scroll and never crosses the `start` line. Leave about one card of bottom
+  padding after the last one.
 - **Text reveal:** a component with one variant per highlighted phrase, switched by `scrollVariantEffect`; or
   `textEffect` by word with `trigger="onInView"` for a simpler reveal.
 - **Progress bar:** `styleTransformEffect` has a uniform `scale` only, no `scaleX`. So put a bar as wide as its track
@@ -97,7 +132,9 @@ Verify each on the published site: the canvas does not run effects.
   `x` takes px, so set the start per breakpoint.
 - **Rotating ring of logos:** a container whose `rotate` follows scroll over one target, the logos inside upright.
 - **Layered parallax:** a scene cut into foreground, middle and background layers with different
-  `parallaxEffect.speed` (the farther, the slower).
+  `parallaxEffect.speed` (the farther, the slower), in the first screen only. Each moving layer is larger than its
+  clipped frame by its travel (`bottom="-180px"` for 180px), or its edge shows. Layers at different speeds are the
+  motion most likely to make people dizzy: keep them few and subtle.
 - **Scroll-driven media:** a sequence of frames or a video stepped by scroll needs a code component; say so to the
   user before writing code.
 

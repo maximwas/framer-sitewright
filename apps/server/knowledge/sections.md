@@ -18,8 +18,16 @@ look follows `direction`.
 
 - Logo left, 3–6 links, one button right, on the container's edges. Sticky with its own fill at `index="0"` of the
   breakpoint, `zIndex="5"`. Three `1fr` columns (start / center / end) when the links should sit in the middle.
+- A header that changes on scroll (transparent over the hero, filled after it) is a header component with two
+  variants, switched by a `scrollVariantEffect` (`onScrollTarget`) aimed at the first section after the hero, or an
+  invisible trigger frame there (`motion`, A header that reacts to scroll). Write the sections when the instance is
+  created (a later `SET` of them is ignored). A header that hides on scroll down needs code.
+- Links to sections scroll smoothly and stop below the header: `link.smoothScroll` on the link frames and
+  `scrollMarginTop` on the targets (`dsl`, the anchor rules). Click every navigation link in Preview.
 - Links are frames with a link (padding 8–12px around the text), so the text keeps its style's color.
-- Phone: a menu (a component with closed and open variants that animate height; needs a key).
+- Phone: a menu (a component with closed and open variants that animate height; needs a key). Every link in the open
+  variant also switches the menu to its closed variant; on links to absolute URLs give that switch a 0.1s delay, or
+  iOS can drop the navigation. The open menu lies over the page rather than pushing the content down (Framer Help).
 
 ## Hero
 
@@ -43,7 +51,9 @@ look follows `direction`.
   words each, `width="auto"`, the statement style) and image pills (radius 100, 2:1, about one line high: 112×56 on
   desktop, 88×44 tablet, 60×30 phone), centered. Each pill shows the words before it.
 - Motion: it appears once as it enters, chunk after chunk (`appearEffect` y 24 and opacity 0, 0.06s apart; pills scale
-  from 0.6). Not a scroll-scrubbed fade: that leaves the text faint while people read it.
+  from 0.6). Not a scroll-scrubbed fade: that leaves the text faint while people read it. A statement without
+  pictures between its words reveals with `effects_set` `text-reveal` (Framer's `textEffect` by word, its preset blur
+  zeroed); chunk appears are for statements with images between the words.
 
 ## Features
 
@@ -89,6 +99,16 @@ look follows `direction`.
 - Put a person next to the action: a 56–64px round portrait, name and role, and when they reply ("Takes every first
   call. Replies within one working day"). A service is bought from people.
 - Footer on the same container edges as the header: logo, short link groups, contact, legal, the current year.
+
+## Inner pages
+
+- A project page (CMS detail): hero image or video, meta (client, year, services), gallery, challenge → approach →
+  results, credits, previous/next, more projects.
+- An article: title, date, category and cover, the body in a rich text inside `htmlTag="article"`, related posts, the
+  call to action.
+- Legal pages as one CMS collection (`/legal/:slug`); a contact page whose form shows pending, success and error
+  states (`dsl`, Forms, overlays and links).
+- Pricing with a monthly/yearly toggle: variants of one component, laid out per breakpoint.
 
 ## 404
 

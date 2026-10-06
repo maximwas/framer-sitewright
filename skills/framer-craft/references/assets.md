@@ -21,6 +21,21 @@
 - **People must read:** testimonials and contact blocks show the face plainly, in a setting that fits the role. Crop
   tight (Unsplash URLs take `&rect=x,y,w,h` or `&crop=faces`) and look at the crop at its real size.
 
+## Shaders
+
+- **Names:** take them from `<available-shaders>` in `framer.agent.getContext()`. Framer's "Shaders" guide writes
+  `chromatic-aberration`; the shader is `chromatic`.
+- **Place:** an absolute `Background` frame pinned `0px` on four sides with `pointerEvents="none"`, holding the
+  `+ShaderNode` pinned the same way, with a gradient shade above it for text. Colors go one per index
+  (`$control__colors.0="#04161A"` …; up to 8 on liquid-gradient, 4 on wave-gradient); a color token is accepted there.
+- **Color:** the palette's base and ink tones and one second hue, never the action accent: an orange accent flooded
+  half a hero and broke the button's contrast.
+- **Image shaders** (fluted-glass and others) take `$control__texture.src` and `$control__texture.alt` (any https
+  image; Framer re-uploads it).
+- **`shader` cannot change** through `SET`: delete the node and add a new one. Its controls can change. Screenshots
+  render shaders.
+- **A shader that moves** for more than 5 s needs a pause ([motion.md](motion.md), other effects).
+
 ## Icons
 
 - **Find the set:** `framer.agent.listIconSets()` gives the set ids (project, external and insertable sets).
@@ -29,6 +44,7 @@
 - **Find the controls:** `framer.agent.readIconSetControls({ iconSetIds })`.
 - **Place:** `+IconNode i1 parent="…" set="<set id>" $control__icon="<exact name>";` plus the set's own controls
   (`$control__color`, Lucide's `$control__width`).
+- **Phosphor icons are outlines until `$control__alpha="1"`:** a filled star for a rating needs it.
 - **One icon set per site.** Lucide gives clean arrows. Phosphor "Arrow Right" rendered on the web as "–▷".
 - **A new item in a project vector set** that the session cannot see ("does not exist in set") needs a new session
   (see [verify.md](verify.md)).
@@ -57,6 +73,10 @@
 - **Site-wide:** `SET rootNode metadata.title="…" metadata.description="…" metadata.favicon="<uploaded url>";` on the
   `RootNode`.
 - **Per page:** overrides go in the page's own metadata.
+- **Hiding a page from search:** `metadata.noIndex="true"` on the `WebPageNode` also turns on `metadata.noIndexSite`
+  (out of the site's own search), and `noIndex="false"` leaves it on: write both. `RootNode` refuses
+  `metadata.noIndex`, so hide pages one by one. `metadata.description=""` on a page removes its own, and the page
+  inherits the site's again.
 - **Builds:** for a full site build, set the site metadata when the project has none.
 - **The full set:** `metadata.favicon` (the mark as SVG) and `metadata.faviconDark`, `metadata.appleTouchIcon` (a
   180×180 PNG of the mark on the base color) and `metadata.socialImage` (1200×630, a screenshot of the hero). Redo all

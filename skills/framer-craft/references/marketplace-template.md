@@ -60,14 +60,29 @@ ready". Read [design-process.md](design-process.md) first; this adds what change
   edits: colors (which token rebrands the accent), type, hero media, the home page components, carousel slides (where
   each width's slides sit on the canvas), CMS collections, contact details (every place they appear), motion, and what
   to set before publishing. Name the panels as Framer shows them (Assets → Colors, Page Settings).
+- **AI-ready:** a project skill for Framer's agent with the template's conventions (`+SkillNode` with `description`,
+  `instruction`, `trigger`; its title becomes the slash command), a short `.md` brief for external agents, and prompts
+  for a rebrand, a logo swap and form wiring.
+- **Buyer documents:** a prelaunch checklist (domain, favicon and social image, form destinations, cookie banner and
+  legal pages, analytics, deleting the preview's Buy button), CMS field descriptions, a changelog in the listing.
+- **Preview only:** a floating "Buy template" button named for deletion (`Delete me`); the current year; no `-copy`
+  slugs; no `Variant 1` or `Frame 12`.
+- **Dependencies named:** list every third-party service (FramerAuth, form back-ends, video players, smooth scroll);
+  never ship sign-up, sign-in or checkout pages that do not work without one.
 
 ## Before listing
 
 - Preview every page and link; resize slowly between breakpoints.
 - Remix it into a clean account and use it as a buyer would.
 - The listing needs:
-  - two promotional images showing the real template;
-  - title, byline, short and full description, categories, pages, features;
-  - price, preview link and remix link;
-  - setup requirements and limitations, support contact, refund terms;
+  - four images at 1600×1200 (4:3), the first the thumbnail and the strongest; a video helps;
+  - a one-word name, a byline naming the audience, a description that lists the pages, categories, styles and
+    features, and the preview URL;
+  - a free template's remix link, or a paid one's checkout URL (Polar, Lemon Squeezy, Contra, Gumroad, Stripe) that
+    goes straight to payment at the listed price, is public and states a refund policy. Framer takes no payments and
+    issues no refunds: the creator sends the remix link after purchase;
+  - the Framer plan it needs (Basic: 30 pages, 2 CMS collections; Pro: 150 and 10; legal, team, FAQ and testimonial
+    collections count);
+  - support contact, setup requirements and limitations;
   - no ads or unrelated promotions inside the template.
+- Framer's checklist items are recommendations, not requirements; every top template still meets them.

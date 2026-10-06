@@ -14,6 +14,15 @@ cleanup) are the only places to step outside the DSL.
 - **Rename or move into a folder** without breaking references: `SET <token id> name="Brand/Light"`. The id stays.
 - **Compare colors after normalizing them.** Framer returns colors as `rgb()` or `rgba()`.
 - **Reference a token** as `var(--token-<id>)` in fills, `textColor`, borders and gradients.
+- **A token id that does not exist is accepted:** `var(--token-<wrong id>)` is stored as written, with no error, and
+  shows no color. Take ids from `renamedIds` or the project's tokens; never type them.
+- **A surface that keeps its color in both themes** (a paper ticket, a label, a receipt, a brand-colored band) needs
+  text tokens that also keep theirs: give its ink the same light and dark value. A shared ink token turns light on it
+  in the dark theme (seen; Framer's linter flags the contrast).
+- **Dark values apply only through the visitor's system theme** (`prefers-color-scheme`): Framer has no theme switch
+  and no action that changes the theme. A switch needs a code override that writes the tokens' values on
+  `document.body` (code, so only when the user asks, and every new token must be added to it). Screenshots show the
+  light theme only: check dark on the published site with the system set to dark.
 
 ## Text styles
 
@@ -22,6 +31,8 @@ cleanup) are the only places to step outside the DSL.
 - **Create:**
   `+TextStylePresetNode h1 name="Heading 1" tag="h1" fontName="…" fontWeight="600" breakpoint.default.fontSize="64px" breakpoint.default.lineHeight="110%";`
 - **Units:** `lineHeight` accepts `%` even though the reference lists only px and em. `rem` works in slots.
+- **`paragraphSpacing` defaults to 20px.** Text of several blocks (stacked lines, a column of digits) gets 20px between
+  them. Write `paragraphSpacing` on purpose: 0 where blocks sit line on line.
 - **Color:** the style can carry a color, but text nodes still get their own `textColor` token (see SKILL.md).
 
 ### Breakpoint slots
@@ -47,6 +58,11 @@ cleanup) are the only places to step outside the DSL.
 
 - **Check that a font exists before using it:** the project inventory lists the project's fonts, and the reference's
   `font-search` query finds library fonts. If Framer has no such font, tell the user where to get it; they upload it.
+- **Check the script and the signs before the look.** Framer draws a missing glyph in another face without a warning
+  (seen: ₴ in Sofia Sans, which has full Cyrillic, came out wider and bolder). Check every letter the site's languages
+  use (Ukrainian ґ є і ї) and every sign the copy uses (₴, №, °, ±, →) in the specimen, then on a screenshot of real
+  copy. Write prices with a code (UAH, EUR) when the face lacks the sign. Satoshi, General Sans, Switzer and Instrument
+  Sans have no Cyrillic, nor does any of Fontshare's closed-source families; about 294 of 1,950 Google families do.
 - **`font-search` by `query` spends the workspace's AI credits.** Without them it fails with "workspace AI credit
   balance exhausted". Search by `name` (`{ type: "font-search", name: "Geist" }`) still works.
 - **The DSL sometimes refuses a library family that font search lists** ("No available font variant"; seen with Inter

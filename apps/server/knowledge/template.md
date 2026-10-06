@@ -16,7 +16,8 @@ adds what changes when the site is a product.
 ## Build it in (Framer's checklist)
 
 - **Design:** shared color and text styles applied everywhere; one hierarchy across pages; polished visual assets.
-- **A custom 404 page.** Required, even for a one-page template.
+- **A custom 404 page.** Expected even for a one-page template (Framer's checklist recommends it, and every top
+  template has one).
 - **Layout:** each page has a clear purpose; shared chrome (header, footer) in a layout template; stacks, grids and auto
   heights; no fixed sizes that break; no horizontal scroll at any width.
 - **Text:** no lorem ipsum or placeholder text; spelling and grammar checked; Framer's fonts; headings balanced.
@@ -55,13 +56,18 @@ adds what changes when the site is a product.
 - Preview every page and link; resize slowly between breakpoints, not only at the presets.
 - Remix the template in a clean account and check that it works as a starting point.
 - The listing needs:
-  - two promotional images that show the real template;
-  - title, byline, short and full description, categories, pages and features;
-  - price, preview link and remix link;
-  - the setup requirements and limitations;
-  - support contact and refund terms.
+  - four images at 1600×1200 (4:3), the first the thumbnail and the strongest; a video helps;
+  - a one-word name, a byline naming the audience, a description that lists the pages, categories, styles and
+    features, and the preview URL;
+  - a free template's remix link, or a paid one's checkout URL (Polar, Lemon Squeezy, Contra, Gumroad, Stripe) that
+    goes straight to payment at the listed price, is public and states a refund policy. Framer takes no payments and
+    issues no refunds: the creator sends the remix link after purchase;
+  - the Framer plan it needs (Basic: 30 pages, 2 CMS collections; Pro: 150 and 10; legal, team, FAQ and testimonial
+    collections count);
+  - support contact, setup requirements and limitations.
 
-  Nothing in the template advertises anything else.
+  Nothing in the template advertises anything else. Framer's checklist items are recommendations, not requirements;
+  every top template still meets them.
 
 ## A "Start here" page for buyers
 
@@ -69,6 +75,17 @@ adds what changes when the site is a product.
   — colors (which token rebrands the accent), type (the families and where sizes live), hero media, the components on
   the home page, slider slides, the CMS collections, contact details (every place they appear), motion, and what to
   set before publishing. Plain words, with the panel names Framer shows (Assets → Colors, Page Settings).
+
+## Ready for buyers and their agents
+
+- **AI-ready:** a project skill for Framer's agent with the template's conventions (`+SkillNode` with `description`,
+  `instruction`, `trigger`; its title becomes the slash command), a short `.md` brief for external agents, and prompts
+  for a rebrand, a logo swap and form wiring.
+- **Buyer documents:** a prelaunch checklist (domain, favicon and social image, form destinations, cookie banner and
+  legal pages, analytics, deleting the preview's Buy button), CMS field descriptions, a changelog in the listing.
+- **Preview only:** a floating "Buy template" button named for deletion (`Delete me`).
+- **Dependencies named:** list every third-party service (FramerAuth, form back-ends, video players, smooth scroll);
+  never ship sign-up, sign-in or checkout pages that do not work without one.
 
 ## Site metadata
 
@@ -84,10 +101,13 @@ adds what changes when the site is a product.
 - A Marketplace carousel takes its slides through a slot control: `$control__slides.0="<id>"
   $control__slides.1="<id>"`, each id a layer that sits directly on the page canvas, next to the breakpoints (create
   the slides there with `parent="<page id>"`, name them, and place them beside the breakpoints).
+- Text in a slot item needs a text style without balance: with balance, its auto-width frame measures wrong and ticker
+  items overlap. Give slot labels a style of their own (`Ticker`).
 - Many carousels measure the first slide and never resize it (Stacking Slider), and Framer's canvas renders a
   breakpoint copy with the primary's slots. So build one carousel per width with its own slides (desktop 1120, tablet
   680, phone 300) and show each on its breakpoints only (`visible`), instead of overriding the slots on a copy.
 - Object controls of a code component (its `transition`, arrow styles) go through `component_controls_set`, once per
   instance and once per breakpoint copy: setting the primary does not reach the copies. A tween default becomes a
-  spring there too.
+  spring there too. A transition Framer refuses comes back in `notStored` (seen: Stacking Slider kept its tween
+  default): then ask the user to set the spring in the component's panel, and list it at handoff.
 

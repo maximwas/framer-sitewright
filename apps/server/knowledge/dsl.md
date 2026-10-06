@@ -19,9 +19,11 @@ something else; every rule here was seen on a live project.
 
 ## Batches
 
-- Framer applies every command it can and skips the failed ones. Fix what `errors` names and send only those
-  commands again, with the real ids from `renamedIds` and `keys` for nodes the batch created: the whole batch again
-  creates them twice.
+- Framer applies every command it can. A create (a new element in xml, a `+` command in dsl) that comes back in
+  `errors` usually still made its node, sometimes with none of its attributes (a `+RichTextNode` with a refused
+  `paddingBottom` came out without its text style). Read the failed targets back with `nodes_read` and fix them with
+  `SET` on their real ids from `renamedIds` and `keys`; send failed `SET`s again, fixed. Sending a create again, or the
+  whole batch, makes a second node.
 - One invalid `$control__` value on an instance drops every `$control__` of that command, and the error names only
   the invalid one. Read the instance back after an error on it, or set a risky control (a link to an anchor) in a
   command of its own.
@@ -45,7 +47,12 @@ something else; every rule here was seen on a live project.
 - Text style breakpoints are slots, not widths: medium, small, extraSmall in order (the tool adds skipped ones),
   starting at the page breakpoints from the top, the narrowest at 0.
 - Color text with a token on the `RichTextNode` itself, `textColor="var(--token-<id>)"`, not only through its text
-  style: only then does the token show in Framer's Color field (needs a key).
+  style: only then does the token show in Framer's Color field (needs a key). Setting `textStylePreset` later drops the
+  node's `textColor` without an error: write both in the same element or `SET`.
+- Dark token values apply only through the visitor's system theme (`prefers-color-scheme`): Framer has no theme switch
+  and no action that changes it. A switch needs a code override that writes the token values on `document.body` (code,
+  so only when the user asks). `node_screenshot` shows the light theme only: check dark with `reference_screenshot`
+  `theme: "dark"` of the published site.
 
 ## Pages and layers
 
@@ -59,7 +66,17 @@ something else; every rule here was seen on a live project.
 - To stretch an absolute layer over its parent, pin all four sides to 0px instead of width and height 100%; never
   auto there, it collapses. To centre one, give `centerAnchorX="50%"` (or `centerAnchorY`) and no pins on that axis:
   `design_apply` creates it pinned and then unpins it.
-- A link to `/#id` needs the target section to have `elementId` and `scrollTargetEnabled` first.
+- A link to `/#id` needs the target section to have `elementId` and `scrollTargetEnabled` first. Without it the call
+  errors, but the node keeps the link cut to the page path (no `#id`), which `links_check` does not flag: set it again
+  once the target exists (build navigation last).
+- A section link needs two more things than its target, or it jumps and hides the heading (seen on a template,
+  06.10.2026): `link.smoothScroll="true"` on every frame that carries a link to `#id`, inside components too (the
+  button and nav link variants: the instance's link control does not carry it), and `scrollMarginTop` on each target
+  section, the sticky header's height plus a gap minus the section's top padding (header 84px, padding 40px:
+  `scrollMarginTop="76px"`), with its own value on breakpoints where the header or padding differ. Component changes
+  after a publish reach the live site only with the next publish, and `publish_status` lists only changed pages.
+- External links start with `https://`: `link.href="www.example.com"` is stored as is, without a warning, and becomes
+  the relative path `/www.example.com`. `links_check` does not catch it.
 - Site and page settings: read them with `site_settings_get` and change them with `site_settings_set`, which writes
   the attributes below quoted and journaled. In raw XML: `<RootNode id="rootNode" metadata.title="…"
   metadata.description="…" metadata.favicon="…" metadata.faviconDark="…" metadata.appleTouchIcon="…"
@@ -73,16 +90,31 @@ something else; every rule here was seen on a live project.
 
 - A page is a primary breakpoint frame plus copies (replicas): add them with `breakpoints_add` (Tablet 810, Phone 390;
   with a key `CREATE_VARIANT` works too) before giving text styles breakpoint sizes.
+- `$rect` in `nodes_read` can be stale (a primary just set to 1440 read 1200×1080) and is missing on nodes inside
+  stacks: judge sizes from screenshots. After widening the primary, `breakpoints_add` placed Tablet from the old width,
+  on top of Desktop. When the lint says "Ground nodes overlap each other", set the copies' `left` (1540, 2450…).
 - Build and delete layers in the primary breakpoint only. Adapt a breakpoint by overriding its copy of a node, by the
   compound id `<breakpoint id><node id>` (real ids, not temp ids from the same batch). A copy takes overrides only: no
   new layers inside it; a layer that should not show there gets `visible="false"` on its copy.
+- A different order on a breakpoint: a `MOVE` of a copy is accepted and `nodes_read` shows it, but the breakpoint was
+  seen to keep the primary's order. Add a second layer at the new position in the primary, hidden there and shown on
+  that breakpoint, and hide the original on that breakpoint. Check it with `node_screenshot`.
 - Breakpoints take only `flowEffect` and `pageEffects`. `layout_audit` reports what a narrow breakpoint kept from
   desktop (narrow-* findings).
+- `breakpoints_add` works on pages only. A layout template gets its breakpoints with `design_apply` dsl (`layout`,
+  Breakpoints).
 
 ## Silent pitfalls
 
+- An attribute name Framer does not know is accepted and ignored, and the batch still reports "applied cleanly":
+  `borderRadius="999px"` left the corners square, because the name is `radius`. Effect fields too
+  (`appearEffect.direction`, `scrollVariantEffect.variant`). Copy attribute names from `nodes_read` of a similar node
+  or from `framer_docs`, never from CSS, and read effects back with `nodes_read`.
 - Setting `text` on a variant or breakpoint copy of styled text drops its text style: repeat `textStylePreset` in the
   same `SET`.
+- On a variant copy of text bound to a variable (`text="var(--variable-…)"`), the first `text` you write stores the
+  variable's name ("Title") without an error. The same write sent again stores the text. Write it twice, then read the
+  copy back with `nodes_read`.
 - A wrapping stack with width auto collapses to one column; `aspectRatio` needs a px height, not auto.
 - Text gets curly quotes and … automatically: write code samples without quotes.
 - Grid rows: `gridRowHeightType="auto"` makes every row as tall as the tallest, so cells with height 1fr fill
@@ -144,7 +176,59 @@ something else; every rule here was seen on a live project.
   `onTap.0.controls.overlay="<id>"`. Images open in Framer's lightbox: `lightboxEffect.padding`, `maxWidth`,
   `backdrop`, `transition` on the image frame.
 - A component that changes with the breakpoint: override `$control__variant` on the breakpoint copy of the instance.
-  `aspectRatio` goes on the instance, never on a variant root.
+  `aspectRatio` goes on the instance, never on a variant root. A Marketplace smart component ignores
+  `$control__variant` on a breakpoint copy without an error (lint: "Component variant does not match its breakpoint"):
+  set its variant there with `component_controls_set { variant: "<name>" }` (its `notStored` may still list `variant`;
+  read the copy back).
+
+## Forms, overlays and links
+
+- Read `framer_docs` guide "Forms" first. `formSubmitButtonId="@submit"` on the form works in the batch that creates
+  the button. The button's state variants (`formButtonPendingVariant`, `formButtonSuccessVariant`,
+  `formButtonErrorVariant`, `formButtonIncompleteVariant`, variant ids) go on that instance in a second
+  `design_apply`. In the batch that creates the form, Framer refuses them ("The target is not the form submit button")
+  and applies everything else, so send only those attributes again, on the instance's real id.
+- Where a form sends is set by the user in the editor (select the form, then where it sends): no tool or DSL attribute
+  reaches it. Say so at handoff and ask for a test submission on the published site.
+- Radio and checkbox: `formInputIconColor` is the dot or tick, `formInputCheckedFill` the checked background. Without
+  `formInputIconColor`, a thick checked border shows the browser's blue dot. A select's placeholder is a first option
+  with `value=""` that is not `disabled`: a disabled one makes the browser preselect the next option, which satisfies
+  `required`.
+- Framer has no `fieldset`, `legend`, `role`, `aria-describedby` or focus event. Make each radio label complete on its
+  own and keep long help text outside the label. Give a hover tooltip `onTap` beside `onMouseEnter` on its trigger
+  (touch screens have no hover). Field errors come only from the browser and the button's Incomplete and Error
+  variants, so put words there.
+- A modal is a `FixedOverlayNode` under the trigger frame (`SHOW_OVERLAY` on its `onTap`), with a token in
+  `backdrop.fill`, `backdrop.dismissible="true"`, `backdrop.blockScroll="true"` and `zIndex="10"`. It closes by its
+  backdrop and by a visible close button (`DISMISS_OVERLAY`, `ariaLabel`).
+- `onKeyDown` keeps its action but drops the key (`controls.key` is not stored): a handler without a key fires on any
+  key, Tab included, so Escape cannot be wired. A lightbox closes on Escape by itself; a modal does not.
+- An overlay opens only from the trigger it sits under: a `SHOW_OVERLAY` that names an overlay under another trigger
+  fails ("The target must be a direct child of …"). For a second button that opens the same modal, `DUPE <overlay id>
+  newId="<tmp>" parent="<second trigger id>";` in the dsl part and point its click at the copy. Keep the dialog's
+  content in a component instance so the copies stay alike. DUPE rewrites a copied form's `formSubmitButtonId`; set its
+  button state variants again. Screenshots of overlay content: `verify`.
+
+## CMS lists and detail pages
+
+- Collections, fields and items go through the `cms_*` tools; a list on the canvas is `design_apply`. Read
+  `framer_docs` guide "CMS Collection Lists" (and section "CMS detail pages") before the first one. Bind fields by the
+  ids `cms_collections_list` gives. A filter on a reference takes the referenced item's id from `cms_items_list`: a
+  slug matches nothing, without an error.
+- Pagination (`load-more`, `infinite-scroll`) adds an absolute Load More button (and a Spinner) at the list's bottom,
+  over the last row: give the list a bottom padding of the button's height plus a gap. `nodes_read` does not show
+  `collectionList.pagination`.
+- The repeated child can be a component instance whose controls are bound to fields
+  (`$control__title="var(--variable-<field id>)"`), with transforms: `toDateString` for a date, `optionToDisplayName`
+  for an option, `prefix` for a lead-in ("Logged by …"), and `convertFromBoolean` with outputType `option` to pick a
+  variant from a boolean field (a highlighted entry).
+- An appear on a list staggers its items with `appearEffect.enter.stagger`: every item is the same layer, so growing
+  delays are impossible.
+- A detail page: `page_create` makes a plain page even for a path with `:`. Create it with `design_apply` dsl
+  `+WebPageNode <tmp> name="<Name>" path="/<base>/:<Collection name>";`. `project_overview` then lists it as
+  `/<base>/:slug`, but `design_apply` takes `pagePath` `/<base>/:<Collection name>`, and `nodes_read` finds it only by
+  `nodeId`. The canvas shows the collection's first item (`cms_items_order` changes which). Rich text bound to a
+  formatted-text field takes per-tag presets whose text style has that tag: `stylePresetHeading1` takes an h1 style.
 
 ## Springs: what Framer stores
 
@@ -162,6 +246,9 @@ Every transition is a spring (design_guide motion), but which spring Framer keep
   a scroll transform or page transition becomes physics. Its warnings list what it rewrote: tell the user which
   transitions to switch to Physics in the editor if they want physics there.
 - `dragEffect.transition` takes only `inertia`.
+- `tickerEffect` and `scrollVariantEffect` have no transition: one written there is accepted and dropped, even when
+  `design_apply`'s warnings list it as rewritten. A ticker's speed is `velocity`; a scroll variant animates with the
+  component's variant `transition`.
 - On an `onMount` appear keep `spring-duration` even if Physics is set by hand: Framer restarts the opacity animation
   after hydration with Physics, and the layer vanishes for one frame when it ends.
 - Read the result back with `nodes_read`.
@@ -169,24 +256,46 @@ Every transition is a spring (design_guide motion), but which spring Framer keep
 ## Motion recipes
 
 - Before building an animated pattern read its Framer guide: `framer_docs` guide "Effects"; "FAQ" for accordions,
-  "Navigations" for menus, "Overlays", "Buttons".
+  "Navigations" for menus, "Overlays", "Buttons". Where those guides use an easing curve ("easing curves with a time"
+  for fade-ins), write a spring without bounce instead.
 - Appear: `appearEffect` `onMount` above the fold, `onInView` below it, from opacity 0 and a small y (8–24), a spring
   without bounce (`spring-duration 0.5s 0 <delay>`), delays in steps for a sequence. `appearEffect.replay="false"`
   makes `onInView` play once. An appear on a layer fully clipped in its start state never plays.
+- Page transitions are `pageEffects` on a page's primary breakpoint (`design_guide` motion, Page transitions).
 - Hover on surfaces: `hoverEffect.backgroundColor` or `opacity`, and always `hoverEffect.scale="1"` with it: Framer
   fills in 1.1 by itself, which jumps. Scale only when asked.
 - Variant changes animate through `transition`: give every variant of a component the same one.
 - A new `loopEffect` starts from Framer's preset, a full turn: always write `loopEffect.rotate="0"` (and any transform
-  you do not animate). Keep loops rare.
+  you do not animate) and a `loopEffect.transition`: without one Framer stores a linear `tween 0,0,1,1 1s 0s`. A spring
+  eases into and out of every cycle, so a spin slows at each turn: give it a long spring (4–6s, as `effects_set` `spin`
+  does) on one small mark. Keep loops rare.
+- A `loopEffect` written on a variant's copy of a layer lands on the primary and in every variant. For a loop that
+  shows in one state only (a loader dot), hide that layer in the other variants with `visible="false"`.
 - Anything that opens (accordion, mobile menu, dropdown) must not show and hide content with `visible="false"`: that
   pops. Give the closed variant a fixed height (its header row) and `overflow="clip"`, the open variant `height="auto"`
   and `overflow="clip"`, both the same transition; swap or rotate the icon in the same variants; set
   `flowEffect.transition` on the list holding the items and on the page breakpoint (the same transition) so the
   sections below glide; fade the hidden part with opacity 0 in the closed variant; `userSelect="none"` on the
   clickable texts. To make the content appear as it opens instead, hide it with `visible="false"` in the closed
-  variant and give it `appearEffect.trigger="onMount"`.
-- `textEffect` by word or character, not on auto-fit text. `tickerEffect` for marquees (it also runs a CMS collection
-  list; give it `overflow="clip"`).
+  variant and give it `appearEffect.trigger="onMount"`. Never for FAQ answers or other content people search for:
+  text hidden with `visible="false"` is not indexed (Framer Help). Keep it in the closed variant, clipped at height 0
+  with opacity 0.
+- `textEffect` by word or character, on headings and short lines only, never on auto-fit text. Written through
+  `design_apply`, a new one blurs every token by 10px: write `textEffect.style.blur="0px"` (`effects_set`
+  `text-reveal` does). Its transition's delay is always stored as 0.05s; delay the effect with `textEffect.delay`.
+  `trigger="onScrollTarget"` is accepted but has no target: use `onInView`. `tickerEffect` for marquees (it also runs
+  a CMS collection list; give it `overflow="clip"`). Fade a ticker's edges with a mask on its clipped frame:
+  `masks.0.mask="linear-gradient(90deg, rgba(0,0,0,0) 0%, rgb(0,0,0) 10%, rgb(0,0,0) 90%, rgba(0,0,0,0) 100%)"`.
+- `parallaxEffect.speed` counts from the top of the page: the layer moves (speed/100 − 1) × scrollY, so at speed 85 a
+  layer 7000px down sits about 1000px off its frame, and the DSL has no offset for it. Use it in the first screen
+  only; further down use `effects_set` `parallax` (a `styleTransformEffect` y on the inner layer of a clipped frame).
+  Either way the moving layer is larger than its frame by its travel, or its edge shows.
+- Custom cursor: a small component (a "View" pill), then on the layer `customCursor.componentNodeId="<component id>"
+  customCursor.follow="true" customCursor.placement="right" customCursor.alignment="center"
+  customCursor.offsetX="12px" customCursor.offsetY="0px"`. Use the component's real id: a `@key` from an earlier batch
+  is refused ("Expected a ComponentNode id"). Framer adds the primary variant, and `offsetY` defaults to 20px, so write
+  it. Leave `customCursor.transition` unset, as Framer's guide advises. Touch screens show no cursor; check it in
+  Preview.
 - A scroll-pinned step section: the section (no zIndex) holds an absolute Background block z0 with its own gradient,
   then a transparent `position="sticky"` stage of 100vh (zIndex 2), then static copies of the later steps, 100vh each
   (instances of the step component, `scrollTargetEnabled` + `elementId`): they give the section its height, show every
@@ -197,18 +306,23 @@ Every transition is a spring (design_guide motion), but which spring Framer keep
   existing node is ignored, so recreate the instance to change them.
 - `styleTransformEffect` `onScrollTarget` follows the scroll linearly from the previous state to each target's state
   while the target passes the viewport line; the transition only smooths it. A continuous change (a progress arc, a
-  bar) needs one target over the whole range. A new one starts from a preset with `scale 0.5` in its first section:
-  write `sections.0.scale=1`. List item numbers go unquoted: `sections.0.opacity=0.15`.
+  bar) needs one target over the whole range. A new one starts from a preset with `opacity 0.5` and `scale 0.5` in its
+  first section: write `sections.0.opacity` and `sections.0.scale` (1 unless wanted). List item numbers go unquoted:
+  `sections.0.opacity=0.15`.
 
 ## Assets
 
-- Icons: `icons_search`, then `+IconNode set="<set id>" $control__icon="<exact name>"`.
+- Icons: `icons_search`, then `+IconNode set="<set id>" $control__icon="<exact name>"`. A Phosphor icon is an outline
+  until `$control__alpha="1"` fills it (rating stars).
 - Photos: `images_search`, then `fill="<url>"` with `altText`. Own files: `image_upload`, videos, PDFs and fonts:
   `file_upload`.
 - Logos and own icons are vectors: `svg_add` through the plugin (parentId places it). To reuse one across the site, ask
   the user to add it to a project vector set (the API cannot), then place it as an `IconNode` of that set. An icon from
   a project vector set given to an instance's icon control is ignored by Framer (design_apply warns): bind it inside
   the component, or give the component a variant per icon.
+- An `svg_add` layer keeps its paths' bounds, not the viewBox (an icon loses its inner padding), and takes no `width`.
+  A vector that must scale with its column (a chart, a wide wordmark) goes in as an image instead: `image_upload` the
+  SVG markup and use it as the `fill` of a frame with `width="1fr"` and `aspectRatio`.
 
 ## Framer's own components and shaders
 
@@ -220,13 +334,14 @@ Every transition is a spring (design_guide motion), but which spring Framer keep
   faststart, under 4 MB).
 - Slideshow and Carousel slots take layers that are direct children of the page (beside the breakpoints). A Countdown
   date takes midnight only. A font control: `$control__font.fontSelector="GF;<Family>-<weight>"` and `fontSize`; one
-  invalid field drops the whole font.
+  invalid field drops the whole font. Its `lineHeight` and `letterSpacing` are `[value, unit]` pairs (`[1.16,"em"]`),
+  never a CSS string, and `fontSelector` goes in the same write as any other font field.
 - Shaders (`shaders_read`): one per page, as a hero or section background: an absolute Background frame with the
   `ShaderNode` pinned to all sides and a shade above it for text. Gradient shaders take up to 8 colors: the palette's
-  base and ink tones and one second hue, never the action accent; a token follows dark mode.
+  base and ink tones and one second hue, never the action accent; a token follows dark mode. Image shaders
+  (fluted-glass and others) take `$control__texture.src` and `$control__texture.alt`; Framer re-uploads the image. The
+  `shader` name cannot change through a `SET`: delete the node and add a new one.
 - `codeOverride` takes a code override's full id `codeFile/<fileId>:<export>` (only while code is switched on).
-- `onKeyDown` keeps its action but drops the key (`controls.key` is not stored): a handler without a key fires on any
-  key, Tab included. A lightbox closes on Escape by itself; a modal does not.
 
 ## Checking
 

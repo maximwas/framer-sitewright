@@ -5,15 +5,11 @@ Container > Content); motion follows [motion.md](motion.md). **Practice** unless
 
 ## Page anatomy
 
-- **A landing page has 5–8 sections.** A typical order:
-  1. hero;
-  2. trust strip (logos, rating, user count);
-  3. problem or value;
-  4. features or how it works;
-  5. proof (testimonials, case studies, numbers);
-  6. pricing or offer;
-  7. FAQ;
-  8. closing call to action, then the footer.
+- **A page is a set of jobs in a usable order:** explain, prove, offer, answer, act. Best-selling templates run a
+  median of nine sections (7–11); a local business with one strong idea can stay short. Take each section's form from
+  the concept (a diagnosis table "what you tell us → what we do", proof as before → after in the unit, a calculator,
+  an archive, chapter openers), not from the SaaS order of logos, features, testimonials, pricing and FAQ. A local
+  business adds service areas, hours and locations, a phone or booking action, a menu or gallery.
 - **One primary action per page.** Repeat the same call to action in the hero, after the proof, and at the end. A
   secondary action (watch, learn more) is visually quieter.
 - **Name sections after their role** (`Hero` only for product pages; `Introduction`, `Work`, `Contact` for portfolios),
@@ -23,14 +19,19 @@ Container > Content); motion follows [motion.md](motion.md). **Practice** unless
 
 ## Hero
 
-- **Headline:** what it is, for whom, why it is different, in 10 words or fewer. One `h1` per page.
+- **Two hero modes.** *Explain* (software, B2B, unfamiliar categories): what it is in about ten words, the product,
+  one action. *Evoke* (local services, brands, places, people, editorial): the most characteristic image, object,
+  question or sentence of the subject's world. In both, the plain description (what, where, for whom) is on the first
+  screen or within the first scroll. One `h1` per page.
 - **Subheadline:** one or two lines of context, `textWrap="balance"` for the headline and `"pretty"` for the paragraph.
 - **Actions:** a primary button with an action verb ("Start a project", "Try it free"), an optional quieter secondary.
 - **Visual:** a product shot, a photo, a shader or a type-led composition, never an icon or a gradient blob. Not
   decoration for its own sake ([distinct-design.md](distinct-design.md), images and assets).
-- **Trust within the first screen:** a logo strip or a rating right under the actions.
-- **Motion:** a single appear (`onMount`, opacity and a small `y`) on the hero copy, staggered by 0.06–0.1 s. No
-  scroll-linked animation above the fold: it delays the first paint and can shift layout.
+- **Trust under the actions** (a logo strip, a rating) is a SaaS and B2B habit. A local business shows its place,
+  hours and a person instead.
+- **Motion:** a single appear (`onMount`, opacity and a small `y`) on the hero copy, staggered by 0.06–0.1 s, but the
+  hero heading or main image (the LCP element) starts visible or moves by `y` only ([motion.md](motion.md), Appear).
+  No scroll-linked animation above the fold: it delays the first paint and can shift layout.
 - **Height:** `height="auto"` with `minHeight="100vh"` only when the composition needs a full screen; otherwise let the
   content set it.
 
@@ -43,10 +44,16 @@ Container > Content); motion follows [motion.md](motion.md). **Practice** unless
 
 ## Social proof
 
-- **Testimonials with a full name, photo, role and a specific outcome.** Keep them in a CMS collection, so the client
-  can add more.
-- **Logos** come from the Logos icon set or the project's vector set, in one neutral color.
-- **Numbers** use tabular figures (`openTypeFontFeatures.tnum="on"`) when they sit in columns.
+- **Testimonials with a full name, photo, role and a specific outcome.**
+- **Proof is real.** On a client's site, testimonials, people, numbers and client logos come from the client. Invented
+  reviews and testimonials are illegal (US FTC rule since 13 Oct 2024, up to $51,744 per violation; EU since May 2022),
+  and logos need permission. Mark stand-ins as placeholders and list them at handoff. Keep testimonials in a CMS
+  collection so the client can add more.
+- **A Marketplace template** uses invented marks, never real brands (Framer: no company logos without permission), and
+  lists its placeholder reviews on the Start here page. Logos sit in one neutral color, from the project's vector set.
+- **Numbers** use tabular figures when they sit in columns. On a text node that has a text style,
+  `openTypeFontFeatures.tnum` is refused ("Cannot apply preset-controlled text properties"): give the figures a text
+  style of their own (`Figure`) and set the feature on that style.
 - **Results as before → after:** per row the metric and its context, then two bars in clipped tracks, a muted
   "before" at 100% and an accent "after" at its ratio (4 of 11 days = 36%), values beside them. Animate the tracks
   (`x -160`, opacity 0, the after track 0.2s later), not the bars ([motion.md](motion.md), Appear). It says more than
@@ -82,13 +89,28 @@ Container > Content); motion follows [motion.md](motion.md). **Practice** unless
 
 - **Simple and recognizable:** logo left, 3–6 links, one button right. Sticky (`positionStickyTop="0"`) with a fill, so
   content scrolls under it.
+- **A header that changes on scroll** (transparent over the hero, filled after it) is a header component with two
+  variants switched by a `scrollVariantEffect` (`onScrollTarget`) aimed at the first section after the hero, or an
+  invisible trigger frame there ([scroll.md](scroll.md), Scroll Variants). A header that hides on scroll down needs
+  code.
 - **Phone:** a drawer component (Phone and Phone Open variants) that opens by height (Field-tested, see
-  [components.md](components.md)). Current-page links get `link.current.*` styles.
-- **Section links** need the targets' `elementId` first (SKILL.md).
+  [components.md](components.md)). Current-page links get `link.current.*` styles. Every link in the open variant also
+  switches the menu to its closed variant; on links to absolute URLs give that switch a 0.1s delay, or iOS can drop the
+  navigation. The open menu lies over the page rather than pushing the content down (Framer Help).
+- **Section links** need the targets' `elementId` first, `link.smoothScroll` on every link frame (inside the button
+  and nav link components too) and `scrollMarginTop` on each target, so the sticky header never covers the heading
+  (SKILL.md). Click every navigation link in Preview at each breakpoint.
 
-## Portfolio and editorial pages
+## Portfolio, editorial and inner pages
 
 - **Portfolio:** a personal introduction at a reading scale, strong project imagery, case studies as CMS detail pages,
   a simple contact at the end. No conversion banner.
 - **Editorial:** a readable measure (50–75 characters), clear heading hierarchy, a post list from CMS, generous line
   height.
+- **A project page** (CMS detail): hero image or video, meta (client, year, services), gallery, challenge → approach →
+  results, credits, previous/next, more projects.
+- **An article:** title, date, category and cover, the body in a rich text inside `htmlTag="article"`, related posts,
+  the call to action.
+- **Legal pages** as one CMS collection (`/legal/:slug`); a contact page whose form shows pending, success and error
+  states.
+- **Pricing with a monthly/yearly toggle:** variants of one component, laid out per breakpoint.
