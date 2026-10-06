@@ -19,6 +19,18 @@ describe("design.apply", () => {
     );
   });
 
+  it("sends variant springs as Framer keeps them and says where to switch to Physics", async () => {
+    const { runtime, state } = createFakeRuntime();
+    const result = await runOperation(
+      designApply,
+      { runtime },
+      { dsl: 'SET card transition="spring-physics 400 40 1 0s";' },
+    );
+
+    expect(state.appliedDsl.at(-1)).toBe('SET card transition="spring-duration 0.45s 0 0s";');
+    expect(result.warnings.map(({ message }) => message).join(" ")).toMatch(/switch these transitions to Physics/);
+  });
+
   it("regression: returns variables' real ids under their keys, and an icon variable gets its initial icon", async () => {
     const { runtime, state } = createFakeRuntime();
 

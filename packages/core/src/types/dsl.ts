@@ -36,3 +36,11 @@ export interface DslCommand {
 }
 
 export type SerializedNode = z.infer<typeof SerializedNodeSchema>;
+
+/** A transition written as the spring Framer keeps on that attribute (design_apply reports them). */
+export interface SpringConversion {
+  readonly target: string;
+  readonly attribute: string;
+  readonly from: string;
+  readonly to: string;
+}

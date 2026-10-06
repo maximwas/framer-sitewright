@@ -5,6 +5,7 @@ import { joinCommands } from "../../dsl/commands.ts";
 import { deferIconInitialValues } from "../../dsl/icon-variables.ts";
 import { parseDsl } from "../../dsl/parse.ts";
 import { assetFailureResult, normalizeDslResult } from "../../dsl/result.ts";
+import { keptSprings, springWarnings } from "../../dsl/springs.ts";
 import { nextTempId } from "../../dsl/temp-ids.ts";
 import { OperationError } from "../../errors.ts";
 import { withDslHistory } from "../../history/dsl/dsl-history.ts";
@@ -106,14 +107,17 @@ async function applyBatch(
 
   const agent = runtime.agent;
   const compiled = xml === undefined ? null : xmlToDsl(xml, (base) => nextTempId(runtime, base));
-  const commands = deferAbsoluteCentering(
-    deferIconInitialValues(
-      joinCommands([
-        ...(compiled?.commands ?? []),
-        ...(dsl === undefined ? [] : [resolveKeyReferences(dsl, compiled?.keys ?? {})]),
-      ]),
+  const springs = keptSprings(
+    deferAbsoluteCentering(
+      deferIconInitialValues(
+        joinCommands([
+          ...(compiled?.commands ?? []),
+          ...(dsl === undefined ? [] : [resolveKeyReferences(dsl, compiled?.keys ?? {})]),
+        ]),
+      ),
     ),
   );
+  const commands = springs.dsl;
 
   if (commands.trim() === "") {
     throw new OperationError("INVALID_INPUT", "Nothing to apply.", "Pass xml, dsl or both.");
@@ -150,7 +154,11 @@ async function applyBatch(
           apply,
         );
   const iconWarnings = await projectIconControlWarnings(agent, pagePath, parsed, applied.renamedIds).catch(() => []);
-  const result = withWarnings(applied, [...iconWarnings, ...fractionalPxWarnings(parsed, applied.renamedIds)]);
+  const result = withWarnings(applied, [
+    ...iconWarnings,
+    ...fractionalPxWarnings(parsed, applied.renamedIds),
+    ...springWarnings(springs.converted),
+  ]);
 
   return compiled === null ? result : withKeys(result, compiled, commands, agent, pagePath);
 }

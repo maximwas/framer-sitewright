@@ -6,12 +6,17 @@ site, and tell the user so.
 ## Transitions: spring physics
 
 - Every transition is a spring with physics (`spring-physics <stiffness> <damping> <mass> <delay>`), never `tween` or a
-  bezier, even when a reference copies CSS easing. Typical: `400 40 1` for buttons and tabs, `200 40 1` for larger
-  moves, `120 22 1` for slow scroll motion.
-- Scroll transforms (`styleTransformEffect.transition`) keep `spring-physics` as written. **Variant transitions do not:**
-  Framer stores a `spring-physics` written through the DSL as a time-based spring, and the Plugin API has no variant
-  transition. Write the nearest time spring without bounce (`spring-duration 0.4s 0 <delay>` for `400 40 1`), read it
-  back, and tell the user which variants and layers to switch to Physics in the editor.
+  bezier, even when a reference copies CSS easing. No bounce: damping = 2·√(stiffness·mass). Typical: `1000 63 1` for
+  hover and press (settles in 0.3s), `400 40 1` for buttons, tabs and menus (0.45s), `200 28 1` for larger moves
+  (0.65s), `120 22 1` for slow scroll motion. More damping than that does not calm a spring, it makes it creep
+  (`200 40 1` takes about 1s to land).
+- Framer keeps `spring-physics` only on scroll transforms (`styleTransformEffect`) and page transitions (`pageEffects`).
+  Everywhere else (variants, appear, hover, press, loop, flow, text effects, overlays) it keeps only time springs and
+  silently turns a written `spring-physics` into its own spring with bounce 0.2, or 0s on an overlay's backdrop.
+  `design_apply` therefore writes each spring as the kind Framer keeps there, the nearest without bounce, and lists
+  the transitions it rewrote: tell the user which ones to switch to Physics in the editor.
+- Respect reduced motion: Framer's Reduced Motion setting keeps only opacity for visitors who ask for it. Anything that
+  moves on its own for more than 5 seconds (a ticker, an autoplaying slider) needs a way to pause it (WCAG 2.2.2).
 
 ## Motion menu: what to offer
 

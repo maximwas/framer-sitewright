@@ -61,3 +61,24 @@ export const DSL_PARTIAL_APPLY_HINT =
 
 /** Framer's refusal when it cannot download an image URL of a batch; nothing of the batch is applied then. */
 export const DSL_ASSET_FAILURE = /Assets upload from URL (\S+) to \S+ failed\.?\s*(.*)/is;
+
+/**
+ * The transitions where Framer keeps spring-physics: scroll transforms and page transitions (a spring-duration written
+ * on a page transition is ignored, on a scroll transform it becomes Framer's 500 60 1). Everywhere else, variants,
+ * appear, hover, press, loop, flow, text effects and overlays, it keeps only spring-duration and turns a written
+ * spring-physics into its default 0.4s with bounce 0.2, or 0s on an overlay's backdrop (seen 06.10.2026).
+ */
+export const PHYSICS_TRANSITIONS = /^(?:styleTransformEffect|pageEffects)\./;
+
+export const SPRING_PHYSICS = /^spring-physics\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)(?:\s+(-?[\d.]+)s?)?\s*$/;
+
+export const SPRING_DURATION = /^spring-duration\s+([\d.]+)s?\s+([\d.]+)(?:\s+(-?[\d.]+)s?)?\s*$/;
+
+/** Framer's time springs end when the motion is this close to its target (framer-motion's safeMin). */
+export const SPRING_REST = 0.001;
+
+/** A critically damped spring is within SPRING_REST of its target after this many radians: e^-x (1 + x) = 0.001. */
+export const CRITICAL_SETTLE_RADIANS = 9.233;
+
+/** Time springs are written to the nearest 0.05 s. */
+export const SPRING_DURATION_STEP_S = 0.05;

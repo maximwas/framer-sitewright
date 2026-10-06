@@ -27,7 +27,9 @@ something else; every rule here was seen on a live project.
   command of its own.
 - A `var(--token-<id>)` of a token that does not exist is accepted without an error: take ids from
   `color_tokens_list`.
-- A temp id lives for the whole session: never reuse one, even after `DEL`.
+- A temp id lives for the whole Server API session, which every agent on the project shares: never reuse one, even
+  after `DEL`, and never address a node by a temp id from an earlier batch (another agent's `q2` may answer). Use the
+  real ids from `renamedIds` and `keys`.
 
 ## Design system
 
@@ -120,11 +122,16 @@ Every transition is a spring (design_guide motion), but which spring Framer keep
 
 - `styleTransformEffect.transition` keeps `spring-physics <stiffness> <damping> <mass> <delay>`; a `spring-duration`
   written there turns into Framer's default physics 500 60 1.
-- A variant `transition` and `appearEffect.enter.transition` keep `spring-duration <time> <bounce> <delay>` only. A
-  `spring-physics` written there is ignored on a node that has its own transition, and becomes Framer's default
-  `spring-duration 0.4s 0.2 0s` (with bounce) on one that has none: no error either way. Write the nearest time spring
-  without bounce (`spring-duration 0.4s 0 0s` for `400 40 1`, `0.6s 0` for `200 40 1`) and tell the user which
-  variants and layers to switch to Physics in the editor if they want physics there.
+- `pageEffects` transitions keep only `spring-physics`: a `spring-duration` there is ignored.
+- Every other transition (a variant's, `appearEffect`, `hoverEffect`, `tapEffect`, `loopEffect`, `flowEffect`,
+  `textEffect`, overlays) keeps `spring-duration <time> <bounce> <delay>` only. A `spring-physics` written there is
+  ignored on a node that has its own transition, and becomes Framer's default `spring-duration 0.4s 0.2 0s` (with
+  bounce; 0s on an overlay's backdrop, 1s 0.25 on a loop) on one that has none: no error either way.
+- `design_apply` writes each spring as the kind Framer keeps on that attribute: a `spring-physics` becomes the time
+  spring without bounce that settles as fast (`400 40 1` → `0.45s 0`, `1000 63 1` → `0.3s 0`), a `spring-duration` on
+  a scroll transform or page transition becomes physics. Its warnings list what it rewrote: tell the user which
+  transitions to switch to Physics in the editor if they want physics there.
+- `dragEffect.transition` takes only `inertia`.
 - On an `onMount` appear keep `spring-duration` even if Physics is set by hand: Framer restarts the opacity animation
   after hydration with Physics, and the layer vanishes for one frame when it ends.
 - Read the result back with `nodes_read`.
