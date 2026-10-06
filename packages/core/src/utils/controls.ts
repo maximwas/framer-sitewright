@@ -38,3 +38,22 @@ export function mergeControls(
     }),
   ]);
 }
+
+/** Whether a control holds the value written: objects compare by their fields, in any order. */
+export function holdsValue(stored: unknown, written: unknown): boolean {
+  return JSON.stringify(sortedKeys(stored)) === JSON.stringify(sortedKeys(written));
+}
+
+function sortedKeys(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(sortedKeys);
+  }
+
+  return isPlainObject(value)
+    ? Object.fromEntries(
+        Object.keys(value)
+          .sort()
+          .map((key) => [key, sortedKeys(value[key])]),
+      )
+    : value;
+}

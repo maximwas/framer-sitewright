@@ -1008,14 +1008,14 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="component_controls_set" data-tool="component_controls_set Set component controls sets control values on a component instance, object controls included: a code component's arrows, dots or clipping, which design_apply refuses (&quot;unsupported type object&quot;). names are the component's own, without $control__; an object merges with the instance's current value, so { arrows: { show: false } } keeps the other arrow settings. simple controls (text, numbers, slots) still go through design_apply. undo does not restore controls set here.">
+  <article class="tool" id="component_controls_set" data-tool="component_controls_set Set component controls sets control values on a component instance, object controls included: a code component's arrows, dots or clipping, which design_apply refuses (&quot;unsupported type object&quot;). names are the component's own, without $control__; an object merges with the instance's current value, so { arrows: { show: false } } keeps the other arrow settings. simple controls (text, numbers, slots) still go through design_apply. the answer holds the controls as framer kept them; notstored lists what it refused without an error (a transition object, a list of images): set those with design_apply $control__… or ask the user to set them in the editor. undo does not restore controls set here.">
     <header>
       <h4><a href="#component_controls_set">component_controls_set</a></h4>
       <span class="badge write">Changes</span>
       <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
     </header>
     <p class="tool-title">Set component controls</p>
-    <p>Sets control values on a component instance, object controls included: a code component's arrows, dots or clipping, which <a href="#design_apply"><code>design_apply</code></a> refuses (&quot;unsupported type object&quot;). Names are the component's own, without $control__; an object merges with the instance's current value, so { arrows: { show: false } } keeps the other arrow settings. Simple controls (text, numbers, slots) still go through <a href="#design_apply"><code>design_apply</code></a>. Undo does not restore controls set here.</p>
+    <p>Sets control values on a component instance, object controls included: a code component's arrows, dots or clipping, which <a href="#design_apply"><code>design_apply</code></a> refuses (&quot;unsupported type object&quot;). Names are the component's own, without $control__; an object merges with the instance's current value, so { arrows: { show: false } } keeps the other arrow settings. Simple controls (text, numbers, slots) still go through <a href="#design_apply"><code>design_apply</code></a>. The answer holds the controls as Framer kept them; notStored lists what it refused without an error (a transition object, a list of images): set those with <a href="#design_apply"><code>design_apply</code></a> $control__… or ask the user to set them in the editor. Undo does not restore controls set here.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>

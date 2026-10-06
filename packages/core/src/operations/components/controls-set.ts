@@ -1,6 +1,6 @@
 import * as z from "zod";
 import { OperationError } from "../../errors.ts";
-import { isControlledNode, mergeControls } from "../../utils/controls.ts";
+import { holdsValue, isControlledNode, mergeControls } from "../../utils/controls.ts";
 import { defineOperation } from "../define.ts";
 
 /**
@@ -24,7 +24,10 @@ export const componentControlsSet = defineOperation({
     nodeId: z.string(),
     /** The instance's layer name, for the activity panel; null when it has none. */
     name: z.string().nullable(),
+    /** The controls as the instance holds them after the write. */
     controls: z.record(z.string(), z.unknown()),
+    /** Controls written that Framer did not keep: set them with design_apply $control__… or in the editor. */
+    notStored: z.array(z.string()),
   }),
   async run({ runtime, history }, { nodeId, controls }) {
     const node = await runtime.port.getNode(nodeId);
@@ -44,10 +47,15 @@ export const componentControlsSet = defineOperation({
     await node.setAttributes({ controls: next });
     history?.markIncomplete(`Controls of ${name ?? nodeId} set: undo does not restore component controls.`);
 
+    // Framer refuses some values without an error (a transition object, an image list): read what it kept.
+    const after = await runtime.port.getNode(nodeId).catch(() => null);
+    const stored = isControlledNode(after) ? after.controls : next;
+
     return {
       nodeId,
       name,
-      controls: next,
+      controls: { ...stored },
+      notStored: Object.keys(controls).filter((key) => !holdsValue(stored[key], next[key])),
     };
   },
   describe({ controls }, { nodeId, name }) {

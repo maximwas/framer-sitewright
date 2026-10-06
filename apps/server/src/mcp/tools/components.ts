@@ -20,6 +20,6 @@ export function registerComponentTools(server: McpServer, context: ToolContext):
     name: "component_controls_set",
     title: "Set component controls",
     description:
-      "Sets control values on a component instance, object controls included: a code component's arrows, dots or clipping, which design_apply refuses (\"unsupported type object\"). Names are the component's own, without $control__; an object merges with the instance's current value, so { arrows: { show: false } } keeps the other arrow settings. Simple controls (text, numbers, slots) still go through design_apply. Undo does not restore controls set here.",
+      "Sets control values on a component instance, object controls included: a code component's arrows, dots or clipping, which design_apply refuses (\"unsupported type object\"). Names are the component's own, without $control__; an object merges with the instance's current value, so { arrows: { show: false } } keeps the other arrow settings. Simple controls (text, numbers, slots) still go through design_apply. The answer holds the controls as Framer kept them; notStored lists what it refused without an error (a transition object, a list of images): set those with design_apply $control__… or ask the user to set them in the editor. Undo does not restore controls set here.",
   });
 }
