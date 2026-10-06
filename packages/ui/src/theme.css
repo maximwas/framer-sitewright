@@ -101,24 +101,40 @@
   --color-sw-danger-soft: var(--sw-danger-soft);
   --shadow-sw: var(--sw-shadow);
   --animate-sw-pulse: sw-pulse 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
-  --animate-sw-run: sw-run 1.4s ease-in-out infinite;
+  --animate-sw-comet: sw-comet 2.8s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+  --animate-sw-arrive: sw-arrive 2.8s cubic-bezier(0.2, 0.7, 0.3, 1) infinite;
 }
 
-/* A dot running along a connection line, fading in and out at the ends. */
-@keyframes sw-run {
+/* A request crossing one line of the flow in the first half of the cycle, then waiting for the other line. */
+@keyframes sw-comet {
   0% {
-    left: 0%;
+    left: 0;
     opacity: 0;
   }
 
-  30%,
-  70% {
+  10%,
+  40% {
     opacity: 1;
   }
 
+  50%,
   100% {
-    left: 100%;
+    left: calc(100% - 2rem);
     opacity: 0;
+  }
+}
+
+/* A ring opening on the tile the request reaches. */
+@keyframes sw-arrive {
+  0% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+
+  30%,
+  100% {
+    opacity: 0;
+    transform: scale(1.4);
   }
 }
 
@@ -137,7 +153,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .animate-sw-pulse,
-  .animate-sw-run {
+  .animate-sw-comet,
+  .animate-sw-arrive {
     animation: none;
   }
 }
