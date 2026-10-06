@@ -2,6 +2,7 @@ import * as z from "zod";
 import { AUDIT_AFTER_APPLY_MS } from "../../constants/layout-audit.ts";
 import { deferAbsoluteCentering } from "../../dsl/absolute-centering.ts";
 import { joinCommands } from "../../dsl/commands.ts";
+import { separateControls } from "../../dsl/controls.ts";
 import { deferIconInitialValues } from "../../dsl/icon-variables.ts";
 import { parseDsl } from "../../dsl/parse.ts";
 import { assetFailureResult, normalizeDslResult } from "../../dsl/result.ts";
@@ -109,11 +110,13 @@ async function applyBatch(
   const compiled = xml === undefined ? null : xmlToDsl(xml, (base) => nextTempId(runtime, base));
   const springs = keptSprings(
     deferAbsoluteCentering(
-      deferIconInitialValues(
-        joinCommands([
-          ...(compiled?.commands ?? []),
-          ...(dsl === undefined ? [] : [resolveKeyReferences(dsl, compiled?.keys ?? {})]),
-        ]),
+      separateControls(
+        deferIconInitialValues(
+          joinCommands([
+            ...(compiled?.commands ?? []),
+            ...(dsl === undefined ? [] : [resolveKeyReferences(dsl, compiled?.keys ?? {})]),
+          ]),
+        ),
       ),
     ),
   );
