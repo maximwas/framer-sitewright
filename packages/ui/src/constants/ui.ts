@@ -225,6 +225,8 @@ export const OPERATION_ICONS: Readonly<Record<string, LucideIcon>> = {
   "components.detach": Unlink,
   "components.makeLocal": CopyPlus,
   "components.setControls": SlidersHorizontal,
+  "nodes.copyStyles": Palette,
+  "nodes.clone": CopyPlus,
   design: Layers,
   editor: MousePointer2,
   files: FileUp,

@@ -12,6 +12,7 @@ import { codeFileDelete, codeFileRead, codeFilesList, codeFileWrite } from "./co
 import { customCodeGet, customCodeSet } from "./code/custom-code.ts";
 import { colorTokensDelete } from "./color-tokens/delete.ts";
 import { colorTokensList } from "./color-tokens/list.ts";
+import { colorTokensSwap } from "./color-tokens/swap.ts";
 import { colorTokensUpsert } from "./color-tokens/upsert.ts";
 import { componentsRead } from "./components/components-read.ts";
 import { componentControlsSet } from "./components/controls-set.ts";
@@ -33,6 +34,8 @@ import { effectsSet } from "./motion/effects-set.ts";
 import { layoutAudit } from "./nodes/audit.ts";
 import { breakpointsAdd } from "./nodes/breakpoints.ts";
 import { breakpointsSuggest } from "./nodes/breakpoints-suggest.ts";
+import { nodesClone } from "./nodes/clone.ts";
+import { stylesCopy } from "./nodes/copy-styles.ts";
 import { nodesFind } from "./nodes/find.ts";
 import { nodesQuery } from "./nodes/query.ts";
 import { nodesRead } from "./nodes/read.ts";
@@ -124,6 +127,9 @@ export const OPERATIONS: readonly AnyOperation[] = [
   pluginDataSet,
   currentUser,
   fontsUsed,
+  colorTokensSwap,
+  stylesCopy,
+  nodesClone,
   textReplace,
   redirectsList,
   redirectsSet,

@@ -1,13 +1,16 @@
 import type { McpServer } from "@modelcontextprotocol/server";
 import {
+  colorTokensSwap,
   currentUser,
   editorNavigate,
   editorSelect,
   editorZoom,
+  nodesClone,
   PRODUCT,
   pluginDataGet,
   pluginDataSet,
   selectionWait,
+  stylesCopy,
 } from "@sitewright/core";
 import type { ToolContext } from "../../types/mcp.ts";
 import { addOperationTool } from "../add-tool.ts";
@@ -49,5 +52,23 @@ export function registerEditorTools(server: McpServer, context: ToolContext): vo
     name: "framer_user",
     title: "Who is signed in",
     description: "The Framer user the connection works as: name, initials and avatar.",
+  });
+  addOperationTool(server, context, colorTokensSwap, {
+    name: "color_token_swap",
+    title: "Replace a color token everywhere",
+    description:
+      "Points every layer that uses one color token at another, across the whole site or one page: fills, text colors, borders and gradients, in pages, components, design pages and layouts. dryRun lists what would change. Texts whose own runs name the token and text styles colored with it are listed apart (rewrite them with design_apply xml and text_styles_upsert). Undo takes it back. Needs the project's Server API key.",
+  });
+  addOperationTool(server, context, stylesCopy, {
+    name: "styles_copy",
+    title: "Copy a layer's styles",
+    description:
+      "Copies the look of one layer to others in one batch: pick the groups (color, text, border, radius, shadow, layout, size); only the values the source has are written. The way to make a set of cards, buttons or labels match one that is right. Undo takes it back.",
+  });
+  addOperationTool(server, context, nodesClone, {
+    name: "node_clone",
+    title: "Copy a layer as standalone layers",
+    description:
+      "Copies a layer with everything inside it under another parent, on this page or another, and by default replaces the copy's component instances with their layers, so the copy follows no component: a starting point to change freely without touching the original or its components. Needs the project's Server API key.",
   });
 }

@@ -690,7 +690,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="design-system" data-group>
-  <h3>Design system <span>13</span></h3>
+  <h3>Design system <span>14</span></h3>
   <p class="group-intro">Color tokens with light and dark values, and text styles with their sizes per breakpoint.</p>
   <article class="tool" id="color_tokens_list" data-tool="color_tokens_list List color tokens lists framer color styles (tokens) as { id, path, light, dark }. path uses &quot;/&quot; folders like &quot;brand/primary&quot;.">
     <header>
@@ -738,6 +738,24 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <tr><th scope="row"><code>paths</code></th><td><code class="type">string[]</code></td><td>Style paths; every style at a path goes. <span class="def">default <code>[]</code></span></td></tr>
       <tr><th scope="row"><code>folders</code></th><td><code class="type">string[]</code></td><td>Folders to empty, e.g. &quot;mcp-test/live&quot;: every style inside goes, and the folder with them. <span class="def">default <code>[]</code></span></td></tr>
       <tr><th scope="row"><code>via</code></th><td><code class="type">&quot;auto&quot; | &quot;dsl&quot; | &quot;plugin-api&quot;</code></td><td>How to write: &quot;dsl&quot; (framer.agent, Server API only), &quot;plugin-api&quot; (works on both transports), &quot;auto&quot; (dsl when available). <span class="def">default <code>&quot;auto&quot;</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="color_token_swap" data-tool="color_token_swap Replace a color token everywhere points every layer that uses one color token at another, across the whole site or one page: fills, text colors, borders and gradients, in pages, components, design pages and layouts. dryrun lists what would change. texts whose own runs name the token and text styles colored with it are listed apart (rewrite them with design_apply xml and text_styles_upsert). undo takes it back. needs the project's server api key.">
+    <header>
+      <h4><a href="#color_token_swap">color_token_swap</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Replace a color token everywhere</p>
+    <p>Points every layer that uses one color token at another, across the whole site or one page: fills, text colors, borders and gradients, in pages, components, design pages and layouts. dryRun lists what would change. Texts whose own runs name the token and text styles colored with it are listed apart (rewrite them with <a href="#design_apply"><code>design_apply</code></a> xml and <a href="#text_styles_upsert"><code>text_styles_upsert</code></a>). Undo takes it back. Needs the project's Server API key.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>from</code></th><td><code class="type">string</code></td><td>The token to replace, by path (&quot;Brand/Blue&quot;) or id. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>to</code></th><td><code class="type">string</code></td><td>The token to use instead, by path or id. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>One web page; omit for the whole site.</td></tr>
+      <tr><th scope="row"><code>dryRun</code></th><td><code class="type">boolean</code></td><td>List what would change without changing it. <span class="def">default <code>false</code></span></td></tr>
       </tbody>
     </table></div>
   </article>
@@ -906,7 +924,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="pages" data-group>
-  <h3>Pages, layout and redirects <span>18</span></h3>
+  <h3>Pages, layout and redirects <span>20</span></h3>
   <p class="group-intro">Create, duplicate and delete pages, read one as XML, find layers and replace text across pages, read and set the site's and pages' titles, descriptions, images and search settings, change pages and their motion, check what looks broken, adapt them to tablet and phone, look at them and at a reference, and redirect old paths.</p>
   <article class="tool" id="page_create" data-tool="page_create Create a page creates an empty web page at a path (&quot;/about&quot;) or a design page (a canvas for drafts) by name. build its content with design_apply; add breakpoints with breakpoints_add. undo does not remove pages.">
     <header>
@@ -1012,6 +1030,42 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <tr><th scope="row"><code>type</code></th><td><code class="type">string</code></td><td>Only layers of this type, e.g. &quot;FrameNode&quot;, &quot;RichTextNode&quot;.</td></tr>
       <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>One page; omit to look through every web page.</td></tr>
       <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>50</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="styles_copy" data-tool="styles_copy Copy a layer's styles copies the look of one layer to others in one batch: pick the groups (color, text, border, radius, shadow, layout, size); only the values the source has are written. the way to make a set of cards, buttons or labels match one that is right. undo takes it back.">
+    <header>
+      <h4><a href="#styles_copy">styles_copy</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Copy a layer's styles</p>
+    <p>Copies the look of one layer to others in one batch: pick the groups (color, text, border, radius, shadow, layout, size); only the values the source has are written. The way to make a set of cards, buttons or labels match one that is right. Undo takes it back.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>sourceId</code></th><td><code class="type">string</code></td><td>The layer whose look to copy. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>targetIds</code></th><td><code class="type">string[]</code></td><td>The layers that take it. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>categories</code></th><td><code class="type">&quot;color&quot; | &quot;text&quot; | &quot;border&quot; | &quot;radius&quot; | &quot;shadow&quot; | &quot;layout&quot; | &quot;size&quot;[]</code></td><td>What to copy: color, text, border, radius, shadow, layout, size. <span class="def">default <code>[&quot;color&quot;,&quot;text&quot;,&quot;border&quot;,&quot;radius&quot;,&quot;shadow&quot;]</code></span></td></tr>
+      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>The page the layers are on. <span class="def">default <code>&quot;/&quot;</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="node_clone" data-tool="node_clone Copy a layer as standalone layers copies a layer with everything inside it under another parent, on this page or another, and by default replaces the copy's component instances with their layers, so the copy follows no component: a starting point to change freely without touching the original or its components. needs the project's server api key.">
+    <header>
+      <h4><a href="#node_clone">node_clone</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Copy a layer as standalone layers</p>
+    <p>Copies a layer with everything inside it under another parent, on this page or another, and by default replaces the copy's component instances with their layers, so the copy follows no component: a starting point to change freely without touching the original or its components. Needs the project's Server API key.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>The layer to copy, with everything inside it. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>parentId</code></th><td><code class="type">string</code></td><td>Where the copy goes: a frame or breakpoint, on this page or another. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>The page of parentId. <span class="def">default <code>&quot;/&quot;</code></span></td></tr>
+      <tr><th scope="row"><code>detach</code></th><td><code class="type">boolean</code></td><td>Replace the copy's component instances with their layers, so it no longer follows any component. <span class="def">default <code>true</code></span></td></tr>
       </tbody>
     </table></div>
   </article>

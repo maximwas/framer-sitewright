@@ -62,6 +62,7 @@ export { codeFileDelete, codeFileRead, codeFilesList, codeFileWrite } from "./op
 export { customCodeGet, customCodeSet } from "./operations/code/custom-code.ts";
 export { colorTokensDelete } from "./operations/color-tokens/delete.ts";
 export { colorTokensList } from "./operations/color-tokens/list.ts";
+export { colorTokensSwap } from "./operations/color-tokens/swap.ts";
 export { colorTokensUpsert } from "./operations/color-tokens/upsert.ts";
 export { componentsRead } from "./operations/components/components-read.ts";
 export { componentControlsSet } from "./operations/components/controls-set.ts";
@@ -84,6 +85,8 @@ export { effectsSet } from "./operations/motion/effects-set.ts";
 export { layoutAudit } from "./operations/nodes/audit.ts";
 export { breakpointsAdd } from "./operations/nodes/breakpoints.ts";
 export { breakpointsSuggest } from "./operations/nodes/breakpoints-suggest.ts";
+export { nodesClone } from "./operations/nodes/clone.ts";
+export { stylesCopy } from "./operations/nodes/copy-styles.ts";
 export { nodesFind } from "./operations/nodes/find.ts";
 export { nodesQuery } from "./operations/nodes/query.ts";
 export { nodesRead } from "./operations/nodes/read.ts";

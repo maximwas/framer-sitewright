@@ -44,6 +44,7 @@ const GROUPS = [
       "color_tokens_list",
       "color_tokens_upsert",
       "color_tokens_delete",
+      "color_token_swap",
       "text_styles_list",
       "text_styles_upsert",
       "text_styles_delete",
@@ -68,6 +69,8 @@ const GROUPS = [
       "nodes_read",
       "nodes_find",
       "nodes_query",
+      "styles_copy",
+      "node_clone",
       "design_apply",
       "effects_set",
       "text_replace",
@@ -175,6 +178,8 @@ const GROUPS = [
  */
 const NEEDS = {
   key: [
+    "color_token_swap",
+    "node_clone",
     "node_screenshot",
     "components_read",
     "icons_search",

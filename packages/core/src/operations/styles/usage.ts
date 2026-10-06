@@ -108,7 +108,7 @@ function named(style: ColorStyleData | TextStyleData): { id: string; path: strin
 }
 
 /** The web pages, or the one asked for; for the whole site also every component, design page and layout. */
-async function usageScopes(
+export async function usageScopes(
   runtime: FramerRuntime,
   agent: AgentPort,
   pagePath: string | undefined,
