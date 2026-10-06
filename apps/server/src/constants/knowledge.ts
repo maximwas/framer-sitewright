@@ -8,5 +8,6 @@ export const GUIDE_TOPICS = {
   sections: "navigation, hero, features, proof, pricing, FAQ, closing call to action and footer",
   motion: "pinned scroll sections that change step by step, tabs with active states, links on components",
   verify: "the audit, looking at the result, and the checklist before handing a page over",
+  template: "a site for the Framer Marketplace: Framer's template checklist, what buyers edit, and the listing",
   "no-key": "what works through the plugin without a Server API key, and how to get the rest anyway",
 } as const;

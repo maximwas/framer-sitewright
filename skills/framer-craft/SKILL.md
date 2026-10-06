@@ -91,3 +91,4 @@ Before writing DSL, read the reference that matches the task:
 | Moving a Figma design into Framer | [figma.md](references/figma.md) |
 | Checking results, values Framer rewrites, a stale session | [verify.md](references/verify.md) |
 | Before launch: responsive, speed, SEO, accessibility, content, handoff | [quality.md](references/quality.md) |
+| A template for the Framer Marketplace: Framer's checklist, buyer-editable structure, the listing | [marketplace-template.md](references/marketplace-template.md) |

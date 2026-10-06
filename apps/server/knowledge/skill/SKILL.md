@@ -21,6 +21,7 @@ The full guide is served by the MCP server, so it always matches the installed v
 | Hero, navigation, features, proof, pricing, FAQ, footer | `sections` |
 | A pinned scroll section, tabs with states, links on components | `motion` |
 | Before saying a page is done | `verify` |
+| A template for the Framer Marketplace | `template` |
 | No Server API key (plugin only) | `no-key` |
 
 ## Rules for every batch

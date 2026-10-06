@@ -1,7 +1,8 @@
 # Workflow: building or restyling a site
 
 Follow this order for any new page, section set or redesign. The other topics hold the rules each step uses:
-`direction`, `layout`, `typography`, `sections`, `verify`, and `no-key` when there is no Server API key.
+`direction`, `layout`, `typography`, `sections`, `verify`, `template` when the site is a Framer Marketplace template,
+and `no-key` when there is no Server API key.
 
 ## 1. Brief (ask only what is open, offer defaults)
 
