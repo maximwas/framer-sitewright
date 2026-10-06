@@ -51,6 +51,8 @@ export const PluginToWindowSchema = z.discriminatedUnion("kind", [
     plugin: PluginInfoSchema,
     /** The editor tab is hidden: the browser then runs the plugin's timers about once a minute. */
     hidden: z.boolean().exactOptional(),
+    /** Framer's editor theme, which the journal window takes. */
+    theme: z.enum(["light", "dark"]).exactOptional(),
   }),
   z.object({
     ...envelope,

@@ -39,6 +39,17 @@ export class WindowLink {
     this.#events.addEventListener("message", (event) => this.#onMessage(event as MessageEvent));
     // Hidden or shown again, the window hears it at once: a hidden tab's timers run about once a minute.
     globalThis.document?.addEventListener("visibilitychange", () => void this.#hello());
+
+    // Framer marks its theme on the plugin's page; the window follows a switch at once.
+    if (globalThis.document !== undefined && typeof MutationObserver === "function") {
+      const observer = new MutationObserver(() => void this.#hello());
+
+      for (const element of [globalThis.document.documentElement, globalThis.document.body]) {
+        if (element !== null) {
+          observer.observe(element, { attributeFilter: ["data-framer-theme"] });
+        }
+      }
+    }
   }
 
   get status(): ReadonlyStore<LinkStatus> {
@@ -110,6 +121,7 @@ export class WindowLink {
           kind: "hello",
           plugin: await this.#info,
           hidden: globalThis.document?.hidden ?? false,
+          ...editorTheme(),
         }),
       );
     }
@@ -202,4 +214,12 @@ export class WindowLink {
   #setStatus(status: LinkStatus): void {
     this.#status.setState(status, true);
   }
+}
+
+/** Framer's editor theme, as it marks the plugin's body; nothing outside the editor. */
+function editorTheme(): { theme?: "light" | "dark" } {
+  const theme =
+    globalThis.document?.body?.dataset["framerTheme"] ?? globalThis.document?.documentElement?.dataset["framerTheme"];
+
+  return theme === "dark" || theme === "light" ? { theme } : {};
 }

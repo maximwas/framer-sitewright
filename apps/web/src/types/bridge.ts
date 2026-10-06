@@ -34,6 +34,8 @@ export interface PluginBridgeOptions {
   readonly silentMs?: number;
   /** The same for a plugin whose editor tab is hidden. */
   readonly hiddenSilentMs?: number;
+  /** Called with Framer's editor theme from each hello: the window follows it. */
+  readonly onTheme?: (theme: "light" | "dark") => void;
   /** READY_INTERVAL_MS in tests. */
   readonly readyMs?: number;
 }

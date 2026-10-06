@@ -97,6 +97,11 @@ export class PluginBridge {
 
     if (message.kind === "hello") {
       this.#hidden = message.hidden ?? false;
+
+      if (message.theme !== undefined) {
+        this.#options.onTheme?.(message.theme);
+      }
+
       this.#onHello(source as Window, origin, message.plugin);
     } else if (this.#plugin?.source === source) {
       this.#heardAt = Date.now();

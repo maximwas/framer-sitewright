@@ -12,6 +12,11 @@ export async function startPluginBridge(): Promise<PluginBridge> {
     socketUrl: `ws://${location.host}${BRIDGE_PATH}`,
     pluginOrigins: info.pluginOrigins,
     opener: window.opener as Window | null,
+    // The window looks like the Framer editor around it, not like the system.
+    onTheme: (theme) => {
+      document.documentElement.classList.remove("sw-system");
+      document.documentElement.dataset["framerTheme"] = theme;
+    },
   });
 
   bridge.start();

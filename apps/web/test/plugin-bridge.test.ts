@@ -15,7 +15,12 @@ const PLUGIN_INFO = {
 };
 
 /** A plain ws server plays the MCP server; an EventTarget plays this window, a fake window the plugin that opened it. */
-async function startBridge(silentMs?: number, readyMs?: number, hiddenSilentMs?: number) {
+async function startBridge(
+  silentMs?: number,
+  readyMs?: number,
+  hiddenSilentMs?: number,
+  onTheme?: (theme: "light" | "dark") => void,
+) {
   const server = new WebSocketServer({
     host: "127.0.0.1",
     port: 0,
@@ -48,6 +53,7 @@ async function startBridge(silentMs?: number, readyMs?: number, hiddenSilentMs?:
     ...(silentMs === undefined ? {} : { silentMs }),
     ...(readyMs === undefined ? {} : { readyMs }),
     ...(hiddenSilentMs === undefined ? {} : { hiddenSilentMs }),
+    ...(onTheme === undefined ? {} : { onTheme }),
   });
   const fromPlugin = (data: unknown, origin = PLUGIN_ORIGIN, source: unknown = plugin) =>
     events.dispatchEvent(
@@ -268,6 +274,28 @@ it("regression: keeps a plugin whose editor tab is hidden: the browser slows its
     }),
   );
   await vi.waitFor(() => expect(closed).toBe(true));
+});
+
+it("takes the editor's theme from the plugin, so the journal window looks like Framer around it", async () => {
+  const themes: string[] = [];
+  const { fromPlugin } = await startBridge(undefined, undefined, undefined, (theme) => themes.push(theme));
+
+  fromPlugin(
+    relayMessage({
+      kind: "hello",
+      plugin: PLUGIN_INFO,
+      theme: "dark",
+    }),
+  );
+  fromPlugin(
+    relayMessage({
+      kind: "hello",
+      plugin: PLUGIN_INFO,
+      theme: "light",
+    }),
+  );
+
+  expect(themes).toEqual(["dark", "light"]);
 });
 
 it("regression: keeps saying ready to the plugin that opened it, so a reloaded plugin links again without Connect", async () => {
