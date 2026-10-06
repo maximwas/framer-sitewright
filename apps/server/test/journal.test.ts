@@ -1,13 +1,20 @@
 import { mkdtemp, readdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { designApply } from "@sitewright/core";
+import { colorTokensUpsert, designApply } from "@sitewright/core";
+import { createFakeRuntime } from "@sitewright/core/testing";
+import type { Framer } from "framer-api";
 import { expect, it } from "vitest";
 import { handleActivityCall, listActivity } from "../src/history/activity-api.ts";
 import { ActivityJournal } from "../src/history/activity-journal.ts";
 import { ActivityUndo } from "../src/history/activity-undo.ts";
 import { JournalStore } from "../src/history/journal-store.ts";
 import { createLogger } from "../src/logging/logger.ts";
+import { PluginTransport } from "../src/transports/plugin/transport.ts";
+import { TransportRouter } from "../src/transports/router.ts";
+import { ServerApiPool } from "../src/transports/server-api/pool.ts";
+import { ServerApiSession } from "../src/transports/server-api/session.ts";
+import { ServerApiTransport } from "../src/transports/server-api/transport.ts";
 import type { OperationRunner } from "../src/types/transports.ts";
 
 const project = {
@@ -64,6 +71,68 @@ it("several Claude Code sessions share one journal: each sees the others' entrie
   expect(await first.entries(project.id)).toEqual([]);
   expect((await first.checkpoint("E", "ai"))?.seq).toBe(1);
   expect(await readdir(join(directory, "archive"))).toHaveLength(1);
+});
+
+it("regression: an undo without an entry takes back this session's last change, not another agent's", async () => {
+  // Seen: agents working in parallel shared one journal, and activity_undo would have reverted another one's work.
+  const { runtime, state } = createFakeRuntime();
+  const logger = createLogger("silent");
+  const router = new TransportRouter(
+    ServerApiPool.fixed(
+      new ServerApiTransport(
+        new ServerApiSession({
+          projectUrl: "https://framer.com/projects/Sandbox--abc",
+          apiKey: "key",
+          logger,
+          connectFn: async () => ({ disconnect: async () => undefined }) as unknown as Framer,
+        }),
+        () => runtime,
+      ),
+    ),
+    PluginTransport.disabled({
+      serverApiConfigured: () => true,
+      logger,
+      localAppPort: null,
+    }),
+    "auto",
+  );
+  const directory = await mkdtemp(join(tmpdir(), "sitewright-journal-"));
+  const [mine, theirs] = [0, 1].map(
+    () =>
+      new ActivityJournal({
+        store: new JournalStore(directory),
+        transports: router,
+        logger,
+      }),
+  );
+
+  if (mine === undefined || theirs === undefined) {
+    throw new Error("unreachable");
+  }
+
+  await mine.run("color_tokens_upsert", colorTokensUpsert, {
+    tokens: [
+      {
+        path: "Mine",
+        light: "#111111",
+      },
+    ],
+  });
+  await theirs.run("color_tokens_upsert", colorTokensUpsert, {
+    tokens: [
+      {
+        path: "Theirs",
+        light: "#222222",
+      },
+    ],
+  });
+  await new ActivityUndo(mine).undo(undefined, {
+    dryRun: false,
+    actor: "ai",
+    onConflict: "skip",
+  });
+
+  expect(state.colorStyles.map((token) => token.path)).toEqual(["/Theirs"]);
 });
 
 it("regression: the plugin window lists the journal of the project it is open in, and reverts only this session's", async () => {

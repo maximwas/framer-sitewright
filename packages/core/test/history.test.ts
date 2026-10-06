@@ -305,6 +305,7 @@ describe("activity journal: undo and redo chains", () => {
       durationMs: 0,
       kind: "operation",
       actor: "user",
+      session: null,
       tool: null,
       operation: null,
       effect: "destructive",

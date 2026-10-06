@@ -42,8 +42,14 @@ export class ActivityUndo {
     return this.#journal.exclusive(async () => {
       const entries = await this.#entries(project);
       const state = revertState(entries);
-      const target = pick(entries, entryId, (entry) => isUndoable(entry, state), "undo");
-      const targets = andLater ? restoreTargets(entries, target.seq - 1) : [target];
+      const session = request.actor === "ai" ? this.#journal.session : null;
+      const target = pick(entries, entryId, (entry) => isUndoable(entry, state), "undo", session);
+      // For an agent, "and later" means its own later changes: other agents' work stays. The user means all of them.
+      const targets = andLater
+        ? restoreTargets(entries, target.seq - 1).filter(
+            (entry) => session === null || entry.id === target.id || entry.session === target.session,
+          )
+        : [target];
       const later = targets.length - 1;
       const title = revertTitle(target, entries);
 
@@ -62,7 +68,8 @@ export class ActivityUndo {
     return this.#journal.exclusive(async () => {
       const entries = await this.#entries(project);
       const state = revertState(entries);
-      const target = pick(entries, entryId, (entry) => isRedoable(entry, state), "redo");
+      const session = request.actor === "ai" ? this.#journal.session : null;
+      const target = pick(entries, entryId, (entry) => isRedoable(entry, state), "redo", session);
 
       return this.#revert(entries, [target], "redo", revertTitle(target, entries), request);
     });
@@ -228,17 +235,26 @@ export class ActivityUndo {
   }
 }
 
+/**
+ * The entry to revert. Without an id, an agent gets the newest its own session can revert (agents working in parallel
+ * share one journal, and the newest entry overall may be another one's work); the user, session null, the newest.
+ */
 function pick(
   entries: readonly ActivityEntry[],
   entryId: string | undefined,
   eligible: (entry: ActivityEntry) => boolean,
   verb: RevertKind,
+  session: string | null,
 ): ActivityEntry {
   if (entryId === undefined) {
-    const newest = entries.findLast(eligible);
+    const newest = entries.findLast((entry) => eligible(entry) && (session === null || entry.session === session));
 
     if (newest === undefined) {
-      throw new OperationError("NOT_FOUND", `Nothing to ${verb}.`, "See activity_list for what the journal holds.");
+      throw new OperationError(
+        "NOT_FOUND",
+        `Nothing this session did can be ${verb === "undo" ? "undone" : "redone"}.`,
+        "See activity_list: another session's change is reverted only by its entryId.",
+      );
     }
 
     return newest;

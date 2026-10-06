@@ -38,6 +38,8 @@ export class ActivityJournal extends EventEmitter<{ appended: [ActivityEntry]; c
   readonly #logs = new Map<string, ProjectLog>();
   /** Per project, the newest entry the AI has been told about (see noteFor). */
   readonly #toldAi = new Map<string, number>();
+  /** This process: the session an undo without an entry is limited to. */
+  readonly #session = randomUUID();
   /** Skills the AI activated before this session knew its project (see noteSkill). */
   #pendingSkills: SkillNote[] = [];
   #lock: Promise<unknown> = Promise.resolve();
@@ -50,6 +52,11 @@ export class ActivityJournal extends EventEmitter<{ appended: [ActivityEntry]; c
 
   get transports(): OperationRunner {
     return this.#options.transports;
+  }
+
+  /** The session this journal records for; several agents' processes share one journal. */
+  get session(): string {
+    return this.#session;
   }
 
   /** The journal's clock, for entries timed elsewhere (reverts). */
@@ -367,6 +374,7 @@ export class ActivityJournal extends EventEmitter<{ appended: [ActivityEntry]; c
       id: randomUUID(),
       seq,
       project,
+      session: this.#session,
     }));
 
     this.emit("appended", entry);

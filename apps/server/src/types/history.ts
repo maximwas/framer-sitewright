@@ -12,8 +12,8 @@ export interface JournalChunk {
   readonly file: string | null;
 }
 
-/** An entry before the journal gives it an id, a sequence number, a time and the project. */
-export type EntryDraft = Omit<ActivityEntry, "id" | "seq" | "at" | "project">;
+/** An entry before the journal gives it its id, number, time, project and session. */
+export type EntryDraft = Omit<ActivityEntry, "id" | "seq" | "at" | "project" | "session">;
 
 export interface JournalOptions {
   /** null when the journal is off (SITEWRIGHT_HISTORY=off): tools still run, nothing is recorded. */

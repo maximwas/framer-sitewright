@@ -175,6 +175,8 @@ export const ActivityEntrySchema = z.object({
   kind: z.enum(["operation", "undo", "redo", "restore", "checkpoint", "skill"]),
   /** Journals written before the field existed hold only the AI's calls. */
   actor: z.enum(ACTIVITY_ACTORS).default("ai"),
+  /** The server process (an agent's session) that recorded it; journals before the field: null. */
+  session: z.string().nullable().default(null),
   tool: z.string().nullable(),
   operation: z.string().nullable(),
   effect: z.enum(["read", "write", "destructive"]).nullable(),
