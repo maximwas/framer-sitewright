@@ -60,8 +60,9 @@ look follows `direction`.
 
 - Results read best as before → after, not as four big numbers: per row the metric and its context on the left, two
   bars on the right (a muted "before" bar at 100%, an accent "after" bar at its ratio, e.g. 4 of 11 days = 36%) with
-  the values beside them. Each bar sits in a clipped track and slides in from `x -720` on view, the after bar 0.2s
-  later. One large stat (47 companies) can sit beside the heading.
+  the values beside them. The track (a clipped frame holding the bar) slides in from `x -160` with opacity 0 on view,
+  the after track 0.2s later; the bars themselves carry no effect (`motion`, Appear needs a visible layer). One large
+  stat (47 companies) can sit beside the heading.
 
 ## Pricing
 

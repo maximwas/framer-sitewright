@@ -50,6 +50,13 @@ Every one of them is a spring (see Transitions above); check them in Preview or 
   padding 11px smaller each side (37 → 26 with an arrow of 22), so the button keeps its width and the label slides
   left as the arrow comes in. The fill stays the same.
 
+## Appear needs a visible layer
+
+- An `appearEffect` plays when its own layer comes into view, measured with its start state applied. A layer that the
+  start state moves fully out of a clipped parent (a bar at `x -720` inside an `overflow="clip"` track) is never in
+  view, so it never plays and stays hidden on the site (seen: the after bars of a results section). A bar wide enough
+  to keep a visible edge did play, which hides the problem. Put the effect on the visible parent (the track) instead.
+
 ## Scroll transforms: the start state
 
 - A new `styleTransformEffect` starts from Framer's preset, whose first section already has `scale: 0.5`: writing only

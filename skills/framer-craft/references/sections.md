@@ -48,8 +48,9 @@ Container > Content); motion follows [motion.md](motion.md). **Practice** unless
 - **Logos** come from the Logos icon set or the project's vector set, in one neutral color.
 - **Numbers** use tabular figures (`openTypeFontFeatures.tnum="on"`) when they sit in columns.
 - **Results as before → after:** per row the metric and its context, then two bars in clipped tracks, a muted
-  "before" at 100% and an accent "after" at its ratio (4 of 11 days = 36%), values beside them; each bar slides in
-  from `x -720` on view. It says more than four big numbers in a row.
+  "before" at 100% and an accent "after" at its ratio (4 of 11 days = 36%), values beside them. Animate the tracks
+  (`x -160`, opacity 0, the after track 0.2s later), not the bars ([motion.md](motion.md), Appear). It says more than
+  four big numbers in a row.
 - **On phone** a testimonial loses its photo (a Compact variant, [components.md](components.md)), not its words.
 
 ## Statement

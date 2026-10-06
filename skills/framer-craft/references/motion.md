@@ -57,6 +57,9 @@ Decide the motion once per site, like a design token set, and reuse it everywher
   opacity animation after hydration, and the layer vanishes for one frame when it ends. This is a framer-motion bug
   that a project cannot fix.
 - **Parallax and appear on one layer fight over `y`.** Put the parallax on the child and the appear on the wrapper.
+- **An appear needs a layer that is in view in its start state.** The layer is measured with its start state applied:
+  one that the start state moves fully out of a clipped parent (a bar at `x -720` inside an `overflow="clip"` track)
+  never counts as in view, never plays, and stays hidden on the site. Put the effect on the visible parent.
 
 ## Hover and press
 
