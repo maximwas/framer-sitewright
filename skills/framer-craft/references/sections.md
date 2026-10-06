@@ -96,7 +96,11 @@ Container > Content); motion follows [motion.md](motion.md). **Practice** unless
 - **Phone:** a drawer component (Phone and Phone Open variants) that opens by height (Field-tested, see
   [components.md](components.md)). Current-page links get `link.current.*` styles. Every link in the open variant also
   switches the menu to its closed variant; on links to absolute URLs give that switch a 0.1s delay, or iOS can drop the
-  navigation. The open menu lies over the page rather than pushing the content down (Framer Help).
+  navigation. The open menu lies over the page rather than pushing the content down (Framer Help). Links that are
+  component instances take no `onTap`: give the link component an `EventHandlerVariable` fired by
+  `onTap.0.action="TRIGGER_EVENT"`, and on each instance in the open variant set `onClick.0.action="SET_VARIANT"` to
+  the closed variant ([components.md](components.md)). Seen: the menu stayed open over the section a link scrolled
+  to. Tap every link of the open menu on a phone in Preview.
 - **Section links** need the targets' `elementId` first, `link.smoothScroll` on every link frame (inside the button
   and nav link components too) and `scrollMarginTop` on each target, so the sticky header never covers the heading
   (SKILL.md). Click every navigation link in Preview at each breakpoint.

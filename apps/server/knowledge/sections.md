@@ -28,6 +28,10 @@ look follows `direction`.
 - Phone: a menu (a component with closed and open variants that animate height; needs a key). Every link in the open
   variant also switches the menu to its closed variant; on links to absolute URLs give that switch a 0.1s delay, or
   iOS can drop the navigation. The open menu lies over the page rather than pushing the content down (Framer Help).
+  When the links are component instances (a Nav Link, a Button), they take no `onTap`: give that component an event
+  (`dsl`, Components and interactions) and set `onClick.0.action="SET_VARIANT"` to the closed variant on each instance
+  in the open variant. Seen on a template: the menu stayed open over the section a link scrolled to. Tap every link of
+  the open menu on a phone in Preview.
 
 ## Hero
 

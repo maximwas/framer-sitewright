@@ -72,3 +72,24 @@ Forms and overlays
 Responsive
 - 1440, 1200, 810, 390, and slowly dragged between them; no horizontal scroll at 390 or 320; rows of three become a
   column; display ×0.4–0.67 on phone; side padding 16–24; button labels on one line; tap targets 44px.
+
+## What a buyer saw in a finished template
+
+From the review of a template that looked done in the editor (06.10.2026). Check each before handover:
+
+- Tap every link of the open phone menu: the menu closes and the section shows below the header (`sections`).
+- Scroll to the very bottom at every breakpoint. An appear with a `y` offset inside a clipped block at the end of the
+  page (a footer wordmark) never reached its threshold on tablet and phone and stayed invisible: reveal such a layer
+  with opacity only.
+- Marketplace sliders: `stackOffset` leaves slivers of the other slides at the edge, and their transition defaults to
+  a tween: set the offset to 0 unless a stack is meant, set a spring, size the slides so the next one peeks to the
+  content edge, and give the slides one height.
+- No instructions for the buyer in the page copy ("each note is a CMS item you can replace"): they belong on the
+  guide page for the buyer (`template`).
+- A hover state and a pointer cursor only on what is clickable: cards that lead nowhere stay still.
+- Button labels: white on a bright accent failed AA (3.47:1 on #F0561D). Run `contrast_check` on every button variant;
+  light accents take ink labels.
+- Client logos written as grey company names read as placeholders: draw fictional SVG wordmarks (`svg_add`).
+- The same person in two photos goes unnoticed by `images_check` (different files): look at every photo of the site
+  on one contact sheet.
+- Bars that grow by `scale` get thinner while they move: slide them out of a clipped track instead (`motion`).

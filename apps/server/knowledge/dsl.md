@@ -331,7 +331,9 @@ Every transition is a spring (design_guide motion), but which spring Framer keep
   `components_read`'s `framer` list and read its controls first (`components_read` with that id).
 - Video as a background: `$control__source="Upload"` `$control__file="<file_upload url>"`, loop, muted, playing,
   `fit` cover and a poster image, pinned to all sides with width and height 100%. Re-encode it first (H.264, no audio,
-  faststart, under 4 MB).
+  faststart, under 4 MB). In a reel that switches clips by variants, every clip loads and plays at once (seen: 7.6 MB
+  on a phone's first load with three clips): set `$control__playing="false"` on the clips a variant does not show,
+  give each clip a poster (its first frame, so nothing flashes), and show one clip or the poster on phones.
 - Slideshow and Carousel slots take layers that are direct children of the page (beside the breakpoints). A Countdown
   date takes midnight only. A font control: `$control__font.fontSelector="GF;<Family>-<weight>"` and `fontSize`; one
   invalid field drops the whole font. Its `lineHeight` and `letterSpacing` are `[value, unit]` pairs (`[1.16,"em"]`),

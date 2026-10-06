@@ -70,3 +70,24 @@ Read these back after writing:
 - **Recycled session or timeout:** a write may or may not have applied. Re-read before retrying, and never blindly
   repeat a create, or the nodes duplicate.
 - **Deleted nodes:** their descendants can still be read through `serializeNodes`, under their old parents.
+
+## What a buyer saw in a finished template
+
+From the review of a template that looked done in the editor (06.10.2026). Check each before handover:
+
+- Tap every link of the open phone menu: the menu closes and the section shows below the header
+  ([sections.md](sections.md)).
+- Section links scroll smoothly and stop below the sticky header: `link.smoothScroll` on every link frame (inside
+  button and nav link components too) and `scrollMarginTop` on each target.
+- Scroll to the very bottom at every breakpoint: an appear with a `y` offset inside a clipped block at the end of the
+  page (a footer wordmark) never reached its threshold on tablet and phone and stayed invisible. Use opacity only there.
+- Marketplace sliders: `stackOffset` leaves slivers at the edge and the transition defaults to a tween: offset 0
+  unless a stack is meant, a spring, slides sized so the next one peeks to the content edge, one height for all.
+- No instructions for the buyer in the page copy: they go on the guide page ([marketplace-template.md](marketplace-template.md)).
+- Hover states and a pointer cursor only on clickable layers.
+- Button labels: white on a bright accent failed AA (3.47:1 on #F0561D): check every button variant's contrast.
+- Client logos as grey company names read as placeholders: draw fictional SVG wordmarks.
+- The same person in two different photos: look at all photos on one contact sheet.
+- In a hero reel switched by variants, every clip loads and plays: `$control__playing="false"` on hidden clips, a
+  poster on each, one clip or the poster on phones.
+- Bars that grow by `scale` get thinner: slide them out of a clipped track ([scroll.md](scroll.md)).
