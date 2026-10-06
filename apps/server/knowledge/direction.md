@@ -28,6 +28,9 @@ something on the list, the brief wins.
 - Sample the palette from the concept's world: two or three neutrals of its materials (or the client's photos) and one
   accent that exists in that world, locked for actions and real highlights. Three or four colors in all; each with its
   source ("stamp red: the station stamp").
+- Every palette says how its background is painted: flat, a gradient (linear, radial, mesh) or a live shader (`dsl`,
+  Shaders), taken like the colors from something in the concept's world whose tone changes across it (light on a wall,
+  the sky, water, a fading print) and named with that source; flat when nothing there does.
 - Color may change with the content when the concept asks for it: one per chapter, per item, per time of day.
 - Muted text as its own token in the base's tone, checked at AA (`contrast_check`) on every background it sits on: a
   60% tint of the ink often fails.

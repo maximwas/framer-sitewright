@@ -24,8 +24,11 @@ question. A skipped question, or "decide yourself", takes the fallback in bracke
 6. **Voice** as three "X but not Y" pairs (warm but not cute) plus words to use and avoid, not mood adjectives: "quiet
    luxury" and "calm and editorial" produce the generated looks (pairs that follow from the purpose).
 7. **Palette:** proposed inside each concept (§2): background, surface, text, muted text, line, accent and text on the
-   accent as hex, with AA contrast; brand colors when they exist (the first option). Under each palette, two links the
-   user can open and send on (hex without #, joined by `-`): `https://coolors.co/<every color>` and
+   accent as hex, with AA contrast; brand colors when they exist (the first option). Each palette also says how its
+   background is painted: flat, a gradient (linear, radial, mesh) or a live shader (a `ShaderNode`), taken like the
+   colors from something in the concept's world whose tone changes across it (light on a wall, the sky, water, a fading
+   print) and named with that source; flat when nothing there does. Under each palette, two links the user can open and
+   send on (hex without #, joined by `-`): `https://coolors.co/<every color>` and
    `https://www.realtimecolors.com/?colors=<text>-<background>-<accent>-<surface>-<second hue, else muted text>`.
 8. **Theme:** light, dark, or both following the device; both means a dark value on every token (light only).
 9. **Assets:** logo (SVG), photos, video, icons: all, logo only, or nothing yet (stock and named placeholders, listed
