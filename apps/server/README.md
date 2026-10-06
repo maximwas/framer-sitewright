@@ -105,7 +105,8 @@ sitewright --help
   `contrast_check` (a color or token pair against WCAG), `template_audit` (a Marketplace template against Framer's
   checklist, section by section), `live_check` (the published site as visitors get it: values published as
   references, broken images and links, missing meta tags, heavy pages).
-- **Design guide:** `design_guide` — the order of work, layout and typography rules, direction from top Framer sites,
+- **Design guide:** `design_guide` — the order of work from a brief (`project_brief`) and one concept, layout,
+  typography and motion rules, direction from award-winning Framer sites, what Framer's DSL does without saying so,
   and the checklist before handing a page over. The Claude Code skill (`setup --skill`) points the agent at it.
 - **Components and assets:** `components_read`, `component_controls_set`, `component_insert` (a free Marketplace
   component or one of Framer's own, by module URL), `component_make_local` (a Marketplace component copied into the
@@ -118,7 +119,7 @@ sitewright --help
   component its controls, read from a copy placed on a temporary design page, to judge whether it fits.
 - **CMS:** `cms_collections_list`, `cms_collection_create`, `cms_collection_delete`, `cms_fields_set`,
   `cms_items_list`, `cms_items_upsert`, `cms_items_delete`, `cms_items_order`. Items are written by slug, values by
-  field name. Undo does not restore CMS changes yet.
+  field name. Undo restores items, not yet collections, fields or the order of items.
 - **Pages and the whole site:** `page_create`, `page_delete`, `page_duplicate` (a copy with its breakpoints, as a
   draft), `reference_screenshot` (any public page, e.g. a reference the user names), `publish_preview` (what a publish
   would change and what blocks it, without publishing), `nodes_find` (layers by name, text or type across
