@@ -244,6 +244,8 @@ export const ActivitySummarySchema = z.object({
   outcome: ActivityEntrySchema.shape.outcome,
   error: z.string().nullable(),
   tool: z.string().nullable(),
+  /** The operation the call ran (pages.create…), for its icon; null for skills and checkpoints. */
+  operation: z.string().nullable().default(null),
   layer: ActivityEntrySchema.shape.layer,
   changes: z.string(),
   /** What kinds of change the entry made, for badges: components, animations, text, colors, layout… */

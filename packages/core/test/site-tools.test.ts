@@ -222,3 +222,94 @@ it("tells where the site is published, what changed since, and the newest deploy
     },
   ]);
 });
+
+it("regression: reads a page's layers a level at a time, not one round trip per layer (seen: text_replace took 123 s)", async () => {
+  // 30 sections with a text each. Through the Server API every getChildren is a round trip: walked one layer after
+  // another, the page took 61 of them in a row.
+  const { runtime } = createFakeRuntime({
+    canvas: Array.from({ length: 30 }, (_, i) => [
+      {
+        id: `section-${i}`,
+        parentId: "breakpoint-desktop",
+        className: "FrameNode",
+        name: `Section ${i}`,
+      },
+      {
+        id: `text-${i}`,
+        parentId: `section-${i}`,
+        className: "TextNode",
+        name: null,
+        text: i === 29 ? "Book a call" : `Line ${i}`,
+      },
+    ]).flat(),
+  });
+  // Calls wait for the next round, which answers every call in flight at once.
+  const waiting: (() => void)[] = [];
+  const slow = {
+    ...runtime,
+    port: {
+      ...runtime.port,
+      getChildren: (nodeId: string) =>
+        new Promise<Awaited<ReturnType<typeof runtime.port.getChildren>>>((resolve) =>
+          waiting.push(() => void runtime.port.getChildren(nodeId).then(resolve)),
+        ),
+    },
+  };
+  const roundsOf = async <T>(work: Promise<T>): Promise<{ result: T; rounds: number }> => {
+    let done = false;
+    const finished = work.finally(() => {
+      done = true;
+    });
+    let rounds = 0;
+
+    while (!done && rounds < 200) {
+      for (let i = 0; i < 50; i += 1) {
+        await Promise.resolve();
+      }
+
+      const round = waiting.splice(0);
+
+      if (round.length > 0) {
+        rounds += 1;
+
+        for (const answer of round) {
+          answer();
+        }
+      }
+    }
+
+    return {
+      result: await finished,
+      rounds,
+    };
+  };
+
+  const found = await roundsOf(
+    runOperation(
+      nodesFind,
+      { runtime: slow },
+      {
+        type: "RichTextNode",
+        limit: 200,
+      },
+    ),
+  );
+
+  expect(found.rounds).toBeLessThan(12);
+  expect(found.result.matches.map(({ id }) => id)).toEqual(Array.from({ length: 30 }, (_, i) => `text-${i}`));
+
+  const preview = await roundsOf(
+    runOperation(
+      textReplace,
+      { runtime: slow },
+      {
+        find: "call",
+        replace: "visit",
+        dryRun: true,
+      },
+    ),
+  );
+
+  expect(preview.rounds).toBeLessThan(12);
+  expect(preview.result.changes.map(({ id }) => id)).toEqual(["text-29"]);
+});

@@ -147,6 +147,7 @@ export function summarizeEntry(entry: ActivityEntry, state: RevertState): Activi
     outcome: entry.outcome,
     error: entry.error,
     tool: entry.tool,
+    operation: entry.operation ?? null,
     // Entries from before the field: only a plugin call is known for sure.
     layer: entry.layer ?? (entry.transport === "plugin" ? "plugin-api" : null),
     changes: describeChanges(entry.steps),

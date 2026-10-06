@@ -53,7 +53,8 @@ import { textStylesList } from "./text-styles/list.ts";
 import { textStylesUpsert } from "./text-styles/upsert.ts";
 
 /** Every operation by name: the single source for the MCP server and the Framer plugin. */
-const OPERATIONS: readonly AnyOperation[] = [
+/** Every operation, in one list for the server, the plugin and the journal. */
+export const OPERATIONS: readonly AnyOperation[] = [
   projectOverview,
   colorTokensList,
   colorTokensUpsert,

@@ -6,22 +6,45 @@ import {
   type ChangeCategory,
 } from "@sitewright/core";
 import {
+  Blend,
   BookOpen,
   CaseSensitive,
+  Code,
   Component,
+  CopyPlus,
   Database,
   Eye,
+  FileMinus,
+  FilePlus,
+  Files,
+  FileUp,
+  Globe,
+  History,
+  ImageUp,
+  Languages,
+  Layers,
   LayoutGrid,
   Link2,
   type LucideIcon,
+  MonitorSmartphone,
+  MousePointer2,
   Palette,
+  PanelsTopLeft,
   Pencil,
+  PencilLine,
+  PenTool,
   Plus,
+  Replace,
+  Rocket,
+  Settings2,
+  Shapes,
+  Signpost,
   SlidersHorizontal,
   Sparkles,
   Square,
   Trash,
   Type,
+  Unlink,
 } from "lucide-react";
 import type { Tone } from "../types/toolkit.ts";
 
@@ -184,3 +207,49 @@ export const LAYER_BADGES: Readonly<
 
 /** A skill Claude used: a book, beside the eye of a read. */
 export const SKILL_ICON: LucideIcon = BookOpen;
+
+/**
+ * An entry's icon by the operation it ran, for a change that touched nothing the badges know (a preview, an upload, a
+ * publish, a page): the operation's own, else its family's (the name before the first dot).
+ */
+export const OPERATION_ICONS: Readonly<Record<string, LucideIcon>> = {
+  breakpoints: MonitorSmartphone,
+  cms: Database,
+  codeFiles: Code,
+  customCode: Code,
+  colorTokens: Palette,
+  colors: Palette,
+  components: Component,
+  "components.insertSection": PanelsTopLeft,
+  "components.detach": Unlink,
+  "components.makeLocal": CopyPlus,
+  "components.setControls": SlidersHorizontal,
+  design: Layers,
+  files: FileUp,
+  fonts: Type,
+  history: History,
+  icons: Shapes,
+  images: ImageUp,
+  layout: LayoutGrid,
+  linkStyles: Link2,
+  localization: Languages,
+  motion: Sparkles,
+  nodes: Layers,
+  pages: Files,
+  "pages.create": FilePlus,
+  "pages.delete": FileMinus,
+  project: Globe,
+  "project.publish": Rocket,
+  redirects: Signpost,
+  selection: MousePointer2,
+  shaders: Blend,
+  site: Globe,
+  "site.settings.set": Settings2,
+  styles: Palette,
+  svg: PenTool,
+  text: Replace,
+  textStyles: CaseSensitive,
+};
+
+/** A change no operation icon fits: a pencil, never an empty square. */
+export const FALLBACK_ENTRY_ICON: LucideIcon = PencilLine;

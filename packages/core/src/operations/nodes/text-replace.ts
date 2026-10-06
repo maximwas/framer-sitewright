@@ -1,14 +1,16 @@
 import * as z from "zod";
 import { TEXT_CONTENT_DEPTH } from "../../constants/history.ts";
+import { WALK_CONCURRENCY } from "../../constants/nodes.ts";
 import { withTextHistory } from "../../history/dsl/dsl-history.ts";
 import { readNodes } from "../../history/dsl/read-nodes.ts";
 import { fromPluginNode } from "../../plugin-nodes/attributes.ts";
 import { idOf, nameOf, textOf } from "../../plugin-nodes/node-record.ts";
-import { walkPage } from "../../plugin-nodes/walk.ts";
+import { pageLayers } from "../../plugin-nodes/walk.ts";
 import { TextChangeSchema } from "../../schemas/site.ts";
 import type { AgentPort, FramerRuntime } from "../../types/framer.ts";
 import type { OperationContext } from "../../types/operations.ts";
 import type { TextChange, TextFormatting, TextMatch, TextWrites } from "../../types/site.ts";
+import { mapInOrder } from "../../utils/async.ts";
 import { errorMessage } from "../../utils/errors.ts";
 import { countOf } from "../../utils/text.ts";
 import { replaceFormatting, replaceText, spellingsToSend } from "../../utils/text-replace.ts";
@@ -81,11 +83,13 @@ export const textReplace = defineOperation({
     // A copy that follows its original changed with it; one that still shows its old text holds its own.
     const holding: TextMatch[] = [];
 
-    for (const copy of copies) {
-      if ((await textOf(copy.node)) === copy.before) {
+    const now = await mapInOrder(copies, WALK_CONCURRENCY, (copy) => textOf(copy.node));
+
+    copies.forEach((copy, index) => {
+      if (now[index] === copy.before) {
         holding.push(copy);
       }
-    }
+    });
 
     const second = await write(holding);
 
@@ -116,32 +120,28 @@ async function findMatches(
   const matches: TextMatch[] = [];
 
   for (const page of await pagesToSearch(port, pagePath)) {
-    await walkPage(
-      port,
-      page.id,
-      async (node, breakpoint) => {
-        if (fromPluginNode(node, null).type !== "RichTextNode") {
-          return;
-        }
+    const { layers } = await pageLayers(port, page.id, { copies: true });
+    const texts = layers.filter(({ node }) => fromPluginNode(node, null).type === "RichTextNode");
+    // Read together: one by one, each text is a round trip through the Server API.
+    const befores = await mapInOrder(texts, WALK_CONCURRENCY, ({ node }) => textOf(node));
 
-        const before = await textOf(node);
-        const after = before === null ? null : replaceText(before, find, replace, matchCase);
-        const copy = breakpoint !== null && !breakpoint.isPrimaryBreakpoint;
+    texts.forEach(({ node, breakpoint }, index) => {
+      const before = befores[index] ?? null;
+      const after = before === null ? null : replaceText(before, find, replace, matchCase);
+      const copy = breakpoint !== null && !breakpoint.isPrimaryBreakpoint;
 
-        if (before !== null && after !== null) {
-          matches.push({
-            node,
-            id: idOf(node),
-            page: page.path ?? "",
-            breakpoint: copy ? (nameOf(breakpoint) ?? String(breakpoint.id)) : null,
-            originalId: copy && typeof node.originalId === "string" ? node.originalId : null,
-            before,
-            after,
-          });
-        }
-      },
-      { copies: true },
-    );
+      if (before !== null && after !== null) {
+        matches.push({
+          node,
+          id: idOf(node),
+          page: page.path ?? "",
+          breakpoint: copy ? (nameOf(breakpoint) ?? String(breakpoint.id)) : null,
+          originalId: copy && typeof node.originalId === "string" ? node.originalId : null,
+          before,
+          after,
+        });
+      }
+    });
   }
 
   return matches;

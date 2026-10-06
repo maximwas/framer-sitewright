@@ -1,12 +1,13 @@
 import * as z from "zod";
-import { FIND_LIMIT, FIND_LIMIT_MAX, FIND_TEXT_MAX } from "../../constants/nodes.ts";
+import { FIND_LIMIT, FIND_LIMIT_MAX, FIND_TEXT_MAX, WALK_CONCURRENCY } from "../../constants/nodes.ts";
 import { OperationError } from "../../errors.ts";
 import { fromPluginNode } from "../../plugin-nodes/attributes.ts";
 import { idOf, nameOf, textOf } from "../../plugin-nodes/node-record.ts";
-import { walkPage } from "../../plugin-nodes/walk.ts";
+import { pageLayers } from "../../plugin-nodes/walk.ts";
 import { FoundLayerSchema } from "../../schemas/site.ts";
 import type { FramerPort, WebPageData } from "../../types/framer-port.ts";
 import type { FoundLayer } from "../../types/site.ts";
+import { mapInOrder } from "../../utils/async.ts";
 import { countOf } from "../../utils/text.ts";
 import { defineOperation } from "../define.ts";
 
@@ -59,15 +60,15 @@ export const nodesFind = defineOperation({
     let complete = true;
 
     for (const page of await pagesToSearch(runtime.port, pagePath)) {
-      complete &&= await walkPage(runtime.port, page.id, async (node) => {
-        const layerType = fromPluginNode(node, null).type;
+      const { layers, complete: seenAll } = await pageLayers(runtime.port, page.id);
+      const wantedLayers = layers.filter(({ node }) => type === undefined || fromPluginNode(node, null).type === type);
+      // Texts are read together: one by one, each is a round trip through the Server API.
+      const texts = await mapInOrder(wantedLayers, WALK_CONCURRENCY, ({ node }) => textOf(node));
 
-        if (type !== undefined && layerType !== type) {
-          return;
-        }
-
+      complete &&= seenAll;
+      wantedLayers.forEach(({ node }, index) => {
         const name = nameOf(node);
-        const text = await textOf(node);
+        const text = texts[index] ?? null;
         const found =
           wanted === undefined ||
           (name?.toLowerCase().includes(wanted) ?? false) ||
@@ -77,7 +78,7 @@ export const nodesFind = defineOperation({
           matches.push({
             id: idOf(node),
             page: page.path ?? "",
-            type: layerType,
+            type: fromPluginNode(node, null).type,
             name,
             text: text === null ? null : text.slice(0, FIND_TEXT_MAX),
           });

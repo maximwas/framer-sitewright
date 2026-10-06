@@ -94,7 +94,7 @@ export { projectPublish } from "./operations/project/publish.ts";
 export { publishPreview } from "./operations/project/publish-preview.ts";
 export { deploymentsList, publishStatus } from "./operations/project/publish-status.ts";
 export { redirectsList, redirectsSet } from "./operations/redirects/redirects.ts";
-export { findOperation } from "./operations/registry.ts";
+export { findOperation, OPERATIONS } from "./operations/registry.ts";
 export { a11yAudit, contrastCheck, imagesCheck, linksCheck, seoAudit } from "./operations/site/checks.ts";
 export { referenceScreenshot } from "./operations/site/reference-screenshot.ts";
 export { siteSettingsGet, siteSettingsSet } from "./operations/site/settings.ts";

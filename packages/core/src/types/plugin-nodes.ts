@@ -73,7 +73,11 @@ export interface WalkOptions {
 }
 
 /** Called for every layer of a walk, with the breakpoint it is on (null for a layer of the page itself). */
-export type WalkVisitor = (node: PluginNodeRecord, breakpoint: PluginNodeRecord | null) => Promise<void> | void;
+/** A layer of a page walk with the breakpoint it is on (null for the page's own layers). */
+export interface WalkedLayer {
+  readonly node: PluginNodeRecord;
+  readonly breakpoint: PluginNodeRecord | null;
+}
 
 /** Where a new node goes: an existing node, a `key` created earlier in the batch, or the new element it is nested in. */
 export type ParentRef = { readonly id: string } | { readonly key: string } | { readonly ref: string };

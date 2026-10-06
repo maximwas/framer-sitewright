@@ -12,6 +12,12 @@ export const BREAKPOINT_MAX_WIDTH = 3840;
 /** Layers nodes_find and text_replace look at, at most, before they stop: a page of a big site, not a runaway walk. */
 export const FIND_MAX_LAYERS = 20_000;
 
+/**
+ * Plugin API calls a page walk keeps in flight at once: through the Server API each call is a round trip, so a page
+ * read one layer after another took minutes (text_replace, 123 s on a one-page template).
+ */
+export const WALK_CONCURRENCY = 16;
+
 /** Matches nodes_find returns by default, and at most. */
 export const FIND_LIMIT = 50;
 export const FIND_LIMIT_MAX = 200;

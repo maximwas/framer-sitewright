@@ -1,48 +1,85 @@
-import { FIND_MAX_LAYERS } from "../constants/nodes.ts";
+import { FIND_MAX_LAYERS, WALK_CONCURRENCY } from "../constants/nodes.ts";
 import type { FramerPort } from "../types/framer-port.ts";
-import type { PluginNodeRecord, WalkOptions, WalkVisitor } from "../types/plugin-nodes.ts";
+import type { PluginNodeRecord, WalkedLayer, WalkOptions } from "../types/plugin-nodes.ts";
+import { mapInOrder } from "../utils/async.ts";
 import { nodeRecord } from "./node-record.ts";
+
+interface Branch extends WalkedLayer {
+  children: Branch[];
+}
 
 /**
  * Every layer of a page, depth first, through getChildren: the page's own layers and those of its primary breakpoint.
  * The other breakpoints copy the primary one, so walking them would list each layer once per breakpoint; `copies`
- * walks them too, for what a copy holds of its own. Stops after FIND_MAX_LAYERS layers; resolves with whether it saw
- * them all.
+ * walks them too, for what a copy holds of its own. The tree is read a level at a time with the level's calls in
+ * flight together, since each call is a round trip through the Server API. Stops after FIND_MAX_LAYERS layers;
+ * `complete` says whether it saw them all.
  */
-export async function walkPage(
+export async function pageLayers(
   port: FramerPort,
   pageId: string,
-  visit: WalkVisitor,
   { copies = false }: WalkOptions = {},
-): Promise<boolean> {
+): Promise<{ layers: WalkedLayer[]; complete: boolean }> {
+  const branch = (child: unknown, breakpoint: PluginNodeRecord | null): Branch[] => {
+    const node = nodeRecord(child);
+
+    return node === null
+      ? []
+      : [
+          {
+            node,
+            // The top-level breakpoint frames pass themselves down.
+            breakpoint: breakpoint ?? (node.isBreakpoint ? node : null),
+            children: [],
+          },
+        ];
+  };
+  const roots = [...(await port.getChildren(pageId))]
+    .filter((child) => copies || !nodeRecord(child)?.isBreakpoint || nodeRecord(child)?.isPrimaryBreakpoint)
+    .flatMap((child) => branch(child, null));
+  let level = roots;
   let seen = 0;
-  // Each layer with the breakpoint it is on: the top-level breakpoint frames pass themselves down.
-  const stack: (readonly [unknown, PluginNodeRecord | null])[] = [...(await port.getChildren(pageId))]
-    .filter((child) => copies || !child.isBreakpoint || child.isPrimaryBreakpoint)
-    .reverse()
-    .map((child) => {
-      const record = nodeRecord(child);
+  let complete = true;
 
-      return [child, record?.isBreakpoint ? record : null] as const;
+  // The level that passes the limit is listed, but its children are not read.
+  while (level.length > 0 && seen <= FIND_MAX_LAYERS) {
+    seen += level.length;
+
+    if (seen > FIND_MAX_LAYERS) {
+      break;
+    }
+
+    const children = await mapInOrder(level, WALK_CONCURRENCY, async ({ node }) => port.getChildren(String(node.id)));
+    const next: Branch[] = [];
+
+    level.forEach((parent, index) => {
+      parent.children = [...(children[index] ?? [])].flatMap((child) => branch(child, parent.breakpoint));
+      next.push(...parent.children);
     });
-
-  while (stack.length > 0) {
-    const [next, breakpoint] = stack.pop() ?? [null, null];
-    const node = nodeRecord(next);
-
-    if (node === null) {
-      continue;
-    }
-
-    if (++seen > FIND_MAX_LAYERS) {
-      return false;
-    }
-
-    await visit(node, breakpoint);
-    stack.push(
-      ...[...(await port.getChildren(String(node.id)))].reverse().map((child) => [child, breakpoint] as const),
-    );
+    level = next;
   }
 
-  return true;
+  const layers: WalkedLayer[] = [];
+  const visit = (branches: readonly Branch[]) => {
+    for (const { node, breakpoint, children } of branches) {
+      if (layers.length >= FIND_MAX_LAYERS) {
+        complete = false;
+
+        return;
+      }
+
+      layers.push({
+        node,
+        breakpoint,
+      });
+      visit(children);
+    }
+  };
+
+  visit(roots);
+
+  return {
+    layers,
+    complete,
+  };
 }

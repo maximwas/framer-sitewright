@@ -22,3 +22,4 @@ export type { ActivityFeed } from "./types/activity.ts";
 export type { EditorHost, NoticeVariant, ReadonlyStore, UiTransport } from "./types/host.ts";
 export type { Tone } from "./types/toolkit.ts";
 export { backoffDelay } from "./utils/backoff.ts";
+export { operationIcon } from "./utils/operation-icon.ts";
