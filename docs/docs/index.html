@@ -85,9 +85,10 @@
           <h1>Sitewright docs</h1>
           <p class="lead">
             Sitewright is an MCP server that lets AI agents — Claude Code, Cursor, Codex — build and edit Framer sites:
-            design tokens and text styles, pages and sections, breakpoints, components, images, CMS content and
-            translations. It runs on your computer, works in the Framer project you have open, and records every change
-            in a journal you can undo.
+            design tokens and text styles, pages and sections, breakpoints, motion, components from your project and the
+            Marketplace, images, CMS content and translations, and the checks before a site is handed over. It runs on
+            your computer, works in the Framer project you have open, and records every change in a journal you can
+            undo.
           </p>
           <div class="callout">
             <strong>Unofficial.</strong> Sitewright is not affiliated with or endorsed by Framer. “Framer” is a
@@ -100,7 +101,7 @@
             <li><strong>A Framer project</strong> you can edit, and the Sitewright plugin in it.</li>
             <li>
               <strong>Optionally, the project's Server API key.</strong> Without one, the plugin does the work; a key
-              adds effects, components, rich text, screenshots and catalogs (see
+              adds motion, variants, rich text, link styles, translations, screenshots and catalogs (see
               <a href="#no-key">Working without a key</a>).
             </li>
           </ul>
@@ -225,14 +226,17 @@ npx -y sitewright@latest key remove   # remove one</code></pre>
             <li>manage color tokens and text styles, including sizes per breakpoint;</li>
             <li>add Tablet and Phone breakpoints and adapt their copies;</li>
             <li>add SVG, upload images and files, set component controls;</li>
-            <li>edit CMS collections, fields and items, and write translations;</li>
+            <li>insert components and sections from the Marketplace, and fill their controls with your own photos;</li>
+            <li>edit CMS collections, fields and items, and redirects;</li>
+            <li>run the checks before handover: search, links, images, accessibility, contrast;</li>
             <li>write code files and custom code, when you allow it.</li>
           </ul>
           <p>
             These need a key: effects and motion (hover, appear, scroll), variants and components, rich text, text color
-            on a text node (put it on the text style instead), shadows, radial and conic gradients, screenshots, the icon,
-            component and stock photo catalogs, and deleting a whole CMS collection. A batch that asks for one of them
-            changes nothing and says what needs the key.
+            on a text node (put it on the text style instead), shadows, radial and conic gradients, link styles,
+            translations and new locales, changing the site's settings, screenshots of pages and references, preview
+            links, the icon, component, shader and stock photo catalogs, and deleting a whole CMS collection. A batch
+            that asks for one of them changes nothing and says what needs the key.
           </p>
         </section>
 
@@ -242,22 +246,23 @@ npx -y sitewright@latest key remove   # remove one</code></pre>
             Every call is an entry: what the agent read or changed, how it reached Framer, and what it touched — tokens,
             styles and layers you can click to select in the editor. Open the journal page with
             <code>sitewright open</code>, the plugin's <strong>Open journal</strong>, or ask the agent
-            (<a href="#activity_open"><code>activity_open</code></a>).
+            (<a href="#activity_open"><code>activity_open</code></a>). The window takes Framer's light or dark theme.
           </p>
           <ul>
-            <li><strong>All · Changes · Reads · Skills</strong> pick what the list shows.</li>
+            <li><strong>All · Changes · CMS · Reads · Skills</strong> pick what the list shows.</li>
             <li><strong>Undo</strong> takes back the newest change; Undo on an entry takes back that change and everything after it.</li>
             <li><strong>Redo</strong> puts back what the last undo took.</li>
             <li><strong>Mark</strong> sets a checkpoint, and <strong>Restore</strong> beside it undoes everything since, with a preview first.</li>
-            <li><strong>Clear</strong> starts the journal over: the changes stay in Framer, but can no longer be undone from here.</li>
+            <li><strong>Clear</strong> starts the journal on screen over, with or without the plugin in that project: the changes stay in Framer, but can no longer be undone from here.</li>
           </ul>
           <p>
             What you undo on the page, the agent hears about with its next result, so it re-reads before building on it.
             Edits you made yourself after the agent are kept: undo skips them unless you choose to revert them too.
           </p>
           <div class="callout">
-            Not undoable yet: CMS changes, translations, component controls and deleted code files. Those tools say so,
-            and a deletion returns what it removed, so the agent can put it back.
+            Not undoable yet: pages, CMS collections, fields and the order of items, translations and locales, component
+            controls, detaching or making a component local, redirects, uploaded files and deleted code files. Those
+            tools say so, and a deletion returns what it removed, so the agent can put it back.
           </div>
         </section>
 
@@ -308,10 +313,12 @@ npx -y sitewright@latest key remove   # remove one</code></pre>
         </section>
 
         <section id="quality">
-          <h2>Design guide and layout audit</h2>
+          <h2>Design guide, audit and checks</h2>
           <p>
-            <a href="#design_guide"><code>design_guide</code></a> gives the agent the order of work, layout and type
-            rules, direction measured on top Framer sites, the habits of generated pages to avoid, and the checklist
+            <a href="#design_guide"><code>design_guide</code></a> gives the agent the order of work, starting from a brief
+            (<a href="#project_brief"><code>project_brief</code></a>) and one concept the site follows; layout, type and
+            motion rules with springs that settle without a bounce; direction measured on award-winning Framer sites; what
+            Framer's layout language does without saying so; the habits of generated pages to avoid; and the checklist
             before a page is handed over. The Claude Code skill (<code>sitewright setup --skill</code>) points the agent
             at it.
           </p>
@@ -321,6 +328,11 @@ npx -y sitewright@latest key remove   # remove one</code></pre>
             looks for what breaks on the published site: children on different edges, cards of uneven height, text links
             in the default blue, sections wider than the rest, fixed sizes that break on phones, grids too dense for a
             phone, missing headings, uneven spacing.
+          </p>
+          <p>
+            Before handover, the <a href="#checks">checks</a> look at the whole site: search titles and descriptions,
+            broken links and anchors, the same photo twice and missing alt text, contrast, copy left over from a
+            template, and the published site itself (<a href="#live_check"><code>live_check</code></a>).
           </p>
         </section>
 
@@ -410,7 +422,10 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
 
         <section id="files">
           <h2>Files on your computer</h2>
-          <p>Everything stays in <code>~/.sitewright</code>; nothing goes anywhere but Framer.</p>
+          <p>
+            Everything stays in <code>~/.sitewright</code>; nothing goes anywhere but Framer. A few tools read public
+            pages they name: the Marketplace, Google Fonts and Fontshare, and your published site.
+          </p>
           <ul>
             <li><code>keys.json</code> — the Server API keys, one per project, readable only by you;</li>
             <li><code>settings.json</code> — the switches;</li>
@@ -784,7 +799,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
 </section>
 <section class="tool-group" id="pages" data-group>
   <h3>Pages, layout and redirects <span>16</span></h3>
-  <p class="group-intro">Create and delete pages, read one as XML, find layers and replace text across pages, read and set the site's and pages' titles, descriptions, images and search settings, change pages, check what looks broken, adapt them to tablet and phone, look at them, and redirect old paths.</p>
+  <p class="group-intro">Create, duplicate and delete pages, read one as XML, find layers and replace text across pages, read and set the site's and pages' titles, descriptions, images and search settings, change pages and their motion, check what looks broken, adapt them to tablet and phone, look at them and at a reference, and redirect old paths.</p>
   <article class="tool" id="page_create" data-tool="page_create Create a page creates an empty web page at a path (&quot;/about&quot;) or a design page (a canvas for drafts) by name. build its content with design_apply; add breakpoints with breakpoints_add. undo does not remove pages.">
     <header>
       <h4><a href="#page_create">page_create</a></h4>
@@ -1054,7 +1069,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
 </section>
 <section class="tool-group" id="checks" data-group>
   <h3>Checks before handover <span>7</span></h3>
-  <p class="group-intro">What looks fine in the editor and still fails on the published site: search titles and descriptions, broken links and anchors, the same photo twice, missing alt text, and text that does not stand out from its background.</p>
+  <p class="group-intro">What looks fine in the editor and still fails on the published site: search titles and descriptions, broken links and anchors, the same photo twice, missing alt text, text that does not stand out from its background, copy left over from a template, and the published site itself.</p>
   <article class="tool" id="seo_audit" data-tool="seo_audit Check SEO checks what search engines and link previews get, page by page: a title of 30–60 characters and a description of 70–160 on every page (a page inherits the site's), no title used twice, exactly one h1, no page hidden from search but the 404, alt text on photos, and a social image and favicon for the site. run it before handing a site over or listing a template. with a server api key it reads every page's metadata; without one it checks the headings only and says so in note.">
     <header>
       <h4><a href="#seo_audit">seo_audit</a></h4>
@@ -1401,7 +1416,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
 </section>
 <section class="tool-group" id="cms" data-group>
   <h3>CMS <span>8</span></h3>
-  <p class="group-intro">Collections and their fields; items by slug, with values by field name. Undo does not cover CMS yet.</p>
+  <p class="group-intro">Collections and their fields; items by slug, with values by field name. Undo covers items, not yet collections, fields or the order of items.</p>
   <article class="tool" id="cms_collections_list" data-tool="cms_collections_list List CMS collections lists the project's cms collections with their fields (id, type, enum cases, the collection a reference points at, a list's nested fields) and item counts. a field binds on the canvas by its id: var(--variable-&lt;id&gt;). collections a sync plugin manages are read-only here.">
     <header>
       <h4><a href="#cms_collections_list">cms_collections_list</a></h4>
@@ -1536,7 +1551,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
 </section>
 <section class="tool-group" id="localization" data-group>
   <h3>Localization <span>4</span></h3>
-  <p class="group-intro">What still needs translating, and the translations, one locale at a time. Locales are added in the editor.</p>
+  <p class="group-intro">New locales, what still needs translating, and the translations, one locale at a time.</p>
   <article class="tool" id="locales_list" data-tool="locales_list List locales lists the site's locales (code, name, url slug, fallback) and which one is the default. add one with locale_add.">
     <header>
       <h4><a href="#locales_list">locales_list</a></h4>

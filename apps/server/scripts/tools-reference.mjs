@@ -53,7 +53,7 @@ const GROUPS = [
     id: "pages",
     title: "Pages, layout and redirects",
     intro:
-      "Create and delete pages, read one as XML, find layers and replace text across pages, read and set the site's and pages' titles, descriptions, images and search settings, change pages, check what looks broken, adapt them to tablet and phone, look at them, and redirect old paths.",
+      "Create, duplicate and delete pages, read one as XML, find layers and replace text across pages, read and set the site's and pages' titles, descriptions, images and search settings, change pages and their motion, check what looks broken, adapt them to tablet and phone, look at them and at a reference, and redirect old paths.",
     tools: [
       "page_create",
       "page_delete",
@@ -77,7 +77,7 @@ const GROUPS = [
     id: "checks",
     title: "Checks before handover",
     intro:
-      "What looks fine in the editor and still fails on the published site: search titles and descriptions, broken links and anchors, the same photo twice, missing alt text, and text that does not stand out from its background.",
+      "What looks fine in the editor and still fails on the published site: search titles and descriptions, broken links and anchors, the same photo twice, missing alt text, text that does not stand out from its background, copy left over from a template, and the published site itself.",
     tools: ["seo_audit", "links_check", "images_check", "a11y_audit", "contrast_check", "template_audit", "live_check"],
   },
   {
@@ -105,7 +105,8 @@ const GROUPS = [
   {
     id: "cms",
     title: "CMS",
-    intro: "Collections and their fields; items by slug, with values by field name. Undo does not cover CMS yet.",
+    intro:
+      "Collections and their fields; items by slug, with values by field name. Undo covers items, not yet collections, fields or the order of items.",
     tools: [
       "cms_collections_list",
       "cms_collection_create",
@@ -120,7 +121,7 @@ const GROUPS = [
   {
     id: "localization",
     title: "Localization",
-    intro: "What still needs translating, and the translations, one locale at a time. Locales are added in the editor.",
+    intro: "New locales, what still needs translating, and the translations, one locale at a time.",
     tools: ["locales_list", "localization_get", "localization_set", "locale_add"],
   },
   {

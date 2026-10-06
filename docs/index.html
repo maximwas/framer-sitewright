@@ -6,7 +6,7 @@
     <title>Sitewright — an MCP server for Framer</title>
     <meta
       name="description"
-      content="Sitewright lets Claude Code, Cursor and Codex build and edit Framer sites: tokens, text styles, pages, components, CMS and translations, with a local journal you can undo. Free and open source."
+      content="Sitewright lets Claude Code, Cursor and Codex build and edit Framer sites: tokens, text styles, pages, motion, components, CMS and translations, checks before handover, and a local journal you can undo. Free and open source."
     />
     <meta property="og:title" content="Sitewright — an MCP server for Framer" />
     <meta
@@ -89,7 +89,7 @@
               <span class="status"><span class="dot"><i></i></span>Plugin connected</span>
             </div>
             <div class="tabs" aria-hidden="true">
-              <span class="on">All</span><span>Changes</span><span>Reads</span><span>Skills</span>
+              <span class="on">All</span><span>Changes</span><span>CMS</span><span>Reads</span><span>Skills</span>
             </div>
             <div class="feed">
             <ol class="entries">
@@ -194,7 +194,7 @@
               <span class="ring" aria-hidden="true"></span>
               <small>On your computer</small>
               <h3>Sitewright</h3>
-              <p>58 tools, design rules and a layout audit. Records every change in a journal you can undo.</p>
+              <p>85 tools, a design guide and checks before handover. Records every change in a journal you can undo.</p>
             </div>
             <div class="arrow" aria-hidden="true">
               <span class="pipe">
@@ -258,7 +258,7 @@
               <h3>A journal with undo</h3>
               <p>
                 Every call is recorded with what changed and how it reached Framer. Undo the last change, a change and
-                everything after it, or go back to a checkpoint.
+                everything after it, or go back to a checkpoint. The window takes Framer's light or dark theme.
               </p>
             </div>
             <div class="feature">
@@ -283,7 +283,7 @@
               <h3>Works without a key</h3>
               <p>
                 With just the plugin, the agent builds pages from frames and text, styles, breakpoints, gradients,
-                images, CMS content and translations.
+                images, CMS content, redirects, and components and sections from the Marketplace.
               </p>
             </div>
             <div class="feature">
@@ -306,10 +306,10 @@
                   <path d="M4 19.5A2.5 2.5 0 006.5 22H20v-5" />
                 </svg>
               </span>
-              <h3>A design guide built in</h3>
+              <h3>A concept before a layout</h3>
               <p>
-                The order of work, layout and type rules, direction measured on top Framer sites, and a checklist
-                before a page is handed over.
+                A brief, then one idea the whole site follows. Layout and type rules, direction measured on
+                award-winning Framer sites, and what Framer does without saying so.
               </p>
             </div>
             <div class="feature">
@@ -323,6 +323,44 @@
               <p>
                 Adds Tablet and Phone breakpoints and adapts their copies, so a page holds at 1440, 810 and 390 pixels
                 wide.
+              </p>
+            </div>
+            <div class="feature">
+              <span class="icon" aria-hidden="true">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M3 12c3-6 6-6 9 0s6 6 9 0" />
+                </svg>
+              </span>
+              <h3>Motion that settles</h3>
+              <p>
+                Appear, hover, scroll and loop presets in one call, as springs that come to rest without a bounce,
+                with a note where Framer keeps true spring physics.
+              </p>
+            </div>
+            <div class="feature">
+              <span class="icon" aria-hidden="true">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                  <path d="M3 6h18M16 10a4 4 0 01-8 0" />
+                </svg>
+              </span>
+              <h3>The Marketplace, filled in</h3>
+              <p>
+                Finds free components and sections, reads their controls, and fills a carousel with your own photos.
+                Fonts come from Framer's library, Google Fonts or Fontshare.
+              </p>
+            </div>
+            <div class="feature">
+              <span class="icon" aria-hidden="true">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <path d="M9 12l2 2 4-4" />
+                  <path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z" />
+                </svg>
+              </span>
+              <h3>Checks before handover</h3>
+              <p>
+                Search titles and descriptions, broken links and anchors, alt text, contrast, a template's leftover
+                copy, and the published site itself.
               </p>
             </div>
           </div>
@@ -353,16 +391,17 @@
                   <td>The Sitewright plugin open in the Framer editor, connected.</td>
                   <td>
                     Color tokens and text styles, fonts, pages from frames and text (layout, size, fills, linear
-                    gradients, images, borders, links), breakpoints, SVG, component controls, CMS, translations, code
-                    files, the editor selection.
+                    gradients, images, borders, links), breakpoints, SVG, Marketplace components and sections and their
+                    controls, CMS, redirects, code files, the editor selection, and the checks before handover.
                   </td>
                 </tr>
                 <tr>
                   <th scope="row">Server API</th>
                   <td>Your own key from Framer → Site Settings → General → API Keys, saved per project.</td>
                   <td>
-                    Everything above, plus effects and transitions, variants and components, rich text, shadows,
-                    screenshots, Framer's DSL reference, and the icon, component and stock photo catalogs.
+                    Everything above, plus motion and transitions, variants and components, rich text, shadows, link
+                    styles, translations and new locales, site settings, screenshots of pages and references, preview
+                    links, Framer's DSL reference, and the icon, component, shader and stock photo catalogs.
                   </td>
                 </tr>
               </tbody>
@@ -377,16 +416,34 @@
       <section id="tools">
         <div class="wrap">
           <p class="kicker">Tools</p>
-          <h2><span data-count="58">58</span> tools, grouped the way you build a site.</h2>
+          <h2><span data-count="85">85</span> tools, grouped the way you build a site.</h2>
           <p class="intro">
             Each tool says what it changes, whether it can be undone, and what the agent should check before using it.
-            Code tools stay off until you switch them on.
+            Code tools stay off until you switch them on. The <a href="docs/#reference">docs</a> say which need a Server API
+            key.
           </p>
 
           <div class="tools">
             <div class="group">
-              <h3>Design system <span>7</span></h3>
-              <p>Tokens with light and dark values, text styles with breakpoint sizes.</p>
+              <h3>Project and guide <span>11</span></h3>
+              <p>Status, switching projects, the brief, the design guide and Framer's docs, the selection, publishing on request.</p>
+              <ul class="chips">
+                <li>framer_status</li>
+                <li>framer_connect</li>
+                <li>project_overview</li>
+                <li>project_brief</li>
+                <li>selection_get</li>
+                <li>publish_status</li>
+                <li>deployments_list</li>
+                <li>publish_preview</li>
+                <li>project_publish</li>
+                <li>design_guide</li>
+                <li>framer_docs</li>
+              </ul>
+            </div>
+            <div class="group">
+              <h3>Design system <span>12</span></h3>
+              <p>Tokens with light and dark values, text and link styles, where each style is used, fonts in Framer and beyond.</p>
               <ul class="chips">
                 <li>color_tokens_list</li>
                 <li>color_tokens_upsert</li>
@@ -394,34 +451,64 @@
                 <li>text_styles_list</li>
                 <li>text_styles_upsert</li>
                 <li>text_styles_delete</li>
+                <li>link_styles_list</li>
+                <li>link_styles_upsert</li>
+                <li>link_styles_delete</li>
+                <li>styles_usage</li>
                 <li>fonts_search</li>
+                <li>fonts_discover</li>
               </ul>
             </div>
             <div class="group">
-              <h3>Pages and layout <span>11</span></h3>
-              <p>Create pages, read and change them, find and replace across them, redirect old paths.</p>
+              <h3>Pages and layout <span>16</span></h3>
+              <p>Create, duplicate and read pages, change them, set their motion, replace text, site settings, look at them, redirect old paths.</p>
               <ul class="chips">
                 <li>page_create</li>
                 <li>page_delete</li>
+                <li>page_duplicate</li>
                 <li>nodes_read</li>
                 <li>nodes_find</li>
                 <li>design_apply</li>
+                <li>effects_set</li>
                 <li>text_replace</li>
+                <li>site_settings_get</li>
+                <li>site_settings_set</li>
                 <li>layout_audit</li>
                 <li>breakpoints_add</li>
                 <li>node_screenshot</li>
+                <li>reference_screenshot</li>
                 <li>redirects_list</li>
                 <li>redirects_set</li>
               </ul>
             </div>
             <div class="group">
-              <h3>Components and assets <span>7</span></h3>
-              <p>Components and their controls, icons, photos, uploads, SVG.</p>
+              <h3>Checks before handover <span>7</span></h3>
+              <p>What looks fine in the editor and still fails on the published site.</p>
+              <ul class="chips">
+                <li>seo_audit</li>
+                <li>links_check</li>
+                <li>images_check</li>
+                <li>a11y_audit</li>
+                <li>contrast_check</li>
+                <li>template_audit</li>
+                <li>live_check</li>
+              </ul>
+            </div>
+            <div class="group">
+              <h3>Components and assets <span>14</span></h3>
+              <p>Components and their controls, the Marketplace, icons, shaders, photos, uploads, SVG.</p>
               <ul class="chips">
                 <li>components_read</li>
+                <li>component_insert</li>
                 <li>component_controls_set</li>
+                <li>component_make_local</li>
+                <li>component_detach</li>
+                <li>section_insert</li>
+                <li>marketplace_browse</li>
+                <li>marketplace_item</li>
                 <li>icons_search</li>
                 <li>images_search</li>
+                <li>shaders_read</li>
                 <li>image_upload</li>
                 <li>file_upload</li>
                 <li>svg_add</li>
@@ -429,7 +516,7 @@
             </div>
             <div class="group">
               <h3>CMS <span>8</span></h3>
-              <p>Collections and fields; items by slug, values by field name.</p>
+              <p>Collections and fields, List fields too; items by slug, values by field name.</p>
               <ul class="chips">
                 <li>cms_collections_list</li>
                 <li>cms_collection_create</li>
@@ -442,10 +529,11 @@
               </ul>
             </div>
             <div class="group">
-              <h3>Localization <span>3</span></h3>
-              <p>See what still needs translating and write it, locale by locale.</p>
+              <h3>Localization <span>4</span></h3>
+              <p>Add a locale, see what still needs translating, and write it.</p>
               <ul class="chips">
                 <li>locales_list</li>
+                <li>locale_add</li>
                 <li>localization_get</li>
                 <li>localization_set</li>
               </ul>
@@ -461,27 +549,6 @@
                 <li>activity_redo</li>
                 <li>activity_restore</li>
                 <li>activity_open</li>
-              </ul>
-            </div>
-            <div class="group">
-              <h3>Project <span>7</span></h3>
-              <p>Status, switching projects, the selection, what changed since publishing, publishing on request.</p>
-              <ul class="chips">
-                <li>framer_status</li>
-                <li>framer_connect</li>
-                <li>project_overview</li>
-                <li>selection_get</li>
-                <li>publish_status</li>
-                <li>deployments_list</li>
-                <li>project_publish</li>
-              </ul>
-            </div>
-            <div class="group">
-              <h3>Knowledge <span>2</span></h3>
-              <p>The design guide and Framer's own DSL reference and guides.</p>
-              <ul class="chips">
-                <li>design_guide</li>
-                <li>framer_docs</li>
               </ul>
             </div>
             <div class="group">
@@ -506,8 +573,9 @@
             <p class="kicker">Privacy</p>
             <h2>Your projects and keys never leave your machine.</h2>
             <p class="intro">
-              Sitewright runs on your computer and talks only to Framer. There is no Sitewright server, so there is
-              nothing to sign up for and nothing that sees your work.
+              Sitewright runs on your computer and talks to Framer. Beyond that it reads only public pages a tool
+              names: the Marketplace, the font catalogs, your published site. There is no Sitewright server, so there
+              is nothing to sign up for and nothing that sees your work.
             </p>
           </div>
           <ul class="checks">
@@ -566,8 +634,9 @@
               <summary>Do I need a Server API key?</summary>
               <div class="answer">
                 <p>
-                No. With the plugin alone the agent builds and edits pages, styles, breakpoints, CMS and translations. A
-                key adds effects, components and variants, rich text, screenshots and Framer's catalogs.
+                No. With the plugin alone the agent builds and edits pages, styles, breakpoints, CMS, redirects and
+                Marketplace components, and runs the checks. A key adds motion, variants, rich text, link styles,
+                translations, screenshots and Framer's catalogs.
                 </p>
               </div>
             </details>
@@ -577,7 +646,7 @@
                 <p>
                 It works in the editor, not on your live site: nothing is published unless you ask. Every change is in
                 the journal, and most can be undone with one click. The journal says when a change cannot be undone,
-                such as CMS edits for now, and returns what it removed.
+                such as a new CMS collection or field, and returns what it removed.
                 </p>
               </div>
             </details>
@@ -586,8 +655,8 @@
               <div class="answer">
                 <p>
                 Sitewright runs as a fast local server with the journal and undo, a layout audit after every change,
-                design rules from real builds, and the plugin path that works without a key. You can use it next to
-                Framer's tools.
+                checks before handover, design rules and motion recipes from real builds, the Marketplace, and the
+                plugin path that works without a key. You can use it next to Framer's tools.
                 </p>
               </div>
             </details>
