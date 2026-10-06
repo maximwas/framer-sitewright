@@ -29,7 +29,8 @@ question. A skipped question, or "decide yourself", takes the fallback in bracke
    colors from something in the concept's world whose tone changes across it (light on a wall, the sky, water, a fading
    print) and named with that source; flat when nothing there does. Under each palette, two links the user can open and
    send on (hex without #, joined by `-`): `https://coolors.co/<every color>` and
-   `https://www.realtimecolors.com/?colors=<text>-<background>-<accent>-<surface>-<second hue, else muted text>`.
+   `https://www.realtimecolors.com/?colors=<text>-<background>-<accent>-<surface>-<second hue, else muted text>`; when
+   the background is a gradient or a shader, a third: `https://instantgradient.com/app/<the gradient's colors>`.
 8. **Theme:** light, dark, or both following the device; both means a dark value on every token (light only).
 9. **Assets:** logo (SVG), photos, video, icons: all, logo only, or nothing yet (stock and named placeholders, listed
    at handoff; a drawn SVG mark without a logo).
