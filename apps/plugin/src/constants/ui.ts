@@ -1,8 +1,7 @@
 import type { UIOptions } from "@framer/plugin";
 import { CloseCode } from "@sitewright/core";
-import { Bot, Frame, Sparkles } from "lucide-react";
 import type { LinkStatus } from "../types/link.ts";
-import type { FlowNode, StatusCopy } from "../types/ui.ts";
+import type { StatusCopy } from "../types/ui.ts";
 
 /** The plugin's window: top right, out of the way of the canvas, wide enough for the setup commands. */
 export const PLUGIN_WINDOW: UIOptions = {
@@ -80,31 +79,3 @@ export const STOPPED_COPY: StatusCopy = {
   detail: "The connection to Claude Code stopped.",
   tone: "neutral",
 };
-
-/** How far behind the first line's sheen the second one starts, so the light passes from Claude Code to the project. */
-export const FLOW_SHEEN_DELAY_SECONDS = 0.5;
-
-/** The soft light that sweeps along a live line. */
-export const FLOW_SHEEN_STYLE = {
-  background: "linear-gradient(90deg, transparent, color-mix(in srgb, var(--sw-accent) 70%, transparent), transparent)",
-} as const;
-
-/** The links the plugin's window draws, from Claude Code to this project. */
-
-export const FLOW_NODES: readonly FlowNode[] = [
-  {
-    label: "Claude Code",
-    icon: Bot,
-    main: false,
-  },
-  {
-    label: "Sitewright",
-    icon: Sparkles,
-    main: true,
-  },
-  {
-    label: "This project",
-    icon: Frame,
-    main: false,
-  },
-];

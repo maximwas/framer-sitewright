@@ -1,7 +1,5 @@
 import type { Tone } from "@sitewright/ui";
-import type { LucideIcon } from "lucide-react";
 import type { WindowLink } from "../link/window-link.ts";
-import type { LinkStatus } from "./link.ts";
 
 /** What the plugin window says about the link. */
 export interface StatusCopy {
@@ -20,22 +18,4 @@ export interface SetupStep {
 
 export interface AppProps {
   readonly link: WindowLink;
-}
-
-export interface StatusNoteProps {
-  readonly state: LinkStatus["state"];
-  readonly detail: string;
-}
-
-export interface ConnectionFlowProps {
-  /** Claude Code reaches the project: requests run along the lines. */
-  readonly live: boolean;
-}
-
-/** One stop on the way from Claude Code to the project. */
-export interface FlowNode {
-  readonly label: string;
-  readonly icon: LucideIcon;
-  /** Sitewright itself, in the middle. */
-  readonly main: boolean;
 }

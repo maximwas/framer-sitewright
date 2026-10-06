@@ -1,4 +1,3 @@
-import type { ActivityFeed } from "@sitewright/ui";
 import type { WebSocketClient } from "../api/web-socket-client.ts";
 
 /** Where the page's socket stands; `unreachable` keeps retrying, but long enough that the page says so. */
@@ -15,7 +14,6 @@ export interface AppProps {
 
 export interface AppHeaderProps {
   readonly connection: ConnectionState;
-  readonly feed: ActivityFeed;
 }
 
 /**

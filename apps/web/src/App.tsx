@@ -16,7 +16,7 @@ export function App({ client }: AppProps) {
     <MotionConfig reducedMotion="user">
       <main className="flex h-full justify-center sm:p-6">
         <div className="relative flex h-full min-h-0 w-full max-w-2xl flex-col overflow-hidden bg-sw-surface sm:rounded-2xl sm:border sm:border-sw-line-strong sm:shadow-sw">
-          <AppHeader connection={connection} feed={feed} />
+          <AppHeader connection={connection} />
           <ActivityPanel feed={feed} />
           <div className="px-3.5 pb-2 empty:hidden">
             <SupportLinks />

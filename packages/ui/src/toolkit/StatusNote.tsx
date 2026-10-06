@@ -1,6 +1,6 @@
-import { FADE } from "@sitewright/ui";
 import { AnimatePresence, motion } from "motion/react";
-import type { StatusNoteProps } from "../types/ui.ts";
+import { FADE } from "../constants/toolkit.ts";
+import type { StatusNoteProps } from "../types/toolkit.ts";
 
 /** What the state means and what to do, sliding in when the state changes. */
 export function StatusNote({ state, detail }: StatusNoteProps) {

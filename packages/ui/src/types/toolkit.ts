@@ -108,3 +108,22 @@ export interface ToastState {
   show(message: string, variant: NoticeVariant, link?: string): void;
   dismiss(id: number): void;
 }
+
+export interface ConnectionFlowProps {
+  /** Claude Code reaches the project: requests run along the lines. */
+  readonly live: boolean;
+}
+
+/** One stop on the way from Claude Code to the project. */
+export interface FlowNode {
+  readonly label: string;
+  readonly icon: LucideIcon;
+  /** Sitewright itself, in the middle. */
+  readonly main: boolean;
+}
+
+export interface StatusNoteProps {
+  /** What the note is about: a new one slides in when it changes. */
+  readonly state: string;
+  readonly detail: string;
+}

@@ -1,10 +1,8 @@
-import { StatusPill, SupportLinks, Toaster, WindowBar } from "@sitewright/ui";
+import { ConnectionFlow, StatusNote, StatusPill, SupportLinks, Toaster, WindowBar } from "@sitewright/ui";
 import { MotionConfig } from "motion/react";
 import { useStore } from "zustand";
 import { ActionButton } from "./components/ActionButton.tsx";
-import { ConnectionFlow } from "./components/ConnectionFlow.tsx";
 import { SetupGuide } from "./components/SetupGuide.tsx";
-import { StatusNote } from "./components/StatusNote.tsx";
 import type { AppProps } from "./types/ui.ts";
 import { describeStatus } from "./utils/describe-status.ts";
 

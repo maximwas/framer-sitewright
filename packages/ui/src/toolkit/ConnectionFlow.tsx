@@ -1,10 +1,10 @@
-import { FLOW_NODES, FLOW_SHEEN_DELAY_SECONDS, FLOW_SHEEN_STYLE } from "../constants/ui.ts";
-import type { ConnectionFlowProps } from "../types/ui.ts";
+import { FLOW_NODES, FLOW_SHEEN_DELAY_SECONDS, FLOW_SHEEN_STYLE } from "../constants/flow.ts";
+import type { ConnectionFlowProps } from "../types/toolkit.ts";
 
 /**
  * Claude Code → Sitewright → this project. While connected, the lines are solid and a soft light sweeps along them in
  * turn, and a live dot breathes on Sitewright; otherwise the lines are dashed and still. CSS animations: a re-render
- * (the status, every second) never restarts them.
+ * (the status, every second) never restarts them. The plugin and the journal window draw the same one.
  */
 export function ConnectionFlow({ live }: ConnectionFlowProps) {
   return (

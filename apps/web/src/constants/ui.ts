@@ -25,9 +25,9 @@ export const CONNECTION_STATUS: Readonly<Record<ConnectionState, { readonly labe
 export const UNREACHABLE_HINT =
   "The MCP server is not running: open Claude Code with the server connected (/mcp). This page reconnects by itself.";
 
-/** Under the header: whether this window carries the Framer plugin's bridge. Nothing when no plugin opened it. */
-export const RELAY_LABELS: Readonly<Record<RelayStatus, string | null>> = {
-  "no-plugin": null,
+/** Under the connection flow: whether this window carries the Framer plugin's bridge, and what to do. */
+export const RELAY_LABELS: Readonly<Record<RelayStatus, string>> = {
+  "no-plugin": "This page shows the journal. Claude Code reaches Framer through the window the plugin's Connect opens.",
   waiting: "Waiting for the Framer plugin…",
   connected: "Framer plugin connected through this window. Keep it open.",
   closed: "Framer plugin disconnected. Click Connect in the plugin to reconnect.",
