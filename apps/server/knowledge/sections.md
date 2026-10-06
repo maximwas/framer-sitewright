@@ -26,6 +26,18 @@ look follows `direction`.
 - Left-aligned with a visual beside or over it beats centered-everything; centered only when the composition is built
   around the center (a single large image below).
 - Trust in the first screen: a logo strip or a rating right under the actions.
+- A card laid over the hero media (a field note, a stat) is for desktop: give it a boolean variable and hide it on
+  tablet and phone, where it covers the headline. The hero stage takes `height="auto"` with a `minHeight`, never a
+  fixed height: the headline wraps more on narrow screens.
+
+## Statement
+
+- One large sentence between hero and features, the problem and the answer in two tones (muted hook, primary answer).
+- Photos between words (a trend of top Framer sites): a wrapping horizontal stack of short text chunks (two or three
+  words each, `width="auto"`, the statement style) and image pills (radius 100, 2:1, about one line high: 112×56 on
+  desktop, 88×44 tablet, 60×30 phone), centered. Each pill shows the words before it.
+- Motion: it appears once as it enters, chunk after chunk (`appearEffect` y 24 and opacity 0, 0.06s apart; pills scale
+  from 0.6). Not a scroll-scrubbed fade: that leaves the text faint while people read it.
 
 ## Features
 
@@ -39,6 +51,17 @@ look follows `direction`.
 
 - Testimonials with a full name, photo, role and a specific outcome; real logos from the Logos icon set in one neutral
   color. Believable numbers (47 clients, 4.8 rating), never round ones.
+- A testimonial card is one solid card (`layout`, Cards made of two pieces). On phone give the component a **Compact**
+  variant: the quote, name and role only, no photo, 24px padding, the quote one style smaller.
+- A slider: offer a free Marketplace carousel (`marketplace_browse` components, `carousels`) or a native one with a
+  variant per slide; see `template`, Carousels with slots, for how slots and breakpoints work.
+
+## Numbers
+
+- Results read best as before → after, not as four big numbers: per row the metric and its context on the left, two
+  bars on the right (a muted "before" bar at 100%, an accent "after" bar at its ratio, e.g. 4 of 11 days = 36%) with
+  the values beside them. Each bar sits in a clipped track and slides in from `x -720` on view, the after bar 0.2s
+  later. One large stat (47 companies) can sit beside the heading.
 
 ## Pricing
 
@@ -53,4 +76,12 @@ look follows `direction`.
 
 - One sentence restating the value, the same button as the hero. A change of background (dark band) is enough; it does
   not need a card.
+- Put a person next to the action: a 56–64px round portrait, name and role, and when they reply ("Takes every first
+  call. Replies within one working day"). A service is bought from people.
 - Footer on the same container edges as the header: logo, short link groups, contact, legal, the current year.
+
+## 404
+
+- Tell a small story from the site's subject instead of "Oops": an operations studio lost the page "in a handoff" and
+  shows the trail with its own Step component (link clicked → handed off → lost here), next to a photo of an empty
+  place. Two actions: back home, and report the broken link (`mailto:` with a subject).

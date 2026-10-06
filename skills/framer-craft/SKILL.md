@@ -66,6 +66,9 @@ The `framer` skill gives you the CLI, the DSL grammar and Framer's design rules:
 - **Things that open** (accordion, menu, dropdown) animate their height, not `visible`. Framer's own FAQ example uses
   `visible="false"`, and that pops. See [motion.md](references/motion.md).
 - **A temp id lives for the whole session.** Never reuse one, even after `DEL`. Use fresh names in every batch.
+- **Photos come from the subject's world in one warm, candid art direction,** picked by looking at candidates side by
+  side; people in testimonials and contact blocks must read. See [assets.md](references/assets.md).
+- **Hover changes one thing:** a color or a small arrow cue, never a label that rolls up or a pill behind a nav link.
 - **Code** (code components, custom code, overrides) only when the user asks for it, or when the canvas cannot do the
   task. In that case, explain why before you write any code.
 - **Icons are interface, not illustration** (Practice). A section's visual is a real image, product shot, shader or

@@ -8,7 +8,12 @@
     `scrollTargetEnabled="true"` and `elementId`); `target="null"` is the initial state.
 - **Write every value of a state.** A state without explicit values gets Framer's defaults (opacity 0.5, scale 0.5),
   so always write `opacity 1`, `scale 1` and the rest. An identity state is stored as `{}`.
-- **Write `sections.<i>.*` attribute by attribute.**
+- **Write `sections.<i>.*` attribute by attribute,** numbers without quotes (`sections.0.opacity=0.15`): a quoted
+  value inside a list fails with "Expected number", and a JSON string for `sections` fails the same way. A new effect's
+  first state already has `scale 0.5` from the preset, so writing only its opacity keeps a scale that makes
+  left-aligned text drift sideways. `styleTransformEffect=null` removes the effect.
+- **A statement does not need scroll scrubbing:** a fade tied to scroll leaves the text faint while people read it.
+  An `appearEffect` per chunk (y 24, opacity 0, 0.06s apart) reads as intended.
 - **Removing extra states:** `styleTransformEffect.sections.<i>="null"`, from the highest index down.
 - **`onScrollTarget` interpolates; it does not switch.** As a target's top crosses the viewport line (`viewport`
   start / middle / end = 0 / 0.5 / 1 of the window height) and then its bottom, the value moves linearly from the

@@ -73,13 +73,19 @@ Build every page as Main > Section > Container > Content:
   (primary), Laptop 1280, Tablet 810 and Phone 390.
 - **All breakpoints before text style sizes.** A style's breakpoint slots start at the page breakpoints that exist when
   they are written; a breakpoint added later leaves the old starts in place, and the style must be recreated to follow
-  it.
+  it. Read every style's sizes back before handoff: a leftover slot (starting at 1200) left tablet sizes smaller than
+  phone ones (display 38 on tablet, 44 on phone; body 14 on tablet, 18 on phone). Tablet sits between laptop and phone.
+- **A page on a layout template takes its breakpoints' fill from the template:** a `fill` on the page breakpoint is
+  refused; set it on the template's breakpoints.
 - **Override a node on a replica** with the compound id `<replica id><node id>`, written with no separator.
   - Use real ids. A real replica id joined with a temp id from the same batch fails: create the node in one batch, then
     override it in the next.
   - Temp-plus-temp compounds inside a new component do work.
 - **An override cannot be reset to inherit** through the DSL. Writing the primary's value only pins that value.
-- **On phone**, grids usually become vertical stacks. Check text wrapping and overflow on every replica.
+- **On phone**, grids usually become vertical stacks. Check text wrapping and overflow on every replica. Cards that
+  stick and stack go `position="relative"` on phone when they are taller than the screen, or their bottoms can never
+  be read. A card laid over the hero media is hidden on tablet and phone (a boolean variable), where it covers the
+  headline.
 - **To drop a side border on a breakpoint**, make its color transparent. `borderRight="0"` gives the error "Border is
   incomplete".
 - **A connector that turns into a down arrow:** a horizontal connector (width 40px) gets `rotation="90deg"` in a

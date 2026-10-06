@@ -35,6 +35,15 @@
 - **States:** interactive components get hover and pressed gesture variants, plus disabled or loading where it applies
   (forms: Default, Pending, Success; see [cms-forms.md](cms-forms.md)).
 
+## Cards of two pieces
+
+- **A text panel and a photo side by side make one solid card:** the root gets the card fill, the radius,
+  `overflow="clip"`, `padding="0px"`, `gap="0px"`; the photo runs to the edges without its own radius. A transparent gap
+  between the pieces shows what is behind them: the card under it in a sticky stack, the next slide in a carousel.
+- **A phone variant instead of a squeezed card:** a testimonial gets a `Compact` variant (`CREATE_VARIANT <tmp>
+  from="<primary variant id>";` then `SET <tmp> name="Compact"`): quote, name and role, the photo hidden, 24px
+  padding, the quote one style smaller. The phone slides use it.
+
 ## Variables are controls
 
 - **Create and bind:** `+Variable label name="Label" type="string" initialValue="Get started" scope="btn";`, then bind
@@ -92,6 +101,11 @@ Use them only when the user asks, or when the canvas cannot do the task.
 - **Image controls** (`ControlType.Image`) cannot be set through the API. The user picks the image in the editor.
 - **Slots:** set `$control__<slot>.<i>="<id>"` to a layer that is a direct child of the page (a `WebPageNode` child,
   outside the breakpoints). Park slot content next to the Desktop frame.
+- **One carousel per width.** Many carousels measure the first slide once and never resize it (Stacking Slider), and
+  the canvas renders a breakpoint copy with the primary's slots. Build one instance per width with its own slides
+  (desktop 1120, tablet 680, phone 300 wide) and show each on its breakpoints only with `visible`.
+- **Object controls on copies:** setting a carousel's object controls on the primary instance does not reach its
+  breakpoint copies. Set each copy too, and replace a `tween` default `transition` with a spring.
 - **In the canvas, slot content is Framer's internal renderer**, not your component. Props that a carousel injects
   (for example `variant` for the active card) do not reach it there, only on the site. Set the cards' variants by hand
   for the canvas.

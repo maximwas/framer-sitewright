@@ -13,6 +13,13 @@
   - Assets are addressed by content.
   - Assets cannot be deleted through the API.
 - **Images from a design:** export at 2×, cut out with alpha, save as WebP.
+- **One art direction from the subject's world:** warm, natural light, candid shots of the places and people the
+  client serves. No posed studio portraits, corporate headshots, gadgets on a bed, or brand logos (browser and app
+  icons) in a template. A photo set between words shows those words.
+- **Pick by looking:** query about eight candidates per slot, view the thumbnails side by side, and take each slot from
+  a different shoot.
+- **People must read:** testimonials and contact blocks show the face plainly, in a setting that fits the role. Crop
+  tight (Unsplash URLs take `&rect=x,y,w,h` or `&crop=faces`) and look at the crop at its real size.
 
 ## Icons
 
@@ -51,3 +58,6 @@
   `RootNode`.
 - **Per page:** overrides go in the page's own metadata.
 - **Builds:** for a full site build, set the site metadata when the project has none.
+- **The full set:** `metadata.favicon` (the mark as SVG) and `metadata.faviconDark`, `metadata.appleTouchIcon` (a
+  180×180 PNG of the mark on the base color) and `metadata.socialImage` (1200×630, a screenshot of the hero). Redo all
+  of them after a rebrand: old colors in the tab icon give it away.

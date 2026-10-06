@@ -47,6 +47,16 @@ Container > Content); motion follows [motion.md](motion.md). **Practice** unless
   can add more.
 - **Logos** come from the Logos icon set or the project's vector set, in one neutral color.
 - **Numbers** use tabular figures (`openTypeFontFeatures.tnum="on"`) when they sit in columns.
+- **Results as before → after:** per row the metric and its context, then two bars in clipped tracks, a muted
+  "before" at 100% and an accent "after" at its ratio (4 of 11 days = 36%), values beside them; each bar slides in
+  from `x -720` on view. It says more than four big numbers in a row.
+- **On phone** a testimonial loses its photo (a Compact variant, [components.md](components.md)), not its words.
+
+## Statement
+
+- **Photos between words:** a wrapping, centered stack of short text chunks (two or three words, `width="auto"`) and
+  image pills (radius 100, 2:1, one line high: 112×56, 88×44 tablet, 60×30 phone). The hook in a muted color, the
+  answer in the primary. It appears once, chunk by chunk ([scroll.md](scroll.md)).
 
 ## Pricing
 
@@ -60,7 +70,10 @@ Container > Content); motion follows [motion.md](motion.md). **Practice** unless
 
 ## Closing call to action and footer
 
-- **Closing CTA:** one sentence restating the value, the same primary button as the hero.
+- **Closing CTA:** one sentence restating the value, the same primary button as the hero. Add the person who answers:
+  a round 56–64px portrait, name, role and when they reply.
+- **404:** a small story from the site's subject (an operations studio's page "got lost in a handoff", told with its
+  own Step cards), a photo of an empty place, and two actions: home, and report the broken link.
 - **Footer:** logo, short navigation groups, contact, social icons, legal links, the year. Part of the layout template
   with the header.
 

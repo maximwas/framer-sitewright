@@ -63,6 +63,12 @@ Decide the motion once per site, like a design token set, and reuse it everywher
 - **Surfaces:** `hoverEffect.backgroundColor` or `hoverEffect.opacity`, always with `hoverEffect.scale="1"`. Scale
   only when the user asks for it.
 - **Components:** use gesture variants (`gesture="hover"`, `"pressed"`). Effects on a variant root are refused.
+- **One change per hover:** a color, or a small directional cue. Users called a label that rolls up (a second copy in
+  a clipped mask), a pill popping in behind a nav link, or a scale jump glitches. Nav links change only their text
+  color.
+- **An arrow cue without layout shift:** after the label, an `Arrow` frame (`overflow="clip"`, `width="0px"`,
+  `stackDistribution="end"`) holds "→" in the button's text style. The hover variant sets it to `22px` and takes 11px
+  off each side padding (37 → 26), so the button keeps its width and the label slides left as the arrow arrives.
 
 ## Springs: which survive where
 

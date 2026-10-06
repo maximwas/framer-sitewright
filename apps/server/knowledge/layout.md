@@ -82,7 +82,20 @@ fix any of these for you, and most fail silently.
 - On phone: display sizes ×0.4–0.67, side padding 16–24 (20 is common), rows of 3+ become columns, navigation becomes
   a menu, button labels stay on one line, tap targets at least 44px.
 - Hero: `height="auto"` + `minHeight="100vh"` when it needs the screen, never a fixed `100vh`.
+- Text style sizes per breakpoint: read `text_styles_list` before trusting them. A style can keep a slot from older
+  breakpoints (one starting at 1200), and its tablet sizes can end up smaller than its phone sizes. Tablet sits between
+  laptop and phone (display 96 / 72 / 40 for 1280 / tablet / phone). After styles change through the Plugin API, run
+  `framer_connect { reconnect: true }` before the next DSL batch.
+- A page that uses a layout template takes its breakpoints' fill from the template: set it on the template's
+  breakpoints.
 - No horizontal scroll: no px widths above the replica width minus padding, no absolute layers outside the frame.
+
+## Cards made of two pieces
+
+- A card of a text panel and a photo side by side is one solid card: the component's root gets the card fill
+  (`Surface/Card`), the radius and `overflow="clip"`, `padding="0px"` and `gap="0px"`; the photo runs to the edges
+  with no radius of its own, the root clips the corners. A transparent gap between the pieces shows whatever is behind
+  them: the card under it in a sticky stack, the next slide in a slider.
 
 ## Layers stretched over their parent
 

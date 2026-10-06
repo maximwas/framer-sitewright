@@ -62,3 +62,32 @@ adds what changes when the site is a product.
   - support contact and refund terms.
 
   Nothing in the template advertises anything else.
+
+## A "Start here" page for buyers
+
+- A design page named "Start here" with one board: a short heading and six to nine cards, one per thing a buyer edits
+  — colors (which token rebrands the accent), type (the families and where sizes live), hero media, the components on
+  the home page, slider slides, the CMS collections, contact details (every place they appear), motion, and what to
+  set before publishing. Plain words, with the panel names Framer shows (Assets → Colors, Page Settings).
+
+## Site metadata
+
+- Site-wide values live on the root node: `SET rootNode metadata.title="…" metadata.description="…"
+  metadata.favicon="…" metadata.faviconDark="…" metadata.appleTouchIcon="…" metadata.socialImage="…";`. Pages
+  override them only when they differ (the 404 sets `noIndex`).
+- Favicon: the brand mark as SVG, a light and a dark one; Apple touch icon: a 180×180 PNG of the mark on the base
+  color; social image: 1200×630, a screenshot of the hero (`node_screenshot` with `clip`). Update them whenever the
+  brand changes: old colors in the tab icon give a redesign away.
+
+## Carousels with slots
+
+- A Marketplace carousel takes its slides through a slot control: `$control__slides.0="<id>"
+  $control__slides.1="<id>"`, each id a layer that sits directly on the page canvas, next to the breakpoints (create
+  the slides there with `parent="<page id>"`, name them, and place them beside the breakpoints).
+- Many carousels measure the first slide and never resize it (Stacking Slider), and Framer's canvas renders a
+  breakpoint copy with the primary's slots. So build one carousel per width with its own slides (desktop 1120, tablet
+  680, phone 300) and show each on its breakpoints only (`visible`), instead of overriding the slots on a copy.
+- Object controls of a code component (its `transition`, arrow styles) go through `component_controls_set`, once per
+  instance and once per breakpoint copy: setting the primary does not reach the copies. A tween default becomes a
+  spring there too.
+

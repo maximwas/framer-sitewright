@@ -40,6 +40,10 @@ brief instead of asking again.
   property, never a wrapper frame around its instance.
 - **Headings:** `balance: true` on their text styles; display tracking negative, line height ≤ 1.1.
 - **Spacing from the scale** (4…128), grouped by distance; one section padding; text never touches a visible edge.
-- **Real images,** never icons as the visual; a page without images is unfinished.
+- **Real images,** never icons as the visual; a page without images is unfinished. One warm, candid art direction
+  from the subject's world; pick each photo from a contact sheet of candidates; people in testimonials and contact
+  blocks must read.
+- **Cards of two pieces** (text panel + photo) are one solid card: fill, radius and clip on the root, no gap.
+- **Hover changes one thing:** a color or an arrow cue; never a label that rolls up or a pill behind a nav link.
 - **After every `design_apply`, read its `audit`** and fix every defect before the next section; run `layout_audit`
   on the page before calling it done, then look at it (screenshots with a key, or ask the user).

@@ -39,6 +39,14 @@ something on the list, the brief wins.
   product compositions without fake interfaces.
 - Asset order: the client's own material, then stock (`images_search` with a key, or `image_upload` by URL), then a
   clearly named placeholder frame with the size it needs — and tell the user. Never fill the gap with icons.
+- **Photos from the subject's world, in one art direction:** warm, natural light, candid shots of the places and people
+  the client serves (for an operations studio: depots, warehouses, bakeries, workshops, real desks). Never posed studio
+  portraits, corporate headshots against glass, gadgets on a bed, or brand logos (browser and app icons) in a
+  template. A picture set between words shows those exact words.
+- **Choose by looking, not by captions:** pull about eight candidates per slot, put their thumbnails side by side (one
+  contact sheet) and pick; one shoot per slot, so two cards never show the same people.
+- **People must read:** a testimonial or a contact block shows the person plainly, in a setting that fits their role.
+  Crop portraits tight (an Unsplash URL takes `&rect=x,y,w,h` or `&crop=faces`) and look at the crop at its real size.
 
 ## Looks that read as generated (avoid as defaults)
 

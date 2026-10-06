@@ -56,8 +56,10 @@ ready". Read [design-process.md](design-process.md) first; this adds what change
 - **Controls for what changes:** label, link, image, variant. Links are link variables bound to the root (see
   [components.md](components.md)).
 - **Dark values on every token.**
-- **A "Start here" design page,** unpublished: the fonts, styles, components and collections, and how to change logo,
-  colors and content.
+- **A "Start here" design page,** unpublished: one board with a heading and six to nine cards, one per thing a buyer
+  edits: colors (which token rebrands the accent), type, hero media, the home page components, carousel slides (where
+  each width's slides sit on the canvas), CMS collections, contact details (every place they appear), motion, and what
+  to set before publishing. Name the panels as Framer shows them (Assets → Colors, Page Settings).
 
 ## Before listing
 

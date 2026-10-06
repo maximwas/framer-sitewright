@@ -25,17 +25,38 @@ with the effects named per section, and let the user choose.
     every section;
   - images zoom slightly on hover inside a clipped frame (a hover variant of the card, image `scale` 1.05);
   - a ticker of client logos or words (`tickerEffect` on a stack);
-  - one statement that reveals line by line as it scrolls in (`styleTransformEffect` opacity 0.15 → 1 per line);
+  - one statement that appears chunk after chunk as it enters (`appearEffect` `onInView`, y 24 and opacity 0, 0.06s
+    apart), not a scroll-scrubbed fade, which leaves the text faint while people read it (`sections`, Statement);
   - a slider of testimonials (a component with a variant per slide, arrows that `SET_VARIANT`, or a Marketplace
     carousel).
 - **Expressive**, everything above plus:
   - a pinned scene that changes step by step (below);
   - cards that stick and stack as the page scrolls (each `position="sticky"` with a growing `positionStickyTop`, the
-    one under it scaled to 0.94 by a scroll transform);
+    one under it scaled to 0.94 by a scroll transform). Each card needs one opaque root (`layout`, Cards made of two
+    pieces), or the card under it shows through; turn sticky off on phone (`position="relative"` on the copy) when a
+    card is taller than the screen, or its bottom can never be read;
   - parallax on large images (`styleTransformEffect` y inside a clipped frame);
   - a horizontal gallery moved by the vertical scroll.
 
 Every one of them is a spring (see Transitions above); check them in Preview or on the published site.
+
+## Hover on buttons and links
+
+- One change per hover: a color, or a small directional cue. No second copy of the label rolling up in a clipped mask,
+  no pill popping in behind a nav link, no `scale` jump: users read those as glitches.
+- Nav links: the text color changes (to the accent), nothing else.
+- Button with an arrow cue, no layout shift: after the label an `Arrow` frame (`overflow="clip"`, `width="0px"`,
+  `stackDistribution="end"`) holds a "→" in the button style; the hover variant sets it to `22px` and the button's side
+  padding 11px smaller each side (37 → 26 with an arrow of 22), so the button keeps its width and the label slides
+  left as the arrow comes in. The fill stays the same.
+
+## Scroll transforms: the start state
+
+- A new `styleTransformEffect` starts from Framer's preset, whose first section already has `scale: 0.5`: writing only
+  `sections.0.opacity` keeps that scale. Set `styleTransformEffect.sections.0.scale=1` unless the scale is wanted, and
+  read the effect back. Scaling left-aligned text scales it from its center, so the line drifts sideways.
+- Values inside the sections go without quotes in raw DSL (`styleTransformEffect.sections.0.opacity=0.15`);
+  `design_apply` xml writes a JSON list that way by itself. `styleTransformEffect=null` removes the effect.
 
 ## A pinned step section (scroll scene)
 
