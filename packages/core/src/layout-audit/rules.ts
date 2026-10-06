@@ -298,18 +298,26 @@ const nestedRadius: NodeRule = (node) => {
     });
 };
 
-/** A parent that hugs its content with a child that fills it: neither has a size, and Framer silently fixes one. */
+/**
+ * A parent that hugs its content with a child that fills it: neither has a size, and Framer silently fixes one. Along
+ * a stack's direction any filling child does it. Across it, children that fill a hugging row stretch to the tallest
+ * one's content (how cards get equal heights): only children with nothing inside leave the parent without a size.
+ */
 const fitParentFillChild: NodeRule = (node) =>
   (["width", "height"] as const).flatMap((axis) => {
-    if (sizeKind(attr(node, axis)) !== "fit") {
+    const along = alongAxis(node, axis);
+
+    if (along === null || sizeKind(attr(node, axis)) !== "fit") {
       return [];
     }
 
-    const filling = childrenOf(node).filter(
-      (child) => inFlow(child) && attr(child, axis)?.endsWith("fr") && !(axis === "width" && isText(child)),
-    );
+    const flow = childrenOf(node).filter(inFlow);
+    const filling = flow.filter((child) => attr(child, axis)?.endsWith("fr") && !(axis === "width" && isText(child)));
+    const conflict = along
+      ? filling.length > 0
+      : filling.length === flow.length && filling.every((child) => childrenOf(child).length === 0);
 
-    return filling.length === 0
+    return filling.length === 0 || !conflict
       ? []
       : [
           issue(
@@ -321,6 +329,21 @@ const fitParentFillChild: NodeRule = (node) =>
           ),
         ];
   });
+
+/**
+ * Whether an axis runs along the parent's layout (true), across it (false), or is not checked (null): a stack runs
+ * along its direction, a grid along its width (its rows size to their cells), a frame without layout along both.
+ */
+function alongAxis(node: SerializedNode, axis: "width" | "height"): boolean | null {
+  switch (layoutOf(node)) {
+    case "stack":
+      return (directionOf(node) === "horizontal") === (axis === "width");
+    case "grid":
+      return axis === "width" ? true : null;
+    default:
+      return true;
+  }
+}
 
 /** Text inside a visible surface needs room from its edges. */
 const edgeFlushText: NodeRule = (node) => {

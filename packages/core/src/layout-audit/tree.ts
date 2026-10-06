@@ -85,9 +85,35 @@ export function paddingOf(node: SerializedNode): readonly [number, number, numbe
   return [top, right, bottom, left];
 }
 
-/** A visible surface: a card or a band, not a plain wrapper. */
+/**
+ * A visible surface: a card or a band, not a plain wrapper. A border on one or two sides (a divider row, read through
+ * the Plugin API as "1px 0px 0px 0px solid …") draws no box, so it makes no surface.
+ */
 export function hasSurface(node: SerializedNode): boolean {
-  return attr(node, "fill") !== null || attr(node, "border") !== null || attr(node, "backgroundImage") !== null;
+  return attr(node, "fill") !== null || boxBorder(attr(node, "border")) || attr(node, "backgroundImage") !== null;
+}
+
+/** Whether a border shorthand ("1px solid …", "1px 0px 0px 0px solid …") draws both sides of a box. */
+function boxBorder(border: string | null): boolean {
+  if (border === null) {
+    return false;
+  }
+
+  const widths: number[] = [];
+
+  for (const part of border.trim().split(/\s+/)) {
+    const width = /^\d+(?:\.\d+)?(?:px)?$/.test(part) ? Number.parseFloat(part) : null;
+
+    if (width === null) {
+      break;
+    }
+
+    widths.push(width);
+  }
+
+  const [top = 1, right = top, , left = right] = widths;
+
+  return right > 0 && left > 0;
 }
 
 /** Where a fill-width text's lines sit: its own alignment, else its text style's. */

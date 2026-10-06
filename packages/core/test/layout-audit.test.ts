@@ -544,4 +544,78 @@ describe("layout audit", () => {
       expect(rules, rule).not.toContain(rule);
     }
   });
+
+  it("regression: cards filling the height of a row that hugs it are the equal-height pattern, not a fixed size", () => {
+    const card = (title: string) =>
+      node(
+        "FrameNode",
+        "Card",
+        {
+          layout: "stack",
+          stackDirection: "vertical",
+          stackAlignment: "start",
+          stackDistribution: "start",
+          padding: "32px",
+          fill: "#ffffff",
+          width: "1fr",
+          height: "1fr",
+        },
+        [text("Title", "Heading 3", title)],
+      );
+    const row = node(
+      "FrameNode",
+      "Row",
+      {
+        layout: "stack",
+        stackDirection: "horizontal",
+        stackAlignment: "start",
+        stackDistribution: "start",
+        width: "1fr",
+        height: "auto",
+      },
+      [card("Audit"), card("Rebuild")],
+    );
+    const column = node(
+      "FrameNode",
+      "Column",
+      {
+        layout: "stack",
+        stackDirection: "vertical",
+        stackAlignment: "start",
+        stackDistribution: "start",
+        width: "1fr",
+        height: "auto",
+      },
+      [card("Retainer")],
+    );
+    const fills = (target: SerializedNode) =>
+      auditTree(target, context()).filter((found) => found.rule === "fit-parent-fill-child");
+
+    expect(fills(row)).toEqual([]);
+    expect(fills(column)).toHaveLength(1);
+  });
+
+  it("regression: a divider row (a border on one side, as the Plugin API reads it) is no card that needs side padding", () => {
+    const row = (border: string) =>
+      node(
+        "FrameNode",
+        "Row",
+        {
+          layout: "stack",
+          stackDirection: "horizontal",
+          stackAlignment: "start",
+          stackDistribution: "start",
+          padding: "28px 0px",
+          border,
+          width: "1fr",
+          height: "auto",
+        },
+        [text("Title", "Heading 3", "Approvals live in someone's inbox")],
+      );
+    const flush = (border: string) =>
+      auditTree(row(border), context()).filter((found) => found.rule === "edge-flush-text");
+
+    expect(flush("1px 0px 0px 0px solid var(--token-line)")).toEqual([]);
+    expect(flush("1px solid var(--token-line)")).toHaveLength(1);
+  });
 });
