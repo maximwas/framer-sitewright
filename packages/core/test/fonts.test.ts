@@ -9,7 +9,7 @@ describe("font catalog", () => {
     const families = await fontFamilies(createFakeRuntime().runtime);
 
     expect(resolveFontFamily(families, "inter")).toBe("Inter");
-    expect(() => resolveFontFamily(families, "Comic")).toThrow(/exact family name/);
+    expect(() => resolveFontFamily(families, "Comic")).toThrow(/fonts_search/);
     expect(() => assertFontVariant(families, "Inter", 900, "normal")).toThrow(
       /Available: 400 italic, 400 normal, 700 normal/,
     );

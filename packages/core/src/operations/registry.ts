@@ -2,6 +2,7 @@ import type { AnyOperation } from "../types/operations.ts";
 import { fileUpload } from "./assets/file-upload.ts";
 import { iconsSearch } from "./assets/icons-search.ts";
 import { imageUpload } from "./assets/image-upload.ts";
+import { imagesSearch } from "./assets/images-search.ts";
 import { shadersRead } from "./assets/shaders-read.ts";
 import { svgAdd } from "./assets/svg-add.ts";
 import { cmsCollectionCreate, cmsCollectionDelete, cmsCollectionsList } from "./cms/collections.ts";
@@ -75,6 +76,7 @@ export const OPERATIONS: readonly AnyOperation[] = [
   projectCapabilities,
   projectEditorUrl,
   projectPublish,
+  imagesSearch,
   imageUpload,
   fileUpload,
   svgAdd,

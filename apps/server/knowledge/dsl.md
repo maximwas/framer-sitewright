@@ -35,11 +35,12 @@ something else; every rule here was seen on a live project.
 
 ## Design system
 
-- `color_tokens_*` and `text_styles_*`: a font family from Framer's library or uploaded to the project.
+- `color_tokens_*` and `text_styles_*`; `fonts_search` for Framer's families, `fonts_discover` for Google Fonts and
+  Fontshare.
 - A "/" in a style or component name makes a folder (`name="Content/Card"`). Group components by role (Brand,
   Navigation, Controls, Content); keep style names flat unless the user wants folders. A folder has no API of its own:
   it disappears with its last item, so empty it with the `folders` option of the delete tools.
-- When the DSL refuses a library family ("No available font variant"), set the font with
+- When the DSL refuses a library family that `fonts_search` lists ("No available font variant"), set the font with
   `text_styles_upsert` `via: "plugin-api"`. Fonts uploaded to the project go through the DSL; Framer swaps a weight
   the project lacks without an error, and `text_styles_upsert` lists those styles in `fontFallbacks`: tell the user
   which weight to upload.
@@ -322,7 +323,7 @@ keeps depends on the attribute:
 
 - Icons: `icons_search`, then `+IconNode set="<set id>" $control__icon="<exact name>"`. A Phosphor icon is an outline
   until `$control__alpha="1"` fills it (rating stars).
-- Photos: `fill="<url>"` with `altText` (the user's own or a URL they give). Own files: `image_upload`, videos, PDFs and fonts:
+- Photos: `images_search`, then `fill="<url>"` with `altText`. Own files: `image_upload`, videos, PDFs and fonts:
   `file_upload`. An Unsplash URL crops itself with `&rect=x,y,w,h` or `&crop=faces`.
 - Logos and own icons are vectors: `svg_add` through the plugin (parentId places it). To reuse one across the site, ask
   the user to add it to a project vector set (the API cannot), then place it as an `IconNode` of that set. An icon from
