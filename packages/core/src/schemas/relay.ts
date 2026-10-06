@@ -49,6 +49,8 @@ export const PluginToWindowSchema = z.discriminatedUnion("kind", [
     ...envelope,
     kind: z.literal("hello"),
     plugin: PluginInfoSchema,
+    /** The editor tab is hidden: the browser then runs the plugin's timers about once a minute. */
+    hidden: z.boolean().exactOptional(),
   }),
   z.object({
     ...envelope,

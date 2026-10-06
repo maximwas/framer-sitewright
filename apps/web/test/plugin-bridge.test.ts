@@ -15,7 +15,7 @@ const PLUGIN_INFO = {
 };
 
 /** A plain ws server plays the MCP server; an EventTarget plays this window, a fake window the plugin that opened it. */
-async function startBridge(silentMs?: number, readyMs?: number) {
+async function startBridge(silentMs?: number, readyMs?: number, hiddenSilentMs?: number) {
   const server = new WebSocketServer({
     host: "127.0.0.1",
     port: 0,
@@ -47,6 +47,7 @@ async function startBridge(silentMs?: number, readyMs?: number) {
     opener: readyMs === undefined ? null : (plugin as unknown as Window),
     ...(silentMs === undefined ? {} : { silentMs }),
     ...(readyMs === undefined ? {} : { readyMs }),
+    ...(hiddenSilentMs === undefined ? {} : { hiddenSilentMs }),
   });
   const fromPlugin = (data: unknown, origin = PLUGIN_ORIGIN, source: unknown = plugin) =>
     events.dispatchEvent(
@@ -235,6 +236,38 @@ it("regression: lets a plugin that stopped saying hello go, so calls fail fast, 
   // It comes back from the same window: a new session.
   hello();
   await vi.waitFor(() => expect(sockets).toHaveLength(2));
+});
+
+it("regression: keeps a plugin whose editor tab is hidden: the browser slows its hellos to one a minute", async () => {
+  // Seen: with the Framer tab in the background the plugin dropped every minute, and every call failed meanwhile.
+  const { sockets, fromPlugin } = await startBridge(200, undefined, 5_000);
+
+  fromPlugin(
+    relayMessage({
+      kind: "hello",
+      plugin: PLUGIN_INFO,
+      hidden: true,
+    }),
+  );
+  await vi.waitFor(() => expect(sockets).toHaveLength(1));
+
+  let closed = false;
+
+  sockets[0]?.once("close", () => {
+    closed = true;
+  });
+  await new Promise((resolve) => setTimeout(resolve, 600));
+  expect(closed).toBe(false);
+
+  // Back in view, it says hello at once and the short limit applies again.
+  fromPlugin(
+    relayMessage({
+      kind: "hello",
+      plugin: PLUGIN_INFO,
+      hidden: false,
+    }),
+  );
+  await vi.waitFor(() => expect(closed).toBe(true));
 });
 
 it("regression: keeps saying ready to the plugin that opened it, so a reloaded plugin links again without Connect", async () => {

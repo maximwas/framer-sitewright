@@ -92,6 +92,7 @@ it("opens the journal window, says hello until it answers, and shows the window'
       relayMessage({
         kind: "hello",
         plugin: PLUGIN_INFO,
+        hidden: false,
       }),
     ),
   );

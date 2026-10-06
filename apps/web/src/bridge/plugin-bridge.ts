@@ -7,7 +7,12 @@ import {
   relayMessage,
   type WindowToPlugin,
 } from "@sitewright/core";
-import { PLUGIN_CLOSED_POLL_MS, PLUGIN_SILENT_MS, READY_INTERVAL_MS } from "../constants/bridge.ts";
+import {
+  PLUGIN_CLOSED_POLL_MS,
+  PLUGIN_SILENT_HIDDEN_MS,
+  PLUGIN_SILENT_MS,
+  READY_INTERVAL_MS,
+} from "../constants/bridge.ts";
 import { relayStore } from "../store/relay-store.ts";
 import type { BridgeStatus, LinkedPlugin, PendingRun, PluginBridgeOptions } from "../types/bridge.ts";
 import { BridgeClient } from "./bridge-client.ts";
@@ -29,8 +34,10 @@ export class PluginBridge {
   #unsubscribe: (() => void) | null = null;
   #watch: ReturnType<typeof setInterval> | undefined;
   #announce: ReturnType<typeof setInterval> | undefined;
-  /** When the linked plugin last said hello. */
+  /** When the linked plugin was last heard: a hello, or an answer to a call. */
   #heardAt = 0;
+  /** Whether its editor tab was hidden at its last hello. */
+  #hidden = false;
   #sequence = 0;
 
   constructor(options: PluginBridgeOptions) {
@@ -89,8 +96,10 @@ export class PluginBridge {
     }
 
     if (message.kind === "hello") {
+      this.#hidden = message.hidden ?? false;
       this.#onHello(source as Window, origin, message.plugin);
     } else if (this.#plugin?.source === source) {
+      this.#heardAt = Date.now();
       this.#onPluginMessage(message);
     }
   };
@@ -138,13 +147,14 @@ export class PluginBridge {
     );
 
     const silentMs = this.#options.silentMs ?? PLUGIN_SILENT_MS;
+    const hiddenSilentMs = this.#options.hiddenSilentMs ?? PLUGIN_SILENT_HIDDEN_MS;
 
     this.#watch = setInterval(
       () => {
         if (source.closed) {
           this.#unlink("plugin closed");
           relayStore.setState({ state: "closed" });
-        } else if (Date.now() - this.#heardAt > silentMs) {
+        } else if (Date.now() - this.#heardAt > (this.#hidden ? hiddenSilentMs : silentMs)) {
           this.#unlink("plugin stopped answering");
           relayStore.setState({ state: "waiting" });
         }

@@ -37,6 +37,8 @@ export class WindowLink {
     this.#origins = options.origins ?? localAppOrigins(LOCAL_APP_PORT);
     this.#events = options.events ?? window;
     this.#events.addEventListener("message", (event) => this.#onMessage(event as MessageEvent));
+    // Hidden or shown again, the window hears it at once: a hidden tab's timers run about once a minute.
+    globalThis.document?.addEventListener("visibilitychange", () => void this.#hello());
   }
 
   get status(): ReadonlyStore<LinkStatus> {
@@ -107,6 +109,7 @@ export class WindowLink {
         relayMessage({
           kind: "hello",
           plugin: await this.#info,
+          hidden: globalThis.document?.hidden ?? false,
         }),
       );
     }

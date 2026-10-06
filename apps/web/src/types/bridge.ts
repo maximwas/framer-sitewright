@@ -32,6 +32,8 @@ export interface PluginBridgeOptions {
   readonly opener?: Window | null;
   /** How long the plugin may go without a hello before the window lets it go (PLUGIN_SILENT_MS); shorter in tests. */
   readonly silentMs?: number;
+  /** The same for a plugin whose editor tab is hidden. */
+  readonly hiddenSilentMs?: number;
   /** READY_INTERVAL_MS in tests. */
   readonly readyMs?: number;
 }
