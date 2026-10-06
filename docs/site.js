@@ -21,15 +21,36 @@ const ICONS = {
   cms: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>',
 };
 
-/** What the agent keeps doing in the hero's journal. */
+/** What the agent keeps doing in the hero's journal, with the chips of what each change touched. */
 const FEED = [
-  { icon: "globe", title: "Translations", tag: "plugin", meta: "Dutch · 48 written" },
-  { icon: "devices", title: "Breakpoints", tag: "plugin", meta: "Tablet 810, Phone 390 · 2 added" },
-  { icon: "component", title: "Button", tag: "agent", meta: "Hover and pressed variants · 3 created" },
-  { icon: "image", title: "Images", tag: "server", meta: "3 photos uploaded · Gallery" },
-  { icon: "audit", title: "Layout audit", tag: "plugin", meta: "Page / · no defects" },
-  { icon: "section", title: "Pricing section", tag: "agent", meta: "22 layers created · audit: no defects" },
-  { icon: "cms", title: "CMS fields", tag: "plugin", meta: "Blog · Cover, Author added" },
+  { icon: "globe", title: "Translations", tag: "plugin", meta: "Dutch · 48 written", chips: [["text", "globe", "Dutch"]] },
+  {
+    icon: "devices",
+    title: "Breakpoints",
+    tag: "plugin",
+    meta: "Tablet 810, Phone 390 · 2 added",
+    chips: [
+      ["layout", "devices", "Tablet"],
+      ["layout", "devices", "Phone"],
+    ],
+  },
+  {
+    icon: "component",
+    title: "Button",
+    tag: "agent",
+    meta: "Hover and pressed variants · 3 created",
+    chips: [["components", "component", "Buttons/Button"]],
+  },
+  { icon: "image", title: "Images", tag: "server", meta: "3 photos uploaded · Gallery", chips: [["layout", "image", "Gallery"]] },
+  { icon: "audit", title: "Layout audit", tag: "plugin", meta: "Page / · no defects", chips: [] },
+  {
+    icon: "section",
+    title: "Pricing section",
+    tag: "agent",
+    meta: "22 layers created · audit: no defects",
+    chips: [["layout", "section", "Pricing"]],
+  },
+  { icon: "cms", title: "CMS fields", tag: "plugin", meta: "Blog · Cover, Author added", chips: [["content", "cms", "Blog"]] },
 ];
 
 (() => {
@@ -57,7 +78,6 @@ const FEED = [
   journal();
   scrolling();
   reveals();
-  flow();
   features();
   faq();
 
@@ -155,7 +175,7 @@ const FEED = [
 
     inView(window_, () => {
       running = true;
-      schedule(2600);
+      schedule(4500);
 
       return () => {
         running = false;
@@ -268,16 +288,18 @@ const FEED = [
       }
     }
 
+    /** The newest change: highlighted, its time with an Undo under it, as in the journal. */
     function promote(row) {
       row.classList.add("hl");
 
-      const side = row.querySelector(".side");
+      const time = document.createElement("time");
       const button = document.createElement("button");
 
+      time.textContent = row.dataset.time ?? "";
       button.className = "undo";
       button.type = "button";
       button.textContent = "Undo";
-      side?.replaceChildren(button);
+      row.querySelector(".side")?.replaceChildren(time, button);
     }
 
     function demote(row) {
@@ -295,11 +317,16 @@ const FEED = [
 
     row.className = "entry";
     row.dataset.time = time;
+    const chips = item.chips
+      .map(([kind, icon, label]) => `<span class="chip ${kind}">${ICONS[icon]}${label}</span>`)
+      .join("");
+
     row.innerHTML = `
       <span class="icon" aria-hidden="true">${ICONS[item.icon]}</span>
-      <span>
+      <span class="body">
         <span class="title"><span class="name"></span> <span class="tag ${item.tag}">${TAGS[item.tag]}</span></span>
         <span class="meta"></span>
+        ${chips === "" ? "" : `<span class="chips">${chips}</span>`}
       </span>
       <span class="side"></span>`;
     row.querySelector(".name").textContent = item.title;
@@ -384,27 +411,6 @@ const FEED = [
         });
       });
     }
-  }
-
-  /** Requests travel from the agent to Sitewright to Framer. */
-  function flow() {
-    for (const shaft of document.querySelectorAll(".shaft")) {
-      animate(shaft, { strokeDashoffset: [0, -10] }, { duration: 0.9, repeat: Infinity, ease: "linear" });
-    }
-
-    for (const [index, packet] of [...document.querySelectorAll(".packet")].entries()) {
-      animate(
-        packet,
-        { x: [-14, 14], opacity: [0, 1, 1, 0], scale: [0.6, 1, 1, 0.6] },
-        { duration: 1.4, repeat: Infinity, delay: index * 0.7, ease: "easeInOut" },
-      );
-    }
-
-    animate(
-      ".node.main .ring",
-      { opacity: [0.7, 0], scale: [1, 1.06] },
-      { duration: 2.2, repeat: Infinity, ease: "easeOut" },
-    );
   }
 
   function features() {

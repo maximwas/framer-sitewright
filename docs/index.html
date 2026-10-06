@@ -84,76 +84,78 @@
           <div class="stage">
           <figure class="window" aria-label="The Sitewright journal: every change the agent made, with undo">
             <div class="window-bar">
-              <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-              <strong>Journal</strong> · Landing page
-              <span class="status"><span class="dot"><i></i></span>Plugin connected</span>
+              <svg class="mark" viewBox="0 0 30 30" aria-hidden="true">
+                <rect width="30" height="30" rx="8" fill="#0099ff" />
+                <path d="M9 11h12M9 19h12M12 11v8M18 11v8" stroke="#fff" stroke-width="2" stroke-linecap="round" />
+              </svg>
+              <strong>Sitewright</strong>
+              <span class="status"><span class="dot"><i></i></span>Connected</span>
             </div>
-            <div class="tabs" aria-hidden="true">
-              <span class="on">All</span><span>Changes</span><span>CMS</span><span>Reads</span><span>Skills</span>
+            <div class="window-head" aria-hidden="true">
+              <div class="mini-flow">
+                <span class="stop"><span class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg></span>Claude Code</span>
+                <span class="wire"><i></i></span>
+                <span class="stop main"><span class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.94 15.5A2 2 0 0 0 8.5 14.06l-6.14-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.14a.5.5 0 0 1 .96 0l1.58 6.14a2 2 0 0 0 1.44 1.44l6.14 1.58a.5.5 0 0 1 0 .96l-6.14 1.58a2 2 0 0 0-1.44 1.44l-1.58 6.14a.5.5 0 0 1-.96 0z"/><path d="M20 3v4M22 5h-4"/></svg><b class="live-dot"></b></span>Sitewright</span>
+                <span class="wire"><i></i></span>
+                <span class="stop"><span class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 6H2M22 18H2M6 2v20M18 2v20"/></svg></span>This project</span>
+              </div>
+              <p class="note">Framer plugin connected through this window. Keep it open.</p>
+            </div>
+            <div class="window-tools" aria-hidden="true">
+              <span class="select">Landing page <em>(open in Framer)</em><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+              <span class="toolbar">
+                <span class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>Undo</span>
+                <span class="btn off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg>Redo</span>
+                <span class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg>Mark</span>
+                <span class="btn ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Clear</span>
+                <span class="gear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></span>
+              </span>
+              <span class="tabs"><span class="on">All</span><span>Changes</span><span>CMS</span><span>Reads</span><span>Skills</span></span>
             </div>
             <div class="feed">
             <ol class="entries">
               <li class="entry hl" data-time="12:04">
-                <span class="icon" aria-hidden="true">
-                  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                    <rect x="3" y="4" width="18" height="16" rx="2" />
-                    <path d="M3 9h18M8 13h8M8 16h5" />
-                  </svg>
-                </span>
-                <span>
+                <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span>
+                <span class="body">
                   <span class="title"><span class="name">Hero section</span> <span class="tag agent">Framer agent</span></span>
                   <span class="meta">14 layers created · audit: no defects</span>
+                  <span class="chips"><span class="chip layout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>Hero</span></span>
                 </span>
-                <span class="side"><button class="undo" type="button">Undo</button></span>
+                <span class="side"><time>12:04</time><button class="undo" type="button">Undo</button></span>
               </li>
-              <li class="entry">
-                <span class="icon" aria-hidden="true">
-                  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                    <path d="M4 7V5h16v2M9 19h6M12 5v14" />
-                  </svg>
-                </span>
-                <span>
+              <li class="entry" data-time="12:03">
+                <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg></span>
+                <span class="body">
                   <span class="title"><span class="name">Text styles</span> <span class="tag plugin">Plugin API</span></span>
                   <span class="meta">Heading 1, Body · 2 updated</span>
+                  <span class="chips"><span class="chip text"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>Heading 1</span><span class="chip text"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>Body</span></span>
                 </span>
                 <span class="side"><time>12:03</time></span>
               </li>
-              <li class="entry">
-                <span class="icon" aria-hidden="true">
-                  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                    <ellipse cx="12" cy="6" rx="8" ry="3" />
-                    <path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6" />
-                  </svg>
-                </span>
-                <span>
+              <li class="entry" data-time="12:01">
+                <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></span>
+                <span class="body">
                   <span class="title"><span class="name">CMS items</span> <span class="tag plugin">Plugin API</span></span>
                   <span class="meta">Blog · 6 created</span>
+                  <span class="chips"><span class="chip content"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>Blog</span></span>
                 </span>
                 <span class="side"><time>12:01</time></span>
               </li>
-              <li class="entry">
-                <span class="icon" aria-hidden="true">
-                  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                    <path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z" />
-                  </svg>
-                </span>
-                <span>
+              <li class="entry" data-time="11:58">
+                <span class="icon warn" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg></span>
+                <span class="body">
                   <span class="title"><span class="name">Skill used</span> <span class="tag skill">design guide</span></span>
                   <span class="meta">workflow, layout, typography</span>
                 </span>
                 <span class="side"><time>11:58</time></span>
               </li>
-              <li class="checkpoint">Checkpoint · New landing page</li>
-              <li class="entry">
-                <span class="icon" aria-hidden="true">
-                  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                    <circle cx="12" cy="12" r="8" />
-                    <path d="M12 4v16M4 12h16" />
-                  </svg>
-                </span>
-                <span>
+              <li class="checkpoint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg>New landing page</li>
+              <li class="entry" data-time="11:52">
+                <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r="1"/><circle cx="17.5" cy="10.5" r="1"/><circle cx="8.5" cy="7.5" r="1"/><circle cx="6.5" cy="12.5" r="1"/><path d="M12 2a10 10 0 0 0 0 20c1 0 1.7-.8 1.7-1.7 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1 0-.9.8-1.7 1.7-1.7H16a6 6 0 0 0 6-6c0-4.9-4.5-8.4-10-8.4z"/></svg></span>
+                <span class="body">
                   <span class="title"><span class="name">Color tokens</span> <span class="tag server">Server API</span></span>
                   <span class="meta">Brand / Primary, Surface · 8 created</span>
+                  <span class="chips"><span class="chip colors"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r="1"/><circle cx="17.5" cy="10.5" r="1"/><circle cx="8.5" cy="7.5" r="1"/><circle cx="6.5" cy="12.5" r="1"/><path d="M12 2a10 10 0 0 0 0 20c1 0 1.7-.8 1.7-1.7 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1 0-.9.8-1.7 1.7-1.7H16a6 6 0 0 0 6-6c0-4.9-4.5-8.4-10-8.4z"/></svg>Brand / Primary</span></span>
                 </span>
                 <span class="side"><time>11:52</time></span>
               </li>
@@ -181,30 +183,14 @@
               <h3>Claude Code, Cursor or Codex</h3>
               <p>You describe the site. The agent plans the work and calls Sitewright's tools.</p>
             </div>
-            <div class="arrow" aria-hidden="true">
-              <span class="pipe">
-                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
-                  <path class="shaft" d="M3 12h16" />
-                  <path d="M14 7l5 5-5 5" />
-                </svg>
-                <i class="packet"></i>
-              </span>
-            </div>
+            <div class="arrow" aria-hidden="true"><span class="wire"><i></i></span></div>
             <div class="node main">
               <span class="ring" aria-hidden="true"></span>
               <small>On your computer</small>
               <h3>Sitewright</h3>
               <p>85 tools, a design guide and checks before handover. Records every change in a journal you can undo.</p>
             </div>
-            <div class="arrow" aria-hidden="true">
-              <span class="pipe">
-                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
-                  <path class="shaft" d="M3 12h16" />
-                  <path d="M14 7l5 5-5 5" />
-                </svg>
-                <i class="packet"></i>
-              </span>
-            </div>
+            <div class="arrow" aria-hidden="true"><span class="wire"><i></i></span></div>
             <div class="node">
               <small>In the editor</small>
               <h3>Your Framer project</h3>
