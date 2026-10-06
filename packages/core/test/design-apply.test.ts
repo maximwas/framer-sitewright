@@ -19,6 +19,19 @@ describe("design.apply", () => {
     );
   });
 
+  it("answers with the temp ids the agent wrote, though it sent names of its own to Framer", async () => {
+    const { runtime, state } = createFakeRuntime();
+    const result = await runOperation(
+      designApply,
+      { runtime },
+      { dsl: '+ColorStyleTokenNode ink name="Ink" light="#111111";\nSET ink light="#222222";' },
+    );
+
+    expect(state.appliedDsl.at(-1)).not.toMatch(/\bink\b(?!_| )/);
+    expect(Object.keys(result.renamedIds)).toEqual(["ink"]);
+    expect(state.colorStyles.find((token) => token.path === "/Ink")?.light).toBe("rgb(34, 34, 34)");
+  });
+
   it("sends variant springs as Framer keeps them and says where to switch to Physics", async () => {
     const { runtime, state } = createFakeRuntime();
     const result = await runOperation(

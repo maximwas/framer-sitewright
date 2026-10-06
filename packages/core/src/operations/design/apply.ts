@@ -7,7 +7,7 @@ import { deferIconInitialValues } from "../../dsl/icon-variables.ts";
 import { parseDsl } from "../../dsl/parse.ts";
 import { assetFailureResult, normalizeDslResult } from "../../dsl/result.ts";
 import { keptSprings, springWarnings } from "../../dsl/springs.ts";
-import { nextTempId } from "../../dsl/temp-ids.ts";
+import { isolateTempIds, nextTempId } from "../../dsl/temp-ids.ts";
 import { OperationError } from "../../errors.ts";
 import { withDslHistory } from "../../history/dsl/dsl-history.ts";
 import { applyXmlWithPluginApi } from "../../plugin-nodes/apply.ts";
@@ -108,15 +108,14 @@ async function applyBatch(
 
   const agent = runtime.agent;
   const compiled = xml === undefined ? null : xmlToDsl(xml, (base) => nextTempId(runtime, base));
+  const raw =
+    dsl === undefined
+      ? null
+      : isolateTempIds(resolveKeyReferences(dsl, compiled?.keys ?? {}), (base) => nextTempId(runtime, base));
   const springs = keptSprings(
     deferAbsoluteCentering(
       separateControls(
-        deferIconInitialValues(
-          joinCommands([
-            ...(compiled?.commands ?? []),
-            ...(dsl === undefined ? [] : [resolveKeyReferences(dsl, compiled?.keys ?? {})]),
-          ]),
-        ),
+        deferIconInitialValues(joinCommands([...(compiled?.commands ?? []), ...(raw === null ? [] : [raw.dsl])])),
       ),
     ),
   );
@@ -157,11 +156,14 @@ async function applyBatch(
           apply,
         );
   const iconWarnings = await projectIconControlWarnings(agent, pagePath, parsed, applied.renamedIds).catch(() => []);
-  const result = withWarnings(applied, [
-    ...iconWarnings,
-    ...fractionalPxWarnings(parsed, applied.renamedIds),
-    ...springWarnings(springs.converted),
-  ]);
+  const result = withOwnNames(
+    withWarnings(applied, [
+      ...iconWarnings,
+      ...fractionalPxWarnings(parsed, applied.renamedIds),
+      ...springWarnings(springs.converted),
+    ]),
+    raw?.created ?? {},
+  );
 
   return compiled === null ? result : withKeys(result, compiled, commands, agent, pagePath);
 }
@@ -172,6 +174,20 @@ function withAudit(result: DesignApplyResult, audit: readonly AuditIssue[]): Des
     : {
         ...result,
         audit: [...audit],
+      };
+}
+
+/** renamedIds under the temp ids the agent wrote, not the ones isolateTempIds sent in their place. */
+function withOwnNames(result: DslResult, created: Readonly<Record<string, string>>): DslResult {
+  const sent = new Map(Object.entries(created).map(([own, sentAs]) => [sentAs, own]));
+
+  return sent.size === 0
+    ? result
+    : {
+        ...result,
+        renamedIds: Object.fromEntries(
+          Object.entries(result.renamedIds).map(([tempId, id]) => [sent.get(tempId) ?? tempId, id]),
+        ),
       };
 }
 

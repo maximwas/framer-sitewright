@@ -27,9 +27,9 @@ something else; every rule here was seen on a live project.
   command of its own.
 - A `var(--token-<id>)` of a token that does not exist is accepted without an error: take ids from
   `color_tokens_list`.
-- A temp id lives for the whole Server API session, which every agent on the project shares: never reuse one, even
-  after `DEL`, and never address a node by a temp id from an earlier batch (another agent's `q2` may answer). Use the
-  real ids from `renamedIds` and `keys`.
+- A temp id works only inside its batch: `design_apply` sends the temp ids a batch creates under names of its own
+  (every agent on a project shares one Server API session, where another agent's `q2` would answer) and answers with
+  your names in `renamedIds`. In later batches use the real ids from `renamedIds` and `keys`.
 
 ## Design system
 
