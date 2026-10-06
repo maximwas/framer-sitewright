@@ -63,6 +63,7 @@ export { colorTokensList } from "./operations/color-tokens/list.ts";
 export { colorTokensUpsert } from "./operations/color-tokens/upsert.ts";
 export { componentsRead } from "./operations/components/components-read.ts";
 export { componentControlsSet } from "./operations/components/controls-set.ts";
+export { componentInsert } from "./operations/components/insert.ts";
 export { needsAgent, runOperation } from "./operations/define.ts";
 export { designApply } from "./operations/design/apply.ts";
 export { fontsSearch } from "./operations/fonts/search.ts";

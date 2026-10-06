@@ -64,10 +64,13 @@ const GROUPS = [
   {
     id: "assets",
     title: "Components and assets",
-    intro: "Components and their controls, icon sets, stock photos, your own images, files and SVG.",
+    intro:
+      "Components and their controls, components from the Marketplace, icon sets, stock photos, your own images, files and SVG.",
     tools: [
       "components_read",
+      "component_insert",
       "component_controls_set",
+      "marketplace_browse",
       "icons_search",
       "images_search",
       "image_upload",
@@ -145,6 +148,7 @@ const NEEDS = {
     "framer_status",
     "framer_connect",
     "design_guide",
+    "marketplace_browse",
     "activity_list",
     "activity_get",
     "activity_checkpoint",

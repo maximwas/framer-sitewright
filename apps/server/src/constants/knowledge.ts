@@ -6,7 +6,8 @@ export const GUIDE_TOPICS = {
   typography: "families, scale, tracking, line height, balance, measure, labels, breakpoint sizes",
   direction: "what makes a site look designed, with numbers from top Framer sites, and the habits of generated pages",
   sections: "navigation, hero, features, proof, pricing, FAQ, closing call to action and footer",
-  motion: "pinned scroll sections that change step by step, tabs with active states, links on components",
+  motion:
+    "what motion to offer (subtle, balanced, expressive) and how to build each effect, pinned scroll sections, tabs, links on components",
   verify: "the audit, looking at the result, and the checklist before handing a page over",
   template: "a site for the Framer Marketplace: Framer's template checklist, what buyers edit, and the listing",
   "no-key": "what works through the plugin without a Server API key, and how to get the rest anyway",

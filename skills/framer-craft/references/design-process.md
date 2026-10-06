@@ -15,6 +15,15 @@ Before any canvas work, settle these with the user. Ask only what is still open,
 - **Motion appetite:** none, subtle, or expressive. This decides the motion budget (see [motion.md](motion.md)).
 - **References:** two or three sites the client likes, and what exactly they like in each.
 
+## 1b. Look at the market (Practice)
+
+- Before proposing directions, look at what sells now in the brief's category on the Framer Marketplace (with
+  Sitewright: `marketplace_browse`). Name what the best ones do that a merely correct page lacks: type scale, image
+  size, section rhythm, motion.
+- For carousels, tickers and effects, offer two or three free Marketplace components with previews, or a native build
+  with variants, and let the user choose.
+- Offer a motion level too (subtle, balanced, expressive) with the effects per section ([motion.md](motion.md)).
+
 ## 2. Propose directions, not pages
 
 - **Show 2–3 directions, never more.** More options give mixed feedback that is hard to apply.

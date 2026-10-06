@@ -41,7 +41,7 @@ describe("stdio server", () => {
     try {
       const { tools } = await client.listTools();
 
-      expect(tools).toHaveLength(58);
+      expect(tools).toHaveLength(60);
 
       const status = await client.callTool({
         name: "framer_status",

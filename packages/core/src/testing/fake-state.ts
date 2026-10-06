@@ -94,6 +94,7 @@ export function defaultState(): FakeFramerState {
     uploadedFiles: [],
     svgs: [],
     selection: [],
+    instances: [],
     moves: [],
     customCode: {
       headStart: {

@@ -11,6 +11,7 @@ import { registerDesignTools } from "./tools/design.ts";
 import { registerDocsTools } from "./tools/docs.ts";
 import { registerFontTools } from "./tools/fonts.ts";
 import { registerLocalizationTools } from "./tools/localization.ts";
+import { registerMarketplaceTools } from "./tools/marketplace.ts";
 import { registerNodeTools } from "./tools/nodes.ts";
 import { registerPageTools } from "./tools/pages.ts";
 import { registerProjectTools } from "./tools/project.ts";
@@ -41,6 +42,7 @@ export function createMcpServer(context: ToolContext, version: string): McpServe
   registerLocalizationTools(server, context);
   registerPageTools(server, context);
   registerDocsTools(server, context);
+  registerMarketplaceTools(server);
   registerScreenshotTool(server, context);
   registerActivityTools(server, context);
 

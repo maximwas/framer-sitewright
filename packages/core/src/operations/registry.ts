@@ -14,6 +14,7 @@ import { colorTokensList } from "./color-tokens/list.ts";
 import { colorTokensUpsert } from "./color-tokens/upsert.ts";
 import { componentsRead } from "./components/components-read.ts";
 import { componentControlsSet } from "./components/controls-set.ts";
+import { componentInsert } from "./components/insert.ts";
 import { designApply } from "./design/apply.ts";
 import { fontsSearch } from "./fonts/search.ts";
 import { historyRevert } from "./history/revert.ts";
@@ -63,6 +64,7 @@ const OPERATIONS: readonly AnyOperation[] = [
   iconsSearch,
   componentsRead,
   componentControlsSet,
+  componentInsert,
   customCodeGet,
   customCodeSet,
   codeFilesList,

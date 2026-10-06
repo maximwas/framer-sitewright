@@ -10,6 +10,15 @@ and `no-key` when there is no Server API key.
 - Brand assets: logo (SVG), fonts, colors, photography. Missing assets become part of your proposal.
 - Two or three reference sites and what the client likes in each.
 
+## 1b. Look at the market
+
+- Read what sells now in the brief's category: `marketplace_browse` (templates, category `agency`, `consulting`,
+  `saas`…). Open two or three previews and name what they do that the plan lacks: the scale of the type, how big the
+  images are, the section rhythm, the motion. A page that is only clean and correct reads as unfinished next to them.
+- For a carousel, ticker or effect, offer the user two or three free Marketplace components (`marketplace_browse`
+  components, `freeOnly`) with their previews, or to build it natively with variants; insert the chosen one with
+  `component_insert`.
+
 ## 2. Direction before any node (write it out, then check it)
 
 Write a compact plan in the conversation:
@@ -20,6 +29,8 @@ Write a compact plan in the conversation:
    container (one width for header, sections and footer); the section rhythm (one padding value).
 4. **Imagery:** what the visuals are (client photos, product shots, stock with one art direction) and where they go.
 5. **Signature:** the one thing the page is remembered by.
+6. **Motion level:** offer subtle, balanced or expressive with the effects each adds per section (`motion`, Motion
+   menu), and build what the user picks; a template defaults to balanced.
 
 Then read `direction` ("Looks that read as generated") and change every part that any similar brief would get.
 

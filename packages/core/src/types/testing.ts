@@ -86,6 +86,8 @@ export interface FakeFramerState {
   svgs: string[];
   /** Ids selected in the editor; addSVG selects what it inserts. */
   selection: string[];
+  /** addComponentInstance calls: the instances it made and their URLs. */
+  instances: { id: string; url: string }[];
   /** setParent calls, in order. */
   moves: { nodeId: string; parentId: string; index?: number }[];
   customCode: Record<CustomCodeLocation, { disabled: boolean; html: string | null }>;

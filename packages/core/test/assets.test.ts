@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { matchIcons } from "../src/operations/assets/icon-match.ts";
 import { iconsSearch } from "../src/operations/assets/icons-search.ts";
 import { svgAdd } from "../src/operations/assets/svg-add.ts";
+import { componentInsert } from "../src/operations/components/insert.ts";
 import { runOperation } from "../src/operations/define.ts";
 import { createFakeRuntime } from "../src/testing/index.ts";
 
@@ -80,6 +81,42 @@ describe("svg.add", () => {
       {
         nodeId: state.selection[0],
         parentId: "logo-frame",
+      },
+    ]);
+  });
+});
+
+describe("components.insert", () => {
+  it("inserts a component by its module URL and moves the instance where asked", async () => {
+    const { runtime, state } = createFakeRuntime(
+      {},
+      {
+        withAgent: false,
+        transport: "plugin",
+      },
+    );
+    const url = "https://framer.com/m/Carousel-TC0BVf.js@NX0Ibe5BZmuZM0cYmZOE";
+    const result = await runOperation(
+      componentInsert,
+      { runtime },
+      {
+        url,
+        parentId: "testimonials",
+        index: 1,
+      },
+    );
+
+    expect(state.instances).toEqual([
+      {
+        id: result.nodeId,
+        url,
+      },
+    ]);
+    expect(state.moves).toEqual([
+      {
+        nodeId: result.nodeId,
+        parentId: "testimonials",
+        index: 1,
       },
     ]);
   });

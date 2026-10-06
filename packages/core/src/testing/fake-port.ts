@@ -510,6 +510,19 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
       // Like the editor, select what was inserted.
       state.selection = [nextId("svg")];
     },
+    addComponentInstance: async ({ url }) => {
+      const id = nextId("instance");
+
+      state.instances.push({
+        id,
+        url,
+      });
+
+      return {
+        id,
+        name: null,
+      };
+    },
     getSelection: async () => state.selection.map((id) => ({ id })),
     publish: async () => {
       state.publishes += 1;

@@ -858,8 +858,8 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="assets" data-group>
-  <h3>Components and assets <span>7</span></h3>
-  <p class="group-intro">Components and their controls, icon sets, stock photos, your own images, files and SVG.</p>
+  <h3>Components and assets <span>9</span></h3>
+  <p class="group-intro">Components and their controls, components from the Marketplace, icon sets, stock photos, your own images, files and SVG.</p>
   <article class="tool" id="components_read" data-tool="components_read Read components lists the project's components with their exact controls ($control__variant options, $control__&lt;name&gt; for each variable) before you place or change instances. control names are the ones listed here, e.g. $control__showicon; do not derive them from variable names. code components are listed in codecomponents: place one with +componentinstancenode component=&quot;&lt;id&gt;&quot;.">
     <header>
       <h4><a href="#components_read">components_read</a></h4>
@@ -872,6 +872,23 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
       <tr><th scope="row"><code>ids</code></th><td><code class="type">string[]</code></td><td>Component ids to read controls for. Omit for every canvas component of the project.</td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="component_insert" data-tool="component_insert Insert a component inserts a component by its module url (framer.com/m/…): a free marketplace component from marketplace_browse (moduleurl), one of framer's own like video or youtube, or a url the user copied from the insert menu. design_apply cannot: it takes only the project's own component ids. then set its controls with design_apply ($control__…) or component_controls_set. undo does not remove it.">
+    <header>
+      <h4><a href="#component_insert">component_insert</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Insert a component</p>
+    <p>Inserts a component by its module URL (framer.com/m/…): a free Marketplace component from <a href="#marketplace_browse"><code>marketplace_browse</code></a> (moduleUrl), one of Framer's own like Video or YouTube, or a URL the user copied from the Insert menu. <a href="#design_apply"><code>design_apply</code></a> cannot: it takes only the project's own component ids. Then set its controls with <a href="#design_apply"><code>design_apply</code></a> ($control__…) or <a href="#component_controls_set"><code>component_controls_set</code></a>. Undo does not remove it.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>url</code></th><td><code class="type">string</code></td><td>The component's module URL, e.g. https://framer.com/m/Carousel-TC0BVf.js@NX0Ibe5BZmuZM0cYmZOE. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>parentId</code></th><td><code class="type">string</code></td><td>Layer to put the instance into. Without it Framer puts it into the layer selected in the editor.</td></tr>
+      <tr><th scope="row"><code>index</code></th><td><code class="type">number</code></td><td>Position among parentId's children; last by default.</td></tr>
       </tbody>
     </table></div>
   </article>
@@ -888,6 +905,25 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <tbody>
       <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>The component instance (ComponentInstanceNode) to set. <span class="req">required</span></td></tr>
       <tr><th scope="row"><code>controls</code></th><td><code class="type">object</code></td><td>Control values by the names the component declares, without $control__ (e.g. arrows, dots). An object control merges with the instance's current value. <span class="req">required</span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="marketplace_browse" data-tool="marketplace_browse Browse the Framer Marketplace reads the framer marketplace in its current ranking: templates of a category (agency, consulting, saas, portfolio…), to see what sells now before proposing a direction, or components (carousels, tickers, effects) to offer the user instead of building them. each item has its page, live preview, price (null = free) and, for a free component, the moduleurl that component_insert inserts. without a category you get the whole kind and the category slugs there are; query filters by name. open the previews you name with your browser tools when you can.">
+    <header>
+      <h4><a href="#marketplace_browse">marketplace_browse</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
+    </header>
+    <p class="tool-title">Browse the Framer Marketplace</p>
+    <p>Reads the Framer Marketplace in its current ranking: templates of a category (agency, consulting, saas, portfolio…), to see what sells now before proposing a direction, or components (carousels, tickers, effects) to offer the user instead of building them. Each item has its page, live preview, price (null = free) and, for a free component, the moduleUrl that <a href="#component_insert"><code>component_insert</code></a> inserts. Without a category you get the whole kind and the category slugs there are; query filters by name. Open the previews you name with your browser tools when you can.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>kind</code></th><td><code class="type">&quot;templates&quot; | &quot;components&quot;</code></td><td> <span class="def">default <code>&quot;templates&quot;</code></span></td></tr>
+      <tr><th scope="row"><code>category</code></th><td><code class="type">string</code></td><td>A category slug, e.g. &quot;agency&quot;, &quot;consulting&quot;, &quot;saas&quot; (templates) or &quot;carousels&quot;, &quot;tickers&quot; (components).</td></tr>
+      <tr><th scope="row"><code>query</code></th><td><code class="type">string</code></td><td>Keep only items whose name has these words, e.g. testimonial.</td></tr>
+      <tr><th scope="row"><code>freeOnly</code></th><td><code class="type">boolean</code></td><td>Only free items (components that component_insert can insert). <span class="def">default <code>false</code></span></td></tr>
+      <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>12</code></span></td></tr>
       </tbody>
     </table></div>
   </article>
@@ -1267,7 +1303,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
       <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>20</code></span></td></tr>
-      <tr><th scope="row"><code>show</code></th><td><code class="type">&quot;all&quot; | &quot;changes&quot; | &quot;reads&quot; | &quot;skills&quot;</code></td><td> <span class="def">default <code>&quot;changes&quot;</code></span></td></tr>
+      <tr><th scope="row"><code>show</code></th><td><code class="type">&quot;all&quot; | &quot;changes&quot; | &quot;cms&quot; | &quot;reads&quot; | &quot;skills&quot;</code></td><td> <span class="def">default <code>&quot;changes&quot;</code></span></td></tr>
       </tbody>
     </table></div>
   </article>
@@ -1367,14 +1403,14 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
 <section class="tool-group" id="knowledge" data-group>
   <h3>Knowledge <span>2</span></h3>
   <p class="group-intro">The design guide built into Sitewright, and Framer's own DSL reference and guides.</p>
-  <article class="tool" id="design_guide" data-tool="design_guide Design guide how to build framer sites that look designed and hold together, from measuring top framer sites and from live builds. read &quot;workflow&quot; before building or restyling any page, then the topic for the task. topics: workflow (the order of work for a new page or redesign, and the checks before calling it done); layout (alignment, distribution, sizes by role, equal heights, grids, containers, spacing, breakpoints, buttons, images); typography (families, scale, tracking, line height, balance, measure, labels, breakpoint sizes); direction (what makes a site look designed, with numbers from top framer sites, and the habits of generated pages); sections (navigation, hero, features, proof, pricing, faq, closing call to action and footer); motion (pinned scroll sections that change step by step, tabs with active states, links on components); verify (the audit, looking at the result, and the checklist before handing a page over); template (a site for the framer marketplace: framer's template checklist, what buyers edit, and the listing); no-key (what works through the plugin without a server api key, and how to get the rest anyway).">
+  <article class="tool" id="design_guide" data-tool="design_guide Design guide how to build framer sites that look designed and hold together, from measuring top framer sites and from live builds. read &quot;workflow&quot; before building or restyling any page, then the topic for the task. topics: workflow (the order of work for a new page or redesign, and the checks before calling it done); layout (alignment, distribution, sizes by role, equal heights, grids, containers, spacing, breakpoints, buttons, images); typography (families, scale, tracking, line height, balance, measure, labels, breakpoint sizes); direction (what makes a site look designed, with numbers from top framer sites, and the habits of generated pages); sections (navigation, hero, features, proof, pricing, faq, closing call to action and footer); motion (what motion to offer (subtle, balanced, expressive) and how to build each effect, pinned scroll sections, tabs, links on components); verify (the audit, looking at the result, and the checklist before handing a page over); template (a site for the framer marketplace: framer's template checklist, what buyers edit, and the listing); no-key (what works through the plugin without a server api key, and how to get the rest anyway).">
     <header>
       <h4><a href="#design_guide">design_guide</a></h4>
       <span class="badge read">Reads</span>
       <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
     </header>
     <p class="tool-title">Design guide</p>
-    <p>How to build Framer sites that look designed and hold together, from measuring top Framer sites and from live builds. Read &quot;workflow&quot; before building or restyling any page, then the topic for the task. Topics: workflow (the order of work for a new page or redesign, and the checks before calling it done); layout (alignment, distribution, sizes by role, equal heights, grids, containers, spacing, breakpoints, buttons, images); typography (families, scale, tracking, line height, balance, measure, labels, breakpoint sizes); direction (what makes a site look designed, with numbers from top Framer sites, and the habits of generated pages); sections (navigation, hero, features, proof, pricing, FAQ, closing call to action and footer); motion (pinned scroll sections that change step by step, tabs with active states, links on components); verify (the audit, looking at the result, and the checklist before handing a page over); template (a site for the Framer Marketplace: Framer's template checklist, what buyers edit, and the listing); no-key (what works through the plugin without a Server API key, and how to get the rest anyway).</p>
+    <p>How to build Framer sites that look designed and hold together, from measuring top Framer sites and from live builds. Read &quot;workflow&quot; before building or restyling any page, then the topic for the task. Topics: workflow (the order of work for a new page or redesign, and the checks before calling it done); layout (alignment, distribution, sizes by role, equal heights, grids, containers, spacing, breakpoints, buttons, images); typography (families, scale, tracking, line height, balance, measure, labels, breakpoint sizes); direction (what makes a site look designed, with numbers from top Framer sites, and the habits of generated pages); sections (navigation, hero, features, proof, pricing, FAQ, closing call to action and footer); motion (what motion to offer (subtle, balanced, expressive) and how to build each effect, pinned scroll sections, tabs, links on components); verify (the audit, looking at the result, and the checklist before handing a page over); template (a site for the Framer Marketplace: Framer's template checklist, what buyers edit, and the listing); no-key (what works through the plugin without a Server API key, and how to get the rest anyway).</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>

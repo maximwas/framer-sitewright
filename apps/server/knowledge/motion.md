@@ -13,6 +13,30 @@ site, and tell the user so.
   transition. Write the nearest time spring without bounce (`spring-duration 0.4s 0 <delay>` for `400 40 1`), read it
   back, and tell the user which variants and layers to switch to Physics in the editor.
 
+## Motion menu: what to offer
+
+A page with motion only in its hero reads as unfinished; motion on every element reads as noise. Offer three levels
+with the effects named per section, and let the user choose.
+
+- **Subtle:** hover and pressed states on everything clickable; one hero load sequence (heading, text, media, 0.1s
+  apart); accordions and menus that open by height.
+- **Balanced** (the default for templates), everything above plus:
+  - cards of a group appear on scroll with a stagger (`appearEffect` `onInView`, delays growing 0.06s per item), not
+    every section;
+  - images zoom slightly on hover inside a clipped frame (a hover variant of the card, image `scale` 1.05);
+  - a ticker of client logos or words (`tickerEffect` on a stack);
+  - one statement that reveals line by line as it scrolls in (`styleTransformEffect` opacity 0.15 → 1 per line);
+  - a slider of testimonials (a component with a variant per slide, arrows that `SET_VARIANT`, or a Marketplace
+    carousel).
+- **Expressive**, everything above plus:
+  - a pinned scene that changes step by step (below);
+  - cards that stick and stack as the page scrolls (each `position="sticky"` with a growing `positionStickyTop`, the
+    one under it scaled to 0.94 by a scroll transform);
+  - parallax on large images (`styleTransformEffect` y inside a clipped frame);
+  - a horizontal gallery moved by the vertical scroll.
+
+Every one of them is a spring (see Transitions above); check them in Preview or on the published site.
+
 ## A pinned step section (scroll scene)
 
 The section stays on screen while the page scrolls, and its content changes step by step: a list whose active item
