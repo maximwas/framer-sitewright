@@ -33,3 +33,15 @@ it("regression: gives the temp ids a raw batch creates names of its own, so anot
     q3: "q3_s1",
   });
 });
+
+it("regression: renames a compound id made of two temp ids of the batch (seen: SET rv…box… was refused)", () => {
+  // A variant created in the batch and a node created in it: their override is addressed by both ids together.
+  const { dsl } = isolateTempIds(
+    ['CREATE_VARIANT rv from="AbDvD4kXp";', '+FrameNode box parent="AbDvD4kXp";', 'SET rvbox fill="#ffffff";'].join(
+      "\n",
+    ),
+    (base) => `${base}_s1`,
+  );
+
+  expect(dsl).toContain('SET rv_s1box_s1 fill="#ffffff";');
+});

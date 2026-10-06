@@ -760,19 +760,20 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="fonts_discover" data-tool="fonts_discover Discover fonts finds fonts beyond framer's library search, in google fonts and fontshare: by words of the name, category (sans, serif, display, slab, mono, handwriting) and order (popular, trending, new). each comes with its license in plain words, its weights, a specimen link, and whether framer's library has it (inframer). propose two or three pairings from it, not only inter-like defaults, and check the script the site needs (most fontshare families are latin only). google fonts (ofl) may be uploaded anywhere: pass files true for its woff2 files, upload each with file_upload, then use the family in text_styles_upsert. fontshare's license (itf ffl v2.0) allows uploading its files only to the user's own site: for a client's site or a sold template use a family with inframer true from framer's library.">
+  <article class="tool" id="fonts_discover" data-tool="fonts_discover Discover fonts finds fonts beyond framer's library search, in google fonts and fontshare: by words of the name, category (sans, serif, display, slab, mono, handwriting) and order (popular, trending, new). each comes with its license in plain words, its weights, a specimen link, and whether framer's library has it (inframer). propose two or three pairings from it, not only inter-like defaults, and pass script for the site's language (cyrillic for ukrainian: most fontshare families are latin only); a currency sign such as ₴ can still be missing, so check it in the specimen. google fonts (ofl) may be uploaded anywhere: pass files true for its woff2 files, upload each with file_upload, then use the family in text_styles_upsert. fontshare's license (itf ffl v2.0) allows uploading its files only to the user's own site: for a client's site or a sold template use a family with inframer true from framer's library.">
     <header>
       <h4><a href="#fonts_discover">fonts_discover</a></h4>
       <span class="badge read">Reads</span>
       <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
     </header>
     <p class="tool-title">Discover fonts</p>
-    <p>Finds fonts beyond Framer's library search, in Google Fonts and Fontshare: by words of the name, category (sans, serif, display, slab, mono, handwriting) and order (popular, trending, new). Each comes with its license in plain words, its weights, a specimen link, and whether Framer's library has it (inFramer). Propose two or three pairings from it, not only Inter-like defaults, and check the script the site needs (most Fontshare families are Latin only). Google Fonts (OFL) may be uploaded anywhere: pass files true for its woff2 files, upload each with <a href="#file_upload"><code>file_upload</code></a>, then use the family in <a href="#text_styles_upsert"><code>text_styles_upsert</code></a>. Fontshare's license (ITF FFL v2.0) allows uploading its files only to the user's own site: for a client's site or a sold template use a family with inFramer true from Framer's library.</p>
+    <p>Finds fonts beyond Framer's library search, in Google Fonts and Fontshare: by words of the name, category (sans, serif, display, slab, mono, handwriting) and order (popular, trending, new). Each comes with its license in plain words, its weights, a specimen link, and whether Framer's library has it (inFramer). Propose two or three pairings from it, not only Inter-like defaults, and pass script for the site's language (cyrillic for Ukrainian: most Fontshare families are Latin only); a currency sign such as ₴ can still be missing, so check it in the specimen. Google Fonts (OFL) may be uploaded anywhere: pass files true for its woff2 files, upload each with <a href="#file_upload"><code>file_upload</code></a>, then use the family in <a href="#text_styles_upsert"><code>text_styles_upsert</code></a>. Fontshare's license (ITF FFL v2.0) allows uploading its files only to the user's own site: for a client's site or a sold template use a family with inFramer true from Framer's library.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
       <tr><th scope="row"><code>query</code></th><td><code class="type">string</code></td><td>Words of a family name, e.g. &quot;grotesk&quot; or &quot;satoshi&quot;.</td></tr>
       <tr><th scope="row"><code>category</code></th><td><code class="type">&quot;sans&quot; | &quot;serif&quot; | &quot;display&quot; | &quot;slab&quot; | &quot;mono&quot; | &quot;handwriting&quot;</code></td><td></td></tr>
+      <tr><th scope="row"><code>script</code></th><td><code class="type">string</code></td><td>Only families that cover this script, e.g. &quot;cyrillic&quot; for a Ukrainian site, &quot;greek&quot;, &quot;vietnamese&quot;.</td></tr>
       <tr><th scope="row"><code>source</code></th><td><code class="type">&quot;google&quot; | &quot;fontshare&quot; | &quot;all&quot;</code></td><td>google: Google Fonts; fontshare: Fontshare (ITF). <span class="def">default <code>&quot;all&quot;</code></span></td></tr>
       <tr><th scope="row"><code>sort</code></th><td><code class="type">&quot;popular&quot; | &quot;trending&quot; | &quot;new&quot;</code></td><td> <span class="def">default <code>&quot;popular&quot;</code></span></td></tr>
       <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>12</code></span></td></tr>
@@ -782,8 +783,8 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="pages" data-group>
-  <h3>Pages, layout and redirects <span>14</span></h3>
-  <p class="group-intro">Create and delete pages, read one as XML, find layers and replace text across pages, change pages, check what looks broken, adapt them to tablet and phone, look at them, and redirect old paths.</p>
+  <h3>Pages, layout and redirects <span>16</span></h3>
+  <p class="group-intro">Create and delete pages, read one as XML, find layers and replace text across pages, read and set the site's and pages' titles, descriptions, images and search settings, change pages, check what looks broken, adapt them to tablet and phone, look at them, and redirect old paths.</p>
   <article class="tool" id="page_create" data-tool="page_create Create a page creates an empty web page at a path (&quot;/about&quot;) or a design page (a canvas for drafts) by name. build its content with design_apply; add breakpoints with breakpoints_add. undo does not remove pages.">
     <header>
       <h4><a href="#page_create">page_create</a></h4>
@@ -907,14 +908,14 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="text_replace" data-tool="text_replace Replace text replaces text inside text layers across the site's pages (or one page), through design_apply, so the journal can undo it. run it with dryrun first and show the user what changes. a replaced text keeps its text style, but formatting inside it (bold words, links in the text) becomes plain.">
+  <article class="tool" id="text_replace" data-tool="text_replace Replace text replaces text inside text layers across the site's pages (or one page), including breakpoint copies that hold their own text (a copy that follows the primary breakpoint changes with it); the journal can undo it. run it with dryrun first and show the user what changes. each change says what happens to the formatting inside the layer: kept (with the server api key framer replaces in place: bold, links and lists stay), partial (the match crosses differently formatted runs and takes the formatting of the run it starts in), plain (without a key the layer is rewritten as plain text through design_apply).">
     <header>
       <h4><a href="#text_replace">text_replace</a></h4>
       <span class="badge write">Changes</span>
-      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+      <span class="badge needs-partial" title="Works without a key; a Server API key adds more">Plugin · more with a key</span>
     </header>
     <p class="tool-title">Replace text</p>
-    <p>Replaces text inside text layers across the site's pages (or one page), through <a href="#design_apply"><code>design_apply</code></a>, so the journal can undo it. Run it with dryRun first and show the user what changes. A replaced text keeps its text style, but formatting inside it (bold words, links in the text) becomes plain.</p>
+    <p>Replaces text inside text layers across the site's pages (or one page), including breakpoint copies that hold their own text (a copy that follows the primary breakpoint changes with it); the journal can undo it. Run it with dryRun first and show the user what changes. Each change says what happens to the formatting inside the layer: kept (with the Server API key Framer replaces in place: bold, links and lists stay), partial (the match crosses differently formatted runs and takes the formatting of the run it starts in), plain (without a key the layer is rewritten as plain text through <a href="#design_apply"><code>design_apply</code></a>).</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
@@ -923,6 +924,37 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>One page; omit for every web page.</td></tr>
       <tr><th scope="row"><code>matchCase</code></th><td><code class="type">boolean</code></td><td> <span class="def">default <code>false</code></span></td></tr>
       <tr><th scope="row"><code>dryRun</code></th><td><code class="type">boolean</code></td><td>Only list what would change. <span class="def">default <code>false</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="site_settings_get" data-tool="site_settings_get Read site settings reads the site's settings and every page's in one place. the site: title, description, social image and favicons (light, dark, apple touch icon), which every page inherits. each page: its own title, description and social image (null inherits the site's), noindex (hidden from search engines), noindexsite (hidden from the site's own search), its layout template and whether it is a draft; plus the layout templates there are. without a server api key only the pages' paths and drafts are visible. change them with site_settings_set.">
+    <header>
+      <h4><a href="#site_settings_get">site_settings_get</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-partial" title="Works without a key; a Server API key adds more">Plugin · more with a key</span>
+    </header>
+    <p class="tool-title">Read site settings</p>
+    <p>Reads the site's settings and every page's in one place. The site: title, description, social image and favicons (light, dark, Apple touch icon), which every page inherits. Each page: its own title, description and social image (null inherits the site's), noIndex (hidden from search engines), noIndexSite (hidden from the site's own search), its layout template and whether it is a draft; plus the layout templates there are. Without a Server API key only the pages' paths and drafts are visible. Change them with <a href="#site_settings_set"><code>site_settings_set</code></a>.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>One page; omit for every web page.</td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="site_settings_set" data-tool="site_settings_set Change site settings changes the site's and pages' settings in one call, so the fixes seo_audit suggests land together. the site: title, description, socialimage, favicon, favicondark, appletouchicon (favicons exist only on the site). pages by path, each with only what changes: title, description, socialimage, noindex, noindexsite, layouttemplate, draft (noindex exists only on pages). null clears a value, so a page inherits the site's again. noindexsite follows noindex unless given: framer turns it on with noindex and keeps it on after. framer downloads each image url itself; one it cannot download is left out and the call fails, but the rest is applied (the answer shows the settings as they are now). a page on a layout template takes its breakpoints' background, padding and gap from the template, so fill on them is refused. the journal can undo it; needs the server api key.">
+    <header>
+      <h4><a href="#site_settings_set">site_settings_set</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Change site settings</p>
+    <p>Changes the site's and pages' settings in one call, so the fixes <a href="#seo_audit"><code>seo_audit</code></a> suggests land together. The site: title, description, socialImage, favicon, faviconDark, appleTouchIcon (favicons exist only on the site). Pages by path, each with only what changes: title, description, socialImage, noIndex, noIndexSite, layoutTemplate, draft (noIndex exists only on pages). null clears a value, so a page inherits the site's again. noIndexSite follows noIndex unless given: Framer turns it on with noIndex and keeps it on after. Framer downloads each image URL itself; one it cannot download is left out and the call fails, but the rest is applied (the answer shows the settings as they are now). A page on a layout template takes its breakpoints' background, padding and gap from the template, so fill on them is refused. The journal can undo it; needs the Server API key.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>site</code></th><td><code class="type">object</code></td><td>The site's defaults, which pages inherit; favicons live only here. null clears a value.<ul class="fields"><li><code>title</code> <code class="type">string | null</code> <span class="opt">optional</span> — The site's title: the default for every page.</li><li><code>description</code> <code class="type">string | null</code> <span class="opt">optional</span> — The site's description: the default for every page.</li><li><code>socialImage</code> <code class="type">string | null</code> <span class="opt">optional</span> — The link preview image, 1200×630.</li><li><code>favicon</code> <code class="type">string | null</code> <span class="opt">optional</span> — The browser tab icon, SVG or PNG.</li><li><code>faviconDark</code> <code class="type">string | null</code> <span class="opt">optional</span> — The tab icon for dark browser themes.</li><li><code>appleTouchIcon</code> <code class="type">string | null</code> <span class="opt">optional</span> — The home screen icon on iOS, a 180×180 PNG.</li></ul></td></tr>
+      <tr><th scope="row"><code>pages</code></th><td><code class="type">object[]</code></td><td>Pages by path, each with only the settings to change. null clears a value.<ul class="fields"><li><code>path</code> <code class="type">string</code> — The page, e.g. &quot;/about&quot;; a CMS detail page as &quot;/blog/:slug&quot;.</li><li><code>title</code> <code class="type">string | null</code> <span class="opt">optional</span> — The page's title; null inherits the site's. A CMS detail page takes variables: {{Title}}.</li><li><code>description</code> <code class="type">string | null</code> <span class="opt">optional</span> — The page's description; null inherits the site's.</li><li><code>socialImage</code> <code class="type">string | null | string</code> <span class="opt">optional</span> — The page's link preview image; null inherits the site's. A CMS detail page may use var(--variable-&lt;id&gt;).</li><li><code>noIndex</code> <code class="type">boolean</code> <span class="opt">optional</span> — Hide the page from search engines.</li><li><code>noIndexSite</code> <code class="type">boolean</code> <span class="opt">optional</span> — Hide the page from the site's own search; follows noIndex unless given.</li><li><code>layoutTemplate</code> <code class="type">string | null</code> <span class="opt">optional</span> — &quot;default&quot; (the home page's template), a layout template id from site_settings_get, or null for none.</li><li><code>draft</code> <code class="type">boolean</code> <span class="opt">optional</span> — A draft page is left out when the site is published.</li></ul></td></tr>
       </tbody>
     </table></div>
   </article>

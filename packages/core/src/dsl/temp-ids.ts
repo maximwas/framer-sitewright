@@ -52,7 +52,7 @@ export function isolateTempIds(
   }
 
   const renamed = commands.map(({ raw, command }) => {
-    const head = created[command.id];
+    const head = created[command.id] ?? compoundOf(command.id, created);
     const withHead = head === undefined ? raw : raw.replace(/^(\S+\s+)\S+/, `$1${head}`);
 
     return Object.entries(command.attributes).reduce((text, [key, value]) => {
@@ -68,9 +68,25 @@ export function isolateTempIds(
   };
 }
 
+/**
+ * A compound id (a breakpoint's or variant's id followed by a node's) made of two temp ids the batch creates, renamed
+ * part by part; undefined for anything else.
+ */
+function compoundOf(id: string, created: Readonly<Record<string, string>>): string | undefined {
+  for (const [own, sent] of Object.entries(created)) {
+    const rest = id.startsWith(own) ? created[id.slice(own.length)] : undefined;
+
+    if (rest !== undefined) {
+      return `${sent}${rest}`;
+    }
+  }
+
+  return undefined;
+}
+
 /** A value that is a created temp id, or holds one as var(--variable-<id>), with the id renamed. */
 function renameValue(value: string, created: Readonly<Record<string, string>>): string {
-  const own = created[value];
+  const own = created[value] ?? compoundOf(value, created);
 
   if (own !== undefined) {
     return own;
