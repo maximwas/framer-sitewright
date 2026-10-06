@@ -7,6 +7,7 @@ import {
   CloseCode,
   localAppOrigins,
   MAX_MESSAGE_BYTES,
+  PLUGIN_CHANGED_EVENT,
   type PluginInfo,
   type ServerToPlugin,
 } from "@sitewright/core";
@@ -289,6 +290,7 @@ export class BridgeServer
     previous?.socket.close(CloseCode.Superseded, "superseded by a newer plugin connection");
     this.emit("connected", session);
     this.#tellPeers();
+    this.#tellPanels();
   }
 
   #deactivate(session: PluginSession, code: number): void {
@@ -299,11 +301,19 @@ export class BridgeServer
     this.#active = null;
     this.emit("disconnected", session, code);
     this.#tellPeers();
+    this.#tellPanels();
   }
 
   #tellPeers(): void {
     for (const peer of this.#peers) {
       peer.sendStatus();
+    }
+  }
+
+  /** The journal panels show the journal of the plugin's project: they reload when it changes. */
+  #tellPanels(): void {
+    for (const panel of this.#panels) {
+      panel.notify(PLUGIN_CHANGED_EVENT, null);
     }
   }
 

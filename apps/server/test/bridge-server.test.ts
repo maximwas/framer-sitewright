@@ -9,6 +9,7 @@ import {
   BRIDGE_PROTOCOL_VERSION,
   CloseCode,
   decodeServerToPlugin,
+  PLUGIN_CHANGED_EVENT,
   WEB_SOCKET_PATH,
 } from "@sitewright/core";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -214,6 +215,32 @@ describe("BridgeServer", () => {
         data: { seq: 7 },
       },
     ]);
+    panel.close();
+  });
+
+  it("regression: tells every panel when the plugin opens a project or goes, so the journal shows that project", async () => {
+    // Seen: the plugin opened in a new project, and the journal window kept listing the old projects without it.
+    const port = await start();
+
+    server?.servePanels(async () => null);
+
+    const panel = (await openAt(port, WEB_SOCKET_PATH, {
+      origin: `http://127.0.0.1:${port}`,
+      host: `127.0.0.1:${port}`,
+    })) as WebSocket;
+    const opened = nextMessage(panel);
+    const plugin = await openSession(port);
+
+    expect(await opened).toEqual({
+      type: "event",
+      name: PLUGIN_CHANGED_EVENT,
+      data: null,
+    });
+
+    const gone = nextMessage(panel);
+
+    plugin.close();
+    expect(await gone).toMatchObject({ name: PLUGIN_CHANGED_EVENT });
     panel.close();
   });
 

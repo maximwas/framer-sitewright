@@ -1,10 +1,11 @@
-import type { ActivityView, RevertReport } from "@sitewright/core";
+import { type ActivityView, PLUGIN_CHANGED_EVENT, type RevertReport } from "@sitewright/core";
 
-/** Server events after which the panel reloads the journal. */
+/** Server events after which the panel reloads the journal: it changed, or the plugin opened another project's. */
 export const JOURNAL_EVENTS: ReadonlySet<string> = new Set([
   "activity.appended",
   "activity.cleared",
   "activity.changed",
+  PLUGIN_CHANGED_EVENT,
 ]);
 
 /** How many journal entries the window loads; older ones stay in the journal. */

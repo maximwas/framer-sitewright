@@ -126,7 +126,7 @@ export class ActivityApiClient {
     return CapabilitiesSchema.nullable().parse(await this.#transport.call("capabilities.get", {}));
   }
 
-  /** Runs `listener` whenever the journal changes (an entry is added, or it is cleared). Returns an unsubscribe. */
+  /** Runs `listener` whenever the journal shown changes (an entry, a clear, another project). Returns an unsubscribe. */
   onChange(listener: () => void): () => void {
     return this.#transport.onEvent((name) => {
       if (JOURNAL_EVENTS.has(name)) {
