@@ -259,6 +259,7 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
   /** A canvas layer as the Plugin API hands it out: a text layer reads and writes its text. */
   function canvasNode(layer: FakeFramerState["canvas"][number]) {
     return {
+      ...layer.attributes,
       id: layer.id,
       name: layer.name,
       __class: layer.className,
@@ -631,6 +632,30 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
         name: null,
       };
     },
+    addDetachedComponentLayers: async ({ url, layout, attributes }) => {
+      // Like the Server API: a frame on the home page's canvas root, at absolute canvas coordinates (06.10.2026).
+      const layer = {
+        id: nextId("frame"),
+        parentId: state.webPages.find((page) => page.path === "/")?.id ?? "",
+        className: "FrameNode",
+        name: "Section",
+        attributes: {
+          position: "absolute",
+          left: "4320px",
+          top: "-498px",
+        },
+      };
+
+      state.canvas.push(layer);
+      state.detachedLayers.push({
+        id: layer.id,
+        url,
+        ...(layout === undefined ? {} : { layout }),
+        ...(attributes === undefined ? {} : { attributes }),
+      });
+
+      return canvasNode(layer);
+    },
     getSelection: async () => state.selection.map((id) => ({ id })),
     publish: async () => {
       state.publishes += 1;
@@ -763,22 +788,42 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
     createFrameNode: async () => {
       throw new Error("The fake project has no Plugin API canvas nodes.");
     },
-    // Only a web page's draft: other node writes go through the fake framer.agent.
+    // A web page's draft, or a canvas layer's attributes; other node writes go through the fake framer.agent.
     setAttributes: async (nodeId, attributes) => {
       const page = state.webPages.find((candidate) => candidate.id === nodeId);
 
-      if (page === undefined || typeof attributes.draft !== "boolean") {
-        throw new Error("The fake project has no Plugin API canvas nodes.");
+      if (page !== undefined && typeof attributes.draft === "boolean") {
+        Object.assign(page, { draft: attributes.draft });
+
+        return {
+          ...page,
+          __class: "WebPageNode",
+        };
       }
 
-      Object.assign(page, { draft: attributes.draft });
+      const layer = state.canvas.find((candidate) => candidate.id === nodeId);
 
-      return {
-        ...page,
-        __class: "WebPageNode",
+      if (layer === undefined) {
+        throw new Error(`The fake project has no Plugin API canvas node ${nodeId}.`);
+      }
+
+      // Like the Server API: position stays as it is, without an error; a DSL SET changes it (06.10.2026).
+      const { position: _ignored, ...kept } = attributes;
+
+      layer.attributes = {
+        ...layer.attributes,
+        ...kept,
       };
+
+      return canvasNode(layer);
     },
     setParent: async (nodeId, parentId, index) => {
+      const layer = state.canvas.find((candidate) => candidate.id === nodeId);
+
+      if (layer !== undefined) {
+        layer.parentId = parentId;
+      }
+
       state.moves.push({
         nodeId,
         parentId,

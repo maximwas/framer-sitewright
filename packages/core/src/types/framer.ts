@@ -48,6 +48,13 @@ export interface AgentPort {
    * actions (confirm_publish, deploy_to_production): the user publishes.
    */
   publish(input?: Record<string, unknown>): Promise<unknown>;
+  /**
+   * Copies an external instance's component (Marketplace, shared library) into the project and points the instance at
+   * the copy: `{ status, message, component }` (ComponentAgentAnswerSchema). It finds the instance on any page.
+   */
+  makeExternalComponentLocal(input: { id: string; replaceAll?: boolean }, options?: PageScope): Promise<unknown>;
+  /** Replaces a local component's instance with its layers: `{ status, replacementId }`. */
+  flattenComponentInstance(input: { id: string }, options?: PageScope): Promise<unknown>;
 }
 
 export type TransportKind = "server-api" | "plugin";

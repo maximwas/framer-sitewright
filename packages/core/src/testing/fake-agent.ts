@@ -85,6 +85,22 @@ export function createFakeAgent(state: FakeFramerState, nextId: (prefix: string)
 
       return JSON.parse(JSON.stringify(state.publishPreview)) as unknown;
     },
+    makeExternalComponentLocal: async (input) => {
+      state.componentAgentCalls.push({
+        method: "makeExternalComponentLocal",
+        input: { ...input },
+      });
+
+      return state.componentAgentAnswers.shift() ?? madeLocal(input.replaceAll, nextId);
+    },
+    flattenComponentInstance: async (input) => {
+      state.componentAgentCalls.push({
+        method: "flattenComponentInstance",
+        input: { ...input },
+      });
+
+      return state.componentAgentAnswers.shift() ?? flattened(input.id, state, nextId);
+    },
   };
 }
 
@@ -106,6 +122,53 @@ function screenshotResult(query: Record<string, unknown>, { state, nextId }: Fak
     image_url: `https://framerusercontent.com/screenshots/on-demand/${nextId("shot")}.jpg`,
     ...(query.viewport === undefined ? {} : { viewport: query.viewport }),
     theme: query.theme ?? "light",
+  };
+}
+
+/** Like Framer: without replaceAll it asks first, whatever the instances (06.10.2026). */
+function madeLocal(replaceAll: boolean | undefined, nextId: (prefix: string) => string): unknown {
+  if (replaceAll === undefined) {
+    return {
+      status: "needs_confirmation",
+      message:
+        "This component may have multiple instances. Use `ask_clarification` to ask the user whether to replace only this instance or all instances, then retry with `replaceAll` set to true or false.",
+    };
+  }
+
+  return {
+    status: "success",
+    message: "Made external component local.",
+    component: {
+      id: nextId("component"),
+      displayName: "Component",
+    },
+  };
+}
+
+/**
+ * Like Framer: the instance's layer gives way to a frame in its parent, placed as the component's own root is, not as
+ * the instance was (06.10.2026).
+ */
+function flattened(id: string, state: FakeFramerState, nextId: (prefix: string) => string): unknown {
+  const instance = state.canvas.find((layer) => layer.id === id);
+  const replacement = {
+    id: nextId("frame"),
+    parentId: instance?.parentId ?? "",
+    className: "FrameNode",
+    name: instance?.name ?? null,
+    attributes: {
+      position: "absolute",
+      left: "0px",
+      top: "0px",
+      width: "1140px",
+    },
+  };
+
+  state.canvas = [...state.canvas.filter((layer) => layer.id !== id), replacement];
+
+  return {
+    status: "success",
+    replacementId: replacement.id,
   };
 }
 
@@ -269,6 +332,17 @@ function setNode({ id, attributes }: DslCommand, session: FakeAgentSession): voi
 
   if (token !== undefined) {
     Object.assign(token, tokenColors(attributes));
+
+    return;
+  }
+
+  const layer = session.state.canvas.find((candidate) => candidate.id === target);
+
+  if (layer !== undefined) {
+    layer.attributes = {
+      ...layer.attributes,
+      ...attributes,
+    };
 
     return;
   }

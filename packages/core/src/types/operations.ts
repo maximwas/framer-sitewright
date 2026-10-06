@@ -23,6 +23,7 @@ export type PluginPermission =
   | "TextStyle.remove"
   | "addSVG"
   | "addComponentInstance"
+  | "addDetachedComponentLayers"
   | "setParent"
   | "setCustomCode"
   | "createCodeFile"

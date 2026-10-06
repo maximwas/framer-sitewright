@@ -468,6 +468,16 @@ export interface FramerPort {
    * (alpha) Framer puts it where the editor's selection is.
    */
   addComponentInstance(options: { url: string; parentId?: string }): Promise<unknown>;
+  /**
+   * Inserts the layers of a component designed in Framer (not a code component) by its module URL, as a frame instead
+   * of an instance; returns that frame. It takes no parent: the plugin puts it at the editor's selection, the Server API
+   * on the home page's canvas root (06.10.2026). `layout` asks for a layout block whose variants follow the breakpoints.
+   */
+  addDetachedComponentLayers(options: {
+    url: string;
+    layout?: boolean;
+    attributes?: Record<string, unknown>;
+  }): Promise<unknown>;
   /** Inserts an SVG as a vector layer (the plugin); the Server API refuses it ("Failed to optimize SVG"). */
   addSVG(svg: { svg: string; name?: string }): Promise<void>;
   /** The layers selected in the editor. Only the plugin has a selection; the Server API lacks the method. */

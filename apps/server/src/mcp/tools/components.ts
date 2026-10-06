@@ -1,5 +1,12 @@
 import type { McpServer } from "@modelcontextprotocol/server";
-import { componentControlsSet, componentInsert, componentsRead } from "@sitewright/core";
+import {
+  componentControlsSet,
+  componentDetach,
+  componentInsert,
+  componentMakeLocal,
+  componentsRead,
+  sectionInsert,
+} from "@sitewright/core";
 import type { ToolContext } from "../../types/mcp.ts";
 import { addOperationTool } from "../add-tool.ts";
 
@@ -21,5 +28,23 @@ export function registerComponentTools(server: McpServer, context: ToolContext):
     title: "Set component controls",
     description:
       'Sets control values on a component instance, object controls included: a code component\'s arrows, dots or clipping, which design_apply refuses ("unsupported type object"). Names are the component\'s own, without $control__; an object merges with the instance\'s current value, so { arrows: { show: false } } keeps the other arrow settings. Simple controls (text, numbers, slots) still go through design_apply. Image URLs in image fields (image, images, photo, poster, logo… alone, in a list or in a list\'s entries) are uploaded first, since Framer keeps only uploaded images there: this is how a Marketplace carousel gets your photos ({ slides: [{ image: "<url>", caption: "…" }] }). The answer holds the controls as Framer kept them; notStored lists what it refused without an error (a transition object, a list of images): set those with design_apply $control__… or ask the user to set them in the editor. Undo does not restore controls set here.',
+  });
+  addOperationTool(server, context, componentMakeLocal, {
+    name: "component_make_local",
+    title: "Make a component local",
+    description:
+      "Copies an external component (from the Marketplace or a shared library) into the project and points the instance at the copy, so you can restyle it with the site's color tokens and text styles. Choose it over component_controls_set when the controls cannot reach the colors or type you need. A component designed in Framer becomes a project component: edit its layers with design_apply. A code component becomes a code file of the project (codeFile in the answer): edit it with code_file_read and code_file_write; Framer refuses to copy some code components. Without replaceAll, Framer first answers status needs_confirmation and changes nothing: ask the user whether only this instance or every instance should use the copy, then call again with replaceAll false or true. To edit one placement as plain layers, call component_detach afterwards. Undo does not take it back. Needs the project's Server API key (framer_status shows whether it is set).",
+  });
+  addOperationTool(server, context, componentDetach, {
+    name: "component_detach",
+    title: "Detach an instance",
+    description:
+      "Replaces a component instance with its layers, like Detach in the editor, and returns the id of the new root layer (nodeId); the root keeps the instance's place and size in its parent. Choose it for a one-off edit of a single placement: the layers stop following the component, so later changes to the component skip them. To restyle every placement, edit the component instead. It works on an instance of a project component designed in Framer: make a Marketplace or shared-library instance local first with component_make_local. A code component has no layers to detach. Undo does not bring the instance back. Needs the project's Server API key (framer_status shows whether it is set).",
+  });
+  addOperationTool(server, context, sectionInsert, {
+    name: "section_insert",
+    title: "Insert a section as layers",
+    description:
+      "Inserts a component designed in Framer by its module URL (framer.com/m/…, from the Insert menu, a Marketplace page or marketplace_browse) as plain, editable layers instead of a locked instance: a ready section (hero, pricing, FAQ, footer) to restyle with the site's tokens and text styles and to edit freely with design_apply. Choose component_insert instead to keep a live instance tuned through its controls: carousels, tickers and other code components have no layers to insert. The layers go into parentId at index, in its flow when it is a stack or grid. With layout true, Framer inserts a layout block whose variants follow the page's breakpoints, but only when it inserts into a breakpoint of that page, as it can in the open editor; the answer's note says when the variants were not matched, so set the Tablet and Phone layouts with design_apply. Undo does not remove the layers: delete them with design_apply. Works through the plugin and with the Server API key alike.",
   });
 }

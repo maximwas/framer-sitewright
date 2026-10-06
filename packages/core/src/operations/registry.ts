@@ -15,7 +15,10 @@ import { colorTokensList } from "./color-tokens/list.ts";
 import { colorTokensUpsert } from "./color-tokens/upsert.ts";
 import { componentsRead } from "./components/components-read.ts";
 import { componentControlsSet } from "./components/controls-set.ts";
+import { componentDetach } from "./components/detach.ts";
 import { componentInsert } from "./components/insert.ts";
+import { componentMakeLocal } from "./components/make-local.ts";
+import { sectionInsert } from "./components/section-insert.ts";
 import { designApply } from "./design/apply.ts";
 import { fontsInLibrary } from "./fonts/in-library.ts";
 import { fontsSearch } from "./fonts/search.ts";
@@ -72,6 +75,9 @@ const OPERATIONS: readonly AnyOperation[] = [
   componentsRead,
   componentControlsSet,
   componentInsert,
+  componentMakeLocal,
+  componentDetach,
+  sectionInsert,
   customCodeGet,
   customCodeSet,
   codeFilesList,

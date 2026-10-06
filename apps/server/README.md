@@ -106,7 +106,9 @@ sitewright --help
 - **Design guide:** `design_guide` — the order of work, layout and typography rules, direction from top Framer sites,
   and the checklist before handing a page over. The Claude Code skill (`setup --skill`) points the agent at it.
 - **Components and assets:** `components_read`, `component_controls_set`, `component_insert` (a free Marketplace
-  component or one of Framer's own, by module URL), `icons_search`, `images_search`, `image_upload`, `file_upload`
+  component or one of Framer's own, by module URL), `component_make_local` (a Marketplace component copied into the
+  project to restyle), `component_detach` (an instance as plain layers), `section_insert` (a ready section as editable
+  layers), `icons_search`, `images_search`, `image_upload`, `file_upload`
   (videos, PDFs, fonts), `svg_add`.
 - **Marketplace:** `marketplace_browse` — templates and components in their current ranking, by category or name, to
   see what sells before proposing a direction or to offer a component instead of building one. `marketplace_item` —

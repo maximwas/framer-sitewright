@@ -53,6 +53,10 @@ export interface FakeFramerState {
   redirects: { id: string; from: string; to: string | null; expandToAllLocales: boolean }[];
   /** Layers under the home page's breakpoints, for the Plugin API's tree reads; text layers have text. */
   /** Layers by parent; a page's own breakpoints (pages other than "/") are layers with isBreakpoint and a px width. */
+  /**
+   * Layers under the home page's breakpoints, for the Plugin API's tree reads; text layers have text. `attributes` are
+   * what getNode reads beside id and name, and what setAttributes writes.
+   */
   canvas: {
     id: string;
     parentId: string;
@@ -61,6 +65,7 @@ export interface FakeFramerState {
     text?: string;
     isBreakpoint?: boolean;
     width?: string;
+    attributes?: Record<string, unknown>;
   }[];
   publishInfo: PublishInfoData;
   unpublishedChanges: UnpublishedChangeData[];
@@ -113,6 +118,12 @@ export interface FakeFramerState {
   instances: { id: string; url: string; parentId?: string }[];
   /** setParent calls, in order. */
   moves: { nodeId: string; parentId: string; index?: number }[];
+  /** addDetachedComponentLayers calls: the frame each made and what it was asked. */
+  detachedLayers: { id: string; url: string; layout?: boolean; attributes?: Record<string, unknown> }[];
+  /** makeExternalComponentLocal and flattenComponentInstance calls, in order, as framer.agent got them. */
+  componentAgentCalls: { method: "makeExternalComponentLocal" | "flattenComponentInstance"; input: object }[];
+  /** What those calls answer, in order, before the fake's own answers (e.g. `{ status: "blocked", message }`). */
+  componentAgentAnswers: unknown[];
   customCode: Record<CustomCodeLocation, { disabled: boolean; html: string | null }>;
   codeFiles: { id: string; name: string; path: string; content: string }[];
   /** What queryImages answers. */

@@ -145,6 +145,9 @@ export function defaultState(): FakeFramerState {
     selection: [],
     instances: [],
     moves: [],
+    detachedLayers: [],
+    componentAgentCalls: [],
+    componentAgentAnswers: [],
     customCode: {
       headStart: {
         disabled: false,
