@@ -321,7 +321,13 @@ const fitParentFillChild: NodeRule = (node) =>
     }
 
     const flow = childrenOf(node).filter(inFlow);
-    const filling = flow.filter((child) => attr(child, axis)?.endsWith("fr") && !(axis === "width" && isText(child)));
+    // Along the stack, an empty spacer next to content takes what is left and nothing when nothing is: Framer keeps the
+    // parent hugging (a card's spacer that pins its last item to the bottom).
+    const sized = flow.some((child) => hasOwnContent(child) && !attr(child, axis)?.endsWith("fr"));
+    const spacer = (child: SerializedNode) => along && sized && !hasOwnContent(child) && !hasSurface(child);
+    const filling = flow.filter(
+      (child) => attr(child, axis)?.endsWith("fr") && !(axis === "width" && isText(child)) && !spacer(child),
+    );
     const conflict = along
       ? filling.length > 0
       : filling.length === flow.length && filling.every((child) => !hasOwnContent(child));

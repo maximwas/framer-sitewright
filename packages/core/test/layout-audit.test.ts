@@ -845,4 +845,59 @@ describe("layout audit", () => {
       ),
     ).not.toContain("fixed-width");
   });
+
+  it("regression: an empty spacer filling a card that hugs its content pins the last item to the bottom (seen: Step cards)", () => {
+    const card = (spacer: SerializedNode) =>
+      node(
+        "FrameNode",
+        "Step",
+        {
+          layout: "stack",
+          stackDirection: "vertical",
+          stackAlignment: "start",
+          stackDistribution: "start",
+          fill: "#ffffff",
+          padding: "32px",
+          width: "320px",
+          height: "auto",
+        },
+        [
+          text("Title", "Heading 3", "Watch"),
+          spacer,
+          node("ComponentInstanceNode", "Output", {
+            width: "auto",
+            height: "auto",
+          }),
+        ],
+      );
+    const fills = (target: SerializedNode) =>
+      auditTree(target, context()).filter((found) => found.rule === "fit-parent-fill-child");
+
+    expect(
+      fills(
+        card(
+          node("FrameNode", "Spacer", {
+            width: "1fr",
+            height: "1fr",
+          }),
+        ),
+      ),
+    ).toEqual([]);
+    expect(
+      fills(
+        card(
+          node(
+            "FrameNode",
+            "Body",
+            {
+              layout: "stack",
+              width: "1fr",
+              height: "1fr",
+            },
+            [text("Text", "Body", "We sit with each team")],
+          ),
+        ),
+      ),
+    ).toHaveLength(1);
+  });
 });
