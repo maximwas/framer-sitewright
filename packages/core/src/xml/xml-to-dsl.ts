@@ -1,5 +1,5 @@
 import { DSL_VARIABLE_TYPE } from "../constants/dsl.ts";
-import { XML_RUN_CONTAINER_TYPES } from "../constants/xml.ts";
+import { PLACEMENT_ATTRIBUTES, XML_RUN_CONTAINER_TYPES } from "../constants/xml.ts";
 import { addNode, deleteNode, setNode } from "../dsl/commands.ts";
 import type { DslValue } from "../types/dsl.ts";
 import type { XmlCompiled, XmlElementNode, XmlParent, XmlVariable } from "../types/xml.ts";
@@ -32,7 +32,7 @@ export function xmlToDsl(source: string, nextTempId: (base: string) => string): 
   }
 
   return {
-    commands: variablesBeforeUse(compiler.commands, compiler.variables),
+    commands: variablesBeforeUse([...compiler.commands, ...compiler.deferred], compiler.variables),
     keys: compiler.keys,
     variables: compiler.variables,
   };
@@ -66,6 +66,10 @@ function variablesBeforeUse(commands: readonly string[], variables: readonly Xml
 
 class XmlCompiler {
   readonly commands: string[] = [];
+  /** SETs of effects that point at elements created later in the batch: they run after everything is created. */
+  readonly deferred: string[] = [];
+  /** Temp ids of the elements created so far, in tree order. */
+  readonly #created = new Set<string>();
   readonly keys: Readonly<Record<string, string>>;
   readonly variables: XmlVariable[] = [];
   readonly #nextTempId: (base: string) => string;
@@ -115,8 +119,14 @@ class XmlCompiler {
       attributes.text = text;
     }
 
-    if (Object.keys(attributes).length > 0) {
-      this.commands.push(setNode(id, attributes));
+    const { now, later } = this.#splitForward(attributes);
+
+    if (Object.keys(now).length > 0) {
+      this.commands.push(setNode(id, now));
+    }
+
+    if (Object.keys(later).length > 0) {
+      this.deferred.push(setNode(id, later));
     }
 
     const self = {
@@ -148,8 +158,15 @@ class XmlCompiler {
       attributes.text = text;
     }
 
-    this.commands.push(addNode(element.type, tempId, attributes));
-    this.#noteVariable(element, tempId, attributes);
+    const { now, later } = this.#splitForward(attributes);
+
+    this.commands.push(addNode(element.type, tempId, now));
+    this.#created.add(tempId);
+    this.#noteVariable(element, tempId, now);
+
+    if (Object.keys(later).length > 0) {
+      this.deferred.push(setNode(tempId, later));
+    }
 
     const self = {
       id: tempId,
@@ -170,6 +187,32 @@ class XmlCompiler {
         );
       }
     }
+  }
+
+  /**
+   * The attributes split by whether they may go now. An effect that names an element created later in the batch (a
+   * scroll section's target, a scroll variant, a form's submit button) is refused until that element exists ("every
+   * target must be a scroll target"), so the whole effect (every attribute of the same first segment) waits for it.
+   * What places the element (parent, component, scope) stays: Framer needs it at creation.
+   */
+  #splitForward(attributes: Readonly<Record<string, DslValue>>): {
+    now: Record<string, DslValue>;
+    later: Record<string, DslValue>;
+  } {
+    const pending = new Set(Object.values(this.keys).filter((tempId) => !this.#created.has(tempId)));
+    const groups = new Set(
+      Object.entries(attributes).flatMap(([name, value]) =>
+        typeof value === "string" && pending.has(value) && !PLACEMENT_ATTRIBUTES.has(name)
+          ? [name.split(".")[0] ?? name]
+          : [],
+      ),
+    );
+    const entries = Object.entries(attributes);
+
+    return {
+      now: Object.fromEntries(entries.filter(([name]) => !groups.has(name.split(".")[0] ?? name))),
+      later: Object.fromEntries(entries.filter(([name]) => groups.has(name.split(".")[0] ?? name))),
+    };
   }
 
   /** A nested element's parent is the tree; a top-level one's `parent` may name a key created earlier in the batch. */

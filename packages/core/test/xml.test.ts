@@ -171,6 +171,21 @@ describe("XML: writing nodes", () => {
     expect(commands[4]).toMatch(/component="card_\d+" \$control__label="write to me@example.com";$/);
   });
 
+  it("regression: sets an effect that targets a later element once that element exists (seen: every target must be a scroll target)", () => {
+    const { commands } = xmlToDsl(
+      `<FrameNode parent="page" key="disc" name="Disc" styleTransformEffect.trigger="onScrollTarget" styleTransformEffect.sections.0.target="@stepA" styleTransformEffect.sections.0.opacity="0.2" />
+      <FrameNode parent="page" key="stepA" name="Step A" scrollTargetEnabled="true" elementId="step-a" />`,
+      tempIds,
+    );
+
+    expect(commands).toHaveLength(3);
+    expect(commands[0]).toMatch(/^\+FrameNode disc_\d+ parent="page" name="Disc";$/);
+    expect(commands[1]).toMatch(/^\+FrameNode stepA_\d+ /);
+    expect(commands[2]).toMatch(
+      /^SET disc_\d+ styleTransformEffect\.trigger="onScrollTarget" styleTransformEffect\.sections\.0\.target="stepA_\d+" styleTransformEffect\.sections\.0\.opacity="0\.2";$/,
+    );
+  });
+
   it("refuses malformed XML and what it cannot write, saying where", () => {
     const fails = (xml: string) => () => xmlToDsl(xml, tempIds);
 
