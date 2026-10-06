@@ -111,7 +111,8 @@ something else; every rule here was seen on a live project.
   copy copies its state at that moment: finish the source variant's overrides first.
 - A click that switches a variant (accordions, menus, tabs): `onTap.0.action="SET_VARIANT"`
   `onTap.0.controls.variant="<variant id>"` (or `"cycle"` for two variants) on a node inside the component.
-- A component instance takes no `onTap`. Give its component a `+EventHandlerVariable` (scope = the component), fire it
+- A component instance takes no `onTap`. Give its component a `+EventHandlerVariable` (scope = the component; in XML
+  `<EventHandlerVariable key="click" name="Click" scope="@card"/>`, not `<Variable type=…>`), fire it
   from a node inside with `onTap.0.action="TRIGGER_EVENT"` `onTap.0.controls.id="var(--variable-<id>)"`, then set the
   instance's action on that event: `onClick.0.action="SET_VARIANT"` (or `SHOW_OVERLAY`, a link…). `components_read`
   shows the event's key. Never wrap an instance in a frame to link it or make it clickable.
