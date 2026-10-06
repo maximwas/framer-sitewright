@@ -470,7 +470,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
           <p class="search-empty" hidden>No tool matches.</p>
 <!-- tools:start -->
 <section class="tool-group" id="project" data-group>
-  <h3>Project and connection <span>8</span></h3>
+  <h3>Project and connection <span>9</span></h3>
   <p class="group-intro">Where the agent starts: which project is open, how it is reached, and publishing when you ask.</p>
   <article class="tool" id="framer_status" data-tool="framer_status Framer connection status shows the active transport (server api or the framer plugin), whether each one is configured and connected, what to do if not, the projects with a saved server api key (framer_connect { project } switches between them), and what the project's framer plan allows. call it when a framer tool fails.">
     <header>
@@ -560,19 +560,29 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="project_publish" data-tool="project_publish Publish the site publishes the site as it is in the editor: to staging when the project has staging on, otherwise live to visitors. only when the user asks to publish. returns the deployment's first status (optimization goes on after it) and the address; a failed status means framer could not publish, tell the user.">
+  <article class="tool" id="publish_preview" data-tool="publish_preview Preview a publish shows what publishing would do, without publishing: whether it is blocked, the blocking errors and the warnings (with the layer's id when framer names one), the pages (with their paths), components and other parts changed since the last publish, where it would go (production, staging or a branch preview) and the site's urls. use it before the user publishes, to fix what blocks or warns first, and to find the live url for reference_screenshot. it never publishes: the user does, or project_publish when they ask. needs the project's server api key.">
+    <header>
+      <h4><a href="#publish_preview">publish_preview</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Preview a publish</p>
+    <p>Shows what publishing would do, without publishing: whether it is blocked, the blocking errors and the warnings (with the layer's id when Framer names one), the pages (with their paths), components and other parts changed since the last publish, where it would go (production, staging or a branch preview) and the site's URLs. Use it before the user publishes, to fix what blocks or warns first, and to find the live URL for <a href="#reference_screenshot"><code>reference_screenshot</code></a>. It never publishes: the user does, or <a href="#project_publish"><code>project_publish</code></a> when they ask. Needs the project's Server API key.</p>
+    <p class="no-params">No parameters.</p>
+  </article>
+  <article class="tool" id="project_publish" data-tool="project_publish Publish the site publishes the site as it is in the editor: to staging when the project has staging on, otherwise live to visitors. only when the user asks to publish; with the server api key, check first with publish_preview. returns the deployment's first status (optimization goes on after it) and the address; a failed status means framer could not publish, tell the user.">
     <header>
       <h4><a href="#project_publish">project_publish</a></h4>
       <span class="badge write">Changes</span>
       <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
     </header>
     <p class="tool-title">Publish the site</p>
-    <p>Publishes the site as it is in the editor: to staging when the project has staging on, otherwise live to visitors. Only when the user asks to publish. Returns the deployment's first status (optimization goes on after it) and the address; a failed status means Framer could not publish, tell the user.</p>
+    <p>Publishes the site as it is in the editor: to staging when the project has staging on, otherwise live to visitors. Only when the user asks to publish; with the Server API key, check first with <a href="#publish_preview"><code>publish_preview</code></a>. Returns the deployment's first status (optimization goes on after it) and the address; a failed status means Framer could not publish, tell the user.</p>
     <p class="no-params">No parameters.</p>
   </article>
 </section>
 <section class="tool-group" id="design-system" data-group>
-  <h3>Design system <span>8</span></h3>
+  <h3>Design system <span>12</span></h3>
   <p class="group-intro">Color tokens with light and dark values, and text styles with their sizes per breakpoint.</p>
   <article class="tool" id="color_tokens_list" data-tool="color_tokens_list List color tokens lists framer color styles (tokens) as { id, path, light, dark }. path uses &quot;/&quot; folders like &quot;brand/primary&quot;.">
     <header>
@@ -672,6 +682,68 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
+  <article class="tool" id="link_styles_list" data-tool="link_styles_list List link styles lists link styles: how links in text look at rest, under the pointer (hover) and when they point to the page being viewed (current), with colors as a token path and the value it draws, the underline (decoration, its color, style, thickness and offset) and a highlight behind the text (background). values a style does not set are left out, and framer does not store decoration none, auto thickness or offset, or zero radius and padding. transition shows a tween a style still has. needs the project's server api key: link styles exist only in the dsl.">
+    <header>
+      <h4><a href="#link_styles_list">link_styles_list</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">List link styles</p>
+    <p>Lists link styles: how links in text look at rest, under the pointer (hover) and when they point to the page being viewed (current), with colors as a token path and the value it draws, the underline (decoration, its color, style, thickness and offset) and a highlight behind the text (background). Values a style does not set are left out, and Framer does not store decoration none, auto thickness or offset, or zero radius and padding. transition shows a tween a style still has. Needs the project's Server API key: link styles exist only in the DSL.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>prefix</code></th><td><code class="type">string</code></td><td>Only styles inside this folder, e.g. &quot;Links&quot;.</td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="link_styles_upsert" data-tool="link_styles_upsert Create or update link styles creates or updates link styles by path in one batch; only the values given change, and null removes one. a link in text takes its look from its link style, not from the text: without one framer draws it in its default blue. make one per role (navigation, footer, links in body text) with color { token: &quot;text/muted&quot; }, a hover color, and on a menu of several pages a current color for the active item; then put linkstylepreset=&quot;&lt;path&gt;&quot; on the text with design_apply. a new style needs color. framer animates link styles only with tween easing, which sitewright never writes, so colors change at once; transition: null removes a tween.">
+    <header>
+      <h4><a href="#link_styles_upsert">link_styles_upsert</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Create or update link styles</p>
+    <p>Creates or updates link styles by path in one batch; only the values given change, and null removes one. A link in text takes its look from its link style, not from the text: without one Framer draws it in its default blue. Make one per role (navigation, footer, links in body text) with color { token: &quot;Text/Muted&quot; }, a hover color, and on a menu of several pages a current color for the active item; then put linkStylePreset=&quot;&lt;path&gt;&quot; on the text with <a href="#design_apply"><code>design_apply</code></a>. A new style needs color. Framer animates link styles only with tween easing, which Sitewright never writes, so colors change at once; transition: null removes a tween.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>styles</code></th><td><code class="type">object[]</code></td><td> <span class="req">required</span><ul class="fields"><li><code>path</code> <code class="type">string</code> — Style path with &quot;/&quot; folders, e.g. &quot;Links/Nav&quot;.</li><li><code>color</code> <code class="type">object | null</code> <span class="opt">optional</span> — { token: &quot;Text/Muted&quot; } binds a color token (var(--token-&lt;id&gt;)); { value: &quot;#111111&quot; } sets a raw color.</li><li><code>decoration</code> <code class="type">&quot;none&quot; | &quot;underline&quot; | &quot;line-through&quot; | null</code> <span class="opt">optional</span></li><li><code>decorationColor</code> <code class="type">object | null</code> <span class="opt">optional</span></li><li><code>decorationStyle</code> <code class="type">&quot;solid&quot; | &quot;double&quot; | &quot;dotted&quot; | &quot;dashed&quot; | &quot;wavy&quot; | null</code> <span class="opt">optional</span></li><li><code>decorationThickness</code> <code class="type">string | null</code> <span class="opt">optional</span></li><li><code>decorationOffset</code> <code class="type">string | null</code> <span class="opt">optional</span> — Gap between the text and its underline.</li><li><code>backgroundColor</code> <code class="type">object | null</code> <span class="opt">optional</span> — A highlight behind the link text.</li><li><code>backgroundRadius</code> <code class="type">string | null</code> <span class="opt">optional</span></li><li><code>backgroundPadding</code> <code class="type">string | null</code> <span class="opt">optional</span></li><li><code>hover</code> <code class="type">object</code> <span class="opt">optional</span> — The link under the pointer.</li><li><code>current</code> <code class="type">object</code> <span class="opt">optional</span> — A link to the page being viewed: the active item of a menu on a site of several pages.</li><li><code>transition</code> <code class="type">null</code> <span class="opt">optional</span> — null removes the tween a style may have. Framer animates link styles only with tween easing and refuses springs, so Sitewright sets no transition: link colors change at once.</li></ul></td></tr>
+      <tr><th scope="row"><code>dryRun</code></th><td><code class="type">boolean</code></td><td>Only return the plan, change nothing. <span class="def">default <code>false</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="link_styles_delete" data-tool="link_styles_delete Delete link styles deletes link styles by path (every style at a path, if several share it) and whole folders (folders: [&quot;links&quot;] deletes everything inside, and so the folder). framer refuses to delete a style text still uses: it comes back in failed with the reason; styles_usage shows where it is used. unknown paths and folders come back in notfound.">
+    <header>
+      <h4><a href="#link_styles_delete">link_styles_delete</a></h4>
+      <span class="badge destructive">Destructive</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Delete link styles</p>
+    <p>Deletes link styles by path (every style at a path, if several share it) and whole folders (folders: [&quot;Links&quot;] deletes everything inside, and so the folder). Framer refuses to delete a style text still uses: it comes back in failed with the reason; <a href="#styles_usage"><code>styles_usage</code></a> shows where it is used. Unknown paths and folders come back in notFound.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>paths</code></th><td><code class="type">string[]</code></td><td>Style paths; every style at a path goes. <span class="def">default <code>[]</code></span></td></tr>
+      <tr><th scope="row"><code>folders</code></th><td><code class="type">string[]</code></td><td>Folders to empty, e.g. &quot;Links&quot;: every style inside goes, and the folder with them. <span class="def">default <code>[]</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="styles_usage" data-tool="styles_usage Show where styles are used shows which color tokens, text styles and link styles the site uses: for each, how many layers use it (a layer counts once across breakpoints) and where (page paths, components, design pages, layouts); a token also lists the text and link styles that bind it. what nothing uses comes back in unused. read the whole site (no pagepath) before deleting or swapping a style: with pagepath it reads one page, and unused means unused there. code files are not searched.">
+    <header>
+      <h4><a href="#styles_usage">styles_usage</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Show where styles are used</p>
+    <p>Shows which color tokens, text styles and link styles the site uses: for each, how many layers use it (a layer counts once across breakpoints) and where (page paths, components, design pages, layouts); a token also lists the text and link styles that bind it. What nothing uses comes back in unused. Read the whole site (no pagePath) before deleting or swapping a style: with pagePath it reads one page, and unused means unused there. Code files are not searched.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>One web page; omit to read the whole site: every page, component, design page and layout.</td></tr>
+      </tbody>
+    </table></div>
+  </article>
   <article class="tool" id="fonts_search" data-tool="fonts_search Search fonts searches fonts by family name: framer's library with its weights and styles, and fonts uploaded to the project (source project) with the variants its text styles use. framer swaps a weight the project lacks without an error; text_styles_upsert reports that as fontfallbacks.">
     <header>
       <h4><a href="#fonts_search">fonts_search</a></h4>
@@ -710,7 +782,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="pages" data-group>
-  <h3>Pages, layout and redirects <span>12</span></h3>
+  <h3>Pages, layout and redirects <span>14</span></h3>
   <p class="group-intro">Create and delete pages, read one as XML, find layers and replace text across pages, change pages, check what looks broken, adapt them to tablet and phone, look at them, and redirect old paths.</p>
   <article class="tool" id="page_create" data-tool="page_create Create a page creates an empty web page at a path (&quot;/about&quot;) or a design page (a canvas for drafts) by name. build its content with design_apply; add breakpoints with breakpoints_add. undo does not remove pages.">
     <header>
@@ -741,6 +813,25 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <tbody>
       <tr><th scope="row"><code>path</code></th><td><code class="type">string</code></td><td>A web page by its path, e.g. &quot;/about&quot;.</td></tr>
       <tr><th scope="row"><code>designPage</code></th><td><code class="type">string</code></td><td>A design page (a canvas for drafts) by its name.</td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="page_duplicate" data-tool="page_duplicate Duplicate a page copies a page with everything on it: a web page (path) to a new path (newpath, e.g. &quot;/about-b&quot;), keeping its breakpoints, their overrides and its settings; or a design page (designpage) under a new name (newname). use it for a variant of a page (an a/b version, a landing page from an existing one) instead of rebuilding it with design_apply. the new path must be free. a web page copy is a draft by default, which publishing leaves out until the user turns the draft off; draft: false publishes it with the site. works with or without the server api key. returns the copy's id, path or name, and whether it is a draft. undo does not remove the copy: delete it with page_delete.">
+    <header>
+      <h4><a href="#page_duplicate">page_duplicate</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Duplicate a page</p>
+    <p>Copies a page with everything on it: a web page (path) to a new path (newPath, e.g. &quot;/about-b&quot;), keeping its breakpoints, their overrides and its settings; or a design page (designPage) under a new name (newName). Use it for a variant of a page (an A/B version, a landing page from an existing one) instead of rebuilding it with <a href="#design_apply"><code>design_apply</code></a>. The new path must be free. A web page copy is a draft by default, which publishing leaves out until the user turns the draft off; draft: false publishes it with the site. Works with or without the Server API key. Returns the copy's id, path or name, and whether it is a draft. Undo does not remove the copy: delete it with <a href="#page_delete"><code>page_delete</code></a>.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>path</code></th><td><code class="type">string</code></td><td>The web page to copy, by its path, e.g. &quot;/about&quot;.</td></tr>
+      <tr><th scope="row"><code>designPage</code></th><td><code class="type">string</code></td><td>The design page to copy, by its name.</td></tr>
+      <tr><th scope="row"><code>newPath</code></th><td><code class="type">string</code></td><td>The web page copy's path, e.g. &quot;/about-b&quot;; no other page may have it.</td></tr>
+      <tr><th scope="row"><code>newName</code></th><td><code class="type">string</code></td><td>The design page copy's name; Framer adds a number when another page has it.</td></tr>
+      <tr><th scope="row"><code>draft</code></th><td><code class="type">boolean</code></td><td>Keep a web page copy off the published site until the user turns its draft off; false publishes it. <span class="def">default <code>true</code></span></td></tr>
       </tbody>
     </table></div>
   </article>
@@ -884,6 +975,24 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
+  <article class="tool" id="reference_screenshot" data-tool="reference_screenshot Screenshot a web page screenshots any public web page in framer's browser: a reference site the user likes, a competitor's, or the published site (its url is in publish_preview or publish_status). use it to study a reference's layout, spacing, type and rhythm before designing, or to check the live site after a publish. the capture is the whole page at the window width given (390 for a phone, 810 for a tablet, default 1200), light or dark. a page longer than 2000 px comes scaled down to fit (a tall page gets narrow), and the text gives the full size and the full-size image's url to open in a browser. local, private and login-only pages cannot be captured: ask the user for a screenshot instead. needs the project's server api key. returns the image and a line with its sizes and url.">
+    <header>
+      <h4><a href="#reference_screenshot">reference_screenshot</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Screenshot a web page</p>
+    <p>Screenshots any public web page in Framer's browser: a reference site the user likes, a competitor's, or the published site (its URL is in <a href="#publish_preview"><code>publish_preview</code></a> or <a href="#publish_status"><code>publish_status</code></a>). Use it to study a reference's layout, spacing, type and rhythm before designing, or to check the live site after a publish. The capture is the whole page at the window width given (390 for a phone, 810 for a tablet, default 1200), light or dark. A page longer than 2000 px comes scaled down to fit (a tall page gets narrow), and the text gives the full size and the full-size image's URL to open in a browser. Local, private and login-only pages cannot be captured: ask the user for a screenshot instead. Needs the project's Server API key. Returns the image and a line with its sizes and URL.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>url</code></th><td><code class="type">string</code></td><td>A public http(s) page, e.g. &quot;https://example.com/pricing&quot;. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>width</code></th><td><code class="type">number</code></td><td>Browser width in px: 390 for a phone, 810 for a tablet. Default 1200.</td></tr>
+      <tr><th scope="row"><code>height</code></th><td><code class="type">number</code></td><td>Browser height in px, which sizes 100vh sections; the capture is the whole page anyway. Default 1080, 844 below 600 wide.</td></tr>
+      <tr><th scope="row"><code>theme</code></th><td><code class="type">&quot;light&quot; | &quot;dark&quot;</code></td><td>The color scheme the page is opened in. <span class="def">default <code>&quot;light&quot;</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
   <article class="tool" id="redirects_list" data-tool="redirects_list List redirects lists the site's redirects: from which path, to which path or url, and for every locale or not.">
     <header>
       <h4><a href="#redirects_list">redirects_list</a></h4>
@@ -1018,7 +1127,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="assets" data-group>
-  <h3>Components and assets <span>11</span></h3>
+  <h3>Components and assets <span>14</span></h3>
   <p class="group-intro">Components and their controls, components from the Marketplace, icon sets, stock photos, your own images, files and SVG.</p>
   <article class="tool" id="components_read" data-tool="components_read Read components lists the project's components with their exact controls ($control__variant options, $control__&lt;name&gt; for each variable) before you place or change instances. control names are the ones listed here, e.g. $control__showicon; do not derive them from variable names. code components are listed in codecomponents and framer's own (video, google maps, embed, slideshow, carousel, countdown, cookie banner, search…) in framer: place any of them with +componentinstancenode component=&quot;&lt;id&gt;&quot;, and pass its id in ids to read its controls first. needs the project's server api key (framer_status shows whether it is set).">
     <header>
@@ -1065,6 +1174,56 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <tbody>
       <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>The component instance (ComponentInstanceNode) to set. <span class="req">required</span></td></tr>
       <tr><th scope="row"><code>controls</code></th><td><code class="type">object</code></td><td>Control values by the names the component declares, without $control__ (e.g. arrows, dots). An object control merges with the instance's current value. <span class="req">required</span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="component_make_local" data-tool="component_make_local Make a component local copies an external component (from the marketplace or a shared library) into the project and points the instance at the copy, so you can restyle it with the site's color tokens and text styles. choose it over component_controls_set when the controls cannot reach the colors or type you need. a component designed in framer becomes a project component: edit its layers with design_apply. a code component becomes a code file of the project (codefile in the answer): edit it with code_file_read and code_file_write; framer refuses to copy some code components. without replaceall, framer first answers status needs_confirmation and changes nothing: ask the user whether only this instance or every instance should use the copy, then call again with replaceall false or true. to edit one placement as plain layers, call component_detach afterwards. undo does not take it back. needs the project's server api key (framer_status shows whether it is set).">
+    <header>
+      <h4><a href="#component_make_local">component_make_local</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Make a component local</p>
+    <p>Copies an external component (from the Marketplace or a shared library) into the project and points the instance at the copy, so you can restyle it with the site's color tokens and text styles. Choose it over <a href="#component_controls_set"><code>component_controls_set</code></a> when the controls cannot reach the colors or type you need. A component designed in Framer becomes a project component: edit its layers with <a href="#design_apply"><code>design_apply</code></a>. A code component becomes a code file of the project (codeFile in the answer): edit it with <a href="#code_file_read"><code>code_file_read</code></a> and <a href="#code_file_write"><code>code_file_write</code></a>; Framer refuses to copy some code components. Without replaceAll, Framer first answers status needs_confirmation and changes nothing: ask the user whether only this instance or every instance should use the copy, then call again with replaceAll false or true. To edit one placement as plain layers, call <a href="#component_detach"><code>component_detach</code></a> afterwards. Undo does not take it back. Needs the project's Server API key (<a href="#framer_status"><code>framer_status</code></a> shows whether it is set).</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>The instance of an external component (ComponentInstanceNode) to make local, from nodes_read. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>replaceAll</code></th><td><code class="type">boolean</code></td><td>The user's choice after a needs_confirmation answer: true points every instance of the component at the local copy, false only this one. Leave it out on the first call.</td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="component_detach" data-tool="component_detach Detach an instance replaces a component instance with its layers, like detach in the editor, and returns the id of the new root layer (nodeid); the root keeps the instance's place and size in its parent. choose it for a one-off edit of a single placement: the layers stop following the component, so later changes to the component skip them. to restyle every placement, edit the component instead. it works on an instance of a project component designed in framer: make a marketplace or shared-library instance local first with component_make_local. a code component has no layers to detach. undo does not bring the instance back. needs the project's server api key (framer_status shows whether it is set).">
+    <header>
+      <h4><a href="#component_detach">component_detach</a></h4>
+      <span class="badge destructive">Destructive</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Detach an instance</p>
+    <p>Replaces a component instance with its layers, like Detach in the editor, and returns the id of the new root layer (nodeId); the root keeps the instance's place and size in its parent. Choose it for a one-off edit of a single placement: the layers stop following the component, so later changes to the component skip them. To restyle every placement, edit the component instead. It works on an instance of a project component designed in Framer: make a Marketplace or shared-library instance local first with <a href="#component_make_local"><code>component_make_local</code></a>. A code component has no layers to detach. Undo does not bring the instance back. Needs the project's Server API key (<a href="#framer_status"><code>framer_status</code></a> shows whether it is set).</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>The instance of a project component (ComponentInstanceNode) to replace with its layers. <span class="req">required</span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="section_insert" data-tool="section_insert Insert a section as layers inserts a component designed in framer by its module url (framer.com/m/…, from the insert menu, a marketplace page or marketplace_browse) as plain, editable layers instead of a locked instance: a ready section (hero, pricing, faq, footer) to restyle with the site's tokens and text styles and to edit freely with design_apply. choose component_insert instead to keep a live instance tuned through its controls: carousels, tickers and other code components have no layers to insert. the layers go into parentid at index, in its flow when it is a stack or grid. with layout true, framer inserts a layout block whose variants follow the page's breakpoints, but only when it inserts into a breakpoint of that page, as it can in the open editor; the answer's note says when the variants were not matched, so set the tablet and phone layouts with design_apply. undo does not remove the layers: delete them with design_apply. works through the plugin and with the server api key alike.">
+    <header>
+      <h4><a href="#section_insert">section_insert</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Insert a section as layers</p>
+    <p>Inserts a component designed in Framer by its module URL (framer.com/m/…, from the Insert menu, a Marketplace page or <a href="#marketplace_browse"><code>marketplace_browse</code></a>) as plain, editable layers instead of a locked instance: a ready section (hero, pricing, FAQ, footer) to restyle with the site's tokens and text styles and to edit freely with <a href="#design_apply"><code>design_apply</code></a>. Choose <a href="#component_insert"><code>component_insert</code></a> instead to keep a live instance tuned through its controls: carousels, tickers and other code components have no layers to insert. The layers go into parentId at index, in its flow when it is a stack or grid. With layout true, Framer inserts a layout block whose variants follow the page's breakpoints, but only when it inserts into a breakpoint of that page, as it can in the open editor; the answer's note says when the variants were not matched, so set the Tablet and Phone layouts with <a href="#design_apply"><code>design_apply</code></a>. Undo does not remove the layers: delete them with <a href="#design_apply"><code>design_apply</code></a>. Works through the plugin and with the Server API key alike.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>url</code></th><td><code class="type">string</code></td><td>The component's module URL (framer.com/m/…): copied from the Insert menu or a Marketplace page, or moduleUrl from marketplace_browse. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>parentId</code></th><td><code class="type">string</code></td><td>Layer to put the layers into, e.g. the page's main stack or its primary (Desktop) breakpoint. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>index</code></th><td><code class="type">number</code></td><td>Position among parentId's children; last by default.</td></tr>
+      <tr><th scope="row"><code>layout</code></th><td><code class="type">boolean</code></td><td>Insert it as a layout block whose variants follow the page's breakpoints. Framer matches them only when it inserts into a breakpoint of the target page; the answer's note says when it did not. <span class="def">default <code>false</code></span></td></tr>
+      <tr><th scope="row"><code>attributes</code></th><td><code class="type">object</code></td><td>Passed to Framer as the component instance's attributes before it detaches the layers. Name, size, opacity and visibility do not reach the layers: set those with design_apply afterwards.</td></tr>
       </tbody>
     </table></div>
   </article>
@@ -1344,16 +1503,16 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="localization" data-group>
-  <h3>Localization <span>3</span></h3>
+  <h3>Localization <span>4</span></h3>
   <p class="group-intro">What still needs translating, and the translations, one locale at a time. Locales are added in the editor.</p>
-  <article class="tool" id="locales_list" data-tool="locales_list List locales lists the site's locales (code, name, url slug, fallback) and which one is the default. the user adds locales in the framer editor; there is no tool for it.">
+  <article class="tool" id="locales_list" data-tool="locales_list List locales lists the site's locales (code, name, url slug, fallback) and which one is the default. add one with locale_add.">
     <header>
       <h4><a href="#locales_list">locales_list</a></h4>
       <span class="badge read">Reads</span>
       <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
     </header>
     <p class="tool-title">List locales</p>
-    <p>Lists the site's locales (code, name, URL slug, fallback) and which one is the default. The user adds locales in the Framer editor; there is no tool for it.</p>
+    <p>Lists the site's locales (code, name, URL slug, fallback) and which one is the default. Add one with <a href="#locale_add"><code>locale_add</code></a>.</p>
     <p class="no-params">No parameters.</p>
   </article>
   <article class="tool" id="localization_get" data-tool="localization_get Read translations lists translatable texts (pages, cms items, components, site settings) with their default-locale text and the translation for one locale. missing: true lists only what still needs translating. page through with offset.">
@@ -1391,6 +1550,26 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <tr><th scope="row"><code>translations</code></th><td><code class="type">object[]</code></td><td> <span class="def">default <code>[]</code></span><ul class="fields"><li><code>id</code> <code class="type">string</code> — Source id from localization_get.</li><li><code>value</code> <code class="type">string | null</code> — The translation; null clears it, so the fallback shows.</li></ul></td></tr>
       <tr><th scope="row"><code>needsReview</code></th><td><code class="type">boolean</code></td><td>Mark the translations for the user to review. <span class="def">default <code>false</code></span></td></tr>
       <tr><th scope="row"><code>groups</code></th><td><code class="type">object[]</code></td><td> <span class="def">default <code>[]</code></span><ul class="fields"><li><code>group</code> <code class="type">string</code> — Group name or id, e.g. a page or CMS item.</li><li><code>status</code> <code class="type">&quot;ready&quot; | &quot;excluded&quot;</code> — excluded keeps the group out of this locale.</li></ul></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="locale_add" data-tool="locale_add Add a locale adds a locale to the site: a language (&quot;nl&quot; or &quot;dutch&quot;), optionally for a region (&quot;nl-be&quot;, or region &quot;be&quot;). a wrong language returns the languages framer knows, a wrong region the language's regions. it is a draft by default: a draft locale stays off the published site until the user turns it on, so translate first with localization_get and localization_set. fallback names the site locale shown where a translation is missing; slug and name default to ones from the code. needs the project's server api key (framer's createlocale is alpha and server api only). returns the locale's id, code, name, url slug, draft and fallback. undo does not remove a locale: the user removes it in the editor.">
+    <header>
+      <h4><a href="#locale_add">locale_add</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Add a locale</p>
+    <p>Adds a locale to the site: a language (&quot;nl&quot; or &quot;Dutch&quot;), optionally for a region (&quot;nl-BE&quot;, or region &quot;BE&quot;). A wrong language returns the languages Framer knows, a wrong region the language's regions. It is a draft by default: a draft locale stays off the published site until the user turns it on, so translate first with <a href="#localization_get"><code>localization_get</code></a> and <a href="#localization_set"><code>localization_set</code></a>. fallback names the site locale shown where a translation is missing; slug and name default to ones from the code. Needs the project's Server API key (Framer's createLocale is alpha and Server API only). Returns the locale's id, code, name, URL slug, draft and fallback. Undo does not remove a locale: the user removes it in the editor.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>language</code></th><td><code class="type">string</code></td><td>Language by code or English name, e.g. &quot;nl&quot; or &quot;Dutch&quot;; &quot;nl-BE&quot; also gives the region. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>region</code></th><td><code class="type">string</code></td><td>Region by code or name for a regional variant, e.g. &quot;BE&quot; or &quot;Belgium&quot; for nl-BE.</td></tr>
+      <tr><th scope="row"><code>fallback</code></th><td><code class="type">string</code></td><td>The site locale shown where a translation is missing, by code or name. Default: Framer's.</td></tr>
+      <tr><th scope="row"><code>slug</code></th><td><code class="type">string</code></td><td>URL segment, e.g. &quot;nl&quot;. Default: from the code.</td></tr>
+      <tr><th scope="row"><code>name</code></th><td><code class="type">string</code></td><td>Name in the editor, e.g. &quot;Nederlands&quot;. Default: from the code.</td></tr>
+      <tr><th scope="row"><code>draft</code></th><td><code class="type">boolean</code></td><td>A draft locale stays off the published site until the user turns it on. <span class="def">default <code>true</code></span></td></tr>
       </tbody>
     </table></div>
   </article>
