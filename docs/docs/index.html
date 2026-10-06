@@ -470,7 +470,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
           <p class="search-empty" hidden>No tool matches.</p>
 <!-- tools:start -->
 <section class="tool-group" id="project" data-group>
-  <h3>Project and connection <span>7</span></h3>
+  <h3>Project and connection <span>8</span></h3>
   <p class="group-intro">Where the agent starts: which project is open, how it is reached, and publishing when you ask.</p>
   <article class="tool" id="framer_status" data-tool="framer_status Framer connection status shows the active transport (server api or the framer plugin), whether each one is configured and connected, what to do if not, the projects with a saved server api key (framer_connect { project } switches between them), and what the project's framer plan allows. call it when a framer tool fails.">
     <header>
@@ -508,6 +508,22 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
     <p class="tool-title">Project overview</p>
     <p>Summarizes the connected Framer project: web pages with paths, design pages, counts of color tokens, text styles, components and CMS collections, and what its Framer plan allows (capabilities). Start here.</p>
     <p class="no-params">No parameters.</p>
+  </article>
+  <article class="tool" id="project_brief" data-tool="project_brief Project brief the questions to ask the user before building or redesigning a framer site, and the answers saved for this project. call it first on any new site or redesign: it returns the questions still open (purpose and main action, whose site it is, name, pages, references, mood, palettes to propose, light or dark theme, assets, copy, motion level, audience, fonts, imagery, cms collections, languages, features, seo, handoff, plan, screens, analytics, accessibility), each with options, what to propose and a fallback, and how to ask them. save answers with answers after every round; the brief stays with the project, so read it before later work on the same site instead of asking again.">
+    <header>
+      <h4><a href="#project_brief">project_brief</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
+    </header>
+    <p class="tool-title">Project brief</p>
+    <p>The questions to ask the user before building or redesigning a Framer site, and the answers saved for this project. Call it first on any new site or redesign: it returns the questions still open (purpose and main action, whose site it is, name, pages, references, mood, palettes to propose, light or dark theme, assets, copy, motion level, audience, fonts, imagery, CMS collections, languages, features, SEO, handoff, plan, screens, analytics, accessibility), each with options, what to propose and a fallback, and how to ask them. Save answers with answers after every round; the brief stays with the project, so read it before later work on the same site instead of asking again.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>answers</code></th><td><code class="type">object</code></td><td>The user's answers to save, by question id, merged into the saved brief; a fallback you took counts as an answer. Omit to read the brief and the questions still open.</td></tr>
+      <tr><th scope="row"><code>reset</code></th><td><code class="type">boolean</code></td><td>Forget the saved brief first, to start over. <span class="def">default <code>false</code></span></td></tr>
+      </tbody>
+    </table></div>
   </article>
   <article class="tool" id="selection_get" data-tool="selection_get Read the editor selection returns the layers the user selected in the framer editor (ids and names). call it when the user says &quot;this&quot;, &quot;the selected one&quot; or &quot;what i picked&quot;, then read those ids with nodes_read and change them with design_apply. works through the sitewright plugin only, open in this project.">
     <header>

@@ -7,8 +7,10 @@ import type { FramerRuntime } from "@sitewright/core";
 import { createFakeRuntime } from "@sitewright/core/testing";
 import type { Framer } from "framer-api";
 import { afterEach, describe, expect, it } from "vitest";
+import { BriefStore } from "../src/brief/brief-store.ts";
 import { CapabilityTracker } from "../src/capabilities/capability-tracker.ts";
 import { parseConfig } from "../src/config/config.ts";
+import { BRIEF_QUESTIONS } from "../src/constants/brief.ts";
 import { DocsCache } from "../src/docs/docs-cache.ts";
 import { handleActivityCall } from "../src/history/activity-api.ts";
 import { ActivityJournal } from "../src/history/activity-journal.ts";
@@ -75,6 +77,7 @@ const EXPECTED_TOOLS = [
   "nodes_read",
   "page_create",
   "page_delete",
+  "project_brief",
   "project_overview",
   "project_publish",
   "publish_status",
@@ -152,6 +155,7 @@ async function connect(transports: TransportRouter) {
         settings,
         links: [],
       }),
+      briefs: new BriefStore(join(directory, "briefs")),
     },
     "0.0.0-test",
   );
@@ -453,5 +457,75 @@ describe("configured server (fake project)", () => {
       },
       { type: "text" },
     ]);
+  });
+});
+
+describe("project_brief", () => {
+  const essentials = Object.entries(BRIEF_QUESTIONS)
+    .filter(([, question]) => question.priority === "essential")
+    .map(([id]) => id);
+
+  it("asks every question essentials first without a project, and refuses to save one", async () => {
+    const { client } = await connect(await unconfiguredTransports());
+    const read = await client.callTool({
+      name: "project_brief",
+      arguments: {},
+    });
+    const brief = read.structuredContent as { project: unknown; questions: { id: string }[] };
+
+    expect(brief.project).toBeNull();
+    expect(brief.questions).toHaveLength(Object.keys(BRIEF_QUESTIONS).length);
+    expect(brief.questions.slice(0, essentials.length).map((question) => question.id)).toEqual(essentials);
+
+    const save = await client.callTool({
+      name: "project_brief",
+      arguments: { answers: { purpose: "Leads" } },
+    });
+
+    expect(save.isError).toBe(true);
+    expect(JSON.stringify(save.content)).toContain("Connect");
+  });
+
+  it("merges each round into the project's brief and starts over on reset", async () => {
+    const { runtime } = createFakeRuntime();
+    const { client } = await connect(fakeProjectTransports(runtime));
+    const call = async (args: Record<string, unknown>) =>
+      (
+        await client.callTool({
+          name: "project_brief",
+          arguments: args,
+        })
+      ).structuredContent as {
+        answers: Record<string, string>;
+        questions: { id: string }[];
+        essentialsAnswered: boolean;
+      };
+
+    await call({
+      answers: {
+        purpose: "Leads",
+        name: "Plain Operation",
+      },
+    });
+
+    const second = await call({ answers: { theme: "Light only" } });
+
+    expect(second.answers).toEqual({
+      purpose: "Leads",
+      name: "Plain Operation",
+      theme: "Light only",
+    });
+    expect(second.questions.map((question) => question.id)).not.toContain("theme");
+    expect(second.essentialsAnswered).toBe(false);
+
+    const all = await call({ answers: Object.fromEntries(essentials.map((id) => [id, "Decide yourself"])) });
+
+    expect(all.essentialsAnswered).toBe(true);
+    expect((await call({})).answers).toEqual(all.answers);
+
+    const reset = await call({ reset: true });
+
+    expect(reset.answers).toEqual({});
+    expect(reset.questions).toHaveLength(Object.keys(BRIEF_QUESTIONS).length);
   });
 });

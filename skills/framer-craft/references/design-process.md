@@ -6,14 +6,41 @@ Everything here is **Practice** (Framer's docs and experienced creators) unless 
 
 ## 1. Brief
 
-Before any canvas work, settle these with the user. Ask only what is still open, and offer concrete defaults.
+Before any canvas work, run the brief with the user (with Sitewright: `project_brief`, which also saves the answers
+with the project). Skip what the user already said. Ask in rounds of up to four questions, essentials first, each with
+concrete options. Where a question says *propose*, make the proposals for this project instead of asking an open
+question. A skipped question, or "decide yourself", takes the fallback in brackets: say which.
 
-- **Goal of the page or site:** one primary action (sign up, book a call, buy, contact).
-- **Audience and tone:** premium, playful, bold, minimal, editorial, technical.
-- **Pages and content:** a sitemap, who supplies copy and images, what is a CMS list (blog, cases, team, jobs).
-- **Brand assets:** logo (SVG), fonts, colors, photography. Missing ones become part of the proposal.
-- **Motion appetite:** none, subtle, or expressive. This decides the motion budget (see [motion.md](motion.md)).
-- **References:** two or three sites the client likes, and what exactly they like in each.
+**Essentials** (nothing starts without them):
+
+1. **Purpose and main action:** leads (book a call), sell a product (sign up, buy), portfolio, launch or event
+   (waitlist), content. Decides the structure and the call to action.
+2. **Whose site:** a client's, the user's own, or a Framer Marketplace template, which follows
+   [marketplace-template.md](marketplace-template.md) (the user's own).
+3. **Name** and tagline (a working name, marked as a placeholder).
+4. **Pages:** one page or a sitemap (home and a 404, plus legal pages with a form).
+5. **References:** sites they like and what exactly in each, sites they dislike, a brand book or Figma file. *Propose*
+   two or three directions from the Marketplace when there are none.
+6. **Mood** in three words: calm and editorial, bold, precise and technical, warm, quiet luxury, playful (one that
+   follows from the purpose).
+7. **Palette:** *propose* three palettes for this purpose and mood, each with background, surface, text, muted text,
+   line, accent and text on the accent as hex, with AA contrast; brand colors as one more option (the first one).
+8. **Theme:** light, dark, or both following the device; both means a dark value on every token (light only).
+9. **Assets:** logo (SVG), photos, video, icons: all, logo only, or nothing yet (stock and named placeholders, listed
+   at handoff; a drawn SVG mark without a logo).
+10. **Copy:** given, written by you, or placeholders, and in which language (real copy in the site's language, never
+    lorem ipsum).
+11. **Motion level:** subtle, balanced or expressive, with the effects each adds ([motion.md](motion.md)) (balanced).
+
+**Recommended:** audience and what they must believe before acting; fonts (*propose* two or three pairings); imagery
+(photography, product shots, illustration, 3D, video in the hero); CMS (*propose* the collections and their fields
+for content that repeats or grows); languages (one); features such as a contact form, booking, newsletter, store or
+search, saying up front what needs code (a contact form); SEO (old addresses to redirect, words to be found by); who
+edits after launch and the deadline (someone new to Framer: clear names, components, CMS).
+
+**Optional:** domain and Framer plan (build within the plan, say what needs a paid one); screens that matter most
+(1440, 1280, 810, 390, all finished); analytics beyond Framer's own (none: scripts are custom code); accessibility
+(WCAG AA contrast, alt text, visible focus).
 
 ## 1b. Look at the market (Practice)
 

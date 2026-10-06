@@ -79,7 +79,7 @@ Before writing DSL, read the reference that matches the task:
 
 | Task | Read |
 | --- | --- |
-| A new site or redesign: brief, proposing 2–3 directions, design system, wireframe, handoff | [design-process.md](references/design-process.md) |
+| A new site or redesign: the brief questions, proposing 2–3 directions, design system, wireframe, handoff | [design-process.md](references/design-process.md) |
 | Making it look designed, not generated: subject-led direction, AI-default looks to avoid, type, color, real images instead of icons, copy | [distinct-design.md](references/distinct-design.md) |
 | Page anatomy and blocks: hero, features, proof, pricing, FAQ, CTA, footer, navigation | [sections.md](references/sections.md) |
 | Page structure, widths, stacks, grids, breakpoints, z-index, sticky | [layout.md](references/layout.md) |

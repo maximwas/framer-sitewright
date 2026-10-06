@@ -4,11 +4,18 @@ Follow this order for any new page, section set or redesign. The other topics ho
 `direction`, `layout`, `typography`, `sections`, `verify`, `template` when the site is a Framer Marketplace template,
 and `no-key` when there is no Server API key.
 
-## 1. Brief (ask only what is open, offer defaults)
+## 1. Brief (`project_brief`)
 
-- The page's one job and its primary action; the audience; pages and who supplies copy and images.
-- Brand assets: logo (SVG), fonts, colors, photography. Missing assets become part of your proposal.
-- Two or three reference sites and what the client likes in each.
+- Call `project_brief` before anything else. It returns the questions still open for this project, essentials first:
+  purpose and main action, whose site it is (a Marketplace template follows `template`), name, pages, references,
+  mood, palette, theme, assets, copy and motion level; then audience, fonts, imagery, CMS collections, languages,
+  features, SEO and handoff; then plan, screens, analytics and accessibility.
+- Ask in rounds of up to four questions, with each question's options. Where it says `propose`, make the proposals
+  for this project (three palettes with hex values and AA contrast, two or three font pairings, directions from
+  `marketplace_browse`) and offer them as the options.
+- A skipped question or "decide yourself" takes its fallback; say which. Save after every round
+  (`project_brief { answers }`): the brief stays with the project, so later work reads it instead of asking again.
+- Missing assets become part of your proposal: a drawn SVG mark, stock photos, named placeholders listed at handoff.
 
 ## 1b. Look at the market
 

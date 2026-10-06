@@ -2,6 +2,7 @@ import { homedir } from "node:os";
 import { SUPPORT_LINKS } from "@sitewright/core";
 import framerApiPackage from "framer-api/package.json" with { type: "json" };
 import serverPackage from "../package.json" with { type: "json" };
+import { BriefStore } from "./brief/brief-store.ts";
 import { CapabilityTracker } from "./capabilities/capability-tracker.ts";
 import { parseConfig } from "./config/config.ts";
 import { DocsCache } from "./docs/docs-cache.ts";
@@ -84,6 +85,7 @@ export async function createApp(projectDir: string): Promise<App> {
         settings,
         links: SUPPORT_LINKS,
       }),
+      briefs: new BriefStore(config.briefsDir),
     },
     serverPackage.version,
   );

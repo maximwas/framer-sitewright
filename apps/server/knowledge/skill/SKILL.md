@@ -12,9 +12,13 @@ description: >
 
 The full guide is served by the MCP server, so it always matches the installed version. Read it with `design_guide`:
 
+Before a new site or a redesign, call `project_brief`: ask the user its open questions in rounds of up to four, make
+the proposals it asks for (palettes, font pairings, directions), and save the answers. On later work, read the saved
+brief instead of asking again.
+
 | When | Topic |
 | --- | --- |
-| Before any new page, section set or redesign | `workflow` (always first) |
+| Before any new page, section set or redesign | `workflow` (always first, after `project_brief`) |
 | Placing anything: stacks, grids, containers, spacing, breakpoints, buttons, images | `layout` |
 | Text styles, sizes, tracking, headings | `typography` |
 | Choosing the look, avoiding the generated look | `direction` |

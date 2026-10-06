@@ -21,6 +21,7 @@ export function parseConfig(env: Record<string, string | undefined>, homeDir: st
       logFile: join(home, "logs", "sitewright.log"),
       settingsFile: join(home, "settings.json"),
       skillNotesDir: join(home, "skill-notes"),
+      briefsDir: join(home, "briefs"),
       supportFile: join(home, "support.json"),
       keysFile: join(home, "keys.json"),
       supportReminders: parsed.SITEWRIGHT_SUPPORT_REMINDERS === "on",

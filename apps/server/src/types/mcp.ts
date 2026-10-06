@@ -1,5 +1,6 @@
 import type { ServerContext, ToolAnnotations } from "@modelcontextprotocol/server";
 import type * as z from "zod";
+import type { BriefStore } from "../brief/brief-store.ts";
 import type { CapabilityTracker } from "../capabilities/capability-tracker.ts";
 import type { DocsCache } from "../docs/docs-cache.ts";
 import type { ActivityJournal } from "../history/activity-journal.ts";
@@ -49,6 +50,8 @@ export interface ToolContext {
   readonly settings: SettingsStore;
   /** The note on supporting the project, when one is due after a change. */
   readonly support: SupportReminder;
+  /** Each project's brief (project_brief). */
+  readonly briefs: BriefStore;
 }
 
 export type DocsOutput = z.input<typeof DocsOutputSchema>;
