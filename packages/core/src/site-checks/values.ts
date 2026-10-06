@@ -1,8 +1,11 @@
 import { wcagContrast } from "culori";
+import { AUDIT_SEVERITIES } from "../constants/layout-audit.ts";
 import { CONTRAST_AA, CONTRAST_AA_LARGE, CONTRAST_AAA } from "../constants/site-checks.ts";
+import { FOLD_NAMES_MAX } from "../constants/template-audit.ts";
 import type { SerializedNode } from "../types/dsl.ts";
-import type { AuditSeverity } from "../types/layout-audit.ts";
+import type { AuditIssue, AuditSeverity } from "../types/layout-audit.ts";
 import type { Contrast, SiteCheckContext, SiteFinding } from "../types/site-checks.ts";
+import { countOf } from "../utils/text.ts";
 
 /** A token reference's id: `var(--token-<id>)` → `<id>`. */
 const TOKEN_REF = /^var\(--token-([^)]+)\)$/;
@@ -86,4 +89,50 @@ export function finding(
     message,
     fix,
   };
+}
+
+/** A layout audit finding on a page of the site. */
+export function fromIssue(page: string, { rule, severity, nodeId, nodeName, message, fix }: AuditIssue): SiteFinding {
+  return {
+    rule,
+    severity,
+    page,
+    nodeId,
+    nodeName,
+    message,
+    fix,
+  };
+}
+
+/** The most severe first, and one finding per rule and page: the rest fold into it, which names a few of them. */
+export function foldFindings(findings: readonly SiteFinding[]): SiteFinding[] {
+  const groups = new Map<string, SiteFinding[]>();
+
+  for (const found of bySeverity(findings)) {
+    const key = `${found.rule}:${found.page}`;
+
+    groups.set(key, [...(groups.get(key) ?? []), found]);
+  }
+
+  return [...groups.values()].flatMap(([first, ...rest]) => {
+    if (first === undefined) {
+      return [];
+    }
+
+    const names = rest.slice(0, FOLD_NAMES_MAX).map(({ nodeName, nodeId }) => nodeName ?? nodeId ?? "?");
+
+    return rest.length === 0
+      ? [first]
+      : [
+          {
+            ...first,
+            message: `${first.message} The same on ${countOf(rest.length, "more layer")} (${names.join(", ")}${rest.length > FOLD_NAMES_MAX ? ", …" : ""}).`,
+          },
+        ];
+  });
+}
+
+/** Defects first, then likely ones, then matters of taste; in their order within each. */
+export function bySeverity(findings: readonly SiteFinding[]): SiteFinding[] {
+  return [...findings].sort((a, b) => AUDIT_SEVERITIES.indexOf(a.severity) - AUDIT_SEVERITIES.indexOf(b.severity));
 }

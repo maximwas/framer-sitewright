@@ -5,14 +5,18 @@ import type { SiteMetadata } from "../../site-checks/seo.ts";
 import { pageMeta } from "../../site-checks/seo.ts";
 import type { SerializedNode } from "../../types/dsl.ts";
 import type { FramerRuntime } from "../../types/framer.ts";
-import type { CheckedPage, CheckedTextStyle, SiteCheckContext } from "../../types/site-checks.ts";
+import type { FramerPort } from "../../types/framer-port.ts";
+import type { CheckedCollection, CheckedTextStyle, PageTree, SiteCheckContext } from "../../types/site-checks.ts";
 import { readNodeTree } from "../nodes/read-tree.ts";
 
-/** The site's web pages (or the one at `pagePath`), each with its own attributes and its primary breakpoint's tree. */
+/**
+ * The site's web pages (or the one at `pagePath`), each with its own attributes, its primary breakpoint's tree, the
+ * whole tree and its layout template.
+ */
 export async function readSitePages(
   runtime: FramerRuntime,
   pagePath?: string,
-): Promise<{ pages: CheckedPage[]; rootId: string | null }> {
+): Promise<{ pages: PageTree[]; rootId: string | null }> {
   const all = (await runtime.port.getNodesWithType("WebPageNode")).filter(
     (page): page is typeof page & { path: string } =>
       page.path !== null && (pagePath === undefined || page.path === pagePath),
@@ -27,7 +31,7 @@ export async function readSitePages(
   }
 
   let rootId: string | null = null;
-  const pages: CheckedPage[] = [];
+  const pages: PageTree[] = [];
 
   for (const page of all) {
     const tree = await readNodeTree(runtime, page.id, SITE_CHECK_DEPTH, page.path);
@@ -38,6 +42,8 @@ export async function readSitePages(
       attributes: tree?.attributes ?? {},
       content: primaryOf(tree),
       complete: runtime.agent !== null,
+      tree,
+      layoutTemplateId: typeof tree?.["$layoutTemplateId"] === "string" ? tree["$layoutTemplateId"] : null,
     });
   }
 
@@ -91,6 +97,23 @@ export async function siteCheckContext(runtime: FramerRuntime): Promise<SiteChec
     token: (id) => tokens.get(id) ?? null,
     textStyle: (preset) => (typeof preset === "string" ? (lookup.get(preset) ?? null) : null),
   };
+}
+
+/** Every CMS collection with its items' slugs and text values (plain and formatted text, without tags). */
+export async function readCollections(port: FramerPort): Promise<CheckedCollection[]> {
+  return Promise.all(
+    (await port.getCollections()).map(async (collection) => ({
+      name: collection.name,
+      items: (await collection.getItems()).map((item) => ({
+        slug: item.slug,
+        texts: Object.values(item.fieldData).flatMap(({ type, value }) =>
+          (type === "string" || type === "formattedText") && typeof value === "string"
+            ? [value.replace(/<[^>]*>/g, " ")]
+            : [],
+        ),
+      })),
+    })),
+  );
 }
 
 /** A page tree's primary breakpoint: what visitors on the widest screens see; the page itself when it has none. */

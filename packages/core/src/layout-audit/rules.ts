@@ -520,6 +520,9 @@ const buttonPadding: NodeRule = (node) => {
     : [];
 };
 
+/** Shared styles instead of values written on one layer: a text style on every text, tokens for colors. */
+export const STYLE_RULES: readonly NodeRule[] = [unstyledText, rawColor];
+
 export const NODE_RULES: readonly NodeRule[] = [
   mixedAlignment,
   unevenGridCells,
@@ -917,15 +920,11 @@ const narrowType: PageRule = (breakpoint, context) => {
       ];
 };
 
+/** What a tablet or phone breakpoint kept from desktop: grids, rows, side padding, display type. */
+export const NARROW_RULES: readonly PageRule[] = [narrowGrid, narrowRow, narrowPadding, narrowType];
+
 /** Checks of each breakpoint's own layout: copies of the primary breakpoint get their own. */
-export const BREAKPOINT_RULES: readonly PageRule[] = [
-  containerWidths,
-  sectionRhythm,
-  narrowGrid,
-  narrowRow,
-  narrowPadding,
-  narrowType,
-];
+export const BREAKPOINT_RULES: readonly PageRule[] = [containerWidths, sectionRhythm, ...NARROW_RULES];
 
 /** Checks of the page's content, once on the primary breakpoint: the others show the same content. */
 export const CONTENT_RULES: readonly PageRule[] = [headings, templateHabits, noImagery, centeredEverything];

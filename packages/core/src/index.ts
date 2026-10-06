@@ -89,6 +89,7 @@ export { deploymentsList, publishStatus } from "./operations/project/publish-sta
 export { redirectsList, redirectsSet } from "./operations/redirects/redirects.ts";
 export { findOperation } from "./operations/registry.ts";
 export { a11yAudit, contrastCheck, imagesCheck, linksCheck, seoAudit } from "./operations/site/checks.ts";
+export { templateAudit } from "./operations/site/template-audit.ts";
 export { textStylesDelete } from "./operations/text-styles/delete.ts";
 export { textStylesList } from "./operations/text-styles/list.ts";
 export { textStylesUpsert } from "./operations/text-styles/upsert.ts";
@@ -112,7 +113,9 @@ export {
 export { KeySetParamsSchema, ProjectKeyStatusSchema } from "./schemas/keys.ts";
 export { BridgeInfoSchema, LocalStatusSchema } from "./schemas/relay.ts";
 export { McpSettingsPatchSchema, McpSettingsSchema } from "./schemas/settings.ts";
+export { SiteFindingSchema } from "./schemas/site-checks.ts";
 export { RevealParamsSchema, RevealResultSchema, WebClientMessageSchema } from "./schemas/web.ts";
+export { bySeverity } from "./site-checks/values.ts";
 export type {
   CallResultMessage,
   PluginInfo,
@@ -144,7 +147,9 @@ export type { AnyOperation, Operation, PluginPermission } from "./types/operatio
 export type { SupportLink } from "./types/product.ts";
 export type { BridgeInfo, LocalStatus, PluginToWindow, WindowToPlugin } from "./types/relay.ts";
 export type { McpSettings, McpSettingsPatch, SettingItem } from "./types/settings.ts";
+export type { SiteFinding } from "./types/site-checks.ts";
 export type { RevealResult, WebClientMessage } from "./types/web.ts";
 export { errorMessage } from "./utils/errors.ts";
 export { nodeNameOf } from "./utils/node-name.ts";
 export { setupCommands } from "./utils/setup-commands.ts";
+export { countOf } from "./utils/text.ts";

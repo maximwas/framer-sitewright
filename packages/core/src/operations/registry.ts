@@ -37,6 +37,7 @@ import { projectPublish } from "./project/publish.ts";
 import { deploymentsList, publishStatus } from "./project/publish-status.ts";
 import { redirectsList, redirectsSet } from "./redirects/redirects.ts";
 import { a11yAudit, contrastCheck, imagesCheck, linksCheck, seoAudit } from "./site/checks.ts";
+import { templateAudit } from "./site/template-audit.ts";
 import { textStylesDelete } from "./text-styles/delete.ts";
 import { textStylesList } from "./text-styles/list.ts";
 import { textStylesUpsert } from "./text-styles/upsert.ts";
@@ -99,6 +100,7 @@ const OPERATIONS: readonly AnyOperation[] = [
   imagesCheck,
   a11yAudit,
   contrastCheck,
+  templateAudit,
   fontsInLibrary,
   effectsSet,
   shadersRead,
