@@ -41,9 +41,11 @@ Then read `direction` ("Looks that read as generated") and change every part tha
 
 ## 5. Breakpoints
 
-- Add Tablet 810 and Phone 390 with `breakpoints_add` (no key needed). Then give the display text styles their
-  tablet and phone sizes (`text_styles_upsert` breakpoints): the slots follow the page's breakpoints, so add those
-  first.
+- The set is Desktop 1440 (primary), Laptop 1280, Tablet 810 and Phone 390: set the primary's `width` to 1440, then
+  add the others with `breakpoints_add` (no key needed), and the same set on a layout template.
+- Add every breakpoint **before** giving text styles their sizes (`text_styles_upsert` breakpoints): a style's slots
+  start at the page's breakpoints as they are when you write them. A breakpoint added later leaves the old slot
+  starts, and `text_styles_upsert` then refuses new slots ("would not start in order") until the style is recreated.
 - Adapt each breakpoint by overriding its copies with `design_apply` xml, by compound id
   `<breakpoint id><node id>` (`nodes_read` on the breakpoint lists them): section padding ×0.5 on phone, side padding
   16–24px, grids of 3+ columns become one column (`layout="stack" stackDirection="vertical"`), columns side by side

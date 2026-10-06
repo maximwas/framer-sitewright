@@ -69,7 +69,11 @@ Build every page as Main > Section > Container > Content:
   `CREATE_VARIANT tablet from="<primary id>"; SET tablet name="Tablet" width="810px" left="<x>px" top="0px";`
   - Always give `width`: without it the replica copies 1200 and breaks the media query.
   - Place replicas side by side without overlap.
-- **Read the project's breakpoints first.** A new page has only Desktop 1200. A common set is 1440 / 1200 / 810 / 390.
+- **Read the project's breakpoints first.** A new page has only Desktop 1200. The set to build is Desktop 1440
+  (primary), Laptop 1280, Tablet 810 and Phone 390.
+- **All breakpoints before text style sizes.** A style's breakpoint slots start at the page breakpoints that exist when
+  they are written; a breakpoint added later leaves the old starts in place, and the style must be recreated to follow
+  it.
 - **Override a node on a replica** with the compound id `<replica id><node id>`, written with no separator.
   - Use real ids. A real replica id joined with a temp id from the same batch fails: create the node in one batch, then
     override it in the next.
@@ -109,7 +113,7 @@ Build every page as Main > Section > Container > Content:
   that uses a template, the page-level `flowEffect` goes on the template's breakpoint.
   - **A template breakpoint needs a fixed px height** (`height="800px"`). `height="auto"` is refused: "Layout template
     breakpoints require a fixed pixel height".
-  - Give the pages that use the template the same breakpoints (Desktop 1200, Tablet 810, Phone 390), and switch a
-    shared header instance per template breakpoint with `$control__variant`.
+  - Give the pages that use the template the same breakpoints (Desktop 1440, Laptop 1280, Tablet 810, Phone 390),
+    and switch a shared header instance per template breakpoint with `$control__variant`.
   - A sticky header in a template: the instance gets `position="sticky"`, `positionStickyTop="0"`, `zIndex="5"`,
     `width="1fr"`, at `index="0"` above the placeholder.

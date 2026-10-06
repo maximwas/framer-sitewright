@@ -76,8 +76,9 @@ fix any of these for you, and most fail silently.
 
 ## Breakpoints
 
-- Primary 1200 or 1440, Tablet 810, Phone 390 (`breakpoints_add`); every replica has a `width`. A replica copies
-  the primary: layers are added and deleted there, and each breakpoint overrides its copies by compound id.
+- Desktop 1440 (primary), Laptop 1280, Tablet 810, Phone 390 (`breakpoints_add`); every replica has a `width`. A
+  replica copies the primary: layers are added and deleted there, and each breakpoint overrides its copies by compound
+  id. With one content width (`maxWidth` 1200) Laptop needs no overrides.
 - On phone: display sizes ×0.4–0.67, side padding 16–24 (20 is common), rows of 3+ become columns, navigation becomes
   a menu, button labels stay on one line, tap targets at least 44px.
 - Hero: `height="auto"` + `minHeight="100vh"` when it needs the screen, never a fixed `100vh`.
