@@ -626,6 +626,18 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
         url,
         ...(parentId === undefined ? {} : { parentId }),
       });
+      // Like Framer: the instance lands at canvas coordinates, absolute, wherever it is put.
+      state.canvas.push({
+        id,
+        parentId: parentId ?? "",
+        className: "ComponentInstanceNode",
+        name: null,
+        attributes: {
+          position: "absolute",
+          left: "5560px",
+          top: "0px",
+        },
+      });
 
       return {
         id,

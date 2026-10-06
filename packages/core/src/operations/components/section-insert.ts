@@ -1,20 +1,12 @@
 import * as z from "zod";
-import {
-  FLOW_LAYOUTS,
-  FLOW_PLACEMENT,
-  FREE_PLACEMENT,
-  LAYOUT_NOT_MATCHED_NOTE,
-  SECTION_INSERT_HINT,
-  SECTION_UNDO_NOTE,
-} from "../../constants/components.ts";
+import { LAYOUT_NOT_MATCHED_NOTE, SECTION_INSERT_HINT, SECTION_UNDO_NOTE } from "../../constants/components.ts";
 import { OperationError } from "../../errors.ts";
 import { nodeRecord } from "../../plugin-nodes/node-record.ts";
-import type { FramerRuntime } from "../../types/framer.ts";
 import type { FramerPort } from "../../types/framer-port.ts";
 import type { PluginNodeRecord } from "../../types/plugin-nodes.ts";
 import { errorMessage } from "../../utils/errors.ts";
 import { defineOperation } from "../define.ts";
-import { placeLayer } from "./placement.ts";
+import { placeInParent } from "./placement.ts";
 
 /**
  * Inserts a component designed in Framer (a section from the Insert menu or the Marketplace) as editable layers, not
@@ -140,24 +132,4 @@ async function breakpointPage(port: FramerPort, node: PluginNodeRecord | null): 
   const page = nodeRecord(await port.getParent(String(current.id)));
 
   return page === null ? null : String(page.id);
-}
-
-/**
- * A move often keeps the canvas coordinates Framer dropped the layers at (absolute, left 8040px), so in a stack or grid
- * they go into the flow and elsewhere into the top left corner. Returns what did not work, or null.
- */
-async function placeInParent(runtime: FramerRuntime, nodeId: string, parentId: string): Promise<string | null> {
-  try {
-    const [parent, node] = (await Promise.all([runtime.port.getNode(parentId), runtime.port.getNode(nodeId)])).map(
-      nodeRecord,
-    );
-
-    if (node === null || node === undefined) {
-      return "Framer did not show the layers after the move: read them with nodes_read.";
-    }
-
-    return await placeLayer(runtime, node, FLOW_LAYOUTS.includes(parent?.layout) ? FLOW_PLACEMENT : FREE_PLACEMENT);
-  } catch (error) {
-    return `Framer did not place the layers in their parent: ${errorMessage(error)}. Set their position with design_apply.`;
-  }
 }

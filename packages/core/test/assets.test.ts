@@ -108,6 +108,29 @@ describe("components.insert", () => {
     expect(state.instances[0]?.parentId).toBe("testimonials");
   });
 
+  it("regression: puts the instance into a stack's flow, not where Framer dropped it (seen: absolute at left 5560px)", async () => {
+    const { runtime, state } = createFakeRuntime();
+
+    state.canvas.push({
+      id: "row",
+      parentId: "page",
+      className: "FrameNode",
+      name: "Row",
+      attributes: { layout: "stack" },
+    });
+
+    const { nodeId } = await runOperation(
+      componentInsert,
+      { runtime },
+      {
+        url: "https://framer.com/m/Carousel-TC0BVf.js@NX0Ibe5BZmuZM0cYmZOE",
+        parentId: "row",
+      },
+    );
+
+    expect(state.canvas.find((layer) => layer.id === nodeId)?.attributes?.position).toBe("relative");
+  });
+
   it("inserts a component by its module URL and moves the instance where asked", async () => {
     const { runtime, state } = createFakeRuntime(
       {},

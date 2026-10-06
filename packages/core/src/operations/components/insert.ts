@@ -3,6 +3,7 @@ import { OperationError } from "../../errors.ts";
 import { errorMessage } from "../../utils/errors.ts";
 import { isPlainObject } from "../../utils/guards.ts";
 import { defineOperation } from "../define.ts";
+import { placeInParent } from "./placement.ts";
 
 /**
  * Inserts a component by its module URL: a free Marketplace component (marketplace_browse gives its moduleUrl), one of
@@ -29,6 +30,8 @@ export const componentInsert = defineOperation({
   output: z.object({
     nodeId: z.string(),
     name: z.string().nullable(),
+    /** What did not work out in placing it, or null. */
+    note: z.string().nullable(),
   }),
   async run({ runtime, history }, { url, parentId, index }) {
     const { port } = runtime;
@@ -59,15 +62,18 @@ export const componentInsert = defineOperation({
     }
 
     // The plugin may not know the alpha parentId yet: the move puts it there anyway, and at its index.
-    if (parentId !== undefined) {
-      await port.setParent(nodeId, parentId, index);
-    }
+    // The move keeps the canvas coordinates Framer dropped it at: in a stack or grid it goes into the flow.
+    const note =
+      parentId === undefined
+        ? null
+        : await port.setParent(nodeId, parentId, index).then(() => placeInParent(runtime, nodeId, parentId));
 
     history?.markIncomplete("Undo does not remove an inserted component instance: delete it with design_apply.");
 
     return {
       nodeId,
       name: isPlainObject(node) && typeof node.name === "string" ? node.name : null,
+      note,
     };
   },
   describe(_input, { nodeId, name }) {
