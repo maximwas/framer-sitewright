@@ -1,12 +1,14 @@
 import type { McpServer } from "@modelcontextprotocol/server";
 import { type DocSection, findSection, requireAgent, searchSections, sliceContent } from "@sitewright/core";
 import * as z from "zod";
+import { ESSENTIALS_SECTION } from "../../constants/docs.ts";
 import { GUIDE_TOPICS } from "../../constants/knowledge.ts";
 import { guideNames, readGuide, resolveGuideName } from "../../docs/guides.ts";
 import { readGuideTopic } from "../../knowledge/guide.ts";
 import { DocsInputSchema, DocsOutputSchema } from "../../schemas/mcp.ts";
 import type { GuideTopic } from "../../types/knowledge.ts";
 import type { DocsOutput, ToolContext } from "../../types/mcp.ts";
+import { essentialsOf } from "../../utils/docs.ts";
 import { addTool } from "../add-tool.ts";
 
 export function registerDocsTools(server: McpServer, { transports, docs, journal }: ToolContext): void {
@@ -55,7 +57,7 @@ export function registerDocsTools(server: McpServer, { transports, docs, journal
     name: "framer_docs",
     title: "Framer DSL reference",
     description:
-      "Framer's official agent reference for the design DSL (commands, attributes, layout rules, CMS, variables, forms, effects). No arguments lists sections; pass section to read one, or query to search. guide reads one of Framer's implementation guides (FAQ, Navigations, Buttons, Effects, Overlays, Forms, Grids…): read the one for what you build before building it, they hold the recipes the reference lacks (e.g. how an accordion animates). Needs the project's Server API key (framer_status shows whether it is set).",
+      "Framer's official agent reference for the design DSL (commands, attributes, layout rules, CMS, variables, forms, effects), read live from Framer so it matches its current version. Start with section \"essentials\": its guardrails, core principles, command syntax with computed values, design rules and critical reminders in one read (continue with nextOffset). No arguments lists sections; pass section to read one, or query to search. guide reads one of Framer's implementation guides (FAQ, Navigations, Buttons, Effects, Overlays, Forms, Grids…): read the one for what you build before building it, they hold the recipes the reference lacks (e.g. how an accordion animates). Needs the project's Server API key (framer_status shows whether it is set).",
     input: DocsInputSchema,
     output: DocsOutputSchema,
     annotations: {
@@ -80,6 +82,10 @@ export function registerDocsTools(server: McpServer, { transports, docs, journal
             const text = await transports.withServerApi((runtime) => readGuide(runtime, name));
 
             return guideResult(name, text, offset, limit);
+          }
+
+          if (section?.toLowerCase() === ESSENTIALS_SECTION) {
+            return essentialsResult(sections, offset, limit);
           }
 
           if (section !== undefined) {
@@ -145,6 +151,25 @@ function guideResult(name: string, guide: string, offset: number, limit: number)
       {
         id: `guide-${name.toLowerCase().replaceAll(/[^a-z0-9]+/g, "-")}`,
         title: name,
+        level: 1,
+        snippet: null,
+      },
+    ],
+    content: text,
+    nextOffset,
+  };
+}
+
+/** Framer's guardrails, core principles, command syntax, design rules and reminders as one read, page by page. */
+function essentialsResult(sections: DocSection[], offset: number, limit: number): DocsOutput {
+  const { text, nextOffset } = sliceContent(essentialsOf(sections), offset, limit);
+
+  return {
+    mode: "section",
+    sections: [
+      {
+        id: ESSENTIALS_SECTION,
+        title: "Essentials",
         level: 1,
         snippet: null,
       },

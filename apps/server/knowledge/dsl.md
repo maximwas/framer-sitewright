@@ -65,7 +65,7 @@ something else; every rule here was seen on a live project.
 
 ## Pages and layers
 
-- Read `framer_docs` ("Updating the Project") for node types and attributes. Read with `nodes_read` (XML), write with
+- Read `framer_docs` section "essentials" once for Framer's own rules, command syntax and attributes. Read with `nodes_read` (XML), write with
   `design_apply` xml. Pass `pagePath` for a node that is not on the home page: `nodes_find` and `selection_get` say
   which page it is on.
 - New nodes go last in their parent unless `index` is given.

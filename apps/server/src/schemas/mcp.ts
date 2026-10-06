@@ -15,7 +15,7 @@ export const DocsInputSchema = z.strictObject({
     .trim()
     .min(1)
     .exactOptional()
-    .describe('Section id or title, e.g. "updating-the-project" or "Variables".'),
+    .describe('"essentials" for the core of the reference in one read, or a section id or title, e.g. "Variables".'),
   query: z.string().trim().min(2).exactOptional().describe("Full-text search across the reference."),
   guide: z
     .string()
