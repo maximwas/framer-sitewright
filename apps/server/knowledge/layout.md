@@ -84,6 +84,13 @@ fix any of these for you, and most fail silently.
 - Hero: `height="auto"` + `minHeight="100vh"` when it needs the screen, never a fixed `100vh`.
 - No horizontal scroll: no px widths above the replica width minus padding, no absolute layers outside the frame.
 
+## Layers stretched over their parent
+
+- A frame stretches by its pins alone: `position="absolute"` with `left`, `right`, `top`, `bottom` at `0px`.
+- **A component instance does not:** it keeps its own `width` and `height`, which default to `auto`, so a pinned
+  instance collapses to its content (seen: a full-bleed video layer at 200 x 200). Give it `width="100%"
+  height="100%"` together with the pins. `layout_audit` reports it as `pinned-instance-auto`.
+
 ## Overflow, sticky, z-index
 
 - `overflow="clip"`, never `hidden`: hidden breaks sticky anywhere inside it. A clip container cuts shadows and hover

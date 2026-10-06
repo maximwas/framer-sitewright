@@ -618,4 +618,33 @@ describe("layout audit", () => {
     expect(flush("1px 0px 0px 0px solid var(--token-line)")).toEqual([]);
     expect(flush("1px solid var(--token-line)")).toHaveLength(1);
   });
+
+  it("regression: a component instance pinned to all sides keeps its auto size and collapses (seen: 200 x 200)", () => {
+    const pinned = (size: string) =>
+      node("ComponentInstanceNode", "Hero Reel", {
+        position: "absolute",
+        left: "0px",
+        right: "0px",
+        top: "0px",
+        bottom: "0px",
+        width: size,
+        height: size,
+      });
+    const collapsed = (size: string) =>
+      auditTree(
+        node(
+          "FrameNode",
+          "Stage",
+          {
+            width: "1fr",
+            height: "780px",
+          },
+          [pinned(size)],
+        ),
+        context(),
+      ).filter((found) => found.rule === "pinned-instance-auto");
+
+    expect(collapsed("auto")).toHaveLength(1);
+    expect(collapsed("100%")).toEqual([]);
+  });
 });

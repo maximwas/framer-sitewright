@@ -362,6 +362,42 @@ const edgeFlushText: NodeRule = (node) => {
     : [];
 };
 
+/**
+ * A component instance pinned to both sides of an axis still takes its own size, and an instance's default is auto: it
+ * collapses to the component's content (seen: a hero video layer at 200 x 200). A frame stretches by its pins alone.
+ */
+const pinnedInstanceAuto: NodeRule = (node) => {
+  if (node.type !== "ComponentInstanceNode" || inFlow(node)) {
+    return [];
+  }
+
+  const axes = (
+    [
+      ["width", "left", "right"],
+      ["height", "top", "bottom"],
+    ] as const
+  ).filter(
+    ([size, start, end]) =>
+      attr(node, start) !== null &&
+      attr(node, end) !== null &&
+      attr(node, start) !== "null" &&
+      attr(node, end) !== "null" &&
+      (attr(node, size) ?? "auto") === "auto",
+  );
+
+  return axes.length === 0
+    ? []
+    : [
+        issue(
+          "pinned-instance-auto",
+          "defect",
+          node,
+          `${label(node)} is pinned to both sides but its ${axes.map(([size]) => size).join(" and ")} stays auto: an instance keeps its own size, so it collapses instead of filling its parent.`,
+          `Give it ${axes.map(([size]) => `${size}="100%"`).join(" ")} with the pins.`,
+        ),
+      ];
+};
+
 /** An image frame without children and without a size collapses to nothing. */
 const imageCollapse: NodeRule = (node) => {
   const image = attr(node, "backgroundImage") !== null || /^https?:|url\(/i.test(attr(node, "fill") ?? "");
@@ -476,6 +512,7 @@ export const NODE_RULES: readonly NodeRule[] = [
   fitParentFillChild,
   edgeFlushText,
   imageCollapse,
+  pinnedInstanceAuto,
   cardContentFloats,
   autoWidthText,
   fixedViewportHeight,

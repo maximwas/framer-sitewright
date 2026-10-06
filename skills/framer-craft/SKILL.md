@@ -50,7 +50,8 @@ The `framer` skill gives you the CLI, the DSL grammar and Framer's design rules:
 - **New nodes go last in their parent.** Give `index` whenever order matters, or a new section lands after the footer.
 - **Absolute and fixed layers** take px or % sizes, never `fr`. Pins (`left`, `right`, `top`, `bottom`) take px only.
 - **To stretch an absolute layer** over its parent, pin all four sides to `0px`. Do not use width and height 100%, and
-  never `auto`: the layer collapses.
+  never `auto`: the layer collapses. **A component instance is the exception:** pinned, it keeps its own size (`auto`
+  by default) and collapses to its content; give it `width="100%" height="100%"` with the pins.
 - **To center an absolute layer**, set `centerAnchorX="50%"` (or `centerAnchorY`) with no pins on that axis. Framer
   refuses to create an absolute node without pins, so create it pinned. Then, in a second `SET`, set those pins to
   `null` and add the anchor.
