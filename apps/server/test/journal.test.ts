@@ -259,3 +259,43 @@ it("lists every project with a journal, and opens another project's journal by i
   expect(other.project).toEqual(client);
   expect(other.entries.map((entry) => entry.label)).toEqual(["Client start"]);
 });
+
+it("lists the CMS work apart: collection, field and item calls, and the undos of items", async () => {
+  const journal = new ActivityJournal({
+    store: new JournalStore(await mkdtemp(join(tmpdir(), "sitewright-journal-"))),
+    transports,
+    logger: createLogger("silent"),
+  });
+  const entry = (operation: string, title: string) => ({
+    durationMs: 1,
+    kind: "operation" as const,
+    actor: "ai" as const,
+    tool: operation.replaceAll(".", "_"),
+    operation,
+    effect: "write" as const,
+    transport: "plugin" as const,
+    layer: "plugin-api" as const,
+    title,
+    outcome: "ok" as const,
+    error: null,
+    steps: [],
+    incomplete: null,
+    reverts: [],
+    conflicts: 0,
+    remap: {},
+    label: null,
+    detail: null,
+  });
+
+  await journal.record(entry("design.apply", "Design: 1 created"));
+  await journal.record(entry("cms.items.upsert", "CMS items: 2 created"));
+  await journal.record(entry("color.tokens.upsert", "Color tokens: 1 created"));
+  await journal.record(entry("cms.collection.create", "CMS collection"));
+
+  const { entries } = await listActivity(journal, {
+    limit: 10,
+    show: "cms",
+  });
+
+  expect(entries.map(({ title }) => title)).toEqual(["CMS collection", "CMS items: 2 created"]);
+});

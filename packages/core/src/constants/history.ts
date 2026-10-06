@@ -25,6 +25,7 @@ export const OPERATION_LABELS: Readonly<Record<string, string>> = {
   "icons.search": "Icon search",
   "components.read": "Read components",
   "components.setControls": "Component controls",
+  "components.insert": "Component inserted",
   "customCode.get": "Read custom code",
   "customCode.set": "Custom code",
   "codeFiles.list": "List code files",
@@ -54,9 +55,9 @@ export const OPERATION_LABELS: Readonly<Record<string, string>> = {
 
 /**
  * What a journal list shows: every entry; the changes (writes, reverts, checkpoints) with the skills the AI used for
- * them; only what the AI read; only the skills.
+ * them; only the CMS work (collections, fields, items and their undos); only what the AI read; only the skills.
  */
-export const ACTIVITY_VIEWS = ["all", "changes", "reads", "skills"] as const;
+export const ACTIVITY_VIEWS = ["all", "changes", "cms", "reads", "skills"] as const;
 
 /** At most this many nodes and images in an entry's detail; a long list says how many more there were. */
 export const DETAIL_MAX_NODES = 20;

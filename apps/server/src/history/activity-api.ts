@@ -56,6 +56,8 @@ function inView(entry: ActivityEntry, show: ActivityView): boolean {
     case "changes":
       // The skills stay: they tell what the AI followed for the changes after them.
       return entry.effect !== "read";
+    case "cms":
+      return (entry.operation ?? "").startsWith("cms.") || entry.steps.some((step) => step.kind === "cms-item");
     case "reads":
       return entry.effect === "read";
     case "skills":

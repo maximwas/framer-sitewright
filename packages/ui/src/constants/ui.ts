@@ -136,6 +136,10 @@ export const FEED_VIEW_LABELS: Readonly<Record<ActivityView, { readonly label: s
     label: "Changes",
     title: "What Claude changes, with undo, and the skills it used for it",
   },
+  cms: {
+    label: "CMS",
+    title: "Only the CMS: collections, fields and items Claude read or changed, and their undos",
+  },
   reads: {
     label: "Reads",
     title: "Only what Claude reads: nodes, lists, searches, screenshots",

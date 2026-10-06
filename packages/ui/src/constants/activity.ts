@@ -33,6 +33,7 @@ export const NO_PLUGIN_NOTE = "Open the plugin in this project to undo, redo or 
 export const EMPTY_FEED_TEXT: Readonly<Record<ActivityView, string>> = {
   all: "Nothing yet. What Claude reads and changes in this project will show up here.",
   changes: "Nothing yet. Changes Claude makes to this project will show up here, ready to undo.",
+  cms: "No CMS work yet. Collections, fields and items Claude reads or changes in this project will show up here.",
   reads: "Nothing read yet. What Claude looks at in this project will show up here.",
   skills:
     "No skills yet. The skills Claude uses for this project show up here once the Claude Code hooks are on (setup --hooks).",
