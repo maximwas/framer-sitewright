@@ -5,8 +5,11 @@ look follows `direction`.
 
 ## Page anatomy
 
-- 5–8 sections: hero, trust (logos, a rating), value or problem, features or how it works, proof (testimonials, case
-  studies), offer or pricing, FAQ, closing call to action, footer. Drop what the brief does not need.
+- A page is a set of jobs in a usable order: explain, prove, offer, answer, act. The usual sections (hero, trust,
+  value or problem, features or how it works, proof, pricing, FAQ, closing call to action, footer; best-selling
+  templates average nine) are a checklist of those jobs, not a skeleton: take each section's form from the concept (a
+  case as an order ticket, proof as before → after in the unit, a calculator, an archive, chapter openers). Drop what
+  the brief does not need.
 - One primary action, repeated with the same label in the hero, after the proof and at the end; a secondary action is
   visually quieter.
 - Name layers by role (`Hero`, `Container`, `Content`, `Background`); one `h1` per page.
@@ -20,12 +23,15 @@ look follows `direction`.
 
 ## Hero
 
-- Headline: what it is, for whom, why it is different, in about ten words, display size with balance.
+- Two modes (`workflow`, step 2). **Explain** for software, B2B and unfamiliar categories: what it is, for whom, why
+  it is different, in about ten words, display size with balance, plus the product. **Evoke** for brands, places,
+  people and editorial: an image, an object, a question or a manifesto, with the plain description in a smaller line
+  or the first scroll.
 - One or two lines of context, then the actions. A real visual: product, photo, a type-led composition — never an
   icon or a gradient blob.
 - Left-aligned with a visual beside or over it beats centered-everything; centered only when the composition is built
   around the center (a single large image below).
-- Trust in the first screen: a logo strip or a rating right under the actions.
+- Trust right under the actions (a logo strip, a rating) is a SaaS and B2B habit: use it there, not on every hero.
 - A card laid over the hero media (a field note, a stat) is for desktop: give it a boolean variable and hide it on
   tablet and phone, where it covers the headline. The hero stage takes `height="auto"` with a `minHeight`, never a
   fixed height: the headline wraps more on narrow screens.
@@ -49,8 +55,10 @@ look follows `direction`.
 
 ## Proof
 
-- Testimonials with a full name, photo, role and a specific outcome; real logos from the Logos icon set in one neutral
-  color. Believable numbers (47 clients, 4.8 rating), never round ones.
+- Testimonials with a full name, photo, role and a specific outcome, in the concept's unit. On a client's site only
+  real ones the client gives (invented reviews are illegal: FTC rule since 2024, EU since 2022); mark placeholders and
+  list them at handoff. Client logos only with permission, in one neutral color; a Marketplace template uses invented
+  marks, never real brands.
 - A testimonial card is one solid card (`layout`, Cards made of two pieces). On phone give the component a **Compact**
   variant: the quote, name and role only, no photo, 24px padding, the quote one style smaller.
 - A slider: offer a free Marketplace carousel (`marketplace_browse` components, `carousels`, checked with
@@ -71,7 +79,8 @@ look follows `direction`.
 
 ## FAQ
 
-- Five to eight real objections; items open by animating height (needs a key for variants).
+- Five to eight real objections; items open by animating height (needs a key for variants). Keep every answer in the
+  page (closed items clipped, not deleted) so search engines read them.
 
 ## Closing call to action and footer
 

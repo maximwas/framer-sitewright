@@ -29,18 +29,55 @@ and `no-key` when there is no Server API key.
   type, uses a tween you must replace with a spring, and was updated this year. Insert the chosen one with
   `component_insert`.
 
-## 2. Direction before any node (write it out, then check it)
+## 2. Concept before any style (write it out, then check it)
 
-Write a compact plan in the conversation:
+Award-winning sites can each be said in one sentence of the form "X as Y": a magazine archive as a stack of issues,
+one per screen; a commodity group as a descent from a summit to the sea; an operations studio as one order followed
+through the shop. That sentence decides the first screen, one signature moment, the names and the proof. Palette and
+type come after it and cite it.
 
-1. **Palette:** 4–6 named values with hex (base with a temperature, ink, muted ink, line, one accent).
-2. **Type:** one or two families and their roles; display size, weight, tracking and line height; body size.
-3. **Layout concept:** one sentence; the alignment (left by default; centered only for one or two moments); the
-   container (one width for header, sections and footer); the section rhythm (one padding value).
-4. **Imagery:** what the visuals are (client photos, product shots, stock with one art direction) and where they go.
-5. **Signature:** the one thing the page is remembered by.
-6. **Motion level:** offer subtle, balanced or expressive with the effects each adds per section (`motion`, Motion
-   menu), and build what the user picks; a template defaults to balanced.
+1. **The world:** write 20 nouns of the subject's world: objects and tools, places, materials, units and numbers,
+   rituals and jargon. List the client's real assets too.
+2. **Claim and unit:** one sentence for what is different, and the unit a customer feels it in (days of lead time,
+   hours saved, knots, euros).
+3. **Three concepts** from different archetypes: the product's medium as the page, the name taken literally, one
+   protagonist object followed through the page, a borrowed format (a ticket, a board, a magazine), a collision of two
+   worlds, one unit of value, a duality. Write each as a card:
+
+   ```
+   Spine:          <X> as <Y> (12 words at most)
+   First screen:   explain | evoke · the image, object or sentence · where the plain description sits
+   Signature:      start → trigger → end · phone version · no-motion version · how it is built in Framer
+   Vocabulary:     product and section names, button labels, the 404, the footer line
+   Proof form:     before → after in the unit, a case card, a calculator, an archive…
+   Ending:         the closing line, the footer detail, the 404 story
+   Keep plain:     where the concept must not go (forms, pricing tables, navigation, legal)
+   ```
+
+   Drop any concept a competitor could use: put their logo on it; if it still works, it is no concept. Offer the
+   three to the user and build the one they pick.
+4. **First screen mode:** *explain* (software, B2B, unfamiliar categories: what it is in about ten words, plus the
+   product) or *evoke* (brands, places, people, editorial: an image, an object, a question). Either way the plain
+   description is on the first screen or within the first scroll.
+
+## 2b. Direction derived from the concept
+
+Write a compact plan in the conversation, each choice with its source in the concept:
+
+1. **Palette:** 4–6 named values with hex: two or three neutrals from the world's materials and one accent that exists
+   in that world ("stamp red: the station stamp").
+2. **Type:** one workhorse and at most two voices, each with a job (quotes, data, the maker's hand); display size,
+   weight, tracking and line height; body size. Check the script the site's language needs (Cyrillic, accents).
+3. **Layout:** the alignment (left by default; centered only for one or two moments); the container (one width for
+   header, sections and footer); the section rhythm (one padding value).
+4. **Imagery:** a one-sentence rule for light, distance, subject and treatment. A page needs a visual system: photos,
+   the product UI with one believable sample dataset, one protagonist object, or a graphic system (halftone, line
+   raster, contour lines). Text alone reads unfinished.
+5. **Signature:** the concept made physical by one interaction, storyboarded in three frames, with its phone and
+   no-motion versions.
+6. **Motion:** the concept's one verb (descend, stack, focus, stamp, assemble) built as the signature, then the quiet
+   layer: hovers, things that open, one load sequence. Offer subtle, balanced or expressive only for that quiet layer
+   (`motion`, Motion menu); a template defaults to balanced.
 
 Then read `direction` ("Looks that read as generated") and change every part that any similar brief would get.
 

@@ -82,14 +82,24 @@ export const BRIEF_QUESTIONS = {
     propose: null,
     fallback: "A mood that follows from the purpose and the audience; say which.",
   },
+  concept: {
+    group: "look",
+    priority: "essential",
+    ask: "Which of the three concepts should the site be built on?",
+    why: 'The one idea ("X as Y") that decides the first screen, the signature moment, the names and the proof; palette and type follow from it (design_guide workflow, step 2).',
+    options: [],
+    propose:
+      "Three concepts from the subject's world, each from a different archetype (one object followed through the page, a borrowed format, the name taken literally…): its one-sentence spine, its first screen, its signature moment and how Framer builds it, and the palette and type it implies. Drop any a competitor could use as well.",
+    fallback: "The concept you find strongest; say why.",
+  },
   palette: {
     group: "look",
     priority: "essential",
-    ask: "Brand colors, or one of the palettes you propose?",
+    ask: "Brand colors, or the palette the chosen concept implies?",
     why: "The color tokens every section uses.",
     options: [],
     propose:
-      "Three palettes made for this project's purpose and mood, each with background, surface, text, muted text, line, accent and the text on the accent as hex values, with AA contrast for text on the background and on the accent. Offer them as the options, with the brand colors as one more.",
+      "Palettes drawn from the chosen concept's world (its materials, the client's photos, one accent that exists there), each with background, surface, text, muted text, line, accent and the text on the accent as hex values, with AA contrast for text on the background and on the accent. Offer them as the options, with the brand colors as one more.",
     fallback: "The first palette you proposed.",
   },
   theme: {
@@ -148,7 +158,7 @@ export const BRIEF_QUESTIONS = {
     why: "The text styles.",
     options: [],
     propose:
-      "Two or three pairings (a display and a body font, or one family) found with fonts_search, each with why it fits the mood.",
+      "Two or three pairings found with fonts_search and fonts_discover (a workhorse and at most two voices, each with a job), each with why it fits the concept, its license and whether it covers the site's language.",
     fallback: "The first pairing you proposed.",
   },
   imagery: {

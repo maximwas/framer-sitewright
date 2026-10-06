@@ -25,18 +25,25 @@ something on the list, the brief wins.
 
 ## Color
 
-- A neutral base with a temperature (sand, cream, sage, off-black) + one saturated accent, locked for actions and real
-  highlights. Three or four colors in all.
-- Muted text as the main text color at 60% (a muted token), so it stays in tone on colored backgrounds.
-- Separate sections by a change of background (white / light grey / dark), not by borders.
+- Sample the palette from the concept's world: two or three neutrals of its materials (or the client's photos) and one
+  accent that exists in that world, locked for actions and real highlights. Three or four colors in all; each with its
+  source ("stamp red: the station stamp").
+- Color may change with the content when the concept asks for it: one per chapter, per item, per time of day.
+- Muted text as its own token in the base's tone, checked at AA (`contrast_check`) on every background it sits on: a
+  60% tint of the ink often fails.
+- Make a boundary between sections an event when the concept has one: sticky panels that stack over each other, a
+  pinned crossfade, full-height color panels, a graphic layer between sections. Otherwise a change of background, not
+  a border.
 - Neutrals of one temperature; tinted shadows, never pure black.
 
 ## Imagery
 
-- **Media covers about half of a top site's page (median 47%).** A page without images is outside the range
-  entirely — it reads unfinished, not minimal.
-- One art direction: the same light, temperature and framing across the site. Cut-outs with alpha on a calm base make
-  product compositions without fake interfaces.
+- **Media covers about half of a top site's page (median 47%).** A page needs a visual system: photos, the product's
+  real interface with one believable sample dataset (for software it is often the best hero), one protagonist object
+  followed through the page, or a graphic system that unifies everything (halftone, line raster, contour lines). Text
+  alone reads unfinished, not minimal.
+- One art direction, written as one sentence: light, distance, subject, treatment. Invented dashboards and fake
+  interfaces read as generated; real UI with believable data does not.
 - Asset order: the client's own material, then stock (`images_search` with a key, or `image_upload` by URL), then a
   clearly named placeholder frame with the size it needs — and tell the user. Never fill the gap with icons.
 - **Photos from the subject's world, in one art direction:** warm, natural light, candid shots of the places and people
@@ -50,8 +57,9 @@ something on the list, the brief wins.
 
 ## Looks that read as generated (avoid as defaults)
 
-- Palettes: cream + display serif + terracotta; near-black + one acid green; beige + brass for "premium";
-  purple-to-blue glows, gradient text, permanent dark theme with purple and low-contrast grey text.
+- Palettes that need a reason from the subject and read as generated without one: cream + display serif + terracotta;
+  near-black + one acid green (the 2025 Site of the Year uses it because it is the client's racing livery); beige +
+  brass for "premium"; purple-to-blue glows, gradient text, a permanent dark theme with purple and low-contrast grey.
 - Template chrome: an uppercase tracked label above every heading; a pill badge above the H1 ("New", "AI-powered");
   section numbers 01/02/03 when the items are not steps; an icon in a colored square above every card title; a colored
   border on one side of cards; colored dots before items; `→` after every link; emoji as icons.
@@ -67,6 +75,16 @@ something on the list, the brief wins.
   "© 2024" on a 2026 site.
 - Framer defaults left in place: centered everything (stacks center by default), blue text links, a header wider than
   the content, one gap for heading, text and buttons.
+
+## Vocabulary: write in the concept's language
+
+- Name things inside the world: products, tiers, sections, the newsletter, the team page (a studio's tiers as
+  Lightfish, Quickfish and Heavyfish; services named after the stations an order passes).
+- Microcopy in the world's units ("lead time 11 → 4 days"), the 404 as a small story in the concept, the footer line
+  and the cookie banner in the brand's voice.
+- One second-read detail people find on a second look. Keep forms, navigation labels, prices and legal text plain.
+- No invented testimonials, logos or numbers on a client's site: placeholders are marked and listed at handoff (on a
+  template they are realistic placeholder content buyers replace).
 
 ## Before building, check the plan
 

@@ -16,7 +16,8 @@ export const FONT_CATALOG_TTL_MS = 12 * 60 * 60 * 1000;
 /** What each license allows, in the words a person choosing a font for a client site or a sold template needs. */
 export const FONT_LICENSES = {
   ofl: "SIL Open Font License: free for any use, commercial sites and sold templates included.",
-  "itf-ffl": "ITF Free Font License: free for personal and commercial use; do not sell the font files themselves.",
+  "itf-ffl":
+    "ITF Free Font License v2.0 (17 Aug 2026): self-hosting only on the licensee's own sites; the files may not be edited (no subsetting or converting), passed to clients or contractors, or offered in a template. For a client's site or a sold template use the family from Framer's built-in Fontshare library (fonts_search) instead of uploading files, or have the client download its own copy.",
   apache: "Apache License 2.0: free for any use, commercial sites and sold templates included.",
   ufl: "Ubuntu Font License: free for any use, commercial sites included.",
 } as const;

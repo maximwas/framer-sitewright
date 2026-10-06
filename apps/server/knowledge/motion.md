@@ -20,6 +20,11 @@ site, and tell the user so.
 
 ## Motion menu: what to offer
 
+Start from the concept's one motion verb (`workflow`, step 2): descend, stack, focus, stamp, assemble. Build that verb
+as the signature, a scene that means something, with a phone version and a version without motion. Then the quiet
+layer below. `effects_set` writes the common effects whole, with the right springs: fade-up, hero-sequence,
+text-reveal, hover-lift, hover-fade, press, float, pulse, spin, scroll-grow, parallax, ticker.
+
 A page with motion only in its hero reads as unfinished; motion on every element reads as noise. Offer three levels
 with the effects named per section, and let the user choose.
 
