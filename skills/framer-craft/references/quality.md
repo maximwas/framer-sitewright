@@ -62,8 +62,7 @@ marked otherwise; how to check visuals is in [verify.md](verify.md).
   out of navigation, forms, prices and legal text.
 - The signature has a phone version and reads with reduced motion; the 404, footer line and cookie banner speak in the
   voice.
-- No AI copy tells ([distinct-design.md](distinct-design.md)), no unverified claims, no invented reviews on a client's
-  site.
+- No unverified claims, no invented reviews on a client's site.
 - Every font and image is licensed for this use; every language's letters and the copy's signs render in the chosen
   faces.
 
@@ -72,5 +71,5 @@ marked otherwise; how to check visuals is in [verify.md](verify.md).
   Sheets or a webhook, a redirect after submit) and its spam protection, since the DSL builds only the form's layers;
   uploading custom fonts; the site's language; connecting a domain; password protection and staging.
 - CMS collections for everything the client will update (posts, cases, team, testimonials, FAQ).
-- A project skill with the conventions for future agents ([design-process.md](design-process.md), handoff).
+- A project skill with the conventions for future agents.
 - Publish only when the user asks (SKILL.md).

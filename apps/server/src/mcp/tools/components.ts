@@ -5,7 +5,6 @@ import {
   componentInsert,
   componentMakeLocal,
   componentsRead,
-  sectionInsert,
 } from "@sitewright/core";
 import type { ToolContext } from "../../types/mcp.ts";
 import { addOperationTool } from "../add-tool.ts";
@@ -40,11 +39,5 @@ export function registerComponentTools(server: McpServer, context: ToolContext):
     title: "Detach an instance",
     description:
       "Replaces a component instance with its layers, like Detach in the editor, and returns the id of the new root layer (nodeId); the root keeps the instance's place and size in its parent. Choose it for a one-off edit of a single placement: the layers stop following the component, so later changes to the component skip them. To restyle every placement, edit the component instead. It works on an instance of a project component designed in Framer: make a Marketplace or shared-library instance local first with component_make_local. A code component has no layers to detach. Undo does not bring the instance back. Needs the project's Server API key (framer_status shows whether it is set).",
-  });
-  addOperationTool(server, context, sectionInsert, {
-    name: "section_insert",
-    title: "Insert a section as layers",
-    description:
-      "Inserts a component designed in Framer by its module URL (framer.com/m/…, from the Insert menu, a Marketplace page or marketplace_browse) as plain, editable layers instead of a locked instance: a ready section (hero, pricing, FAQ, footer) to restyle with the site's tokens and text styles and to edit freely with design_apply. Choose component_insert instead to keep a live instance tuned through its controls: carousels, tickers and other code components have no layers to insert. The layers go into parentId at index, in its flow when it is a stack or grid. With layout true, Framer inserts a layout block whose variants follow the page's breakpoints, but only when it inserts into a breakpoint of that page, as it can in the open editor; the answer's note says when the variants were not matched, so set the Tablet and Phone layouts with design_apply. Undo does not remove the layers: delete them with design_apply. Works through the plugin and with the Server API key alike.",
   });
 }

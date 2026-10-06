@@ -134,8 +134,29 @@ Build every page as Main > Section > Container > Content:
 - **A hairline seam between two gradient sections** appears on a fractional y. Extend the lower one 2px upward:
   `top` −2, height +2.
 
+## Navigation and links
+
+- **Sticky header:** `positionStickyTop="0"` with a fill, so content scrolls under it. A header that changes on scroll
+  is a header component with two variants switched by a `scrollVariantEffect` (`onScrollTarget`) aimed at the first
+  section after the hero ([scroll.md](scroll.md), Scroll Variants). A header that hides on scroll down needs code.
+- **Phone menu:** a component with closed and open variants that opens by height ([components.md](components.md)).
+  Current-page links get `link.current.*` styles. Every link in the open variant also switches the menu to its closed
+  variant; on links to absolute URLs give that switch a 0.1s delay, or iOS can drop the navigation. The open menu lies
+  over the page rather than pushing the content down. Links that are component instances take no `onTap`: give the
+  link component an `EventHandlerVariable` fired by `onTap.0.action="TRIGGER_EVENT"`, and on each instance in the open
+  variant set `onClick.0.action="SET_VARIANT"` to the closed variant.
+- **Section links:** a link to `/#id` needs the target to have `elementId` and `scrollTargetEnabled="true"` first;
+  setting them earlier in the same batch works. Without the target the command errors, but the node keeps the link
+  cut to the page (`/page`, no `#id`): set it again once the target exists, so build navigation last. Give every frame
+  that links to `#id` `link.smoothScroll="true"`, inside the button and nav link components too, and each target
+  section `scrollMarginTop` = sticky header height + gap − the section's top padding, or the header covers its heading.
+- **External links start with `https://`:** `link.href="www.example.com"` is stored as is, without a warning, and on
+  the site it is the relative path `/www.example.com`.
+
 ## Text and nodes
 
+- **Tabular figures:** on a text node that has a text style, `openTypeFontFeatures.tnum` is refused ("Cannot apply
+  preset-controlled text properties"): give the figures a text style of their own (`Figure`) and set the feature there.
 - **Typography rewrites characters.** Framer replaces straight quotes with curly ones and `...` with `…`. Write code
   samples without quotes.
 - **DSL values cannot contain line breaks.** Break a headline with `maxWidth` or separate blocks.

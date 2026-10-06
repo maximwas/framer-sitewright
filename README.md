@@ -49,8 +49,8 @@ When both are available, calls go to the plugin first and the DSL work goes to t
 - **Journal with undo:** every call is recorded; undo the last change, a change and everything after it, or restore
   to a checkpoint. A local page (`sitewright open`) shows the journal, how each call reached Framer (Plugin API,
   Server API or Framer's agent layer), the skills Claude used, the settings (custom code, code components) and the project's Server API key.
-- **Knowledge:** `design_guide` and the Claude Code skill: the order of work, layout and typography rules, direction
-  measured on top Framer sites, the habits of generated pages to avoid, and the checklist before handing a page over.
+- **Knowledge:** `design_guide` and the Claude Code skill: what Framer does without saying so, layout and motion rules,
+  and the checks before handing a page over.
 
 ## Privacy
 

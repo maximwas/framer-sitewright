@@ -19,8 +19,6 @@ export interface AppConfig {
   readonly supportFile: string;
   /** SITEWRIGHT_SUPPORT_REMINDERS; the switch on the journal page can turn them off too. */
   readonly supportReminders: boolean;
-  /** Each project's brief, one file per project (see BriefStore). */
-  readonly briefsDir: string;
   /** The skill inboxes of running sessions (see SkillInbox). */
   readonly skillNotesDir: string;
   /** The bridge's port and peer token, shared by every process (see loadOrCreateBridgeConfig). */

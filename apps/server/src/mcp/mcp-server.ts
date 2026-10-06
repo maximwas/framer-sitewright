@@ -3,7 +3,6 @@ import { SERVER_INSTRUCTIONS } from "../constants/mcp.ts";
 import type { ToolContext } from "../types/mcp.ts";
 import { registerActivityTools } from "./tools/activity.ts";
 import { registerAssetTools } from "./tools/assets.ts";
-import { registerBriefTools } from "./tools/brief.ts";
 import { registerCheckTools } from "./tools/checks.ts";
 import { registerCmsTools } from "./tools/cms.ts";
 import { registerCodeTools } from "./tools/code.ts";
@@ -33,7 +32,6 @@ export function createMcpServer(context: ToolContext, version: string): McpServe
 
   registerStatusTools(server, context);
   registerProjectTools(server, context);
-  registerBriefTools(server, context);
   registerColorTokenTools(server, context);
   registerTextStyleTools(server, context);
   registerLinkStyleTools(server, context);

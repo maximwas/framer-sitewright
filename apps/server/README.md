@@ -93,8 +93,6 @@ sitewright --help
   Framer's library, with licenses and the files to upload), `link_styles_list`, `link_styles_upsert`,
   `link_styles_delete` (text links without Framer's default blue, with hover and the current page), `styles_usage`
   (where each token and style is used, and what nothing uses).
-- **Before a site:** `project_brief` — the questions to ask before building or redesigning a site (purpose, pages,
-  palette, theme, assets, copy, motion, CMS, languages…), with the answers saved per project for later sessions.
 - **Pages and nodes:** `project_overview`, `nodes_read`, `design_apply`, `layout_audit`, `selection_get`,
   `node_screenshot`, `breakpoints_add`, `framer_docs`.
 - **Motion:** `effects_set` — appear sequences, text reveals, hover and press, loops, scroll growth, parallax and
@@ -105,16 +103,14 @@ sitewright --help
   `contrast_check` (a color or token pair against WCAG), `template_audit` (a Marketplace template against Framer's
   checklist, section by section), `live_check` (the published site as visitors get it: values published as
   references, broken images and links, missing meta tags, heavy pages).
-- **Design guide:** `design_guide` — the order of work from a brief (`project_brief`) and one concept, layout,
-  typography and motion rules, direction from award-winning Framer sites, what Framer's DSL does without saying so,
-  and the checklist before handing a page over. The Claude Code skill (`setup --skill`) points the agent at it.
+- **Design guide:** `design_guide` — what Framer's DSL does without saying so, layout and motion rules, Marketplace
+  templates, and the checklist before handing a page over. The Claude Code skill (`setup --skill`) points the agent at it.
 - **Components and assets:** `components_read`, `component_controls_set`, `component_insert` (a free Marketplace
   component or one of Framer's own, by module URL), `component_make_local` (a Marketplace component copied into the
-  project to restyle), `component_detach` (an instance as plain layers), `section_insert` (a ready section as editable
-  layers), `icons_search`, `images_search`, `image_upload`, `file_upload`
+  project to restyle), `component_detach` (an instance as plain layers), `icons_search`, `images_search`, `image_upload`, `file_upload`
   (videos, PDFs, fonts), `svg_add`.
 - **Marketplace:** `marketplace_browse` — templates and components in their current ranking, by category or name, to
-  see what sells before proposing a direction or to offer a component instead of building one. `marketplace_item` —
+  offer a component instead of building one. `marketplace_item` —
   the items behind links you or the agent found: description, author, price, preview and last update, and for a free
   component its controls, read from a copy placed on a temporary design page, to judge whether it fits.
 - **CMS:** `cms_collections_list`, `cms_collection_create`, `cms_collection_delete`, `cms_fields_set`,

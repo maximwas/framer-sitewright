@@ -65,7 +65,7 @@ Concept, words and rights
   out of navigation, forms, prices and legal text.
 - The signature has a phone version and reads with reduced motion; the 404, footer line and cookie banner speak in the
   voice.
-- No AI copy tells (`direction`), no unverified claims, no invented reviews on a client's site.
+- No unverified claims, no invented reviews on a client's site.
 - Page copy speaks to the site's visitors only: notes for whoever edits the site go on a guide page or into the handoff
   (`template`, A "Start here" page).
 - Every font and image is licensed for this use; every language's letters and the copy's signs render in the chosen
@@ -84,7 +84,8 @@ Interaction
   opens also closes it.
 - Every row of every states list passes in a real browser (above).
 - Components from the Marketplace or elsewhere carry no leftover defaults: their transition is a spring, no slivers of
-  other slides show at the edges, and their sizes, fonts and colors are the site's (`workflow`, 1b).
+  other slides show at the edges, and their sizes, fonts and colors are the site's (`dsl`, Framer's own components and
+  shaders).
 - Media a state does not show neither loads nor plays (`dsl`, Framer's own components and shaders).
 
 Forms and overlays
@@ -95,3 +96,10 @@ Forms and overlays
 Responsive
 - 1440, 1200, 810, 390, and slowly dragged between them; no horizontal scroll at 390 or 320; rows of three become a
   column; display ×0.4–0.67 on phone; side padding 16–24; button labels on one line; tap targets 44px.
+
+## Handover
+
+Tell the user what is still needed from them (images, copy, fonts), which taste findings you kept on purpose, and what
+only they can set, with where to click (no tool reaches it): each form's Send To destination (email, Google Sheets or
+a webhook, a redirect after submit) and its spam protection; the site's language; connecting a domain; password
+protection and staging.

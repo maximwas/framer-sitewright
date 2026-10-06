@@ -5,7 +5,6 @@ import {
   designApply,
   pagesCreate,
   pagesDelete,
-  sectionInsert,
 } from "@sitewright/core";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { TransportRouter } from "../../src/transports/router.ts";
@@ -48,7 +47,7 @@ describe.skipIf(config === null)("component layers on the sandbox project", () =
     await transports.close();
   });
 
-  it("inserts a section as layers in the flow, makes an instance local after the user's choice and detaches it in place", async () => {
+  it("makes an instance local after the user's choice and detaches it in place", async () => {
     await transports.run(pagesDelete, { path: PAGE }).catch(() => undefined);
 
     const page = await transports.run(pagesCreate, { path: PAGE });
@@ -61,20 +60,6 @@ describe.skipIf(config === null)("component layers on the sandbox project", () =
     const main = made.keys?.main ?? "";
     const node = (id: string) =>
       transports.withServerApi(async (runtime) => (await runtime.port.getNode(id)) as Record<string, unknown>);
-
-    // Through the Server API Framer drops the layers on the home page's canvas, outside every breakpoint.
-    const section = await transports.run(sectionInsert, {
-      url: FOOTER,
-      parentId: main,
-      layout: true,
-    });
-    const parent = await transports.withServerApi(
-      async (runtime) => (await runtime.port.getParent(section.nodeId)) as { id: string },
-    );
-
-    expect(parent.id).toBe(main);
-    expect(await node(section.nodeId)).toMatchObject({ position: "relative" });
-    expect(section.note).toContain("breakpoints");
 
     const instance = await transports.run(componentInsert, {
       url: FOOTER,

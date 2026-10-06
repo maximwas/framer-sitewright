@@ -1,8 +1,8 @@
 # Template: a site for the Framer Marketplace
 
 A template is a site other people buy and edit. Everything here follows Framer's own checklist ("Template best
-practices" and "How to publish a template" in Framer Help, both updated 2026-09-15). Read `workflow` first; this topic
-adds what changes when the site is a product.
+practices" and "How to publish a template" in Framer Help, both updated 2026-09-15). This topic adds what
+changes when the site is a product.
 
 ## What changes
 
@@ -109,7 +109,7 @@ adds what changes when the site is a product.
   show each on its breakpoints only (`visible`), instead of overriding the slots on a copy.
 - Object controls of a code component (its `transition`, arrow styles) go through `component_controls_set`, once per
   instance and once per breakpoint copy: setting the primary does not reach the copies. Replace a tween default with a
-  spring there, and go through the rest of its defaults (`workflow`, 1b). A transition Framer refuses comes back in
+  spring there, and go through the rest of its defaults (`dsl`, Framer's own components and shaders). A transition Framer refuses comes back in
   `notStored` and the tween stays: then ask the user to set the spring in the component's panel, and list it at
   handoff.
 

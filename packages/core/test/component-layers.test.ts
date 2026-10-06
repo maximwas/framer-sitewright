@@ -1,13 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { HistoryRecorder } from "../src/history/recorder.ts";
 import { componentDetach } from "../src/operations/components/detach.ts";
 import { componentMakeLocal } from "../src/operations/components/make-local.ts";
-import { sectionInsert } from "../src/operations/components/section-insert.ts";
 import { runOperation } from "../src/operations/define.ts";
 import { createFakeRuntime } from "../src/testing/index.ts";
-import type { FramerRuntime } from "../src/types/framer.ts";
-
-const FOOTER = "https://framer.com/m/Liquid-Glass-Footer-PpecQS.js@NwnM5wWKuZaTzAqqZTeX";
 
 describe("components.makeLocal", () => {
   it("passes needs_confirmation on in Sitewright's words and copies only with the replaceAll the next call gives", async () => {
@@ -152,143 +147,6 @@ describe("components.detach", () => {
     await expect(runOperation(componentDetach, { runtime }, { nodeId: "carousel" })).rejects.toMatchObject({
       code: "WRITE_FAILED",
       reason: expect.stringContaining("component_make_local"),
-    });
-  });
-});
-
-describe("components.insertSection", () => {
-  it("regression: undo removes the inserted layers (seen: the journal said to delete them with design_apply)", async () => {
-    const { runtime } = createFakeRuntime({
-      canvas: [
-        {
-          id: "main",
-          parentId: "breakpoint-desktop",
-          className: "FrameNode",
-          name: "Main",
-          attributes: { layout: "stack" },
-        },
-      ],
-    });
-    const history = new HistoryRecorder();
-    const { nodeId } = await runOperation(
-      sectionInsert,
-      {
-        runtime,
-        history,
-      },
-      {
-        url: FOOTER,
-        parentId: "main",
-        index: 2,
-      },
-    );
-
-    expect(history.incomplete).toBeNull();
-    expect(history.steps).toEqual([
-      {
-        kind: "node",
-        id: nodeId,
-        type: "FrameNode",
-        name: "Section",
-        pagePath: "/",
-        change: "created",
-        before: null,
-        after: {
-          parentId: "main",
-          index: 2,
-          attributes: {},
-          nodes: [],
-          overrides: {},
-        },
-      },
-    ]);
-  });
-
-  it("regression: moves the layers from where Framer dropped them into the parent's flow at the index (seen: absolute at 4320px)", async () => {
-    const { runtime, state } = createFakeRuntime({
-      canvas: [
-        {
-          id: "main",
-          parentId: "breakpoint-desktop",
-          className: "FrameNode",
-          name: "Main",
-          attributes: { layout: "stack" },
-        },
-      ],
-    });
-    const result = await runOperation(
-      sectionInsert,
-      { runtime },
-      {
-        url: FOOTER,
-        parentId: "main",
-        index: 2,
-      },
-    );
-
-    expect(state.detachedLayers).toEqual([
-      {
-        id: result.nodeId,
-        url: FOOTER,
-        layout: false,
-      },
-    ]);
-    expect(state.moves).toEqual([
-      {
-        nodeId: result.nodeId,
-        parentId: "main",
-        index: 2,
-      },
-    ]);
-    expect(state.canvas.find((layer) => layer.id === result.nodeId)?.attributes).toMatchObject({
-      position: "relative",
-    });
-    expect(result.note).toBeNull();
-  });
-
-  it("says when Framer did not match the variants to the page's breakpoints, and pins the layers in a free parent", async () => {
-    const { runtime, state } = createFakeRuntime();
-    const result = await runOperation(
-      sectionInsert,
-      { runtime },
-      {
-        url: FOOTER,
-        parentId: "breakpoint-desktop",
-        layout: true,
-      },
-    );
-
-    expect(result.note).toContain("breakpoints");
-    expect(state.canvas.find((layer) => layer.id === result.nodeId)?.attributes).toMatchObject({
-      left: "0px",
-      top: "0px",
-    });
-  });
-
-  it("fails with what it takes when Framer cannot detach the component (a code component)", async () => {
-    const { runtime } = createFakeRuntime();
-    const refusing: FramerRuntime = {
-      ...runtime,
-      port: {
-        ...runtime.port,
-        addDetachedComponentLayers: async () => {
-          throw new Error("Failed to load component for detaching. It might not be a visual component.");
-        },
-      },
-    };
-
-    await expect(
-      runOperation(
-        sectionInsert,
-        { runtime: refusing },
-        {
-          url: FOOTER,
-          parentId: "breakpoint-desktop",
-        },
-      ),
-    ).rejects.toMatchObject({
-      code: "WRITE_FAILED",
-      hint: expect.stringContaining("component_insert"),
     });
   });
 });

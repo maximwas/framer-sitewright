@@ -68,7 +68,6 @@ export { componentControlsSet } from "./operations/components/controls-set.ts";
 export { componentDetach } from "./operations/components/detach.ts";
 export { componentInsert } from "./operations/components/insert.ts";
 export { componentMakeLocal } from "./operations/components/make-local.ts";
-export { sectionInsert } from "./operations/components/section-insert.ts";
 export { needsAgent, runOperation } from "./operations/define.ts";
 export { designApply } from "./operations/design/apply.ts";
 export { fontsInLibrary } from "./operations/fonts/in-library.ts";

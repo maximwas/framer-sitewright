@@ -16,13 +16,6 @@ export const MAKE_LOCAL_BLOCKED_HINT =
 export const DETACH_BLOCKED_HINT =
   "Detach works on an instance of a project component designed in Framer: make a Marketplace or shared-library instance local first with component_make_local. A code component has no layers to detach.";
 
-export const SECTION_INSERT_HINT =
-  "section_insert takes a component designed in Framer (from the Insert menu or the Marketplace) by its module URL. A code component (most carousels, tickers, effects) has no layers: insert it as an instance with component_insert.";
-
-/** section_insert with layout true, when Framer put the layers outside the target page's breakpoints. */
-export const LAYOUT_NOT_MATCHED_NOTE =
-  "Framer inserted the layers outside the target page's breakpoints, so their variants were not matched to them: set the Tablet and Phone layouts with design_apply.";
-
 /** Framer's agent names its internal tools in its messages; these are Sitewright's tools for the same thing. */
 export const FRAMER_AGENT_TOOL_NAMES: Readonly<Record<string, string>> = {
   make_external_component_local: "component_make_local",

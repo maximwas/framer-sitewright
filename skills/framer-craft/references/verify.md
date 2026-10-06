@@ -81,8 +81,8 @@ it (a phone width with touch, `prefers-reduced-motion`); without one, ask the us
 every breakpoint:
 
 - scroll every page to its very end: no layer stays invisible, nothing scrolls sideways;
-- use every link once: section links land with their heading below the sticky header ([sections.md](sections.md),
-  Navigation), and a link inside something that opens also closes it;
+- use every link once: section links land with their heading below the sticky header ([layout.md](layout.md),
+  Navigation and links), and a link inside something that opens also closes it;
 - only clickable layers react to hover or show a pointer;
 - media that a state does not show neither loads nor plays ([components.md](components.md), Framer's own
   components);

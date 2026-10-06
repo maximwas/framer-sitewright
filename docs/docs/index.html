@@ -489,7 +489,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
           <p class="search-empty" hidden>No tool matches.</p>
 <!-- tools:start -->
 <section class="tool-group" id="project" data-group>
-  <h3>Project and connection <span>9</span></h3>
+  <h3>Project and connection <span>8</span></h3>
   <p class="group-intro">Where the agent starts: which project is open, how it is reached, and publishing when you ask.</p>
   <article class="tool" id="framer_status" data-tool="framer_status Framer connection status shows the active transport (server api or the framer plugin), whether each one is configured and connected, what to do if not, the projects with a saved server api key (framer_connect { project } switches between them), and what the project's framer plan allows. call it when a framer tool fails.">
     <header>
@@ -527,22 +527,6 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
     <p class="tool-title">Project overview</p>
     <p>Summarizes the connected Framer project: web pages with paths, design pages, counts of color tokens, text styles, components and CMS collections, and what its Framer plan allows (capabilities). Start here.</p>
     <p class="no-params">No parameters.</p>
-  </article>
-  <article class="tool" id="project_brief" data-tool="project_brief Project brief the questions to ask the user before building or redesigning a framer site, and the answers saved for this project. call it first on any new site or redesign, not for a fix or one part of an existing site (read the saved answers there if it has them): it returns the questions still open (purpose and main action, whose site it is, name, pages, references, mood, palettes to propose, light or dark theme, assets, copy, motion level, audience, fonts, imagery, cms collections, languages, features, seo, handoff, plan, screens, analytics, accessibility), each with options, what to propose and a fallback, and how to ask them. save answers with answers after every round; the brief stays with the project, so read it before later work on the same site instead of asking again.">
-    <header>
-      <h4><a href="#project_brief">project_brief</a></h4>
-      <span class="badge write">Changes</span>
-      <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
-    </header>
-    <p class="tool-title">Project brief</p>
-    <p>The questions to ask the user before building or redesigning a Framer site, and the answers saved for this project. Call it first on any new site or redesign, not for a fix or one part of an existing site (read the saved answers there if it has them): it returns the questions still open (purpose and main action, whose site it is, name, pages, references, mood, palettes to propose, light or dark theme, assets, copy, motion level, audience, fonts, imagery, CMS collections, languages, features, SEO, handoff, plan, screens, analytics, accessibility), each with options, what to propose and a fallback, and how to ask them. Save answers with answers after every round; the brief stays with the project, so read it before later work on the same site instead of asking again.</p>
-    <div class="params"><table>
-      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
-      <tbody>
-      <tr><th scope="row"><code>answers</code></th><td><code class="type">object</code></td><td>The user's answers to save, by question id, merged into the saved brief; a fallback you took counts as an answer. Omit to read the brief and the questions still open.</td></tr>
-      <tr><th scope="row"><code>reset</code></th><td><code class="type">boolean</code></td><td>Forget the saved brief first, to start over. <span class="def">default <code>false</code></span></td></tr>
-      </tbody>
-    </table></div>
   </article>
   <article class="tool" id="selection_get" data-tool="selection_get Read the editor selection returns the layers the user selected in the framer editor (ids and names). call it when the user says &quot;this&quot;, &quot;the selected one&quot; or &quot;what i picked&quot;, then read those ids with nodes_read and change them with design_apply. works through the sitewright plugin only, open in this project.">
     <header>
@@ -1178,7 +1162,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="assets" data-group>
-  <h3>Components and assets <span>14</span></h3>
+  <h3>Components and assets <span>13</span></h3>
   <p class="group-intro">Components and their controls, components from the Marketplace, icon sets, stock photos, your own images, files and SVG.</p>
   <article class="tool" id="components_read" data-tool="components_read Read components lists the project's components with their exact controls ($control__variant options, $control__&lt;name&gt; for each variable) before you place or change instances. control names are the ones listed here, e.g. $control__showicon; do not derive them from variable names. code components are listed in codecomponents and framer's own (video, google maps, embed, slideshow, carousel, countdown, cookie banner, search…) in framer: place any of them with +componentinstancenode component=&quot;&lt;id&gt;&quot;, and pass its id in ids to read its controls first. needs the project's server api key (framer_status shows whether it is set).">
     <header>
@@ -1256,25 +1240,6 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
       <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>The instance of a project component (ComponentInstanceNode) to replace with its layers. <span class="req">required</span></td></tr>
-      </tbody>
-    </table></div>
-  </article>
-  <article class="tool" id="section_insert" data-tool="section_insert Insert a section as layers inserts a component designed in framer by its module url (framer.com/m/…, from the insert menu, a marketplace page or marketplace_browse) as plain, editable layers instead of a locked instance: a ready section (hero, pricing, faq, footer) to restyle with the site's tokens and text styles and to edit freely with design_apply. choose component_insert instead to keep a live instance tuned through its controls: carousels, tickers and other code components have no layers to insert. the layers go into parentid at index, in its flow when it is a stack or grid. with layout true, framer inserts a layout block whose variants follow the page's breakpoints, but only when it inserts into a breakpoint of that page, as it can in the open editor; the answer's note says when the variants were not matched, so set the tablet and phone layouts with design_apply. undo does not remove the layers: delete them with design_apply. works through the plugin and with the server api key alike.">
-    <header>
-      <h4><a href="#section_insert">section_insert</a></h4>
-      <span class="badge write">Changes</span>
-      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
-    </header>
-    <p class="tool-title">Insert a section as layers</p>
-    <p>Inserts a component designed in Framer by its module URL (framer.com/m/…, from the Insert menu, a Marketplace page or <a href="#marketplace_browse"><code>marketplace_browse</code></a>) as plain, editable layers instead of a locked instance: a ready section (hero, pricing, FAQ, footer) to restyle with the site's tokens and text styles and to edit freely with <a href="#design_apply"><code>design_apply</code></a>. Choose <a href="#component_insert"><code>component_insert</code></a> instead to keep a live instance tuned through its controls: carousels, tickers and other code components have no layers to insert. The layers go into parentId at index, in its flow when it is a stack or grid. With layout true, Framer inserts a layout block whose variants follow the page's breakpoints, but only when it inserts into a breakpoint of that page, as it can in the open editor; the answer's note says when the variants were not matched, so set the Tablet and Phone layouts with <a href="#design_apply"><code>design_apply</code></a>. Undo does not remove the layers: delete them with <a href="#design_apply"><code>design_apply</code></a>. Works through the plugin and with the Server API key alike.</p>
-    <div class="params"><table>
-      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
-      <tbody>
-      <tr><th scope="row"><code>url</code></th><td><code class="type">string</code></td><td>The component's module URL (framer.com/m/…): copied from the Insert menu or a Marketplace page, or moduleUrl from marketplace_browse. <span class="req">required</span></td></tr>
-      <tr><th scope="row"><code>parentId</code></th><td><code class="type">string</code></td><td>Layer to put the layers into, e.g. the page's main stack or its primary (Desktop) breakpoint. <span class="req">required</span></td></tr>
-      <tr><th scope="row"><code>index</code></th><td><code class="type">number</code></td><td>Position among parentId's children; last by default.</td></tr>
-      <tr><th scope="row"><code>layout</code></th><td><code class="type">boolean</code></td><td>Insert it as a layout block whose variants follow the page's breakpoints. Framer matches them only when it inserts into a breakpoint of the target page; the answer's note says when it did not. <span class="def">default <code>false</code></span></td></tr>
-      <tr><th scope="row"><code>attributes</code></th><td><code class="type">object</code></td><td>Passed to Framer as the component instance's attributes before it detaches the layers. Name, size, opacity and visibility do not reach the layers: set those with design_apply afterwards.</td></tr>
       </tbody>
     </table></div>
   </article>
@@ -1826,18 +1791,18 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
 <section class="tool-group" id="knowledge" data-group>
   <h3>Knowledge <span>2</span></h3>
   <p class="group-intro">The design guide built into Sitewright, and Framer's own DSL reference and guides.</p>
-  <article class="tool" id="design_guide" data-tool="design_guide Design guide how to build framer sites that look designed and hold together, from measuring top framer sites and from live builds. read &quot;workflow&quot; before building or restyling any page, then the topic for the task. topics: workflow (the order of work for a new page or redesign, and the checks before calling it done); dsl (what framer does without saying so: batches, breakpoints, components and clicks, forms, overlays, cms lists, which springs it keeps, metadata, assets); layout (alignment, distribution, sizes by role, equal heights, grids, containers, spacing, breakpoints, buttons, images); typography (families, scale, tracking, line height, balance, measure, labels, breakpoint sizes); direction (what makes a site look designed, with numbers from top framer sites, and the habits of generated pages); sections (navigation, hero, features, proof, pricing, faq, closing call to action and footer); motion (the states list anything that moves or responds needs before it is built, what motion to offer (subtle, balanced, expressive) and how to build each effect, pinned scroll sections, scroll headers, horizontal galleries, page transitions, tabs, links on components); verify (the audit, looking at the result, going through every state in a real browser, and the checklist before handing a page over); template (a site for the framer marketplace: framer's template checklist, what buyers edit, and the listing); no-key (what works through the plugin without a server api key, and how to get the rest anyway).">
+  <article class="tool" id="design_guide" data-tool="design_guide Design guide how to change a framer site so it holds together, from live builds: what framer does without saying so, layout, motion and the checks. read &quot;dsl&quot; before the first design_apply of a session, then the topic for the task. topics: dsl (what framer does without saying so: batches, breakpoints, text styles, components and clicks, menus, forms, overlays, cms lists, which springs it keeps, metadata, assets, marketplace components); layout (alignment, distribution, sizes by role, equal heights, grids, containers, spacing, breakpoints, buttons, images); motion (the states list anything that moves or responds needs before it is built, what motion to offer (subtle, balanced, expressive) and how to build each effect, pinned scroll sections, scroll headers, horizontal galleries, page transitions, tabs, links on components); verify (the audit, looking at the result, going through every state in a real browser, the checklist, and what to tell the user at handover); template (a site for the framer marketplace: framer's template checklist, what buyers edit, and the listing); no-key (what works through the plugin without a server api key, and how to get the rest anyway).">
     <header>
       <h4><a href="#design_guide">design_guide</a></h4>
       <span class="badge read">Reads</span>
       <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
     </header>
     <p class="tool-title">Design guide</p>
-    <p>How to build Framer sites that look designed and hold together, from measuring top Framer sites and from live builds. Read &quot;workflow&quot; before building or restyling any page, then the topic for the task. Topics: workflow (the order of work for a new page or redesign, and the checks before calling it done); dsl (what Framer does without saying so: batches, breakpoints, components and clicks, forms, overlays, CMS lists, which springs it keeps, metadata, assets); layout (alignment, distribution, sizes by role, equal heights, grids, containers, spacing, breakpoints, buttons, images); typography (families, scale, tracking, line height, balance, measure, labels, breakpoint sizes); direction (what makes a site look designed, with numbers from top Framer sites, and the habits of generated pages); sections (navigation, hero, features, proof, pricing, FAQ, closing call to action and footer); motion (the states list anything that moves or responds needs before it is built, what motion to offer (subtle, balanced, expressive) and how to build each effect, pinned scroll sections, scroll headers, horizontal galleries, page transitions, tabs, links on components); verify (the audit, looking at the result, going through every state in a real browser, and the checklist before handing a page over); template (a site for the Framer Marketplace: Framer's template checklist, what buyers edit, and the listing); no-key (what works through the plugin without a Server API key, and how to get the rest anyway).</p>
+    <p>How to change a Framer site so it holds together, from live builds: what Framer does without saying so, layout, motion and the checks. Read &quot;dsl&quot; before the first <a href="#design_apply"><code>design_apply</code></a> of a session, then the topic for the task. Topics: dsl (what Framer does without saying so: batches, breakpoints, text styles, components and clicks, menus, forms, overlays, CMS lists, which springs it keeps, metadata, assets, Marketplace components); layout (alignment, distribution, sizes by role, equal heights, grids, containers, spacing, breakpoints, buttons, images); motion (the states list anything that moves or responds needs before it is built, what motion to offer (subtle, balanced, expressive) and how to build each effect, pinned scroll sections, scroll headers, horizontal galleries, page transitions, tabs, links on components); verify (the audit, looking at the result, going through every state in a real browser, the checklist, and what to tell the user at handover); template (a site for the Framer Marketplace: Framer's template checklist, what buyers edit, and the listing); no-key (what works through the plugin without a Server API key, and how to get the rest anyway).</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
-      <tr><th scope="row"><code>topic</code></th><td><code class="type">&quot;workflow&quot; | &quot;dsl&quot; | &quot;layout&quot; | &quot;typography&quot; | &quot;direction&quot; | &quot;sections&quot; | &quot;motion&quot; | &quot;verify&quot; | &quot;template&quot; | &quot;no-key&quot;</code></td><td>Which part of the guide to read. <span class="def">default <code>&quot;workflow&quot;</code></span></td></tr>
+      <tr><th scope="row"><code>topic</code></th><td><code class="type">&quot;dsl&quot; | &quot;layout&quot; | &quot;motion&quot; | &quot;verify&quot; | &quot;template&quot; | &quot;no-key&quot;</code></td><td>Which part of the guide to read. <span class="def">default <code>&quot;dsl&quot;</code></span></td></tr>
       </tbody>
     </table></div>
   </article>

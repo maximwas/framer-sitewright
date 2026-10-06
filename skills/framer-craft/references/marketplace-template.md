@@ -2,7 +2,7 @@
 
 A template is a site other people buy and edit. This file follows Framer's own checklist: "Template best practices"
 and "How to publish a template" in Framer Help, both updated 2026-09-15, plus Framer Academy's "Get your template
-ready". Read [design-process.md](design-process.md) first; this adds what changes when the site is a product.
+ready". This adds what changes when the site is a product.
 
 ## What changes
 
@@ -47,6 +47,9 @@ ready". Read [design-process.md](design-process.md) first; this adds what change
 
 ## Conventions that keep it editable
 
+- **Font licenses:** Google and Framer's library fonts are free for templates. Fontshare's closed fonts (ITF FFL v2.0)
+  come only from Framer's built-in library: never upload the files into a template. Credit OFL foundries that ask
+  (Velvetyne) in a colophon.
 - **Names by role:**
   - tokens `Surface/Base`, `Text/Primary`, `Accent/…`;
   - text styles `Heading/H2`, `Body/Default`;

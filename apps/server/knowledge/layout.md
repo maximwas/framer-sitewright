@@ -84,8 +84,8 @@ Cards of one set share one height wherever they appear, together or in turn.
 
 ## Breakpoints
 
-- The set and the order of work are in `workflow`, step 5; how copies take overrides is in `dsl`, Breakpoints. Every
-  copy has a `width`. With one content width (`maxWidth` 1200) Laptop needs no overrides.
+- The usual set: Desktop 1440 (primary), Laptop 1280, Tablet 810, Phone 390, on every page before text styles get
+  their sizes; how copies take overrides is in `dsl`, Breakpoints. Every copy has a `width`. With one content width (`maxWidth` 1200) Laptop needs no overrides.
 - On phone: display sizes ×0.4–0.67, section padding ×0.5, side padding 16–24 (20 is common), grids of 3+ columns
   become one column (`layout="stack" stackDirection="vertical"`), columns side by side stack vertically, images keep
   their `aspectRatio`, button labels stay on one line, tap targets at least 44px. Navigation becomes a menu; without a
@@ -95,7 +95,7 @@ Cards of one set share one height wherever they appear, together or in turn.
 - Hero: `height="auto"` + `minHeight="100vh"` when it needs the screen, never a fixed `100vh`.
 - Text style sizes: tablet sits between laptop and phone (display 96 / 72 / 40 for 1280 / tablet / phone). Read
   `text_styles_list` before trusting them: a slot left from older breakpoints can make tablet sizes smaller than phone
-  ones (`workflow`, step 5). After styles change through the Plugin API, run `framer_connect { reconnect: true }`
+  ones (`dsl`, Breakpoints). After styles change through the Plugin API, run `framer_connect { reconnect: true }`
   before the next DSL batch.
 - A layout template holds the shared header and footer: `+LayoutTemplateNode` in `design_apply` dsl makes its Desktop
   at 1200 (set it to 1440 like the pages) with a placeholder. `breakpoints_add` takes pages only, so give the template

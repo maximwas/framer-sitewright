@@ -15,10 +15,9 @@ experienced Framer creators and Framer's help center.
 
 ## Workflow
 
-0. **Tell the request apart.** A new site or a redesign goes through every step below and
-   [design-process.md](references/design-process.md). Help with one part reads the project and builds only that part
-   in its existing tokens, styles and components. A fix changes exactly what was asked, nothing around it, and is read
-   back and checked on every breakpoint. When unsure which, ask.
+0. **Tell the request apart.** Help with one part reads the project and builds only that part in its existing tokens,
+   styles and components. A fix changes exactly what was asked, nothing around it, and is read back and checked on
+   every breakpoint. When unsure which, ask.
 1. Connect and read the project's `index.md` task map, as the `framer` skill says.
 2. Read before you write: `framer.agent.serialize({ id, depth })` for the part you change,
    `framer.agent.readComponentControls` for control names, `listIconSets` + `readIcons` for icons. Never guess ids,
@@ -49,7 +48,7 @@ experienced Framer creators and Framer's help center.
 - **Absolute and fixed layers** take px or % sizes, never `fr`, and px pins; to stretch or center one, follow
   [layout.md](references/layout.md), Absolute layers.
 - **Links:** external ones start with `https://` (`www.…` becomes a relative path); section links need their target,
-  smooth scroll and a scroll margin ([sections.md](references/sections.md), Navigation).
+  smooth scroll and a scroll margin ([layout.md](references/layout.md), Navigation and links).
 - **No effects or `scale` on a variant root or a breakpoint root, and no `aspectRatio` on a variant root:** use a
   gesture variant or a child, and give the `aspectRatio` to the instance. Breakpoints take only `flowEffect` and
   `pageEffects`.
@@ -60,9 +59,8 @@ experienced Framer creators and Framer's help center.
 - **Things that open** (accordion, menu, dropdown) animate their height, never `visible`, which pops even in Framer's
   own FAQ example ([motion.md](references/motion.md)).
 - **A temp id lives for the whole session.** Never reuse one, even after `DEL`.
-- **Visuals:** photos in one warm, candid art direction from the subject's world, picked side by side
-  ([assets.md](references/assets.md)); icons are interface, never a section's visual (**Practice**,
-  [distinct-design.md](references/distinct-design.md)).
+- **Visuals:** photos in one art direction, picked side by side ([assets.md](references/assets.md)); icons are
+  interface, never a section's visual.
 - **Code** (code components, custom code, overrides): only in the cases [components.md](references/components.md),
   Code components, names, and say which one first.
 
@@ -72,10 +70,7 @@ Before writing DSL, read the reference that matches the task:
 
 | Task | Read |
 | --- | --- |
-| New site or redesign: brief, three concepts, outline, design system, wireframe, handoff | [design-process.md](references/design-process.md) |
-| Looking designed, not generated: direction, defaults to avoid, type, color, images, copy | [distinct-design.md](references/distinct-design.md) |
-| Page anatomy, sections, navigation and links | [sections.md](references/sections.md) |
-| Structure, widths, stacks, grids, absolute layers, breakpoints, z-index, sticky | [layout.md](references/layout.md) |
+| Structure, widths, stacks, grids, absolute layers, breakpoints, z-index, sticky, navigation and links | [layout.md](references/layout.md) |
 | Tokens, text styles, fonts, folders, deleting styles | [design-system.md](references/design-system.md) |
 | Components, variants, controls, clicks, page state, Framer's own and code components | [components.md](references/components.md) |
 | Anything that moves or responds: states list, springs, hover, things that open, overlays, page transitions | [motion.md](references/motion.md) |

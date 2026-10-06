@@ -38,7 +38,7 @@ how to get the same result anyway.
 - **Images:** `fill="https://…"` on a frame with a size (`width="1fr"`, `aspectRatio`, any px height) uploads the image
   and fills the frame. Stock search needs a key, so use the client's images or direct image URLs; never icons instead.
 - **Breakpoints:** build the desktop layout so it holds at every width (fill widths, `maxWidth`, wrapping stacks),
-  then add Tablet and Phone with `breakpoints_add` and override their copies (`workflow`, step 5). A phone menu that
+  then add Tablet and Phone with `breakpoints_add` and override their copies (`dsl`, Breakpoints). A phone menu that
   opens needs a component, so a key: without one, keep the wordmark and one link in the phone header.
 
 When a batch asks for something on the key-only list, it is refused whole before any change; the message says what.

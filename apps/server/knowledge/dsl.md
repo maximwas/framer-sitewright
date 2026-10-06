@@ -46,9 +46,19 @@ something else; every rule here was seen on a live project.
   which weight to upload.
 - Text style breakpoints are slots, not widths: medium, small, extraSmall in order (the tool adds skipped ones),
   starting at the page breakpoints from the top, the narrowest at 0.
+- Headings wrap evenly with `balance: true` on their text style (`text_styles_upsert`); a heading's `maxWidth` does
+  not replace it. Paragraphs take `textWrap="pretty"`. A forced line break is a `TextLineBreak`, never a newline in the
+  text.
+- A new text style gets `paragraphSpacing` 20px from Framer (`text_styles_upsert` leaves it unset), so text of
+  several blocks has 20px between them: set it on purpose, 0 where blocks sit line on line.
+- A family can cover a script and still lack a sign (₴): Framer draws a missing sign in another face without an
+  error. Check the site's own signs in a real heading; display line heights under 0.9 make accents and Cyrillic
+  descenders collide.
 - Color text with a token on the `RichTextNode` itself, `textColor="var(--token-<id>)"`, not only through its text
   style: only then does the token show in Framer's Color field (needs a key). Setting `textStylePreset` later drops the
   node's `textColor` without an error: write both in the same element or `SET`.
+- A surface that keeps its color in both themes (a paper ticket, a label, a brand band) needs text tokens that keep
+  theirs too: a shared ink token turns light on it in the dark theme, and Framer's linter flags the contrast.
 - Dark token values apply only through the visitor's system theme (`prefers-color-scheme`): Framer has no theme switch
   and no action that changes it. A switch needs a code override that writes the token values on `document.body` (code,
   so only when the user asks). `node_screenshot` shows the light theme only: check dark with `reference_screenshot`
@@ -90,6 +100,10 @@ something else; every rule here was seen on a live project.
 
 - A page is a primary breakpoint frame plus copies (replicas): add them with `breakpoints_add` (Tablet 810, Phone 390;
   with a key `CREATE_VARIANT` works too) before giving text styles breakpoint sizes.
+- A text style's slots start at the site's breakpoints as they are when you write them, counted over every page: a
+  breakpoint added later, or a page left at another width, puts desktop type on the tablet layout, and
+  `text_styles_upsert` then refuses new slots ("would not start in order") until the style is recreated. Give every
+  page the same set first, then the sizes; read the starts back with `text_styles_list`.
 - `$rect` in `nodes_read` can be stale (right after a size change it still shows the old size) and is missing on nodes
   inside stacks: judge sizes from screenshots. After the primary is widened, `breakpoints_add` places Tablet from the
   old width, on top of Desktop: when the lint says "Ground nodes overlap each other", set the copies' `left` (1540,
@@ -144,6 +158,8 @@ something else; every rule here was seen on a live project.
   copy copies its state at that moment: finish the source variant's overrides first.
 - A click that switches a variant (accordions, menus, tabs): `onTap.0.action="SET_VARIANT"`
   `onTap.0.controls.variant="<variant id>"` (or `"cycle"` for two variants) on a node inside the component.
+- Every link inside an open menu also switches it to its closed variant; on a link to an absolute URL give that
+  switch a 0.1s delay, or iOS can drop the navigation.
 - A component instance takes no `onTap`. Give its component a `+EventHandlerVariable` (scope = the component; in XML
   `<EventHandlerVariable key="click" name="Click" scope="@card"/>`, not `<Variable type=…>`), fire it
   from a node inside with `onTap.0.action="TRIGGER_EVENT"` `onTap.0.controls.id="var(--variable-<id>)"`, then set the
@@ -308,7 +324,7 @@ keeps depends on the attribute:
 - Icons: `icons_search`, then `+IconNode set="<set id>" $control__icon="<exact name>"`. A Phosphor icon is an outline
   until `$control__alpha="1"` fills it (rating stars).
 - Photos: `images_search`, then `fill="<url>"` with `altText`. Own files: `image_upload`, videos, PDFs and fonts:
-  `file_upload`.
+  `file_upload`. An Unsplash URL crops itself with `&rect=x,y,w,h` or `&crop=faces`.
 - Logos and own icons are vectors: `svg_add` through the plugin (parentId places it). To reuse one across the site, ask
   the user to add it to a project vector set (the API cannot), then place it as an `IconNode` of that set. An icon from
   a project vector set given to an instance's icon control is ignored by Framer (design_apply warns): bind it inside
@@ -331,6 +347,14 @@ keeps depends on the attribute:
   date takes midnight only. A font control: `$control__font.fontSelector="GF;<Family>-<weight>"` and `fontSize`; one
   invalid field drops the whole font. Its `lineHeight` and `letterSpacing` are `[value, unit]` pairs (`[1.16,"em"]`),
   never a CSS string, and `fontSelector` goes in the same write as any other font field.
+- A Marketplace component (`marketplace_browse` components, `freeOnly`): read it with `marketplace_item` `inspect`
+  first (whether it takes your own layers as slides, sizes to its container, takes the site's colors and type, uses a
+  tween to replace with a spring, was updated this year), then `component_insert`. Check it without a cursor and in
+  Preview: trails, tilts and magnetic effects do nothing on touch, counters show 00 and reveals their end state on the
+  canvas, scroll-pinned carousels take over the scroll, and Marketplace components expose no events. Its defaults are
+  its author's design: go through every control (debug guides off, grain under about 0.12, springs, offsets that show
+  slivers at 0 unless a stack is meant, one slide height). One that keeps its own fonts and colors: make it local
+  (`component_make_local`) and restyle it, or build it natively.
 - Shaders (`shaders_read`): one per page, as a hero or section background: an absolute Background frame with the
   `ShaderNode` pinned to all sides and a shade above it for text. Gradient shaders take up to 8 colors: the palette's
   base and ink tones and one second hue, never the action accent; a token follows dark mode. Image shaders

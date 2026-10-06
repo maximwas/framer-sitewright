@@ -18,7 +18,6 @@ import { componentControlsSet } from "./components/controls-set.ts";
 import { componentDetach } from "./components/detach.ts";
 import { componentInsert } from "./components/insert.ts";
 import { componentMakeLocal } from "./components/make-local.ts";
-import { sectionInsert } from "./components/section-insert.ts";
 import { designApply } from "./design/apply.ts";
 import { fontsInLibrary } from "./fonts/in-library.ts";
 import { fontsSearch } from "./fonts/search.ts";
@@ -87,7 +86,6 @@ export const OPERATIONS: readonly AnyOperation[] = [
   componentInsert,
   componentMakeLocal,
   componentDetach,
-  sectionInsert,
   customCodeGet,
   customCodeSet,
   codeFilesList,

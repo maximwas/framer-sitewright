@@ -15,13 +15,13 @@ export function registerDocsTools(server: McpServer, { transports, docs, journal
   addTool(server, {
     name: "design_guide",
     title: "Design guide",
-    description: `How to build Framer sites that look designed and hold together, from measuring top Framer sites and from live builds. Read "workflow" before building or restyling any page, then the topic for the task. Topics: ${Object.entries(
+    description: `How to change a Framer site so it holds together, from live builds: what Framer does without saying so, layout, motion and the checks. Read "dsl" before the first design_apply of a session, then the topic for the task. Topics: ${Object.entries(
       GUIDE_TOPICS,
     )
       .map(([name, about]) => `${name} (${about})`)
       .join("; ")}.`,
     input: z.strictObject({
-      topic: z.enum(topics).default("workflow").describe("Which part of the guide to read."),
+      topic: z.enum(topics).default("dsl").describe("Which part of the guide to read."),
     }),
     output: z.object({
       topic: z.string(),

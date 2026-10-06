@@ -12,7 +12,7 @@ function knowledgeRoot(): string | null {
     (url) => fileURLToPath(url),
   );
 
-  return candidates.find((root) => existsSync(`${root}workflow.md`)) ?? null;
+  return candidates.find((root) => existsSync(`${root}dsl.md`)) ?? null;
 }
 
 /** One topic of the design guide as Markdown. */

@@ -57,8 +57,7 @@ Then go through every row in a real browser (`verify`): a screenshot shows one s
 
 ## Motion menu: what to offer
 
-Start from the concept's one motion verb (`workflow`, step 2): descend, stack, focus, stamp, assemble. Build that verb
-as the signature, a scene that means something, with a phone version and a version without motion. Then the quiet
+When the site has one signature scene, build it with a phone version and a version without motion, then the quiet
 layer below. `effects_set` writes the common effects whole, with the right springs: fade-up, hero-sequence,
 text-reveal, hover-lift, hover-fade, press, float, pulse, spin, scroll-grow, parallax, ticker.
 
@@ -89,7 +88,7 @@ with the effects named per section, and let the user choose.
   - images zoom slightly on hover inside a clipped frame (a hover variant of the card, image `scale` 1.05);
   - a ticker of client logos or words (`tickerEffect` on a stack);
   - one statement that appears chunk after chunk as it enters (`appearEffect` `onInView`, y 24 and opacity 0, 0.06s
-    apart), not a scroll-scrubbed fade, which leaves the text faint while people read it (`sections`, Statement); a
+    apart), not a scroll-scrubbed fade, which leaves the text faint while people read it; a
     statement without pictures between its words reveals with `effects_set` `text-reveal`;
   - a slider of testimonials (a component with a variant per slide, arrows that `SET_VARIANT`, or a Marketplace
     carousel);
