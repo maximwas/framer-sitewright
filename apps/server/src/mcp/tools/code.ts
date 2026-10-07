@@ -12,6 +12,7 @@ import {
   customCodeSet,
   type McpSettings,
   OperationError,
+  themeToggleAdd,
 } from "@sitewright/core";
 import { CODE_SWITCH_HINT, CODE_SWITCH_OFF, CODE_TOOLS_RULE } from "../../constants/mcp.ts";
 import type { ToolContext } from "../../types/mcp.ts";
@@ -68,6 +69,13 @@ export function registerCodeTools(server: McpServer, context: ToolContext): void
     title: "Rename a code file",
     description:
       "Renames a code file. Its components and overrides keep working on the canvas. Works only while the user has Code components switched on in the plugin.",
+    before: allowed("codeComponents"),
+  });
+
+  addOperationTool(server, context, themeToggleAdd, {
+    name: "theme_toggle_add",
+    title: "Add a light and dark switch",
+    description: `Writes a code override that switches the site between its color tokens' light and dark values when clicked, starting from the visitor's last choice or system theme and remembering it, and attaches it to the layer you give (a button or an icon). Framer has no theme switch of its own. Tokens without a dark value stay as they are. Works only while the user has Code components switched on in the plugin.`,
     before: allowed("codeComponents"),
   });
 

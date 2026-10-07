@@ -1,13 +1,17 @@
 import type { McpServer } from "@modelcontextprotocol/server";
 import {
+  blogAdd,
   cmsCollectionCreate,
   cmsCollectionDelete,
   cmsCollectionsList,
   cmsFieldsSet,
+  cmsInterlink,
   cmsItemsDelete,
   cmsItemsList,
   cmsItemsOrder,
   cmsItemsUpsert,
+  cmsSeoCollection,
+  formAdd,
 } from "@sitewright/core";
 import { CMS_UNDO_RULE, CMS_VALUES_RULE } from "../../constants/mcp.ts";
 import type { ToolContext } from "../../types/mcp.ts";
@@ -62,5 +66,29 @@ export function registerCmsTools(server: McpServer, context: ToolContext): void 
     name: "cms_items_order",
     title: "Order CMS items",
     description: "Moves items to the top of a collection in the given order; the rest keep their order after them.",
+  });
+  addOperationTool(server, context, cmsSeoCollection, {
+    name: "cms_seo_collection",
+    title: "Make a blog collection ready for search",
+    description:
+      "Creates a CMS collection with the fields a ranking blog needs (Title, Excerpt, Content, Image and its alt text, Meta Title, Meta Description, Target Keyword, Category, Tags, Published, Author, and Related posts pointing at the collection itself), or adds the missing ones to an existing collection. Then bind them on the list and post pages, and run cms_interlink once posts are in. Needs the project's Server API key.",
+  });
+  addOperationTool(server, context, cmsInterlink, {
+    name: "cms_interlink",
+    title: "Link related posts",
+    description:
+      "Fills each item's Related field with its most related items: the same Category scores 3, each shared tag 2, each shared word of the Target Keyword 1; items with nothing in common are left out. dryRun shows the links first. Internal links between posts help search and keep readers on the site. Needs the project's Server API key.",
+  });
+  addOperationTool(server, context, blogAdd, {
+    name: "blog_add",
+    title: "Add a blog",
+    description:
+      "Sets up a blog: a search-ready collection (cms_seo_collection), the list page (/blog by default) and the post page for each item (/blog/:Blog). The pages are left empty for you to build in the site's own styles; the answer says how. Needs the project's Server API key.",
+  });
+  addOperationTool(server, context, formAdd, {
+    name: "form_add",
+    title: "Add a form",
+    description:
+      "Builds a native Framer form in one call: a labelled field per entry (text, textarea, email, tel, number, url, date, time, select with its options, checkbox, radio), required where asked, and the submit button as an instance of the button component you give. Framer validates required fields and types itself. Where the form sends is set by the user in the editor; the answer says so. Multi-step forms and fields shown on a condition need code. Needs the project's Server API key.",
   });
 }

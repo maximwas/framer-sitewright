@@ -59,6 +59,7 @@ export {
 } from "./operations/cms/collections.ts";
 export { cmsFieldsSet } from "./operations/cms/fields.ts";
 export { cmsItemsDelete, cmsItemsList, cmsItemsOrder, cmsItemsUpsert } from "./operations/cms/items.ts";
+export { cmsInterlink, cmsSeoCollection } from "./operations/cms/seo.ts";
 export { codeFileDelete, codeFileRead, codeFilesList, codeFileWrite } from "./operations/code/code-files.ts";
 export { codeFileCheck, codeFilePatch, codeFileRename, codeFilesRead } from "./operations/code/code-tools.ts";
 export { customCodeGet, customCodeSet } from "./operations/code/custom-code.ts";
@@ -74,6 +75,7 @@ export { componentInstances } from "./operations/components/instances.ts";
 export { componentMakeLocal } from "./operations/components/make-local.ts";
 export { needsAgent, runOperation } from "./operations/define.ts";
 export { designApply } from "./operations/design/apply.ts";
+export { blogAdd, formAdd, themeToggleAdd } from "./operations/design/builders.ts";
 export { editorNavigate, editorSelect, editorZoom, selectionWait } from "./operations/editor/editor.ts";
 export { exportNode } from "./operations/export/export-node.ts";
 export { fontsInLibrary } from "./operations/fonts/in-library.ts";

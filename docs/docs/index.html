@@ -1716,7 +1716,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="cms" data-group>
-  <h3>CMS <span>8</span></h3>
+  <h3>CMS <span>12</span></h3>
   <p class="group-intro">Collections and their fields; items by slug, with values by field name. Undo covers items, not yet collections, fields or the order of items.</p>
   <article class="tool" id="cms_collections_list" data-tool="cms_collections_list List CMS collections lists the project's cms collections with their fields (id, type, enum cases, the collection a reference points at, a list's nested fields) and item counts. a field binds on the canvas by its id: var(--variable-&lt;id&gt;). collections a sync plugin manages are read-only here.">
     <header>
@@ -1849,6 +1849,75 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
+  <article class="tool" id="cms_seo_collection" data-tool="cms_seo_collection Make a blog collection ready for search creates a cms collection with the fields a ranking blog needs (title, excerpt, content, image and its alt text, meta title, meta description, target keyword, category, tags, published, author, and related posts pointing at the collection itself), or adds the missing ones to an existing collection. then bind them on the list and post pages, and run cms_interlink once posts are in. needs the project's server api key.">
+    <header>
+      <h4><a href="#cms_seo_collection">cms_seo_collection</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Make a blog collection ready for search</p>
+    <p>Creates a CMS collection with the fields a ranking blog needs (Title, Excerpt, Content, Image and its alt text, Meta Title, Meta Description, Target Keyword, Category, Tags, Published, Author, and Related posts pointing at the collection itself), or adds the missing ones to an existing collection. Then bind them on the list and post pages, and run <a href="#cms_interlink"><code>cms_interlink</code></a> once posts are in. Needs the project's Server API key.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>name</code></th><td><code class="type">string</code></td><td>The collection; an existing one gets the fields it lacks. <span class="def">default <code>&quot;Blog&quot;</code></span></td></tr>
+      <tr><th scope="row"><code>categories</code></th><td><code class="type">string[]</code></td><td>The Category options. <span class="def">default <code>[&quot;Guides&quot;,&quot;News&quot;,&quot;Case studies&quot;]</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="cms_interlink" data-tool="cms_interlink Link related posts fills each item's related field with its most related items: the same category scores 3, each shared tag 2, each shared word of the target keyword 1; items with nothing in common are left out. dryrun shows the links first. internal links between posts help search and keep readers on the site. needs the project's server api key.">
+    <header>
+      <h4><a href="#cms_interlink">cms_interlink</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Link related posts</p>
+    <p>Fills each item's Related field with its most related items: the same Category scores 3, each shared tag 2, each shared word of the Target Keyword 1; items with nothing in common are left out. dryRun shows the links first. Internal links between posts help search and keep readers on the site. Needs the project's Server API key.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>collection</code></th><td><code class="type">string</code></td><td>Collection name or id; it needs a Related field (cms_seo_collection adds one). <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>top</code></th><td><code class="type">number</code></td><td>Related items per item. <span class="def">default <code>3</code></span></td></tr>
+      <tr><th scope="row"><code>dryRun</code></th><td><code class="type">boolean</code></td><td> <span class="def">default <code>false</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="blog_add" data-tool="blog_add Add a blog sets up a blog: a search-ready collection (cms_seo_collection), the list page (/blog by default) and the post page for each item (/blog/:blog). the pages are left empty for you to build in the site's own styles; the answer says how. needs the project's server api key.">
+    <header>
+      <h4><a href="#blog_add">blog_add</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Add a blog</p>
+    <p>Sets up a blog: a search-ready collection (<a href="#cms_seo_collection"><code>cms_seo_collection</code></a>), the list page (/blog by default) and the post page for each item (/blog/:Blog). The pages are left empty for you to build in the site's own styles; the answer says how. Needs the project's Server API key.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>collection</code></th><td><code class="type">string</code></td><td> <span class="def">default <code>&quot;Blog&quot;</code></span></td></tr>
+      <tr><th scope="row"><code>path</code></th><td><code class="type">string</code></td><td>The list page; posts live under it. <span class="def">default <code>&quot;/blog&quot;</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="form_add" data-tool="form_add Add a form builds a native framer form in one call: a labelled field per entry (text, textarea, email, tel, number, url, date, time, select with its options, checkbox, radio), required where asked, and the submit button as an instance of the button component you give. framer validates required fields and types itself. where the form sends is set by the user in the editor; the answer says so. multi-step forms and fields shown on a condition need code. needs the project's server api key.">
+    <header>
+      <h4><a href="#form_add">form_add</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Add a form</p>
+    <p>Builds a native Framer form in one call: a labelled field per entry (text, textarea, email, tel, number, url, date, time, select with its options, checkbox, radio), required where asked, and the submit button as an instance of the button component you give. Framer validates required fields and types itself. Where the form sends is set by the user in the editor; the answer says so. Multi-step forms and fields shown on a condition need code. Needs the project's Server API key.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>parentId</code></th><td><code class="type">string</code></td><td>The frame the form goes into. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td> <span class="def">default <code>&quot;/&quot;</code></span></td></tr>
+      <tr><th scope="row"><code>name</code></th><td><code class="type">string</code></td><td> <span class="def">default <code>&quot;Form&quot;</code></span></td></tr>
+      <tr><th scope="row"><code>button</code></th><td><code class="type">string</code></td><td>The button component (its id from components_read) the submit button is an instance of. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>labelStyle</code></th><td><code class="type">string</code></td><td>The text style of the labels, e.g. &quot;Body/Small&quot;.</td></tr>
+      <tr><th scope="row"><code>fields</code></th><td><code class="type">object[]</code></td><td> <span class="req">required</span><ul class="fields"><li><code>name</code> <code class="type">string</code> — What the submission calls it, e.g. email.</li><li><code>label</code> <code class="type">string</code></li><li><code>type</code> <code class="type">&quot;text&quot; | &quot;textarea&quot; | &quot;email&quot; | &quot;tel&quot; | &quot;number&quot; | &quot;url&quot; | &quot;date&quot; | &quot;time&quot; | &quot;select&quot; | &quot;checkbox&quot; | &quot;radio&quot;</code></li><li><code>required</code> <code class="type">boolean</code> <span class="opt">optional</span></li><li><code>placeholder</code> <code class="type">string</code> <span class="opt">optional</span></li><li><code>options</code> <code class="type">string[]</code> <span class="opt">optional</span> — select: its choices.</li></ul></td></tr>
+      </tbody>
+    </table></div>
+  </article>
 </section>
 <section class="tool-group" id="localization" data-group>
   <h3>Localization <span>4</span></h3>
@@ -1923,7 +1992,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="code" data-group>
-  <h3>Code (opt-in) <span>10</span></h3>
+  <h3>Code (opt-in) <span>11</span></h3>
   <p class="group-intro">Custom HTML and code components. The agent uses them only when you ask for code or the canvas cannot do the task, and the writes work only while you allow them.</p>
   <article class="tool" id="custom_code_get" data-tool="custom_code_get Read custom code shows the site's custom html in each location (head start and end, body start and end).">
     <header>
@@ -2035,6 +2104,23 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
       <tr><th scope="row"><code>name</code></th><td><code class="type">string</code></td><td>File name or path. <span class="req">required</span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="theme_toggle_add" data-tool="theme_toggle_add Add a light and dark switch writes a code override that switches the site between its color tokens' light and dark values when clicked, starting from the visitor's last choice or system theme and remembering it, and attaches it to the layer you give (a button or an icon). framer has no theme switch of its own. tokens without a dark value stay as they are. works only while the user has code components switched on in the plugin.">
+    <header>
+      <h4><a href="#theme_toggle_add">theme_toggle_add</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Add a light and dark switch</p>
+    <p>Writes a code override that switches the site between its color tokens' light and dark values when clicked, starting from the visitor's last choice or system theme and remembering it, and attaches it to the layer you give (a button or an icon). Framer has no theme switch of its own. Tokens without a dark value stay as they are. Works only while the user has Code components switched on in the plugin.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>The button or icon that switches the theme; omit to only write the override.</td></tr>
+      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td> <span class="def">default <code>&quot;/&quot;</code></span></td></tr>
+      <tr><th scope="row"><code>fileName</code></th><td><code class="type">string</code></td><td> <span class="def">default <code>&quot;ThemeToggle.tsx&quot;</code></span></td></tr>
       </tbody>
     </table></div>
   </article>

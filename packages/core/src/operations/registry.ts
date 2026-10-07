@@ -8,6 +8,7 @@ import { svgAdd } from "./assets/svg-add.ts";
 import { cmsCollectionCreate, cmsCollectionDelete, cmsCollectionsList } from "./cms/collections.ts";
 import { cmsFieldsSet } from "./cms/fields.ts";
 import { cmsItemsDelete, cmsItemsList, cmsItemsOrder, cmsItemsUpsert } from "./cms/items.ts";
+import { cmsInterlink, cmsSeoCollection } from "./cms/seo.ts";
 import { codeFileDelete, codeFileRead, codeFilesList, codeFileWrite } from "./code/code-files.ts";
 import { codeFileCheck, codeFilePatch, codeFileRename, codeFilesRead } from "./code/code-tools.ts";
 import { customCodeGet, customCodeSet } from "./code/custom-code.ts";
@@ -22,6 +23,7 @@ import { componentInsert } from "./components/insert.ts";
 import { componentInstances } from "./components/instances.ts";
 import { componentMakeLocal } from "./components/make-local.ts";
 import { designApply } from "./design/apply.ts";
+import { blogAdd, formAdd, themeToggleAdd } from "./design/builders.ts";
 import { editorNavigate, editorSelect, editorZoom, selectionWait } from "./editor/editor.ts";
 import { exportNode } from "./export/export-node.ts";
 import { fontsInLibrary } from "./fonts/in-library.ts";
@@ -150,6 +152,11 @@ export const OPERATIONS: readonly AnyOperation[] = [
   performanceAudit,
   richTextAudit,
   exportNode,
+  cmsSeoCollection,
+  cmsInterlink,
+  blogAdd,
+  formAdd,
+  themeToggleAdd,
   contrastCheck,
   templateAudit,
   siteSettingsGet,

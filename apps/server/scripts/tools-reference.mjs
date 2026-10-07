@@ -143,6 +143,10 @@ const GROUPS = [
       "cms_items_upsert",
       "cms_items_delete",
       "cms_items_order",
+      "cms_seo_collection",
+      "cms_interlink",
+      "blog_add",
+      "form_add",
     ],
   },
   {
@@ -165,6 +169,7 @@ const GROUPS = [
       "code_file_patch",
       "code_file_rename",
       "code_file_check",
+      "theme_toggle_add",
       "code_file_write",
       "code_file_delete",
     ],
@@ -198,6 +203,10 @@ const GROUPS = [
  */
 const NEEDS = {
   key: [
+    "cms_seo_collection",
+    "cms_interlink",
+    "blog_add",
+    "form_add",
     "components_export",
     "site_audit",
     "rich_text_audit",
