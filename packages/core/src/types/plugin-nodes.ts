@@ -77,6 +77,8 @@ export interface WalkOptions {
 export interface WalkedLayer {
   readonly node: PluginNodeRecord;
   readonly breakpoint: PluginNodeRecord | null;
+  /** How deep under the page it sits: 0 for the page's own layers and breakpoints. */
+  readonly depth: number;
 }
 
 /** Where a new node goes: an existing node, a `key` created earlier in the batch, or the new element it is nested in. */

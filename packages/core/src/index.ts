@@ -105,6 +105,7 @@ export { deploymentsList, publishStatus } from "./operations/project/publish-sta
 export { currentUser } from "./operations/project/user.ts";
 export { redirectsList, redirectsSet } from "./operations/redirects/redirects.ts";
 export { findOperation, OPERATIONS } from "./operations/registry.ts";
+export { performanceAudit, richTextAudit, siteAudit } from "./operations/site/audits.ts";
 export { a11yAudit, contrastCheck, imagesCheck, linksCheck, seoAudit } from "./operations/site/checks.ts";
 export { referenceScreenshot } from "./operations/site/reference-screenshot.ts";
 export { siteSettingsGet, siteSettingsSet } from "./operations/site/settings.ts";

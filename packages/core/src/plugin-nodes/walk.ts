@@ -4,7 +4,7 @@ import type { PluginNodeRecord, WalkedLayer, WalkOptions } from "../types/plugin
 import { mapInOrder } from "../utils/async.ts";
 import { nodeRecord } from "./node-record.ts";
 
-interface Branch extends WalkedLayer {
+interface Branch extends Omit<WalkedLayer, "depth"> {
   children: Branch[];
 }
 
@@ -60,7 +60,7 @@ export async function pageLayers(
   }
 
   const layers: WalkedLayer[] = [];
-  const visit = (branches: readonly Branch[]) => {
+  const visit = (branches: readonly Branch[], depth: number) => {
     for (const { node, breakpoint, children } of branches) {
       if (layers.length >= FIND_MAX_LAYERS) {
         complete = false;
@@ -71,12 +71,13 @@ export async function pageLayers(
       layers.push({
         node,
         breakpoint,
+        depth,
       });
-      visit(children);
+      visit(children, depth + 1);
     }
   };
 
-  visit(roots);
+  visit(roots, 0);
 
   return {
     layers,

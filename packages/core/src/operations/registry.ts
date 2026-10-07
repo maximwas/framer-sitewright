@@ -53,6 +53,7 @@ import { publishPreview } from "./project/publish-preview.ts";
 import { deploymentsList, publishStatus } from "./project/publish-status.ts";
 import { currentUser } from "./project/user.ts";
 import { redirectsList, redirectsSet } from "./redirects/redirects.ts";
+import { performanceAudit, richTextAudit, siteAudit } from "./site/audits.ts";
 import { a11yAudit, contrastCheck, imagesCheck, linksCheck, seoAudit } from "./site/checks.ts";
 import { referenceScreenshot } from "./site/reference-screenshot.ts";
 import { siteSettingsGet, siteSettingsSet } from "./site/settings.ts";
@@ -144,6 +145,9 @@ export const OPERATIONS: readonly AnyOperation[] = [
   seoAudit,
   imagesCheck,
   a11yAudit,
+  siteAudit,
+  performanceAudit,
+  richTextAudit,
   contrastCheck,
   templateAudit,
   siteSettingsGet,

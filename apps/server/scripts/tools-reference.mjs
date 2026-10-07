@@ -90,7 +90,18 @@ const GROUPS = [
     title: "Checks before handover",
     intro:
       "What looks fine in the editor and still fails on the published site: search titles and descriptions, broken links and anchors, the same photo twice, missing alt text, text that does not stand out from its background, copy left over from a template, and the published site itself.",
-    tools: ["seo_audit", "links_check", "images_check", "a11y_audit", "contrast_check", "template_audit", "live_check"],
+    tools: [
+      "site_audit",
+      "seo_audit",
+      "links_check",
+      "images_check",
+      "a11y_audit",
+      "rich_text_audit",
+      "performance_audit",
+      "contrast_check",
+      "template_audit",
+      "live_check",
+    ],
   },
   {
     id: "assets",
@@ -182,6 +193,8 @@ const GROUPS = [
  */
 const NEEDS = {
   key: [
+    "site_audit",
+    "rich_text_audit",
     "color_token_swap",
     "node_clone",
     "node_screenshot",

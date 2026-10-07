@@ -32,3 +32,22 @@ export const FRAMER_IMAGE_ID = /framerusercontent\.com\/(?:images|assets)\/([A-Z
 
 /** An Unsplash photo id in a URL. */
 export const UNSPLASH_PHOTO_ID = /images\.unsplash\.com\/(?:photo-)?([\w-]+?)(?:\?|$)/;
+
+/** performance_audit: deeper than this, a layer's nesting slows rendering and editing. */
+export const NESTING_MAX = 15;
+
+/** performance_audit: more layers than this on one page's main breakpoint make a heavy page. */
+export const PAGE_LAYERS_MAX = 1500;
+
+/** rich_text_audit: run and block attributes that set type inline instead of through a text style. */
+export const INLINE_TYPE_ATTRIBUTES = [
+  "font",
+  "fontFamily",
+  "fontSize",
+  "fontWeight",
+  "letterSpacing",
+  "lineHeight",
+] as const;
+
+/** site_audit: how many of the defects it lists in full. */
+export const SITE_AUDIT_FINDINGS_MAX = 100;

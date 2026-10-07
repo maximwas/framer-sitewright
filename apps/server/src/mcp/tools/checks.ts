@@ -1,5 +1,15 @@
 import type { McpServer } from "@modelcontextprotocol/server";
-import { a11yAudit, contrastCheck, imagesCheck, linksCheck, seoAudit, templateAudit } from "@sitewright/core";
+import {
+  a11yAudit,
+  contrastCheck,
+  imagesCheck,
+  linksCheck,
+  performanceAudit,
+  richTextAudit,
+  seoAudit,
+  siteAudit,
+  templateAudit,
+} from "@sitewright/core";
 import { liveCheck, publishedSite } from "../../live-check/check.ts";
 import { LiveCheckInputSchema, LiveCheckOutputSchema } from "../../schemas/live-check.ts";
 import type { ToolContext } from "../../types/mcp.ts";
@@ -71,5 +81,23 @@ export function registerCheckTools(server: McpServer, context: ToolContext): voi
     title: "Check a color pair",
     description:
       'Gives the WCAG contrast of a text color on a background — CSS colors or the project\'s tokens by path ("Text/Primary") — with AA, AA-large and AAA verdicts. Check every text/background pair of a palette before proposing it (white on a mid orange usually fails).',
+  });
+  addOperationTool(server, context, siteAudit, {
+    name: "site_audit",
+    title: "Audit the whole site",
+    description:
+      "Runs seo_audit, links_check, images_check, a11y_audit and (unless layout is false) layout_audit on every page in one call, and rolls them up: per check the defects, likely and taste findings and the three pages with the most, the rules hit most often, and every defect in full. The overview before handover; run a check on its own for its likely and taste findings. Needs the project's Server API key.",
+  });
+  addOperationTool(server, context, performanceAudit, {
+    name: "performance_audit",
+    title: "Audit page weight",
+    description:
+      "Measures each page's weight in the editor: layers on the main breakpoint, the deepest nesting and the photos; flags pages over 1,500 layers and layers nested more than 15 deep, with how to flatten them. For what visitors download (page size, broken images), use live_check on the published site.",
+  });
+  addOperationTool(server, context, richTextAudit, {
+    name: "rich_text_audit",
+    title: "Audit inline text formatting",
+    description:
+      "Finds text formatted outside the design system, down to the runs inside a rich text: type set inline (font, size, weight, tracking, line height) instead of through a text style, and text colored with a raw value instead of a token. Each finding names the layer and the fix. Needs the project's Server API key.",
   });
 }
