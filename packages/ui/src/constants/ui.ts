@@ -242,6 +242,7 @@ export const OPERATION_ICONS: Readonly<Record<string, LucideIcon>> = {
   pages: Files,
   pluginData: StickyNote,
   forms: Layers,
+  sections: Layers,
   theme: Code,
   "pages.create": FilePlus,
   "pages.delete": FileMinus,

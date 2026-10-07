@@ -55,6 +55,10 @@ const GROUPS = [
       "fonts_search",
       "fonts_discover",
       "fonts_used",
+      "fonts_pair",
+      "fonts_by_mood",
+      "palette_generate",
+      "type_scale_generate",
     ],
   },
   {
@@ -71,6 +75,7 @@ const GROUPS = [
       "nodes_query",
       "styles_copy",
       "node_clone",
+      "section_build",
       "design_apply",
       "effects_set",
       "text_replace",
@@ -170,6 +175,8 @@ const GROUPS = [
       "code_file_rename",
       "code_file_check",
       "theme_toggle_add",
+      "component_templates",
+      "component_template_insert",
       "code_file_write",
       "code_file_delete",
     ],
@@ -192,7 +199,7 @@ const GROUPS = [
     id: "knowledge",
     title: "Knowledge",
     intro: "The design guide built into Sitewright, and Framer's own DSL reference and guides.",
-    tools: ["design_guide", "framer_docs"],
+    tools: ["design_guide", "framer_docs", "framer_read"],
   },
 ];
 
@@ -203,6 +210,8 @@ const GROUPS = [
  */
 const NEEDS = {
   key: [
+    "section_build",
+    "framer_read",
     "cms_seo_collection",
     "cms_interlink",
     "blog_add",
@@ -255,6 +264,10 @@ const NEEDS = {
     "svg_add",
   ],
   local: [
+    "palette_generate",
+    "fonts_pair",
+    "fonts_by_mood",
+    "component_templates",
     "page_export_html",
     "framer_status",
     "framer_connect",

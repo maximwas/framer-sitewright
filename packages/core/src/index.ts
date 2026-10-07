@@ -23,10 +23,12 @@ export {
   MAX_MESSAGE_BYTES,
   NO_RECONNECT_CODES,
 } from "./constants/bridge.ts";
+export { CODE_TEMPLATES } from "./constants/code-templates.ts";
 export { ACTIVITY_VIEWS, PREVIEW_IMAGE_ORIGINS } from "./constants/history.ts";
 export { MOTION_PRESET_NOTES, MOTION_PRESETS } from "./constants/motion.ts";
 export { KEY_SETUP_HINT, PRODUCT, SUPPORT_LINKS } from "./constants/product.ts";
 export { SETTING_ITEMS } from "./constants/settings.ts";
+export { FONT_MOODS, FONT_PAIRINGS, FONTS_BY_MOOD, TYPE_SCALE_RATIOS } from "./constants/type-scale.ts";
 export { PLUGIN_CHANGED_EVENT, WEB_SOCKET_PATH, WebCloseCode } from "./constants/web.ts";
 export { findSection, searchSections, sliceContent, splitSections } from "./docs/sections.ts";
 export { OperationError } from "./errors.ts";
@@ -76,6 +78,7 @@ export { componentMakeLocal } from "./operations/components/make-local.ts";
 export { needsAgent, runOperation } from "./operations/define.ts";
 export { designApply } from "./operations/design/apply.ts";
 export { blogAdd, formAdd, themeToggleAdd } from "./operations/design/builders.ts";
+export { codeTemplateInsert, framerRead, sectionBuild, typeScaleGenerate } from "./operations/design/generators.ts";
 export { editorNavigate, editorSelect, editorZoom, selectionWait } from "./operations/editor/editor.ts";
 export { exportNode } from "./operations/export/export-node.ts";
 export { fontsInLibrary } from "./operations/fonts/in-library.ts";
@@ -176,5 +179,7 @@ export type { SiteFinding } from "./types/site-checks.ts";
 export type { RevealResult, WebClientMessage } from "./types/web.ts";
 export { errorMessage } from "./utils/errors.ts";
 export { nodeNameOf } from "./utils/node-name.ts";
+export { PALETTE_SCHEMES, paletteOf } from "./utils/palette.ts";
 export { setupCommands } from "./utils/setup-commands.ts";
 export { countOf } from "./utils/text.ts";
+export { typeScale } from "./utils/type-scale.ts";

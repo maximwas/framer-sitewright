@@ -24,6 +24,7 @@ import { componentInstances } from "./components/instances.ts";
 import { componentMakeLocal } from "./components/make-local.ts";
 import { designApply } from "./design/apply.ts";
 import { blogAdd, formAdd, themeToggleAdd } from "./design/builders.ts";
+import { codeTemplateInsert, framerRead, sectionBuild, typeScaleGenerate } from "./design/generators.ts";
 import { editorNavigate, editorSelect, editorZoom, selectionWait } from "./editor/editor.ts";
 import { exportNode } from "./export/export-node.ts";
 import { fontsInLibrary } from "./fonts/in-library.ts";
@@ -157,6 +158,10 @@ export const OPERATIONS: readonly AnyOperation[] = [
   blogAdd,
   formAdd,
   themeToggleAdd,
+  typeScaleGenerate,
+  framerRead,
+  sectionBuild,
+  codeTemplateInsert,
   contrastCheck,
   templateAudit,
   siteSettingsGet,

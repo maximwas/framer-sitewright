@@ -13,6 +13,7 @@ import { registerDocsTools } from "./tools/docs.ts";
 import { registerEditorTools } from "./tools/editor.ts";
 import { registerExportTools } from "./tools/export.ts";
 import { registerFontTools } from "./tools/fonts.ts";
+import { registerGeneratorTools } from "./tools/generators.ts";
 import { registerLinkStyleTools } from "./tools/link-styles.ts";
 import { registerLocalizationTools } from "./tools/localization.ts";
 import { registerMarketplaceTools } from "./tools/marketplace.ts";
@@ -41,6 +42,7 @@ export function createMcpServer(context: ToolContext, version: string): McpServe
   registerNodeTools(server, context);
   registerEditorTools(server, context);
   registerExportTools(server, context);
+  registerGeneratorTools(server, context);
   registerDesignTools(server, context);
   registerAssetTools(server, context);
   registerComponentTools(server, context);
