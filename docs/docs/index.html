@@ -1796,7 +1796,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="code" data-group>
-  <h3>Code (opt-in) <span>6</span></h3>
+  <h3>Code (opt-in) <span>10</span></h3>
   <p class="group-intro">Custom HTML and code components. The agent uses them only when you ask for code or the canvas cannot do the task, and the writes work only while you allow them.</p>
   <article class="tool" id="custom_code_get" data-tool="custom_code_get Read custom code shows the site's custom html in each location (head start and end, body start and end).">
     <header>
@@ -1846,6 +1846,68 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
       <tr><th scope="row"><code>name</code></th><td><code class="type">string</code></td><td>File name or path, e.g. Ticker.tsx. <span class="req">required</span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="code_files_read" data-tool="code_files_read Read several code files returns the source of up to 25 code files in one call; names not found are listed in missing.">
+    <header>
+      <h4><a href="#code_files_read">code_files_read</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Read several code files</p>
+    <p>Returns the source of up to 25 code files in one call; names not found are listed in missing.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>names</code></th><td><code class="type">string[]</code></td><td>File names or paths. <span class="req">required</span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="code_file_patch" data-tool="code_file_patch Edit part of a code file changes a code file by find-and-replace edits, in order, so only the changed snippets travel: each find must be in the file exactly once (or pass all), or nothing changes. returns the typescript problems of the new version. use when the user asks for code, or when the canvas (design_apply), framer's own components and marketplace components cannot give what the task needs: a value or state the canvas has no node for (computed, from an api, random, shared by several components), input read every frame (cursor, drag, frames stepped by scroll), or a fix a component's controls cannot make. name which one to the user before writing code. works only while the user has code components switched on in the plugin.">
+    <header>
+      <h4><a href="#code_file_patch">code_file_patch</a></h4>
+      <span class="badge destructive">Destructive</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Edit part of a code file</p>
+    <p>Changes a code file by find-and-replace edits, in order, so only the changed snippets travel: each find must be in the file exactly once (or pass all), or nothing changes. Returns the TypeScript problems of the new version. Use when the user asks for code, or when the canvas (<a href="#design_apply"><code>design_apply</code></a>), Framer's own components and Marketplace components cannot give what the task needs: a value or state the canvas has no node for (computed, from an API, random, shared by several components), input read every frame (cursor, drag, frames stepped by scroll), or a fix a component's controls cannot make. Name which one to the user before writing code. Works only while the user has Code components switched on in the plugin.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>name</code></th><td><code class="type">string</code></td><td>File name or path. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>edits</code></th><td><code class="type">object[]</code></td><td> <span class="req">required</span><ul class="fields"><li><code>find</code> <code class="type">string</code> — Text in the file, exactly, with enough around it to be found once.</li><li><code>replace</code> <code class="type">string</code></li><li><code>all</code> <code class="type">boolean</code> <span class="opt">optional</span> — Replace every occurrence instead of exactly one.</li></ul></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="code_file_rename" data-tool="code_file_rename Rename a code file renames a code file. its components and overrides keep working on the canvas. works only while the user has code components switched on in the plugin.">
+    <header>
+      <h4><a href="#code_file_rename">code_file_rename</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Rename a code file</p>
+    <p>Renames a code file. Its components and overrides keep working on the canvas. Works only while the user has Code components switched on in the plugin.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>name</code></th><td><code class="type">string</code></td><td>File name or path. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>newName</code></th><td><code class="type">string</code></td><td>The new name, e.g. Marquee.tsx. <span class="req">required</span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="code_file_check" data-tool="code_file_check Check a code file returns a code file's problems as framer compiles it: typescript errors with line and column (and lint warnings while framer still reports them). run it after writing code, before telling the user it works.">
+    <header>
+      <h4><a href="#code_file_check">code_file_check</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Check a code file</p>
+    <p>Returns a code file's problems as Framer compiles it: TypeScript errors with line and column (and lint warnings while Framer still reports them). Run it after writing code, before telling the user it works.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>name</code></th><td><code class="type">string</code></td><td>File name or path. <span class="req">required</span></td></tr>
       </tbody>
     </table></div>
   </article>

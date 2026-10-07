@@ -9,6 +9,7 @@ import { cmsCollectionCreate, cmsCollectionDelete, cmsCollectionsList } from "./
 import { cmsFieldsSet } from "./cms/fields.ts";
 import { cmsItemsDelete, cmsItemsList, cmsItemsOrder, cmsItemsUpsert } from "./cms/items.ts";
 import { codeFileDelete, codeFileRead, codeFilesList, codeFileWrite } from "./code/code-files.ts";
+import { codeFileCheck, codeFilePatch, codeFileRename, codeFilesRead } from "./code/code-tools.ts";
 import { customCodeGet, customCodeSet } from "./code/custom-code.ts";
 import { colorTokensDelete } from "./color-tokens/delete.ts";
 import { colorTokensList } from "./color-tokens/list.ts";
@@ -130,6 +131,10 @@ export const OPERATIONS: readonly AnyOperation[] = [
   colorTokensSwap,
   stylesCopy,
   nodesClone,
+  codeFilesRead,
+  codeFilePatch,
+  codeFileRename,
+  codeFileCheck,
   textReplace,
   redirectsList,
   redirectsSet,

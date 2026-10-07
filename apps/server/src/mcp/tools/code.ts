@@ -1,8 +1,12 @@
 import type { McpServer } from "@modelcontextprotocol/server";
 import {
+  codeFileCheck,
   codeFileDelete,
+  codeFilePatch,
   codeFileRead,
+  codeFileRename,
   codeFilesList,
+  codeFilesRead,
   codeFileWrite,
   customCodeGet,
   customCodeSet,
@@ -44,6 +48,34 @@ export function registerCodeTools(server: McpServer, context: ToolContext): void
     name: "code_file_read",
     title: "Read a code file",
     description: "Returns a code file's source.",
+  });
+
+  addOperationTool(server, context, codeFilesRead, {
+    name: "code_files_read",
+    title: "Read several code files",
+    description: "Returns the source of up to 25 code files in one call; names not found are listed in missing.",
+  });
+
+  addOperationTool(server, context, codeFilePatch, {
+    name: "code_file_patch",
+    title: "Edit part of a code file",
+    description: `Changes a code file by find-and-replace edits, in order, so only the changed snippets travel: each find must be in the file exactly once (or pass all), or nothing changes. Returns the TypeScript problems of the new version. ${CODE_TOOLS_RULE} Works only while the user has Code components switched on in the plugin.`,
+    before: allowed("codeComponents"),
+  });
+
+  addOperationTool(server, context, codeFileRename, {
+    name: "code_file_rename",
+    title: "Rename a code file",
+    description:
+      "Renames a code file. Its components and overrides keep working on the canvas. Works only while the user has Code components switched on in the plugin.",
+    before: allowed("codeComponents"),
+  });
+
+  addOperationTool(server, context, codeFileCheck, {
+    name: "code_file_check",
+    title: "Check a code file",
+    description:
+      "Returns a code file's problems as Framer compiles it: TypeScript errors with line and column (and lint warnings while Framer still reports them). Run it after writing code, before telling the user it works.",
   });
 
   addOperationTool(server, context, codeFileWrite, {

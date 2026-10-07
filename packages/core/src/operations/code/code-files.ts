@@ -5,7 +5,7 @@ import type { CodeFileHandle } from "../../types/framer-port.ts";
 import { countOf } from "../../utils/text.ts";
 import { defineOperation } from "../define.ts";
 
-function summaryOf(file: CodeFileHandle) {
+export function summaryOf(file: CodeFileHandle) {
   return {
     id: file.id,
     name: file.name,
@@ -139,6 +139,6 @@ export const codeFileDelete = defineOperation({
   },
 });
 
-function matches(file: CodeFileHandle, name: string): boolean {
+export function matches(file: CodeFileHandle, name: string): boolean {
   return file.name === name || file.path === name;
 }

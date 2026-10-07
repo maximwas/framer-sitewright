@@ -59,6 +59,7 @@ export {
 export { cmsFieldsSet } from "./operations/cms/fields.ts";
 export { cmsItemsDelete, cmsItemsList, cmsItemsOrder, cmsItemsUpsert } from "./operations/cms/items.ts";
 export { codeFileDelete, codeFileRead, codeFilesList, codeFileWrite } from "./operations/code/code-files.ts";
+export { codeFileCheck, codeFilePatch, codeFileRename, codeFilesRead } from "./operations/code/code-tools.ts";
 export { customCodeGet, customCodeSet } from "./operations/code/custom-code.ts";
 export { colorTokensDelete } from "./operations/color-tokens/delete.ts";
 export { colorTokensList } from "./operations/color-tokens/list.ts";

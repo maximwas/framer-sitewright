@@ -53,7 +53,8 @@ export type PluginPermission =
   | "setRedirectOrder"
   | "publish"
   | "setPluginData"
-  | "Node.setPluginData";
+  | "Node.setPluginData"
+  | "CodeFile.rename";
 
 /** A unit of work with typed input and output that runs wherever the `framer` object lives. */
 export interface Operation<I extends z.ZodObject, O extends z.ZodObject> {

@@ -383,6 +383,18 @@ export interface CodeFileHandle {
   readonly exports: readonly { readonly name: string; readonly type: string }[];
   setFileContent(code: string): Promise<CodeFileHandle>;
   remove(): Promise<void>;
+  rename?(newName: string): Promise<CodeFileHandle>;
+  /** TypeScript's diagnostics for the file as Framer compiles it. */
+  typecheck?(): Promise<readonly CodeDiagnosticData[]>;
+  /** Deprecated in framer-api 5.1 (Framer removed lintCode); kept while it still answers. */
+  lint?(rules: Record<string, "error" | "warning">): Promise<readonly CodeDiagnosticData[]>;
+}
+
+export interface CodeDiagnosticData {
+  readonly message: string;
+  readonly severity?: string;
+  readonly category?: unknown;
+  readonly span?: { readonly start: { readonly line: number; readonly character: number } };
 }
 
 /** What publish() reports: the new deployment (its status right away, optimization goes on) and where it is live. */
