@@ -122,7 +122,22 @@ sitewright --help
 - **Localization:** `locales_list`, `locale_add` (a new language, as a draft), `localization_get` (what still needs
   translating), `localization_set`.
 - **Code** (off until you allow it): `custom_code_get`, `custom_code_set`, `code_files_list`, `code_file_read`,
-  `code_file_write`, `code_file_delete`.
+  `code_files_read`, `code_file_write`, `code_file_patch` (find-and-replace edits), `code_file_rename`,
+  `code_file_check` (TypeScript errors), `code_file_delete`, `component_templates` and `component_template_insert`
+  (accordion, tabs, countdown, marquee, scroll progress), `theme_toggle_add` (a light and dark switch).
+- **Find and change in bulk:** `nodes_query` (layers by attribute conditions), `component_instances`, `fonts_used`,
+  `color_token_swap` (one token for another, site-wide), `styles_copy`, `node_clone` (a copy that follows no
+  component).
+- **The editor** (through the plugin): `nodes_select`, `node_show`, `nodes_zoom`, `selection_wait`,
+  `plugin_data_get`, `plugin_data_set`, `framer_user`, `breakpoints_suggest`.
+- **Audits:** `site_audit` (every check on every page, rolled up), `performance_audit` (page weight and nesting),
+  `rich_text_audit` (text formatted outside the styles).
+- **Export to files:** `node_export_html`, `node_export_css`, `page_export_react`, `page_export_html` (the published
+  page), `components_export` (component modules).
+- **CMS and builders:** `cms_seo_collection`, `cms_interlink` (related posts), `blog_add`, `form_add` (native forms),
+  `section_build` (hero, call to action, features in the site's styles).
+- **Generators:** `palette_generate` (with Coolors and Realtime Colors links), `type_scale_generate`, `fonts_pair`,
+  `fonts_by_mood`, `framer_read` (Framer's own readProject queries).
 - **Journal:** `activity_list`, `activity_get`, `activity_checkpoint`, `activity_undo`, `activity_redo`,
   `activity_restore`, `activity_open`.
 - **Connection and publishing:** `framer_status`, `framer_connect`, `project_publish` (only when you ask).
