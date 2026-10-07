@@ -30,6 +30,7 @@ export { SETTING_ITEMS } from "./constants/settings.ts";
 export { PLUGIN_CHANGED_EVENT, WEB_SOCKET_PATH, WebCloseCode } from "./constants/web.ts";
 export { findSection, searchSections, sliceContent, splitSections } from "./docs/sections.ts";
 export { OperationError } from "./errors.ts";
+export { exportHtml, exportReact } from "./export/export.ts";
 export { requireAgent, requireScreenshot } from "./framer/runtime.ts";
 export {
   aliasesOf,
@@ -74,6 +75,7 @@ export { componentMakeLocal } from "./operations/components/make-local.ts";
 export { needsAgent, runOperation } from "./operations/define.ts";
 export { designApply } from "./operations/design/apply.ts";
 export { editorNavigate, editorSelect, editorZoom, selectionWait } from "./operations/editor/editor.ts";
+export { exportNode } from "./operations/export/export-node.ts";
 export { fontsInLibrary } from "./operations/fonts/in-library.ts";
 export { fontsSearch } from "./operations/fonts/search.ts";
 export { fontsUsed } from "./operations/fonts/used.ts";

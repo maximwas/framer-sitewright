@@ -70,6 +70,7 @@ export const OPERATION_LABELS: Readonly<Record<string, string>> = {
   "site.audit": "Site audit",
   "site.performance": "Performance audit",
   "site.richText": "Rich text audit",
+  "export.node": "Export",
   "text.replace": "Replace text",
   "redirects.list": "Redirects",
   "redirects.set": "Redirects",

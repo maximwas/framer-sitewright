@@ -1415,7 +1415,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="assets" data-group>
-  <h3>Components and assets <span>13</span></h3>
+  <h3>Components and assets <span>18</span></h3>
   <p class="group-intro">Components and their controls, components from the Marketplace, icon sets, stock photos, your own images, files and SVG.</p>
   <article class="tool" id="components_read" data-tool="components_read Read components lists the project's components with their exact controls ($control__variant options, $control__&lt;name&gt; for each variable) before you place or change instances. control names are the ones listed here, e.g. $control__showicon; do not derive them from variable names. code components are listed in codecomponents and framer's own (video, google maps, embed, slideshow, carousel, countdown, cookie banner, search…) in framer: place any of them with +componentinstancenode component=&quot;&lt;id&gt;&quot;, and pass its id in ids to read its controls first. needs the project's server api key (framer_status shows whether it is set).">
     <header>
@@ -1629,6 +1629,88 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <tr><th scope="row"><code>name</code></th><td><code class="type">string</code></td><td></td></tr>
       <tr><th scope="row"><code>parentId</code></th><td><code class="type">string</code></td><td>Layer to put the vector into. Without it Framer puts it into the layer selected in the editor.</td></tr>
       <tr><th scope="row"><code>index</code></th><td><code class="type">number</code></td><td>Position among parentId's children; last by default.</td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="node_export_html" data-tool="node_export_html Export a layer as HTML writes a layer and everything in it (or a page's desktop breakpoint) as semantic html with a stylesheet: one class per layer, stacks and grids as flex and grid, tokens as css variables with their dark values, text styles as fonts, headings with their tags. with dir it saves a standalone .html file; without, it returns html and css. a starting point to hand to a developer, not a pixel copy: effects, variants and code components are left out.">
+    <header>
+      <h4><a href="#node_export_html">node_export_html</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Export a layer as HTML</p>
+    <p>Writes a layer and everything in it (or a page's desktop breakpoint) as semantic HTML with a stylesheet: one class per layer, stacks and grids as flex and grid, tokens as CSS variables with their dark values, text styles as fonts, headings with their tags. With dir it saves a standalone .html file; without, it returns html and css. A starting point to hand to a developer, not a pixel copy: effects, variants and code components are left out.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>The layer; omit for the page's desktop breakpoint.</td></tr>
+      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td> <span class="def">default <code>&quot;/&quot;</code></span></td></tr>
+      <tr><th scope="row"><code>dir</code></th><td><code class="type">string</code></td><td>A folder to write the files to (relative to where Sitewright runs, or absolute); omit to get the text back.</td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="node_export_css" data-tool="node_export_css Export a layer's CSS returns one layer's own look as css (layout, fill, border, radius, size, its text style as a font) with the project's tokens as css variables: what a developer needs to match it in code.">
+    <header>
+      <h4><a href="#node_export_css">node_export_css</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Export a layer's CSS</p>
+    <p>Returns one layer's own look as CSS (layout, fill, border, radius, size, its text style as a font) with the project's tokens as CSS variables: what a developer needs to match it in code.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td> <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td> <span class="def">default <code>&quot;/&quot;</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="page_export_react" data-tool="page_export_react Export a page as React writes a page's desktop breakpoint (or one layer) as a react component with inline styles, tokens kept as css variables listed at the top. with dir it saves a .tsx file; without, it returns the code. effects, variants and code components are left out.">
+    <header>
+      <h4><a href="#page_export_react">page_export_react</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Export a page as React</p>
+    <p>Writes a page's desktop breakpoint (or one layer) as a React component with inline styles, tokens kept as CSS variables listed at the top. With dir it saves a .tsx file; without, it returns the code. Effects, variants and code components are left out.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>One layer instead of the whole page.</td></tr>
+      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td> <span class="def">default <code>&quot;/&quot;</code></span></td></tr>
+      <tr><th scope="row"><code>dir</code></th><td><code class="type">string</code></td><td>A folder to write the files to (relative to where Sitewright runs, or absolute); omit to get the text back.</td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="page_export_html" data-tool="page_export_html Save a published page's HTML downloads a page of the published site as visitors get it (framer's own rendered html, with its scripts and asset links) and saves it to a folder: a snapshot to archive, diff or hand over. the page must be published; the editor's unpublished changes are not in it.">
+    <header>
+      <h4><a href="#page_export_html">page_export_html</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
+    </header>
+    <p class="tool-title">Save a published page's HTML</p>
+    <p>Downloads a page of the published site as visitors get it (Framer's own rendered HTML, with its scripts and asset links) and saves it to a folder: a snapshot to archive, diff or hand over. The page must be published; the editor's unpublished changes are not in it.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td> <span class="def">default <code>&quot;/&quot;</code></span></td></tr>
+      <tr><th scope="row"><code>dir</code></th><td><code class="type">string</code></td><td>A folder to write the files to (relative to where Sitewright runs, or absolute); omit to get the text back.</td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="components_export" data-tool="components_export Export component code downloads the compiled es modules of the project's canvas components (the framer.com/m/… code framer serves for each) into a folder, one .js per component: they import react, react-dom, framer and framer-motion. pass names for some; omit for all.">
+    <header>
+      <h4><a href="#components_export">components_export</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Export component code</p>
+    <p>Downloads the compiled ES modules of the project's canvas components (the framer.com/m/… code Framer serves for each) into a folder, one .js per component: they import react, react-dom, framer and framer-motion. Pass names for some; omit for all.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>names</code></th><td><code class="type">string[]</code></td><td></td></tr>
+      <tr><th scope="row"><code>dir</code></th><td><code class="type">string</code></td><td>A folder to write the files to (relative to where Sitewright runs, or absolute); omit to get the text back.</td></tr>
       </tbody>
     </table></div>
   </article>

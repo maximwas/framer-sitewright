@@ -57,3 +57,7 @@ export const QUERY_CONDITIONS_MAX = 10;
  */
 export const SELECTION_WAIT_MAX_SECONDS = 25;
 export const SELECTION_WAIT_DEFAULT_SECONDS = 20;
+
+/** How deep the exporters read a layer's tree. */
+export const EXPORT_DEPTH_MAX = 12;
+export const EXPORT_DEPTH_DEFAULT = 10;
