@@ -1,5 +1,6 @@
 import { VIRTUAL_TEXT_ID } from "../constants/history.ts";
 import { tokenRef } from "../dsl/commands.ts";
+import { attributesOf } from "../history/dsl/serialized.ts";
 import type { SerializedNode } from "../types/dsl.ts";
 
 /**
@@ -12,11 +13,10 @@ export function tokenSwaps(nodes: readonly SerializedNode[], from: string, to: s
   const insideText = new Set<string>();
 
   for (const node of nodes) {
+    // serialize() keeps the values under attributes; effects and shadows come flattened to dotted keys.
     const attributes = Object.fromEntries(
-      Object.entries(node).flatMap(([key, value]) =>
-        key === "id" || typeof value !== "string" || !value.includes(before)
-          ? []
-          : [[key, value.replaceAll(before, after)]],
+      Object.entries(attributesOf(node)).flatMap(([key, value]) =>
+        typeof value !== "string" || !value.includes(before) ? [] : [[key, value.replaceAll(before, after)]],
       ),
     );
 

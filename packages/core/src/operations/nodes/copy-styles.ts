@@ -2,6 +2,7 @@ import * as z from "zod";
 import { STYLE_CATEGORIES, STYLE_CATEGORY_NAMES, STYLE_TARGETS_MAX } from "../../constants/copy-styles.ts";
 import { joinCommands, setNode } from "../../dsl/commands.ts";
 import { OperationError } from "../../errors.ts";
+import { attributesOf, parseSerializedNode } from "../../history/dsl/serialized.ts";
 import type { DslValue } from "../../types/dsl.ts";
 import { countOf } from "../../utils/text.ts";
 import { defineOperation } from "../define.ts";
@@ -34,14 +35,15 @@ export const stylesCopy = defineOperation({
     message: z.string(),
   }),
   async run(context, { sourceId, targetIds, categories, pagePath }) {
-    const source = await readNodeTree(context.runtime, sourceId, 0, pagePath);
+    const source = parseSerializedNode(await readNodeTree(context.runtime, sourceId, 0, pagePath));
 
-    if (source === null || source === undefined) {
+    if (source === null) {
       throw new OperationError("NOT_FOUND", `No layer "${sourceId}" on ${pagePath}.`, "Find it with nodes_find.");
     }
 
     const names = new Set(categories.flatMap((category) => STYLE_CATEGORIES[category]));
-    const record = source as Record<string, unknown>;
+    // serialize() keeps the values under attributes.
+    const record: Readonly<Record<string, unknown>> = attributesOf(source);
     const attributes = Object.fromEntries(
       [...names].flatMap((name) => {
         const value = record[name];

@@ -9,9 +9,11 @@ it("copies only the attributes of the chosen groups that the source has, to ever
       card: {
         type: "FrameNode",
         id: "card",
-        fill: "var(--token-surface)",
-        radius: "16px",
-        width: "320px",
+        attributes: {
+          fill: "var(--token-surface)",
+          radius: "16px",
+          width: "320px",
+        },
       },
     },
   });

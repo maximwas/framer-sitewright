@@ -229,7 +229,8 @@ export const richTextAudit = defineOperation({
       );
 
       for (const node of texts) {
-        const record = node as Record<string, unknown>;
+        // serialize() keeps the values under attributes.
+        const record = node.attributes ?? {};
         const inline = INLINE_TYPE_ATTRIBUTES.filter((name) => record[name] !== undefined && record[name] !== null);
         const color = record["textColor"];
 
