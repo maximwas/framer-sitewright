@@ -31,22 +31,25 @@ export class WindowLink {
   #info: Promise<PluginInfo> | null = null;
   #lastAnswer = 0;
   #ticker: ReturnType<typeof setInterval> | undefined;
+  #themeObserver: MutationObserver | null = null;
+  readonly #onMessageEvent = (event: Event) => this.#onMessage(event as MessageEvent);
+  readonly #sayHello = () => void this.#hello();
 
   constructor(options: WindowLinkOptions) {
     this.#options = options;
     this.#origins = options.origins ?? localAppOrigins(LOCAL_APP_PORT);
     this.#events = options.events ?? window;
-    this.#events.addEventListener("message", (event) => this.#onMessage(event as MessageEvent));
+    this.#events.addEventListener("message", this.#onMessageEvent);
     // Hidden or shown again, the window hears it at once: a hidden tab's timers run about once a minute.
-    globalThis.document?.addEventListener("visibilitychange", () => void this.#hello());
+    globalThis.document?.addEventListener("visibilitychange", this.#sayHello);
 
     // Framer marks its theme on the plugin's page; the window follows a switch at once.
     if (globalThis.document !== undefined && typeof MutationObserver === "function") {
-      const observer = new MutationObserver(() => void this.#hello());
+      this.#themeObserver = new MutationObserver(this.#sayHello);
 
       for (const element of [globalThis.document.documentElement, globalThis.document.body]) {
         if (element !== null) {
-          observer.observe(element, { attributeFilter: ["data-framer-theme"] });
+          this.#themeObserver.observe(element, { attributeFilter: ["data-framer-theme"] });
         }
       }
     }
@@ -81,9 +84,13 @@ export class WindowLink {
     this.#post(relayMessage({ kind: "reconnect" }));
   }
 
-  /** Stops saying hello; for tests. */
+  /** Stops saying hello and listening: the window's messages, the page's visibility and the editor theme. */
   dispose(): void {
     clearInterval(this.#ticker);
+    this.#events.removeEventListener("message", this.#onMessageEvent);
+    globalThis.document?.removeEventListener("visibilitychange", this.#sayHello);
+    this.#themeObserver?.disconnect();
+    this.#themeObserver = null;
   }
 
   #link(target: Window, origin: string): void {
