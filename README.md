@@ -113,10 +113,13 @@ pnpm docs:tools          # rewrite the tool reference of the docs page from the 
 
 ### Releasing
 
-Set the same version in `apps/server`, `apps/plugin` and `apps/web`, commit, then push a tag:
+`main` takes changes only through pull requests, with the `check` job of CI passing; direct pushes and force pushes
+are blocked. Set the same version in `apps/server`, `apps/plugin` and `apps/web` on a branch, open a pull request and
+merge it, then tag the merge commit:
 
 ```bash
-git tag v1.2.3 && git push --follow-tags
+git switch main && git pull
+git tag v1.2.3 && git push origin v1.2.3
 ```
 
 The `Release` workflow checks that the tag matches the versions, runs the checks, publishes `sitewright` to npm
