@@ -186,3 +186,58 @@ it("hears only its own window at its exact origin, and passes the server's event
     },
   ]);
 });
+
+// Framer's review (08.10.2026): dispose() stopped only the hello timer, so the message and visibilitychange listeners
+// and the theme observer stayed active after the link was gone.
+it("stops hearing the window, the page's visibility and the editor theme once disposed", async () => {
+  const page = Object.assign(new EventTarget(), {
+    hidden: false,
+    documentElement: { dataset: {} },
+    body: { dataset: {} },
+  });
+  const disconnect = vi.fn();
+
+  vi.stubGlobal("document", page);
+  vi.stubGlobal(
+    "MutationObserver",
+    class {
+      observe() {}
+
+      disconnect = disconnect;
+    },
+  );
+  onTestFinished(() => {
+    vi.unstubAllGlobals();
+  });
+
+  const { link, posted, fromWindow } = linkedPlugin();
+
+  link.show();
+  await vi.waitFor(() => expect(posted.length).toBeGreaterThan(0));
+  fromWindow(
+    relayMessage({
+      kind: "status",
+      state: "connected",
+      closeCode: null,
+    }),
+  );
+  expect(link.status.getState()).toEqual({ state: "connected" });
+
+  link.dispose();
+  expect(disconnect).toHaveBeenCalled();
+
+  fromWindow(
+    relayMessage({
+      kind: "status",
+      state: "retrying",
+      closeCode: null,
+    }),
+  );
+  expect(link.status.getState()).toEqual({ state: "connected" });
+
+  const before = posted.length;
+
+  page.dispatchEvent(new Event("visibilitychange"));
+  await new Promise((resolve) => setTimeout(resolve, 20));
+  expect(posted.length).toBe(before);
+});
