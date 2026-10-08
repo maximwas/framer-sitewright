@@ -70,7 +70,6 @@ export const OPERATION_LABELS: Readonly<Record<string, string>> = {
   "site.audit": "Site audit",
   "site.performance": "Performance audit",
   "site.richText": "Rich text audit",
-  "export.node": "Export",
   "cms.seoCollection": "SEO collection",
   "cms.interlink": "Posts interlinked",
   "cms.blogAdd": "Blog added",

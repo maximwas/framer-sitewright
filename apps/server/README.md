@@ -130,8 +130,6 @@ sitewright --help
   `plugin_data_get`, `plugin_data_set`, `framer_user`, `breakpoints_suggest`.
 - **Audits:** `site_audit` (every check on every page, rolled up), `performance_audit` (page weight and nesting),
   `rich_text_audit` (text formatted outside the styles).
-- **Export to files:** `node_export_html`, `node_export_css`, `page_export_react`, `page_export_html` (the published
-  page), `components_export` (component modules).
 - **CMS:** `cms_seo_collection`, `cms_interlink` (related posts), `blog_add`.
 - **Framer's own queries:** `framer_read` (readProject).
 - **Journal:** `activity_list`, `activity_get`, `activity_checkpoint`, `activity_undo`, `activity_redo`,

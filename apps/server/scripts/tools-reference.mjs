@@ -120,11 +120,6 @@ const GROUPS = [
       "image_upload",
       "file_upload",
       "svg_add",
-      "node_export_html",
-      "node_export_css",
-      "page_export_react",
-      "page_export_html",
-      "components_export",
     ],
   },
   {
@@ -204,7 +199,6 @@ const NEEDS = {
     "cms_seo_collection",
     "cms_interlink",
     "blog_add",
-    "components_export",
     "site_audit",
     "rich_text_audit",
     "color_token_swap",
@@ -251,7 +245,6 @@ const NEEDS = {
     "svg_add",
   ],
   local: [
-    "page_export_html",
     "framer_status",
     "framer_connect",
     "design_guide",

@@ -24,7 +24,6 @@ import { componentMakeLocal } from "./components/make-local.ts";
 import { designApply } from "./design/apply.ts";
 import { blogAdd, themeToggleAdd } from "./design/builders.ts";
 import { editorNavigate, editorSelect, editorZoom, selectionWait } from "./editor/editor.ts";
-import { exportNode } from "./export/export-node.ts";
 import { fontsInLibrary } from "./fonts/in-library.ts";
 import { fontsSearch } from "./fonts/search.ts";
 import { fontsUsed } from "./fonts/used.ts";
@@ -150,7 +149,6 @@ export const OPERATIONS: readonly AnyOperation[] = [
   siteAudit,
   performanceAudit,
   richTextAudit,
-  exportNode,
   cmsSeoCollection,
   cmsInterlink,
   blogAdd,
