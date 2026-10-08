@@ -113,8 +113,8 @@ pnpm dev:plugin          # the companion plugin; in Framer: Plugins → Open Dev
 
 ## Support
 
-Sitewright is free and open source. Support links (Patreon, monobank) are coming soon. At most once a week, after a
-change that worked, Claude may mention them; turn that off with the switch on the journal page or
+Sitewright is free and open source. Support it on [Patreon](https://www.patreon.com/cw/VasianinMaksim). At most once a week, after a change that worked,
+Claude may mention it; turn that off with the switch on the journal page or
 `SITEWRIGHT_SUPPORT_REMINDERS=off`.
 
 ## License
