@@ -1,7 +1,9 @@
 import {
+  AGENT_ONLY_OPERATION_NAMES,
+  agentRequiredError,
   BridgeError,
   type FramerRuntime,
-  findOperation,
+  findPluginOperation,
   OperationError,
   runOperation,
   withJournal,
@@ -9,8 +11,9 @@ import {
 import type { PermissionCheck } from "../types/link.ts";
 
 /**
- * Runs a registry operation by name on the plugin's runtime, once Framer allows the methods it calls. With `journal`,
- * it records what the operation changed and resolves with `{ output, journal }`: the server keeps the journal.
+ * Runs an operation of the plugin's registry by name on the plugin's runtime, once Framer allows the methods it calls.
+ * With `journal`, it records what the operation changed and resolves with `{ output, journal }`: the server keeps the
+ * journal. The operations that need framer.agent outright are not bundled here and answer as they do without a key.
  */
 export async function runInPlugin(
   runtime: FramerRuntime,
@@ -19,9 +22,13 @@ export async function runInPlugin(
   input: unknown,
   { journal }: { journal: boolean },
 ): Promise<unknown> {
-  const operation = findOperation(name);
+  const operation = findPluginOperation(name);
 
   if (operation === undefined) {
+    if (AGENT_ONLY_OPERATION_NAMES.includes(name)) {
+      throw agentRequiredError();
+    }
+
     throw new BridgeError("UNKNOWN_OP", `Unknown operation: ${name}`);
   }
 

@@ -25,12 +25,13 @@ export {
 } from "./constants/bridge.ts";
 export { ACTIVITY_VIEWS, PREVIEW_IMAGE_ORIGINS } from "./constants/history.ts";
 export { MOTION_PRESET_NOTES, MOTION_PRESETS } from "./constants/motion.ts";
+export { AGENT_ONLY_OPERATION_NAMES } from "./constants/operations.ts";
 export { KEY_SETUP_HINT, PRODUCT, SUPPORT_LINKS } from "./constants/product.ts";
 export { SETTING_ITEMS } from "./constants/settings.ts";
 export { PLUGIN_CHANGED_EVENT, WEB_SOCKET_PATH, WebCloseCode } from "./constants/web.ts";
 export { findSection, searchSections, sliceContent, splitSections } from "./docs/sections.ts";
 export { OperationError } from "./errors.ts";
-export { requireAgent, requireScreenshot } from "./framer/runtime.ts";
+export { agentRequiredError, requireAgent, requireScreenshot } from "./framer/runtime.ts";
 export {
   aliasesOf,
   describeOperation,
@@ -96,6 +97,7 @@ export { selectionGet } from "./operations/nodes/selection.ts";
 export { textReplace } from "./operations/nodes/text-replace.ts";
 export { pagesCreate, pagesDelete, pagesDuplicate } from "./operations/pages/pages.ts";
 export { pluginDataGet, pluginDataSet } from "./operations/plugin-data/plugin-data.ts";
+export { findPluginOperation, PLUGIN_OPERATIONS } from "./operations/plugin-registry.ts";
 export { projectCapabilities } from "./operations/project/capabilities.ts";
 export { projectEditorUrl } from "./operations/project/editor-url.ts";
 export { projectInfo } from "./operations/project/info.ts";

@@ -13,4 +13,11 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
   },
+  // Framer's Marketplace review reads the submitted code: ship it readable, not minified.
+  // Its only network code was Vite's modulepreload polyfill, which Framer's browsers do not need.
+  build: {
+    minify: false,
+    cssMinify: false,
+    modulePreload: { polyfill: false },
+  },
 });
