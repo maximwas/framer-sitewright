@@ -1,5 +1,5 @@
 import type { McpServer } from "@modelcontextprotocol/server";
-import { type DocSection, findSection, requireAgent, searchSections, sliceContent } from "@sitewright/core";
+import { type DocSection, findSection, framerRead, requireAgent, searchSections, sliceContent } from "@sitewright/core";
 import * as z from "zod";
 import { ESSENTIALS_SECTION } from "../../constants/docs.ts";
 import { GUIDE_TOPICS } from "../../constants/knowledge.ts";
@@ -9,9 +9,11 @@ import { DocsInputSchema, DocsOutputSchema } from "../../schemas/mcp.ts";
 import type { GuideTopic } from "../../types/knowledge.ts";
 import type { DocsOutput, ToolContext } from "../../types/mcp.ts";
 import { essentialsOf } from "../../utils/docs.ts";
-import { addTool } from "../add-tool.ts";
+import { addOperationTool, addTool } from "../add-tool.ts";
 
-export function registerDocsTools(server: McpServer, { transports, docs, journal }: ToolContext): void {
+export function registerDocsTools(server: McpServer, context: ToolContext): void {
+  const { transports, docs, journal } = context;
+
   const topics = Object.keys(GUIDE_TOPICS) as [GuideTopic, ...GuideTopic[]];
 
   addTool(server, {
@@ -99,6 +101,12 @@ export function registerDocsTools(server: McpServer, { transports, docs, journal
           return indexResult(sections);
         },
       ),
+  });
+  addOperationTool(server, context, framerRead, {
+    name: "framer_read",
+    title: "Query Framer's agent",
+    description:
+      "Runs Framer's own readProject queries (font-search, component-definition, icon-set-definition, shader-definition, implementation guides…) and returns their answer as is: for what the other tools do not read. framer_docs section \"essentials\" lists the query types. Needs the project's Server API key.",
   });
 }
 

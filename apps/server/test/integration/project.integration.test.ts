@@ -7,7 +7,6 @@ import {
   customCodeGet,
   designApply,
   iconsSearch,
-  imagesSearch,
   imageUpload,
   nodesRead,
   projectCapabilities,
@@ -85,16 +84,7 @@ describe.skipIf(config === null)("project reads on the sandbox project", () => {
     expect(removed.ok).toBe(true);
   });
 
-  it("finds photos and icons, uploads an SVG, reads components and code", async () => {
-    const photos = await transports.run(imagesSearch, {
-      query: "white ceramic vases",
-      count: 2,
-      width: 800,
-    });
-
-    expect(photos.images.length).toBeGreaterThan(0);
-    expect(photos.images[0]?.url).toMatch(/^https:\/\/images\.unsplash\.com\//);
-
+  it("finds icons, uploads an SVG, reads components and code", async () => {
     const uploaded = await transports.run(imageUpload, {
       image: await imageSourceOf({
         svg: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#2B3BFF"/></svg>',

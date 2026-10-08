@@ -25,8 +25,7 @@ how to get the same result anyway.
 ## Needs a key (the DSL)
 
 - Effects and motion (hover, appear, loop, scroll), variants and components, rich text blocks and runs, `textColor`
-  and `type` on a text node, shadows, radial and conic gradients, link styles, screenshots, stock photo and icon
-  catalogs.
+  and `type` on a text node, shadows, radial and conic gradients, link styles, screenshots and the icon catalog.
 
 ## Same result anyway
 
@@ -36,7 +35,7 @@ how to get the same result anyway.
 - **Headline wrapping:** `balance: true` on the heading styles.
 - **Equal heights, alignment, containers:** all layout attributes work; follow `layout`.
 - **Images:** `fill="https://…"` on a frame with a size (`width="1fr"`, `aspectRatio`, any px height) uploads the image
-  and fills the frame. Stock search needs a key, so use the client's images or direct image URLs; never icons instead.
+  and fills the frame: use the client's images or image URLs they give; never icons instead.
 - **Breakpoints:** build the desktop layout so it holds at every width (fill widths, `maxWidth`, wrapping stacks),
   then add Tablet and Phone with `breakpoints_add` and override their copies (`dsl`, Breakpoints). A phone menu that
   opens needs a component, so a key: without one, keep the wordmark and one link in the phone header.

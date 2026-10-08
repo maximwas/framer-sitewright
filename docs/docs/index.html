@@ -690,7 +690,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="design-system" data-group>
-  <h3>Design system <span>18</span></h3>
+  <h3>Design system <span>13</span></h3>
   <p class="group-intro">Color tokens with light and dark values, and text styles with their sizes per breakpoint.</p>
   <article class="tool" id="color_tokens_list" data-tool="color_tokens_list List color tokens lists framer color styles (tokens) as { id, path, light, dark }. path uses &quot;/&quot; folders like &quot;brand/primary&quot;.">
     <header>
@@ -886,27 +886,6 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="fonts_discover" data-tool="fonts_discover Discover fonts finds fonts beyond framer's library search, in google fonts and fontshare: by words of the name, category (sans, serif, display, slab, mono, handwriting) and order (popular, trending, new). each comes with its license in plain words, its weights, a specimen link, and whether framer's library has it (inframer). propose two or three pairings from it, not only inter-like defaults, and pass script for the site's language (cyrillic for ukrainian: most fontshare families are latin only); a currency sign such as ₴ can still be missing, so check it in the specimen. google fonts (ofl) may be uploaded anywhere: pass files true for its woff2 files, upload each with file_upload, then use the family in text_styles_upsert. fontshare's license (itf ffl v2.0) allows uploading its files only to the user's own site: for a client's site or a sold template use a family with inframer true from framer's library.">
-    <header>
-      <h4><a href="#fonts_discover">fonts_discover</a></h4>
-      <span class="badge read">Reads</span>
-      <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
-    </header>
-    <p class="tool-title">Discover fonts</p>
-    <p>Finds fonts beyond Framer's library search, in Google Fonts and Fontshare: by words of the name, category (sans, serif, display, slab, mono, handwriting) and order (popular, trending, new). Each comes with its license in plain words, its weights, a specimen link, and whether Framer's library has it (inFramer). Propose two or three pairings from it, not only Inter-like defaults, and pass script for the site's language (cyrillic for Ukrainian: most Fontshare families are Latin only); a currency sign such as ₴ can still be missing, so check it in the specimen. Google Fonts (OFL) may be uploaded anywhere: pass files true for its woff2 files, upload each with <a href="#file_upload"><code>file_upload</code></a>, then use the family in <a href="#text_styles_upsert"><code>text_styles_upsert</code></a>. Fontshare's license (ITF FFL v2.0) allows uploading its files only to the user's own site: for a client's site or a sold template use a family with inFramer true from Framer's library.</p>
-    <div class="params"><table>
-      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
-      <tbody>
-      <tr><th scope="row"><code>query</code></th><td><code class="type">string</code></td><td>Words of a family name, e.g. &quot;grotesk&quot; or &quot;satoshi&quot;.</td></tr>
-      <tr><th scope="row"><code>category</code></th><td><code class="type">&quot;sans&quot; | &quot;serif&quot; | &quot;display&quot; | &quot;slab&quot; | &quot;mono&quot; | &quot;handwriting&quot;</code></td><td></td></tr>
-      <tr><th scope="row"><code>script</code></th><td><code class="type">string</code></td><td>Only families that cover this script, e.g. &quot;cyrillic&quot; for a Ukrainian site, &quot;greek&quot;, &quot;vietnamese&quot;.</td></tr>
-      <tr><th scope="row"><code>source</code></th><td><code class="type">&quot;google&quot; | &quot;fontshare&quot; | &quot;all&quot;</code></td><td>google: Google Fonts; fontshare: Fontshare (ITF). <span class="def">default <code>&quot;all&quot;</code></span></td></tr>
-      <tr><th scope="row"><code>sort</code></th><td><code class="type">&quot;popular&quot; | &quot;trending&quot; | &quot;new&quot;</code></td><td> <span class="def">default <code>&quot;popular&quot;</code></span></td></tr>
-      <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>12</code></span></td></tr>
-      <tr><th scope="row"><code>files</code></th><td><code class="type">boolean</code></td><td>Add the woff2 files of families Framer's library lacks, for file_upload. <span class="def">default <code>false</code></span></td></tr>
-      </tbody>
-    </table></div>
-  </article>
   <article class="tool" id="fonts_used" data-tool="fonts_used Fonts in use lists every font family the project uses, with its weights and styles, the text styles that set it and how many layers carry it inline (on each page's main breakpoint): what to check before a font swap or a license question.">
     <header>
       <h4><a href="#fonts_used">fonts_used</a></h4>
@@ -922,78 +901,9 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="fonts_pair" data-tool="fonts_pair Suggest font pairs lists heading and body pairs typographers rely on, all on google fonts and in framer's library, by mood (editorial, modern, bold, technical, playful, luxury, warm, minimal, developer, fashion) and contrast (high, medium, subtle). pick from the concept, then check the language's signs with fonts_discover before using one.">
-    <header>
-      <h4><a href="#fonts_pair">fonts_pair</a></h4>
-      <span class="badge read">Reads</span>
-      <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
-    </header>
-    <p class="tool-title">Suggest font pairs</p>
-    <p>Lists heading and body pairs typographers rely on, all on Google Fonts and in Framer's library, by mood (editorial, modern, bold, technical, playful, luxury, warm, minimal, developer, fashion) and contrast (high, medium, subtle). Pick from the concept, then check the language's signs with <a href="#fonts_discover"><code>fonts_discover</code></a> before using one.</p>
-    <div class="params"><table>
-      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
-      <tbody>
-      <tr><th scope="row"><code>mood</code></th><td><code class="type">&quot;editorial&quot; | &quot;modern&quot; | &quot;bold&quot; | &quot;technical&quot; | &quot;playful&quot; | &quot;luxury&quot; | &quot;warm&quot; | &quot;minimal&quot; | &quot;developer&quot; | &quot;fashion&quot;</code></td><td></td></tr>
-      <tr><th scope="row"><code>contrast</code></th><td><code class="type">&quot;high&quot; | &quot;medium&quot; | &quot;subtle&quot;</code></td><td></td></tr>
-      </tbody>
-    </table></div>
-  </article>
-  <article class="tool" id="fonts_by_mood" data-tool="fonts_by_mood Find fonts by mood lists google fonts families (in framer's library) for a mood, each with the role it plays best (heading, body or both) and the weights to start from. for any family by name use fonts_search; beyond framer's library, fonts_discover.">
-    <header>
-      <h4><a href="#fonts_by_mood">fonts_by_mood</a></h4>
-      <span class="badge read">Reads</span>
-      <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
-    </header>
-    <p class="tool-title">Find fonts by mood</p>
-    <p>Lists Google Fonts families (in Framer's library) for a mood, each with the role it plays best (heading, body or both) and the weights to start from. For any family by name use <a href="#fonts_search"><code>fonts_search</code></a>; beyond Framer's library, <a href="#fonts_discover"><code>fonts_discover</code></a>.</p>
-    <div class="params"><table>
-      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
-      <tbody>
-      <tr><th scope="row"><code>mood</code></th><td><code class="type">&quot;editorial&quot; | &quot;modern&quot; | &quot;bold&quot; | &quot;technical&quot; | &quot;playful&quot; | &quot;luxury&quot; | &quot;warm&quot; | &quot;minimal&quot; | &quot;developer&quot; | &quot;fashion&quot;</code></td><td> <span class="req">required</span></td></tr>
-      <tr><th scope="row"><code>role</code></th><td><code class="type">&quot;heading&quot; | &quot;body&quot; | &quot;both&quot;</code></td><td></td></tr>
-      </tbody>
-    </table></div>
-  </article>
-  <article class="tool" id="palette_generate" data-tool="palette_generate Generate a palette builds five colors around a base color for a scheme (monochromatic, shades, analogous, complementary, splitcomplementary, triadic, tetradic) and returns them with a coolors and a realtime colors link to show the user. a starting point: take the final colors from the concept's world, check them with contrast_check, then save them as tokens with color_tokens_upsert.">
-    <header>
-      <h4><a href="#palette_generate">palette_generate</a></h4>
-      <span class="badge read">Reads</span>
-      <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
-    </header>
-    <p class="tool-title">Generate a palette</p>
-    <p>Builds five colors around a base color for a scheme (monochromatic, shades, analogous, complementary, splitComplementary, triadic, tetradic) and returns them with a Coolors and a Realtime Colors link to show the user. A starting point: take the final colors from the concept's world, check them with <a href="#contrast_check"><code>contrast_check</code></a>, then save them as tokens with <a href="#color_tokens_upsert"><code>color_tokens_upsert</code></a>.</p>
-    <div class="params"><table>
-      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
-      <tbody>
-      <tr><th scope="row"><code>base</code></th><td><code class="type">string</code></td><td>The base color, #rrggbb. <span class="req">required</span></td></tr>
-      <tr><th scope="row"><code>scheme</code></th><td><code class="type">&quot;monochromatic&quot; | &quot;shades&quot; | &quot;analogous&quot; | &quot;complementary&quot; | &quot;splitComplementary&quot; | &quot;triadic&quot; | &quot;tetradic&quot;</code></td><td> <span class="def">default <code>&quot;analogous&quot;</code></span></td></tr>
-      </tbody>
-    </table></div>
-  </article>
-  <article class="tool" id="type_scale_generate" data-tool="type_scale_generate Generate a type scale works out a type scale from a body size and a ratio (display, heading l, m, s, xs, body and caption, with line heights and tracking that tighten as sizes grow) in the fonts you give. apply true writes them as text styles, headings balanced; false only proposes them. give text styles their breakpoint sizes afterwards (text_styles_upsert).">
-    <header>
-      <h4><a href="#type_scale_generate">type_scale_generate</a></h4>
-      <span class="badge write">Changes</span>
-      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
-    </header>
-    <p class="tool-title">Generate a type scale</p>
-    <p>Works out a type scale from a body size and a ratio (Display, Heading L, M, S, XS, Body and Caption, with line heights and tracking that tighten as sizes grow) in the fonts you give. apply true writes them as text styles, headings balanced; false only proposes them. Give text styles their breakpoint sizes afterwards (<a href="#text_styles_upsert"><code>text_styles_upsert</code></a>).</p>
-    <div class="params"><table>
-      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
-      <tbody>
-      <tr><th scope="row"><code>base</code></th><td><code class="type">number</code></td><td>The body size in px. <span class="def">default <code>16</code></span></td></tr>
-      <tr><th scope="row"><code>ratio</code></th><td><code class="type">&quot;minorThird&quot; | &quot;majorThird&quot; | &quot;perfectFourth&quot; | &quot;augmentedFourth&quot; | &quot;perfectFifth&quot; | &quot;goldenRatio&quot; | number</code></td><td>How fast sizes grow: a name (minorThird 1.2, majorThird 1.25, perfectFourth 1.333, perfectFifth 1.5, goldenRatio 1.618) or a number. <span class="def">default <code>&quot;majorThird&quot;</code></span></td></tr>
-      <tr><th scope="row"><code>headingFont</code></th><td><code class="type">string</code></td><td>The headings' family, exactly as Framer's library names it. <span class="req">required</span></td></tr>
-      <tr><th scope="row"><code>bodyFont</code></th><td><code class="type">string</code></td><td>The body's family; omit to use the heading one.</td></tr>
-      <tr><th scope="row"><code>headingWeight</code></th><td><code class="type">100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900</code></td><td> <span class="def">default <code>600</code></span></td></tr>
-      <tr><th scope="row"><code>bodyWeight</code></th><td><code class="type">100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900</code></td><td> <span class="def">default <code>400</code></span></td></tr>
-      <tr><th scope="row"><code>apply</code></th><td><code class="type">boolean</code></td><td>Write the styles (text_styles_upsert); false only proposes them. <span class="def">default <code>false</code></span></td></tr>
-      </tbody>
-    </table></div>
-  </article>
 </section>
 <section class="tool-group" id="pages" data-group>
-  <h3>Pages, layout and redirects <span>21</span></h3>
+  <h3>Pages, layout and redirects <span>20</span></h3>
   <p class="group-intro">Create, duplicate and delete pages, read one as XML, find layers and replace text across pages, read and set the site's and pages' titles, descriptions, images and search settings, change pages and their motion, check what looks broken, adapt them to tablet and phone, look at them and at a reference, and redirect old paths.</p>
   <article class="tool" id="page_create" data-tool="page_create Create a page creates an empty web page at a path (&quot;/about&quot;) or a design page (a canvas for drafts) by name. build its content with design_apply; add breakpoints with breakpoints_add. undo does not remove pages.">
     <header>
@@ -1135,29 +1045,6 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <tr><th scope="row"><code>parentId</code></th><td><code class="type">string</code></td><td>Where the copy goes: a frame or breakpoint, on this page or another. <span class="req">required</span></td></tr>
       <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>The page of parentId. <span class="def">default <code>&quot;/&quot;</code></span></td></tr>
       <tr><th scope="row"><code>detach</code></th><td><code class="type">boolean</code></td><td>Replace the copy's component instances with their layers, so it no longer follows any component. <span class="def">default <code>true</code></span></td></tr>
-      </tbody>
-    </table></div>
-  </article>
-  <article class="tool" id="section_build" data-tool="section_build Build a section builds a hero, a closing call to action or a features grid in one call, in the site's own system: its heading and body text styles, its text, surface and accent tokens, section &gt; container &gt; content on the site's content width, every stack with its alignment set. pass the texts; the answer names the styles and tokens it used. a starting point to refine with design_apply, not a finished design. needs the project's server api key.">
-    <header>
-      <h4><a href="#section_build">section_build</a></h4>
-      <span class="badge write">Changes</span>
-      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
-    </header>
-    <p class="tool-title">Build a section</p>
-    <p>Builds a hero, a closing call to action or a features grid in one call, in the site's own system: its heading and body text styles, its text, surface and accent tokens, Section &gt; Container &gt; Content on the site's content width, every stack with its alignment set. Pass the texts; the answer names the styles and tokens it used. A starting point to refine with <a href="#design_apply"><code>design_apply</code></a>, not a finished design. Needs the project's Server API key.</p>
-    <div class="params"><table>
-      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
-      <tbody>
-      <tr><th scope="row"><code>kind</code></th><td><code class="type">&quot;hero&quot; | &quot;cta&quot; | &quot;features&quot;</code></td><td> <span class="req">required</span></td></tr>
-      <tr><th scope="row"><code>parentId</code></th><td><code class="type">string</code></td><td>Where the section goes: the page's Main frame or its breakpoint. <span class="req">required</span></td></tr>
-      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td> <span class="def">default <code>&quot;/&quot;</code></span></td></tr>
-      <tr><th scope="row"><code>index</code></th><td><code class="type">number</code></td><td>Its place among the parent's children; omit for last.</td></tr>
-      <tr><th scope="row"><code>heading</code></th><td><code class="type">string</code></td><td> <span class="req">required</span></td></tr>
-      <tr><th scope="row"><code>text</code></th><td><code class="type">string</code></td><td></td></tr>
-      <tr><th scope="row"><code>button</code></th><td><code class="type">object</code></td><td><ul class="fields"><li><code>label</code> <code class="type">string</code></li><li><code>link</code> <code class="type">string</code></li></ul></td></tr>
-      <tr><th scope="row"><code>items</code></th><td><code class="type">object[]</code></td><td>features: the cards.<ul class="fields"><li><code>title</code> <code class="type">string</code></li><li><code>text</code> <code class="type">string</code></li></ul></td></tr>
-      <tr><th scope="row"><code>maxWidth</code></th><td><code class="type">string</code></td><td>The site's content width. <span class="def">default <code>&quot;1200px&quot;</code></span></td></tr>
       </tbody>
     </table></div>
   </article>
@@ -1403,14 +1290,14 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="images_check" data-tool="images_check Check photos lists every photo on the site (image fills and image controls of component instances) and finds the same photo used on more than one layer, by its file, even at different sizes, so two cards never show the same people, and photo fills without alt text (with a server api key, which reads alttext). use it after placing stock photos.">
+  <article class="tool" id="images_check" data-tool="images_check Check photos lists every photo on the site (image fills and image controls of component instances) and finds the same photo used on more than one layer, by its file, even at different sizes, so two cards never show the same people, and photo fills without alt text (with a server api key, which reads alttext). use it after placing photos.">
     <header>
       <h4><a href="#images_check">images_check</a></h4>
       <span class="badge read">Reads</span>
       <span class="badge needs-partial" title="Works without a key; a Server API key adds more">Plugin · more with a key</span>
     </header>
     <p class="tool-title">Check photos</p>
-    <p>Lists every photo on the site (image fills and image controls of component instances) and finds the same photo used on more than one layer, by its file, even at different sizes, so two cards never show the same people, and photo fills without alt text (with a Server API key, which reads altText). Use it after placing stock photos.</p>
+    <p>Lists every photo on the site (image fills and image controls of component instances) and finds the same photo used on more than one layer, by its file, even at different sizes, so two cards never show the same people, and photo fills without alt text (with a Server API key, which reads altText). Use it after placing photos.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
@@ -1507,7 +1394,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="assets" data-group>
-  <h3>Components and assets <span>18</span></h3>
+  <h3>Components and assets <span>17</span></h3>
   <p class="group-intro">Components and their controls, components from the Marketplace, icon sets, stock photos, your own images, files and SVG.</p>
   <article class="tool" id="components_read" data-tool="components_read Read components lists the project's components with their exact controls ($control__variant options, $control__&lt;name&gt; for each variable) before you place or change instances. control names are the ones listed here, e.g. $control__showicon; do not derive them from variable names. code components are listed in codecomponents and framer's own (video, google maps, embed, slideshow, carousel, countdown, cookie banner, search…) in framer: place any of them with +componentinstancenode component=&quot;&lt;id&gt;&quot;, and pass its id in ids to read its controls first. needs the project's server api key (framer_status shows whether it is set).">
     <header>
@@ -1634,24 +1521,6 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <tr><th scope="row"><code>query</code></th><td><code class="type">string</code></td><td>Words of the icon name, e.g. &quot;arrow right&quot; or &quot;menu&quot;. <span class="req">required</span></td></tr>
       <tr><th scope="row"><code>set</code></th><td><code class="type">string</code></td><td>A set id or name (Phosphor, Lucide, Logos…). Omit to search every set.</td></tr>
       <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>20</code></span></td></tr>
-      </tbody>
-    </table></div>
-  </article>
-  <article class="tool" id="images_search" data-tool="images_search Search stock images finds unsplash photos for a section and returns their urls: put one in a frame's fill (fill=&quot;&lt;url&gt;&quot;, with alttext). pass width as twice the frame's display width. use photos where the design needs real-world imagery, not as decoration everywhere. needs the project's server api key (framer_status shows whether it is set).">
-    <header>
-      <h4><a href="#images_search">images_search</a></h4>
-      <span class="badge read">Reads</span>
-      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
-    </header>
-    <p class="tool-title">Search stock images</p>
-    <p>Finds Unsplash photos for a section and returns their urls: put one in a frame's fill (fill=&quot;&lt;url&gt;&quot;, with altText). Pass width as twice the frame's display width. Use photos where the design needs real-world imagery, not as decoration everywhere. Needs the project's Server API key (<a href="#framer_status"><code>framer_status</code></a> shows whether it is set).</p>
-    <div class="params"><table>
-      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
-      <tbody>
-      <tr><th scope="row"><code>query</code></th><td><code class="type">string</code></td><td>What the photo shows, e.g. &quot;white ceramic vases on a table&quot;. <span class="req">required</span></td></tr>
-      <tr><th scope="row"><code>count</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>4</code></span></td></tr>
-      <tr><th scope="row"><code>orientation</code></th><td><code class="type">&quot;landscape&quot; | &quot;portrait&quot; | &quot;squarish&quot;</code></td><td></td></tr>
-      <tr><th scope="row"><code>width</code></th><td><code class="type">number</code></td><td>Twice the display width of the frame the image fills, for sharp images on dense screens.</td></tr>
       </tbody>
     </table></div>
   </article>
@@ -1808,7 +1677,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="cms" data-group>
-  <h3>CMS <span>12</span></h3>
+  <h3>CMS <span>11</span></h3>
   <p class="group-intro">Collections and their fields; items by slug, with values by field name. Undo covers items, not yet collections, fields or the order of items.</p>
   <article class="tool" id="cms_collections_list" data-tool="cms_collections_list List CMS collections lists the project's cms collections with their fields (id, type, enum cases, the collection a reference points at, a list's nested fields) and item counts. a field binds on the canvas by its id: var(--variable-&lt;id&gt;). collections a sync plugin manages are read-only here.">
     <header>
@@ -1990,26 +1859,6 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="form_add" data-tool="form_add Add a form builds a native framer form in one call: a labelled field per entry (text, textarea, email, tel, number, url, date, time, select with its options, checkbox, radio), required where asked, and the submit button as an instance of the button component you give. framer validates required fields and types itself. where the form sends is set by the user in the editor; the answer says so. multi-step forms and fields shown on a condition need code. needs the project's server api key.">
-    <header>
-      <h4><a href="#form_add">form_add</a></h4>
-      <span class="badge write">Changes</span>
-      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
-    </header>
-    <p class="tool-title">Add a form</p>
-    <p>Builds a native Framer form in one call: a labelled field per entry (text, textarea, email, tel, number, url, date, time, select with its options, checkbox, radio), required where asked, and the submit button as an instance of the button component you give. Framer validates required fields and types itself. Where the form sends is set by the user in the editor; the answer says so. Multi-step forms and fields shown on a condition need code. Needs the project's Server API key.</p>
-    <div class="params"><table>
-      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
-      <tbody>
-      <tr><th scope="row"><code>parentId</code></th><td><code class="type">string</code></td><td>The frame the form goes into. <span class="req">required</span></td></tr>
-      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td> <span class="def">default <code>&quot;/&quot;</code></span></td></tr>
-      <tr><th scope="row"><code>name</code></th><td><code class="type">string</code></td><td> <span class="def">default <code>&quot;Form&quot;</code></span></td></tr>
-      <tr><th scope="row"><code>button</code></th><td><code class="type">string</code></td><td>The button component (its id from components_read) the submit button is an instance of. <span class="req">required</span></td></tr>
-      <tr><th scope="row"><code>labelStyle</code></th><td><code class="type">string</code></td><td>The text style of the labels, e.g. &quot;Body/Small&quot;.</td></tr>
-      <tr><th scope="row"><code>fields</code></th><td><code class="type">object[]</code></td><td> <span class="req">required</span><ul class="fields"><li><code>name</code> <code class="type">string</code> — What the submission calls it, e.g. email.</li><li><code>label</code> <code class="type">string</code></li><li><code>type</code> <code class="type">&quot;text&quot; | &quot;textarea&quot; | &quot;email&quot; | &quot;tel&quot; | &quot;number&quot; | &quot;url&quot; | &quot;date&quot; | &quot;time&quot; | &quot;select&quot; | &quot;checkbox&quot; | &quot;radio&quot;</code></li><li><code>required</code> <code class="type">boolean</code> <span class="opt">optional</span></li><li><code>placeholder</code> <code class="type">string</code> <span class="opt">optional</span></li><li><code>options</code> <code class="type">string[]</code> <span class="opt">optional</span> — select: its choices.</li></ul></td></tr>
-      </tbody>
-    </table></div>
-  </article>
 </section>
 <section class="tool-group" id="localization" data-group>
   <h3>Localization <span>4</span></h3>
@@ -2084,7 +1933,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="code" data-group>
-  <h3>Code (opt-in) <span>13</span></h3>
+  <h3>Code (opt-in) <span>11</span></h3>
   <p class="group-intro">Custom HTML and code components. The agent uses them only when you ask for code or the canvas cannot do the task, and the writes work only while you allow them.</p>
   <article class="tool" id="custom_code_get" data-tool="custom_code_get Read custom code shows the site's custom html in each location (head start and end, body start and end).">
     <header>
@@ -2213,32 +2062,6 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>The button or icon that switches the theme; omit to only write the override.</td></tr>
       <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td> <span class="def">default <code>&quot;/&quot;</code></span></td></tr>
       <tr><th scope="row"><code>fileName</code></th><td><code class="type">string</code></td><td> <span class="def">default <code>&quot;ThemeToggle.tsx&quot;</code></span></td></tr>
-      </tbody>
-    </table></div>
-  </article>
-  <article class="tool" id="component_templates" data-tool="component_templates List code component templates lists the ready code components component_template_insert can add: what each does and its file.">
-    <header>
-      <h4><a href="#component_templates">component_templates</a></h4>
-      <span class="badge read">Reads</span>
-      <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
-    </header>
-    <p class="tool-title">List code component templates</p>
-    <p>Lists the ready code components <a href="#component_template_insert"><code>component_template_insert</code></a> can add: what each does and its file.</p>
-    <p class="no-params">No parameters.</p>
-  </article>
-  <article class="tool" id="component_template_insert" data-tool="component_template_insert Add a ready code component adds a ready code component as a code file (accordion, tabs, countdown, marquee, scroll progress; component_templates lists them): property controls for its texts and colors, springs for its motion. place it with component_insert by the file's component, then set its controls. use when the user asks for code, or when the canvas (design_apply), framer's own components and marketplace components cannot give what the task needs: a value or state the canvas has no node for (computed, from an api, random, shared by several components), input read every frame (cursor, drag, frames stepped by scroll), or a fix a component's controls cannot make. name which one to the user before writing code. works only while the user has code components switched on in the plugin.">
-    <header>
-      <h4><a href="#component_template_insert">component_template_insert</a></h4>
-      <span class="badge write">Changes</span>
-      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
-    </header>
-    <p class="tool-title">Add a ready code component</p>
-    <p>Adds a ready code component as a code file (accordion, tabs, countdown, marquee, scroll progress; <a href="#component_templates"><code>component_templates</code></a> lists them): property controls for its texts and colors, springs for its motion. Place it with <a href="#component_insert"><code>component_insert</code></a> by the file's component, then set its controls. Use when the user asks for code, or when the canvas (<a href="#design_apply"><code>design_apply</code></a>), Framer's own components and Marketplace components cannot give what the task needs: a value or state the canvas has no node for (computed, from an API, random, shared by several components), input read every frame (cursor, drag, frames stepped by scroll), or a fix a component's controls cannot make. Name which one to the user before writing code. Works only while the user has Code components switched on in the plugin.</p>
-    <div class="params"><table>
-      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
-      <tbody>
-      <tr><th scope="row"><code>template</code></th><td><code class="type">&quot;accordion&quot; | &quot;tabs&quot; | &quot;countdown&quot; | &quot;marquee&quot; | &quot;scrollProgress&quot;</code></td><td> <span class="req">required</span></td></tr>
-      <tr><th scope="row"><code>fileName</code></th><td><code class="type">string</code></td><td>Another file name, e.g. FaqAccordion.tsx.</td></tr>
       </tbody>
     </table></div>
   </article>

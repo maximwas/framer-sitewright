@@ -8,7 +8,6 @@ import {
   codeFilesList,
   codeFilesRead,
   codeFileWrite,
-  codeTemplateInsert,
   customCodeGet,
   customCodeSet,
   type McpSettings,
@@ -77,13 +76,6 @@ export function registerCodeTools(server: McpServer, context: ToolContext): void
     name: "theme_toggle_add",
     title: "Add a light and dark switch",
     description: `Writes a code override that switches the site between its color tokens' light and dark values when clicked, starting from the visitor's last choice or system theme and remembering it, and attaches it to the layer you give (a button or an icon). Framer has no theme switch of its own. Tokens without a dark value stay as they are. Works only while the user has Code components switched on in the plugin.`,
-    before: allowed("codeComponents"),
-  });
-
-  addOperationTool(server, context, codeTemplateInsert, {
-    name: "component_template_insert",
-    title: "Add a ready code component",
-    description: `Adds a ready code component as a code file (accordion, tabs, countdown, marquee, scroll progress; component_templates lists them): property controls for its texts and colors, springs for its motion. Place it with component_insert by the file's component, then set its controls. ${CODE_TOOLS_RULE} Works only while the user has Code components switched on in the plugin.`,
     before: allowed("codeComponents"),
   });
 

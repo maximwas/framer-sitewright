@@ -89,8 +89,7 @@ sitewright --help
 ## Tools
 
 - **Design system:** `color_tokens_list`, `color_tokens_upsert`, `color_tokens_delete`, `text_styles_list`,
-  `text_styles_upsert`, `text_styles_delete`, `fonts_search`, `fonts_discover` (Google Fonts and Fontshare beyond
-  Framer's library, with licenses and the files to upload), `link_styles_list`, `link_styles_upsert`,
+  `text_styles_upsert`, `text_styles_delete`, `fonts_search`, `link_styles_list`, `link_styles_upsert`,
   `link_styles_delete` (text links without Framer's default blue, with hover and the current page), `styles_usage`
   (where each token and style is used, and what nothing uses).
 - **Pages and nodes:** `project_overview`, `nodes_read`, `design_apply`, `layout_audit`, `selection_get`,
@@ -107,7 +106,7 @@ sitewright --help
   templates, and the checklist before handing a page over. The Claude Code skill (`setup --skill`) points the agent at it.
 - **Components and assets:** `components_read`, `component_controls_set`, `component_insert` (a free Marketplace
   component or one of Framer's own, by module URL), `component_make_local` (a Marketplace component copied into the
-  project to restyle), `component_detach` (an instance as plain layers), `icons_search`, `images_search`, `image_upload`, `file_upload`
+  project to restyle), `component_detach` (an instance as plain layers), `icons_search`, `image_upload`, `file_upload`
   (videos, PDFs, fonts), `svg_add`.
 - **Marketplace:** `marketplace_item` — the items behind Marketplace links you give: description, author, price, preview and last update, and for a free
   component its controls, read from a copy placed on a temporary design page, to judge whether it fits.
@@ -123,8 +122,7 @@ sitewright --help
   translating), `localization_set`.
 - **Code** (off until you allow it): `custom_code_get`, `custom_code_set`, `code_files_list`, `code_file_read`,
   `code_files_read`, `code_file_write`, `code_file_patch` (find-and-replace edits), `code_file_rename`,
-  `code_file_check` (TypeScript errors), `code_file_delete`, `component_templates` and `component_template_insert`
-  (accordion, tabs, countdown, marquee, scroll progress), `theme_toggle_add` (a light and dark switch).
+  `code_file_check` (TypeScript errors), `code_file_delete`, `theme_toggle_add` (a light and dark switch).
 - **Find and change in bulk:** `nodes_query` (layers by attribute conditions), `component_instances`, `fonts_used`,
   `color_token_swap` (one token for another, site-wide), `styles_copy`, `node_clone` (a copy that follows no
   component).
@@ -134,10 +132,8 @@ sitewright --help
   `rich_text_audit` (text formatted outside the styles).
 - **Export to files:** `node_export_html`, `node_export_css`, `page_export_react`, `page_export_html` (the published
   page), `components_export` (component modules).
-- **CMS and builders:** `cms_seo_collection`, `cms_interlink` (related posts), `blog_add`, `form_add` (native forms),
-  `section_build` (hero, call to action, features in the site's styles).
-- **Generators:** `palette_generate` (with Coolors and Realtime Colors links), `type_scale_generate`, `fonts_pair`,
-  `fonts_by_mood`, `framer_read` (Framer's own readProject queries).
+- **CMS:** `cms_seo_collection`, `cms_interlink` (related posts), `blog_add`.
+- **Framer's own queries:** `framer_read` (readProject).
 - **Journal:** `activity_list`, `activity_get`, `activity_checkpoint`, `activity_undo`, `activity_redo`,
   `activity_restore`, `activity_open`.
 - **Connection and publishing:** `framer_status`, `framer_connect`, `project_publish` (only when you ask).

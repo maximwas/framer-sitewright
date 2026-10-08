@@ -1,74 +1,11 @@
 import * as z from "zod";
-import { FORM_FIELD_TYPES, FORM_FIELDS_MAX } from "../../constants/forms.ts";
 import { OperationError } from "../../errors.ts";
-import { formXml } from "../../utils/form-xml.ts";
 import { THEME_TOGGLE_EXPORT, themeToggleCode } from "../../utils/theme-toggle.ts";
 import { cmsSeoCollection } from "../cms/seo.ts";
 import { codeFileWrite } from "../code/code-files.ts";
 import { defineOperation } from "../define.ts";
 import { pagesCreate } from "../pages/pages.ts";
 import { designApply } from "./apply.ts";
-
-export const formAdd = defineOperation({
-  name: "forms.add",
-  effect: "write",
-  idempotent: false,
-  permissions: [],
-  needsAgent: true,
-  input: z.strictObject({
-    parentId: z.string().min(1).describe("The frame the form goes into."),
-    pagePath: z.string().startsWith("/").default("/"),
-    name: z.string().min(1).default("Form"),
-    button: z
-      .string()
-      .min(1)
-      .describe("The button component (its id from components_read) the submit button is an instance of."),
-    labelStyle: z.string().min(1).exactOptional().describe('The text style of the labels, e.g. "Body/Small".'),
-    fields: z
-      .array(
-        z.strictObject({
-          name: z.string().min(1).describe("What the submission calls it, e.g. email."),
-          label: z.string().min(1),
-          type: z.enum(FORM_FIELD_TYPES),
-          required: z.boolean().default(false),
-          placeholder: z.string().exactOptional(),
-          options: z.array(z.string().min(1)).min(1).exactOptional().describe("select: its choices."),
-        }),
-      )
-      .min(1)
-      .max(FORM_FIELDS_MAX),
-  }),
-  output: z.object({
-    ok: z.boolean(),
-    message: z.string(),
-    formId: z.string().nullable(),
-    submitId: z.string().nullable(),
-    note: z.string(),
-  }),
-  async run(context, { pagePath, ...spec }) {
-    const result = await designApply.run(context, {
-      xml: formXml(spec),
-      pagePath,
-    });
-
-    return {
-      ok: result.ok,
-      message: result.message,
-      formId: result.keys?.["form"] ?? null,
-      submitId: result.keys?.["submit"] ?? null,
-      note: "Framer sends a form where the user sets it in the editor (select the form, then where it sends): ask them to set it and to send a test on the published site. Give the submit button its Pending, Success and Error variants (formButtonPendingVariant and the others) in a second design_apply.",
-    };
-  },
-  refused(output) {
-    return output.ok ? null : output.message;
-  },
-  describe({ name, fields }) {
-    return {
-      subject: name,
-      summary: `${fields.length} fields`,
-    };
-  },
-});
 
 export const themeToggleAdd = defineOperation({
   name: "theme.toggleAdd",

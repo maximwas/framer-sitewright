@@ -62,7 +62,7 @@ export function registerCheckTools(server: McpServer, context: ToolContext): voi
     name: "images_check",
     title: "Check photos",
     description:
-      "Lists every photo on the site (image fills and image controls of component instances) and finds the same photo used on more than one layer, by its file, even at different sizes, so two cards never show the same people, and photo fills without alt text (with a Server API key, which reads altText). Use it after placing stock photos.",
+      "Lists every photo on the site (image fills and image controls of component instances) and finds the same photo used on more than one layer, by its file, even at different sizes, so two cards never show the same people, and photo fills without alt text (with a Server API key, which reads altText). Use it after placing photos.",
   });
   addOperationTool(server, context, a11yAudit, {
     name: "a11y_audit",

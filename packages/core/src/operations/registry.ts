@@ -2,7 +2,6 @@ import type { AnyOperation } from "../types/operations.ts";
 import { fileUpload } from "./assets/file-upload.ts";
 import { iconsSearch } from "./assets/icons-search.ts";
 import { imageUpload } from "./assets/image-upload.ts";
-import { imagesSearch } from "./assets/images-search.ts";
 import { shadersRead } from "./assets/shaders-read.ts";
 import { svgAdd } from "./assets/svg-add.ts";
 import { cmsCollectionCreate, cmsCollectionDelete, cmsCollectionsList } from "./cms/collections.ts";
@@ -23,8 +22,7 @@ import { componentInsert } from "./components/insert.ts";
 import { componentInstances } from "./components/instances.ts";
 import { componentMakeLocal } from "./components/make-local.ts";
 import { designApply } from "./design/apply.ts";
-import { blogAdd, formAdd, themeToggleAdd } from "./design/builders.ts";
-import { codeTemplateInsert, framerRead, sectionBuild, typeScaleGenerate } from "./design/generators.ts";
+import { blogAdd, themeToggleAdd } from "./design/builders.ts";
 import { editorNavigate, editorSelect, editorZoom, selectionWait } from "./editor/editor.ts";
 import { exportNode } from "./export/export-node.ts";
 import { fontsInLibrary } from "./fonts/in-library.ts";
@@ -55,6 +53,7 @@ import { projectOverview } from "./project/overview.ts";
 import { projectPublish } from "./project/publish.ts";
 import { publishPreview } from "./project/publish-preview.ts";
 import { deploymentsList, publishStatus } from "./project/publish-status.ts";
+import { framerRead } from "./project/read-project.ts";
 import { currentUser } from "./project/user.ts";
 import { redirectsList, redirectsSet } from "./redirects/redirects.ts";
 import { performanceAudit, richTextAudit, siteAudit } from "./site/audits.ts";
@@ -92,7 +91,6 @@ export const OPERATIONS: readonly AnyOperation[] = [
   projectCapabilities,
   projectEditorUrl,
   projectPublish,
-  imagesSearch,
   imageUpload,
   fileUpload,
   svgAdd,
@@ -156,12 +154,8 @@ export const OPERATIONS: readonly AnyOperation[] = [
   cmsSeoCollection,
   cmsInterlink,
   blogAdd,
-  formAdd,
   themeToggleAdd,
-  typeScaleGenerate,
   framerRead,
-  sectionBuild,
-  codeTemplateInsert,
   contrastCheck,
   templateAudit,
   siteSettingsGet,
