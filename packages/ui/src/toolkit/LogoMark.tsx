@@ -1,9 +1,15 @@
-/** Sitewright's mark: the same as the plugin's icon. */
+/**
+ * Sitewright's mark, the same as the plugin's icon: the four corners of a selected frame and the agent's spark, on a
+ * graphite tile with a hairline (graphite, not Framer blue, so it is never taken for Framer's own).
+ */
 export function LogoMark() {
   return (
     <svg aria-hidden="true" viewBox="0 0 30 30" className="size-[22px] shrink-0">
-      <rect width="30" height="30" rx="8" fill="#0099ff" />
-      <path d="M9 11h12M9 19h12M12 11v8M18 11v8" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+      <rect x="0.5" y="0.5" width="29" height="29" rx="7.5" fill="#1c1d21" stroke="#ffffff" strokeOpacity="0.16" />
+      <g transform="translate(4.2 4.2) scale(0.3375)">
+        <path fill="#f4f2ec" d="M10 10h16v7h-9v9h-7zM54 10v16h-7v-9h-9v-7zM10 54V38h7v9h9v7zM54 54H38v-7h9v-9h7z" />
+        <path fill="#f2a93b" d="M32 21l3.6 7.4L43 32l-7.4 3.6L32 43l-3.6-7.4L21 32l7.4-3.6z" />
+      </g>
     </svg>
   );
 }

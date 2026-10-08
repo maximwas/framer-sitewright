@@ -1,6 +1,6 @@
 {
   "name": "sitewright",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "MCP server and CLI that let AI agents (Claude Code, Cursor, Codex) build and edit Framer sites, with an undo journal. Unofficial, not affiliated with Framer.",
   "license": "MIT",
   "funding": [
