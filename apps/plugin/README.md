@@ -50,7 +50,8 @@ could then pose as Sitewright. After a Marketplace update, check that **Connect*
 The `Release` workflow packs the plugin (`framer-plugin-tools pack`) and puts the zip on the GitHub release; it is
 uploaded in the Framer Marketplace dashboard by hand (Publish New Version).
 
-Framer's review reads the submitted code, so the build is not minified and holds no network code. The plugin imports
+Framer's review reads the submitted code, so the build keeps every source module as its own file at its source path
+(`apps/plugin/src/…`, `packages/core/src/…`), is not minified and holds no network code. The plugin imports
 only `PLUGIN_OPERATIONS` from `@sitewright/core`: the operations that need framer.agent outright (screenshots,
 `readProject`, catalogs, the DSL) are not in its bundle, and it answers them with the Server API key error.
 
