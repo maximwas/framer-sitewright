@@ -3,11 +3,14 @@ import { CloseCode } from "@sitewright/core";
 import type { LinkStatus } from "../types/link.ts";
 import type { StatusCopy } from "../types/ui.ts";
 
-/** The plugin's window: top right, out of the way of the canvas, wide enough for the setup commands. */
+/**
+ * The plugin's window: top right, out of the way of the canvas, wide enough for the setup commands and tall enough
+ * that every state shows without scrolling (the tallest measured 611px of content at this width, 629px at 400).
+ */
 export const PLUGIN_WINDOW: UIOptions = {
   position: "top right",
-  width: 400,
-  height: 560,
+  width: 420,
+  height: 616,
   resizable: true,
   minWidth: 320,
   minHeight: 200,

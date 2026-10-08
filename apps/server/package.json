@@ -1,12 +1,18 @@
 {
   "name": "sitewright",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "MCP server and CLI that let AI agents (Claude Code, Cursor, Codex) build and edit Framer sites, with an undo journal. Unofficial, not affiliated with Framer.",
   "license": "MIT",
-  "funding": {
-    "type": "patreon",
-    "url": "https://www.patreon.com/cw/VasianinMaksim"
-  },
+  "funding": [
+    {
+      "type": "individual",
+      "url": "https://send.monobank.ua/jar/7o9oMrbXTj"
+    },
+    {
+      "type": "patreon",
+      "url": "https://www.patreon.com/cw/VasianinMaksim"
+    }
+  ],
   "homepage": "https://github.com/maximwas/framer-sitewright#readme",
   "repository": {
     "type": "git",

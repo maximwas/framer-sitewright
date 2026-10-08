@@ -21,8 +21,8 @@ export const USE_SERVER_API_HINT = `Or use the Server API: ${SERVER_API_SETUP_HI
 export const LEARN_PROJECT_COOLDOWN_MS = 30_000;
 
 /**
- * How long Framer takes to compile written code: a session opened sooner still lists the old controls (05.10.2026, on
- * Eletho). The next Server API call after a code change waits for it, then opens a new session.
+ * How long Framer takes to compile written code: a session opened sooner still lists the old controls (seen on a live
+ * project, 05.10.2026). The next Server API call after a code change waits for it, then opens a new session.
  */
 export const CODE_COMPILE_MS = 4_000;
 

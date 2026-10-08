@@ -13,8 +13,15 @@ export const PRODUCT = {
   pluginTitle: "Sitewright",
 } as const;
 
-/** Where people can support the project. Empty until the services are chosen; every support button hides then. */
+/**
+ * Where people can support the project, the one-time donation first (a monobank jar takes any Visa or Mastercard,
+ * foreign ones too); Patreon carries the posts. Empty hides every support button.
+ */
 export const SUPPORT_LINKS: readonly SupportLink[] = [
+  {
+    label: "Donate",
+    url: "https://send.monobank.ua/jar/7o9oMrbXTj",
+  },
   {
     label: "Patreon",
     url: "https://www.patreon.com/cw/VasianinMaksim",
