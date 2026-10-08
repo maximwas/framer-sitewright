@@ -11,10 +11,14 @@ export const BRIDGE_PATH = "/sitewright/v1";
 export const LOCAL_APP_PORT = 18_710;
 
 /**
- * Plugin origins the bridge window accepts: the development plugin. The published plugin's origin
- * (https://<id>.plugins.framercdn.com) joins this list once it exists; SITEWRIGHT_PLUGIN_ORIGINS adds more.
+ * Plugin origins the bridge window accepts: the development plugin, and the published one where Framer serves it (read
+ * from the marketplace plugin's frame, 08.10.2026). Only Sitewright's own origins: any other plugin on
+ * plugins.framercdn.com could otherwise pose as Sitewright. SITEWRIGHT_PLUGIN_ORIGINS adds more.
  */
-export const DEFAULT_PLUGIN_ORIGINS: readonly string[] = ["https://localhost:5173"];
+export const DEFAULT_PLUGIN_ORIGINS: readonly string[] = [
+  "https://localhost:5173",
+  "https://5iqjj58d3q5bu5e29j5lpq0po.plugins.framercdn.com",
+];
 
 /** The bridge window's name, so a second Connect reuses the open window instead of opening another. */
 export const BRIDGE_WINDOW_NAME = "sitewright-bridge";
