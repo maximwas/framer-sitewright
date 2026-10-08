@@ -12,13 +12,13 @@ export const GUIDE_INDEX_LINE = /^-\s+(.+?)\s*$/;
 
 /**
  * The reference's sections that `framer_docs` section "essentials" reads in one go, in this order: what to never do,
- * how Framer thinks about a project, the command syntax with its computed values, the design rules, the reminders.
+ * how Framer thinks about a project, the command syntax with its computed values, the reminders. Framer's
+ * "design-rules" section stays out: Sitewright gives no design advice (it is still readable by name).
  */
 export const ESSENTIAL_SECTIONS = [
   "guardrails",
   "core-principles",
   "updating-the-project",
-  "design-rules",
   "critical-reminders",
 ] as const;
 

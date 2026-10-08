@@ -38,6 +38,18 @@ src/
 test/window-link.test.ts
 ```
 
+## Origins
+
+The journal window hears only the plugin origins in `DEFAULT_PLUGIN_ORIGINS` (`packages/core/src/constants/bridge.ts`):
+the development plugin at `https://localhost:5173` and the published one where Framer serves it
+(`https://5iqjj58d3q5bu5e29j5lpq0po.plugins.framercdn.com`). Never all of `plugins.framercdn.com`: any other plugin
+could then pose as Sitewright. After a Marketplace update, check that **Connect** still connects.
+
+## Release
+
+The `Release` workflow packs the plugin (`framer-plugin-tools pack`) and puts the zip on the GitHub release; it is
+uploaded in the Framer Marketplace dashboard by hand (Publish New Version).
+
 ## Development
 
 ```bash

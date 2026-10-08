@@ -106,7 +106,7 @@ const GROUPS = [
     id: "assets",
     title: "Components and assets",
     intro:
-      "Components and their controls, components from the Marketplace, icon sets, stock photos, your own images, files and SVG.",
+      "Components and their controls, components from the Marketplace, icon sets, shaders, your own images, files and SVG.",
     tools: [
       "components_read",
       "component_insert",
@@ -183,8 +183,8 @@ const GROUPS = [
   {
     id: "knowledge",
     title: "Knowledge",
-    intro: "The design guide built into Sitewright, and Framer's own DSL reference and guides.",
-    tools: ["design_guide", "framer_docs", "framer_read"],
+    intro: "How Framer behaves, from live builds (no design advice), and Framer's own DSL reference and guides.",
+    tools: ["framer_guide", "framer_docs", "framer_read"],
   },
 ];
 
@@ -247,7 +247,7 @@ const NEEDS = {
   local: [
     "framer_status",
     "framer_connect",
-    "design_guide",
+    "framer_guide",
     "live_check",
     "activity_list",
     "activity_get",

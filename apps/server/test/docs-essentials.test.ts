@@ -2,7 +2,7 @@ import { splitSections } from "@sitewright/core";
 import { expect, it } from "vitest";
 import { essentialsOf } from "../src/utils/docs.ts";
 
-it("puts Framer's essential sections together in reading order, each with its subsections, and skips missing ones", () => {
+it("puts Framer's essential sections together in reading order, each with its subsections, without its design rules", () => {
   const sections = splitSections(
     [
       "# Overview",
@@ -21,6 +21,7 @@ it("puts Framer's essential sections together in reading order, each with its su
   const text = essentialsOf(sections);
 
   expect(text.indexOf("Never guess ids.")).toBeLessThan(text.indexOf("+FrameNode"));
-  expect(text.indexOf("+FrameNode")).toBeLessThan(text.indexOf("Type rules."));
+  // Sitewright gives no design advice, so Framer's own design rules stay out of the essentials.
+  expect(text).not.toContain("Type rules.");
   expect(text).not.toContain("About the agent.");
 });

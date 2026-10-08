@@ -57,7 +57,7 @@
             <a href="#no-key">Working without a key</a>
             <a href="#journal">The journal and undo</a>
             <a href="#settings">What the agent may do</a>
-            <a href="#quality">Design guide and audit</a>
+            <a href="#quality">Framer guide and audit</a>
             <a href="#xml">Pages as XML</a>
             <a href="#skills">Skills in the journal</a>
             <a href="#cli">Commands</a>
@@ -143,7 +143,7 @@
         <section id="plugin">
           <h2>Connect the plugin</h2>
           <ol>
-            <li>Open your project in Framer, then <strong>Plugins → Sitewright</strong>.</li>
+            <li>Add Sitewright from the Framer Marketplace, then open it in your project: <strong>Plugins → Sitewright</strong>.</li>
             <li>
               Click <strong>Connect</strong>. A small window opens: the journal. It carries the plugin's connection to
               Sitewright, so <strong>keep it open</strong> while you work.
@@ -239,7 +239,7 @@ npx -y sitewright@latest key remove   # remove one</code></pre>
             These need a key: effects and motion (hover, appear, scroll), variants and components, rich text, text color
             on a text node (put it on the text style instead), shadows, radial and conic gradients, link styles,
             translations and new locales, changing the site's settings, screenshots of pages and references, preview
-            links, the icon, component, shader and stock photo catalogs, and deleting a whole CMS collection. A batch
+            links, the icon, component and shader catalogs, and deleting a whole CMS collection. A batch
             that asks for one of them changes nothing and says what needs the key.
           </p>
         </section>
@@ -317,14 +317,13 @@ npx -y sitewright@latest key remove   # remove one</code></pre>
         </section>
 
         <section id="quality">
-          <h2>Design guide, audit and checks</h2>
+          <h2>Framer guide, audit and checks</h2>
           <p>
-            <a href="#design_guide"><code>design_guide</code></a> gives the agent the order of work, starting from a brief
-            (<a href="#project_brief"><code>project_brief</code></a>) and one concept the site follows; layout, type and
-            motion rules with springs that settle without a bounce; direction measured on award-winning Framer sites; what
-            Framer's layout language does without saying so; the habits of generated pages to avoid; and the checklist
-            before a page is handed over. The Claude Code skill (<code>sitewright setup --skill</code>) points the agent
-            at it.
+            <a href="#framer_guide"><code>framer_guide</code></a> tells the agent how Framer behaves: what its layout
+            language does without saying so, how layout, breakpoints and motion work, Framer's Marketplace template
+            checklist, what works without a key, and how to check the result. It gives no design advice: Sitewright carries
+            out the design you and your agent decide on. The Claude Code skill (<code>sitewright setup --skill</code>)
+            points the agent at it.
           </p>
           <p>
             After every <a href="#design_apply"><code>design_apply</code></a>, Sitewright audits what the batch touched,
@@ -415,6 +414,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
                 <tr><th scope="row"><code>SITEWRIGHT_HOME</code></th><td><code>~/.sitewright</code></td><td>The journal, keys, settings, logs and the bridge's port.</td></tr>
                 <tr><th scope="row"><code>SITEWRIGHT_BRIDGE_PORT</code></th><td><code>18710</code></td><td>The journal page and the plugin's bridge.</td></tr>
                 <tr><th scope="row"><code>SITEWRIGHT_PLUGIN_BRIDGE</code></th><td><code>on</code></td><td><code>off</code>: no bridge for the plugin.</td></tr>
+                <tr><th scope="row"><code>SITEWRIGHT_PLUGIN_ORIGINS</code></th><td></td><td>More plugin origins the journal window relays for, comma-separated: a plugin build of your own.</td></tr>
                 <tr><th scope="row"><code>SITEWRIGHT_HISTORY</code></th><td><code>on</code></td><td><code>off</code>: no journal, nothing to undo.</td></tr>
                 <tr><th scope="row"><code>SITEWRIGHT_SUPPORT_REMINDERS</code></th><td><code>on</code></td><td><code>off</code>: the agent never mentions how to support the project.</td></tr>
                 <tr><th scope="row"><code>SITEWRIGHT_CACHE_DIR</code></th><td><code>~/.cache/sitewright</code></td><td>Where Framer's DSL reference is cached.</td></tr>
@@ -428,7 +428,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
           <h2>Files on your computer</h2>
           <p>
             Everything stays in <code>~/.sitewright</code>; nothing goes anywhere but Framer. A few tools read public
-            pages they name: the Marketplace, Google Fonts and Fontshare, and your published site.
+            pages they name: Marketplace items you link, reference pages, and your published site.
           </p>
           <ul>
             <li><code>keys.json</code> — the Server API keys, one per project, readable only by you;</li>
@@ -452,6 +452,12 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
             <dd>
               The journal window looks for the MCP server your agent runs. Start your agent with Sitewright connected (in
               Claude Code, <code>/mcp</code>); the window reconnects by itself.
+            </dd>
+            <dt>Connect opens the window, but the plugin stays “Not connected”</dt>
+            <dd>
+              Close the journal window and click Connect again: the window learns which plugins it may relay for when it
+              opens, so one left open from before an update ignores the new plugin. Update Sitewright too, so the plugin
+              and the server are the same release.
             </dd>
             <dt>The agent does not see a new tool</dt>
             <dd>Reconnect the server in your client after an update (in Claude Code: <code>/mcp</code> → reconnect).</dd>
@@ -1048,14 +1054,14 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="design_apply" data-tool="design_apply Apply design changes changes a page and returns framer's diagnostics (errors, warnings, lint, renamedids). prefer xml; dsl (raw +node/set/del/move/dupe commands) runs after it, for moves and duplicates. without a server api key it runs through the plugin api: xml only, frames and plain text with layout, size, position, fill, radius, border, link and textstylepreset (design_guide dsl lists them), and overrides on breakpoint copies by compound id; anything else refuses the whole batch before a change. xml: tags are node types, attributes are dsl attributes (framer_docs), every value in quotes. an element without id is created: nested ones under their parent element, a top-level one under parent=&quot;&lt;id&gt;&quot;, at the end unless index=&quot;&lt;n&gt;&quot; is given; key=&quot;hero&quot; returns its real id in keys, and @hero in any value (scope, component, parent, var(--variable-@label), and the dsl part) points at it within the batch. an element with id gets a set of only the attributes it lists; $delete=&quot;true&quot; deletes it. nesting existing nodes only addresses them: nothing moves and omitted children stay. inside an existing rich text, blocks and runs without id are the ones at that position (as nodes_read prints them); give a new one a key. text: plain text inside a richtextnode, or &lt;textblock tag=&quot;h1&quot;&gt;…&lt;/textblock&gt; blocks with &lt;textrun bold=&quot;true&quot;&gt;…&lt;/textrun&gt; runs; write &amp; and &lt; as &amp;amp; and &amp;lt;. nested attributes are dotted: hovereffect.scale=&quot;1&quot;. with a key, color text with a token on the richtextnode itself, textcolor=&quot;var(--token-&lt;id&gt;)&quot;, not only through its text style: only then does the token show in framer's color field. framer applies every command it can and skips the failed ones: send only the failed commands again, fixed, never the whole batch (it would create its nodes twice). pass pagepath for a node that is not on the home page (nodes_find and selection_get give it). read design_guide dsl before the first batch.">
+  <article class="tool" id="design_apply" data-tool="design_apply Apply design changes changes a page and returns framer's diagnostics (errors, warnings, lint, renamedids). prefer xml; dsl (raw +node/set/del/move/dupe commands) runs after it, for moves and duplicates. without a server api key it runs through the plugin api: xml only, frames and plain text with layout, size, position, fill, radius, border, link and textstylepreset (framer_guide dsl lists them), and overrides on breakpoint copies by compound id; anything else refuses the whole batch before a change. xml: tags are node types, attributes are dsl attributes (framer_docs), every value in quotes. an element without id is created: nested ones under their parent element, a top-level one under parent=&quot;&lt;id&gt;&quot;, at the end unless index=&quot;&lt;n&gt;&quot; is given; key=&quot;hero&quot; returns its real id in keys, and @hero in any value (scope, component, parent, var(--variable-@label), and the dsl part) points at it within the batch. an element with id gets a set of only the attributes it lists; $delete=&quot;true&quot; deletes it. nesting existing nodes only addresses them: nothing moves and omitted children stay. inside an existing rich text, blocks and runs without id are the ones at that position (as nodes_read prints them); give a new one a key. text: plain text inside a richtextnode, or &lt;textblock tag=&quot;h1&quot;&gt;…&lt;/textblock&gt; blocks with &lt;textrun bold=&quot;true&quot;&gt;…&lt;/textrun&gt; runs; write &amp; and &lt; as &amp;amp; and &amp;lt;. nested attributes are dotted: hovereffect.scale=&quot;1&quot;. with a key, color text with a token on the richtextnode itself, textcolor=&quot;var(--token-&lt;id&gt;)&quot;, not only through its text style: only then does the token show in framer's color field. framer applies every command it can and skips the failed ones: send only the failed commands again, fixed, never the whole batch (it would create its nodes twice). pass pagepath for a node that is not on the home page (nodes_find and selection_get give it). read framer_guide dsl before the first batch.">
     <header>
       <h4><a href="#design_apply">design_apply</a></h4>
       <span class="badge destructive">Destructive</span>
       <span class="badge needs-partial" title="Works without a key; a Server API key adds more">Plugin · more with a key</span>
     </header>
     <p class="tool-title">Apply design changes</p>
-    <p>Changes a page and returns Framer's diagnostics (errors, warnings, lint, renamedIds). Prefer xml; dsl (raw +Node/SET/DEL/MOVE/DUPE commands) runs after it, for moves and duplicates. Without a Server API key it runs through the Plugin API: xml only, frames and plain text with layout, size, position, fill, radius, border, link and textStylePreset (<a href="#design_guide"><code>design_guide</code></a> dsl lists them), and overrides on breakpoint copies by compound id; anything else refuses the whole batch before a change. XML: tags are node types, attributes are DSL attributes (<a href="#framer_docs"><code>framer_docs</code></a>), every value in quotes. An element without id is created: nested ones under their parent element, a top-level one under parent=&quot;&lt;id&gt;&quot;, at the end unless index=&quot;&lt;n&gt;&quot; is given; key=&quot;hero&quot; returns its real id in keys, and @hero in any value (scope, component, parent, var(--variable-@label), and the dsl part) points at it within the batch. An element with id gets a SET of only the attributes it lists; $delete=&quot;true&quot; deletes it. Nesting existing nodes only addresses them: nothing moves and omitted children stay. Inside an existing rich text, blocks and runs without id are the ones at that position (as <a href="#nodes_read"><code>nodes_read</code></a> prints them); give a new one a key. Text: plain text inside a RichTextNode, or &lt;TextBlock tag=&quot;h1&quot;&gt;…&lt;/TextBlock&gt; blocks with &lt;TextRun bold=&quot;true&quot;&gt;…&lt;/TextRun&gt; runs; write &amp; and &lt; as &amp;amp; and &amp;lt;. Nested attributes are dotted: hoverEffect.scale=&quot;1&quot;. With a key, color text with a token on the RichTextNode itself, textColor=&quot;var(--token-&lt;id&gt;)&quot;, not only through its text style: only then does the token show in Framer's Color field. Framer applies every command it can and skips the failed ones: send only the failed commands again, fixed, never the whole batch (it would create its nodes twice). Pass pagePath for a node that is not on the home page (<a href="#nodes_find"><code>nodes_find</code></a> and <a href="#selection_get"><code>selection_get</code></a> give it). Read <a href="#design_guide"><code>design_guide</code></a> dsl before the first batch.</p>
+    <p>Changes a page and returns Framer's diagnostics (errors, warnings, lint, renamedIds). Prefer xml; dsl (raw +Node/SET/DEL/MOVE/DUPE commands) runs after it, for moves and duplicates. Without a Server API key it runs through the Plugin API: xml only, frames and plain text with layout, size, position, fill, radius, border, link and textStylePreset (<a href="#framer_guide"><code>framer_guide</code></a> dsl lists them), and overrides on breakpoint copies by compound id; anything else refuses the whole batch before a change. XML: tags are node types, attributes are DSL attributes (<a href="#framer_docs"><code>framer_docs</code></a>), every value in quotes. An element without id is created: nested ones under their parent element, a top-level one under parent=&quot;&lt;id&gt;&quot;, at the end unless index=&quot;&lt;n&gt;&quot; is given; key=&quot;hero&quot; returns its real id in keys, and @hero in any value (scope, component, parent, var(--variable-@label), and the dsl part) points at it within the batch. An element with id gets a SET of only the attributes it lists; $delete=&quot;true&quot; deletes it. Nesting existing nodes only addresses them: nothing moves and omitted children stay. Inside an existing rich text, blocks and runs without id are the ones at that position (as <a href="#nodes_read"><code>nodes_read</code></a> prints them); give a new one a key. Text: plain text inside a RichTextNode, or &lt;TextBlock tag=&quot;h1&quot;&gt;…&lt;/TextBlock&gt; blocks with &lt;TextRun bold=&quot;true&quot;&gt;…&lt;/TextRun&gt; runs; write &amp; and &lt; as &amp;amp; and &amp;lt;. Nested attributes are dotted: hoverEffect.scale=&quot;1&quot;. With a key, color text with a token on the RichTextNode itself, textColor=&quot;var(--token-&lt;id&gt;)&quot;, not only through its text style: only then does the token show in Framer's Color field. Framer applies every command it can and skips the failed ones: send only the failed commands again, fixed, never the whole batch (it would create its nodes twice). Pass pagePath for a node that is not on the home page (<a href="#nodes_find"><code>nodes_find</code></a> and <a href="#selection_get"><code>selection_get</code></a> give it). Read <a href="#framer_guide"><code>framer_guide</code></a> dsl before the first batch.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
@@ -1395,7 +1401,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
 </section>
 <section class="tool-group" id="assets" data-group>
   <h3>Components and assets <span>12</span></h3>
-  <p class="group-intro">Components and their controls, components from the Marketplace, icon sets, stock photos, your own images, files and SVG.</p>
+  <p class="group-intro">Components and their controls, components from the Marketplace, icon sets, shaders, your own images, files and SVG.</p>
   <article class="tool" id="components_read" data-tool="components_read Read components lists the project's components with their exact controls ($control__variant options, $control__&lt;name&gt; for each variable) before you place or change instances. control names are the ones listed here, e.g. $control__showicon; do not derive them from variable names. code components are listed in codecomponents and framer's own (video, google maps, embed, slideshow, carousel, countdown, cookie banner, search…) in framer: place any of them with +componentinstancenode component=&quot;&lt;id&gt;&quot;, and pass its id in ids to read its controls first. needs the project's server api key (framer_status shows whether it is set).">
     <header>
       <h4><a href="#components_read">components_read</a></h4>
@@ -2129,15 +2135,15 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
 </section>
 <section class="tool-group" id="knowledge" data-group>
   <h3>Knowledge <span>3</span></h3>
-  <p class="group-intro">The design guide built into Sitewright, and Framer's own DSL reference and guides.</p>
-  <article class="tool" id="design_guide" data-tool="design_guide Design guide how to change a framer site so it holds together, from live builds: what framer does without saying so, layout, motion and the checks. read &quot;dsl&quot; before the first design_apply of a session, then the topic for the task. topics: dsl (what framer does without saying so: batches, breakpoints, text styles, components and clicks, menus, forms, overlays, cms lists, which springs it keeps, metadata, assets, marketplace components); layout (alignment, distribution, sizes by role, equal heights, grids, containers, spacing, breakpoints, buttons, images); motion (the states list anything that moves or responds needs before it is built, what motion to offer (subtle, balanced, expressive) and how to build each effect, pinned scroll sections, scroll headers, horizontal galleries, page transitions, tabs, links on components); verify (the audit, looking at the result, going through every state in a real browser, the checklist, and what to tell the user at handover); template (a site for the framer marketplace: framer's template checklist, what buyers edit, and the listing); no-key (what works through the plugin without a server api key, and how to get the rest anyway).">
+  <p class="group-intro">How Framer behaves, from live builds (no design advice), and Framer's own DSL reference and guides.</p>
+  <article class="tool" id="framer_guide" data-tool="framer_guide Framer guide how to build in framer, from live builds: what framer does without saying so, how layout and motion work, and how to check the result. it gives no design advice: the design is the user's. read &quot;dsl&quot; before the first design_apply of a session, then the topic for the task. topics: dsl (what framer does without saying so: batches, breakpoints, text styles, components and clicks, menus, forms, overlays, cms lists, which springs it keeps, metadata, assets, marketplace components); layout (how stacks, sizes, equal heights, grids, containers, breakpoints, sticky and overflow, images and links behave in framer); motion (listing the states of anything that moves or responds, which transitions framer keeps, how to build effects, pinned scroll sections, scroll headers, horizontal galleries, page transitions, tabs, links on components); verify (the audit, looking at the result, going through every state in a real browser, the checks that it works, and what to tell the user at handover); template (a site for the framer marketplace: framer's template checklist, what buyers edit, and the listing); no-key (what works through the plugin without a server api key, and how to get the rest anyway).">
     <header>
-      <h4><a href="#design_guide">design_guide</a></h4>
+      <h4><a href="#framer_guide">framer_guide</a></h4>
       <span class="badge read">Reads</span>
       <span class="badge needs-local" title="Runs in Sitewright itself">Local</span>
     </header>
-    <p class="tool-title">Design guide</p>
-    <p>How to change a Framer site so it holds together, from live builds: what Framer does without saying so, layout, motion and the checks. Read &quot;dsl&quot; before the first <a href="#design_apply"><code>design_apply</code></a> of a session, then the topic for the task. Topics: dsl (what Framer does without saying so: batches, breakpoints, text styles, components and clicks, menus, forms, overlays, CMS lists, which springs it keeps, metadata, assets, Marketplace components); layout (alignment, distribution, sizes by role, equal heights, grids, containers, spacing, breakpoints, buttons, images); motion (the states list anything that moves or responds needs before it is built, what motion to offer (subtle, balanced, expressive) and how to build each effect, pinned scroll sections, scroll headers, horizontal galleries, page transitions, tabs, links on components); verify (the audit, looking at the result, going through every state in a real browser, the checklist, and what to tell the user at handover); template (a site for the Framer Marketplace: Framer's template checklist, what buyers edit, and the listing); no-key (what works through the plugin without a Server API key, and how to get the rest anyway).</p>
+    <p class="tool-title">Framer guide</p>
+    <p>How to build in Framer, from live builds: what Framer does without saying so, how layout and motion work, and how to check the result. It gives no design advice: the design is the user's. Read &quot;dsl&quot; before the first <a href="#design_apply"><code>design_apply</code></a> of a session, then the topic for the task. Topics: dsl (what Framer does without saying so: batches, breakpoints, text styles, components and clicks, menus, forms, overlays, CMS lists, which springs it keeps, metadata, assets, Marketplace components); layout (how stacks, sizes, equal heights, grids, containers, breakpoints, sticky and overflow, images and links behave in Framer); motion (listing the states of anything that moves or responds, which transitions Framer keeps, how to build effects, pinned scroll sections, scroll headers, horizontal galleries, page transitions, tabs, links on components); verify (the audit, looking at the result, going through every state in a real browser, the checks that it works, and what to tell the user at handover); template (a site for the Framer Marketplace: Framer's template checklist, what buyers edit, and the listing); no-key (what works through the plugin without a Server API key, and how to get the rest anyway).</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
@@ -2145,14 +2151,14 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="framer_docs" data-tool="framer_docs Framer DSL reference framer's official agent reference for the design dsl (commands, attributes, layout rules, cms, variables, forms, effects), read live from framer so it matches its current version. start with section &quot;essentials&quot;: its guardrails, core principles, command syntax with computed values, design rules and critical reminders in one read (continue with nextoffset). no arguments lists sections; pass section to read one, or query to search. guide reads one of framer's implementation guides (faq, navigations, buttons, effects, overlays, forms, grids…): read the one for what you build before building it, they hold the recipes the reference lacks (e.g. how an accordion animates). needs the project's server api key (framer_status shows whether it is set).">
+  <article class="tool" id="framer_docs" data-tool="framer_docs Framer DSL reference framer's official agent reference for its dsl (commands, attributes, layout, cms, variables, forms, effects), read live from framer so it matches its current version. start with section &quot;essentials&quot;: its guardrails, core principles, command syntax with computed values and critical reminders in one read (continue with nextoffset). no arguments lists sections; pass section to read one, or query to search. guide reads one of framer's implementation guides (faq, navigations, buttons, effects, overlays, forms, grids…): read the one for what you build before building it, they hold the recipes the reference lacks (e.g. how an accordion animates). needs the project's server api key (framer_status shows whether it is set).">
     <header>
       <h4><a href="#framer_docs">framer_docs</a></h4>
       <span class="badge read">Reads</span>
       <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
     </header>
     <p class="tool-title">Framer DSL reference</p>
-    <p>Framer's official agent reference for the design DSL (commands, attributes, layout rules, CMS, variables, forms, effects), read live from Framer so it matches its current version. Start with section &quot;essentials&quot;: its guardrails, core principles, command syntax with computed values, design rules and critical reminders in one read (continue with nextOffset). No arguments lists sections; pass section to read one, or query to search. guide reads one of Framer's implementation guides (FAQ, Navigations, Buttons, Effects, Overlays, Forms, Grids…): read the one for what you build before building it, they hold the recipes the reference lacks (e.g. how an accordion animates). Needs the project's Server API key (<a href="#framer_status"><code>framer_status</code></a> shows whether it is set).</p>
+    <p>Framer's official agent reference for its DSL (commands, attributes, layout, CMS, variables, forms, effects), read live from Framer so it matches its current version. Start with section &quot;essentials&quot;: its guardrails, core principles, command syntax with computed values and critical reminders in one read (continue with nextOffset). No arguments lists sections; pass section to read one, or query to search. guide reads one of Framer's implementation guides (FAQ, Navigations, Buttons, Effects, Overlays, Forms, Grids…): read the one for what you build before building it, they hold the recipes the reference lacks (e.g. how an accordion animates). Needs the project's Server API key (<a href="#framer_status"><code>framer_status</code></a> shows whether it is set).</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
@@ -2193,7 +2199,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
           <a href="https://github.com/maximwas/framer-sitewright/blob/main/LICENSE">MIT license</a>. Unofficial: not
           affiliated with or endorsed by Framer. “Framer” is a trademark of Framer B.V.
         </p>
-        <p><a href="../">Home</a> · <a href="https://github.com/maximwas/framer-sitewright">GitHub</a></p>
+        <p><a href="../">Home</a> · <a href="https://github.com/maximwas/framer-sitewright">GitHub</a> · <a href="https://send.monobank.ua/jar/7o9oMrbXTj">Donate</a> · <a href="https://www.patreon.com/cw/VasianinMaksim">Patreon</a></p>
       </div>
     </footer>
   </body>

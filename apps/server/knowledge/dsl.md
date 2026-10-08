@@ -36,23 +36,22 @@ something else; every rule here was seen on a live project.
 ## Design system
 
 - `color_tokens_*` and `text_styles_*`; `fonts_search` for Framer's families and the fonts uploaded to the project.
-- A "/" in a style or component name makes a folder (`name="Content/Card"`). Group components by role (Brand,
-  Navigation, Controls, Content); keep style names flat unless the user wants folders. A folder has no API of its own:
-  it disappears with its last item, so empty it with the `folders` option of the delete tools.
+- A "/" in a style or component name makes a folder (`name="Content/Card"`). A folder has no API of its own: it
+  disappears with its last item, so empty it with the `folders` option of the delete tools.
 - When the DSL refuses a library family that `fonts_search` lists ("No available font variant"), set the font with
   `text_styles_upsert` `via: "plugin-api"`. Fonts uploaded to the project go through the DSL; Framer swaps a weight
   the project lacks without an error, and `text_styles_upsert` lists those styles in `fontFallbacks`: tell the user
   which weight to upload.
 - Text style breakpoints are slots, not widths: medium, small, extraSmall in order (the tool adds skipped ones),
   starting at the page breakpoints from the top, the narrowest at 0.
-- Headings wrap evenly with `balance: true` on their text style (`text_styles_upsert`); a heading's `maxWidth` does
-  not replace it. Paragraphs take `textWrap="pretty"`. A forced line break is a `TextLineBreak`, never a newline in the
-  text.
+- Even line lengths come from `balance: true` on a text style (`text_styles_upsert`); a `maxWidth` does not do it.
+  `textWrap="pretty"` avoids a lone last word in paragraphs. A forced line break is a `TextLineBreak`, never a newline
+  in the text.
 - A new text style gets `paragraphSpacing` 20px from Framer (`text_styles_upsert` leaves it unset), so text of
-  several blocks has 20px between them: set it on purpose, 0 where blocks sit line on line.
+  several blocks has 20px between them unless the style sets another value.
 - A family can cover a script and still lack a sign (₴): Framer draws a missing sign in another face without an
-  error. Check the site's own signs in a real heading; display line heights under 0.9 make accents and Cyrillic
-  descenders collide.
+  error. Check the site's own signs in a real heading; line heights under 0.9 make accents and Cyrillic descenders
+  collide.
 - Color text with a token on the `RichTextNode` itself, `textColor="var(--token-<id>)"`, not only through its text
   style: only then does the token show in Framer's Color field (needs a key). Setting `textStylePreset` later drops the
   node's `textColor` without an error: write both in the same element or `SET`.
@@ -247,9 +246,8 @@ something else; every rule here was seen on a live project.
 
 ## Springs: what Framer stores
 
-Every transition is a spring (`motion`, Transitions), except a progress indicator that shows time, which is a linear
-`tween 0,0,1,1 <duration> 0s` that `design_apply` leaves as written (`motion`, States first). Which spring Framer
-keeps depends on the attribute:
+Which kind of transition Framer keeps depends on the attribute. A tween (`tween 0,0,1,1 <duration> 0s`) is left as
+written. For springs:
 
 - `styleTransformEffect.transition` keeps `spring-physics <stiffness> <damping> <mass> <delay>`; a `spring-duration`
   written there turns into Framer's default physics 500 60 1.
@@ -259,9 +257,9 @@ keeps depends on the attribute:
   ignored on a node that has its own transition, and becomes Framer's default `spring-duration 0.4s 0.2 0s` (with
   bounce; 0s on an overlay's backdrop, 1s 0.25 on a loop) on one that has none: no error either way.
 - `design_apply` writes each spring as the kind Framer keeps on that attribute: a `spring-physics` becomes the time
-  spring without bounce that settles as fast (`400 40 1` → `0.45s 0`, `1000 63 1` → `0.3s 0`), a `spring-duration` on
-  a scroll transform or page transition becomes physics. Its warnings list what it rewrote: tell the user which
-  transitions to switch to Physics in the editor if they want physics there.
+  spring that settles as fast (`400 40 1` → `0.45s 0`, `1000 63 1` → `0.3s 0`), a `spring-duration` on a scroll
+  transform or page transition becomes physics. Its warnings list what it rewrote: tell the user which transitions to
+  switch to Physics in the editor if they want physics there.
 - `dragEffect.transition` takes only `inertia`.
 - `tickerEffect` and `scrollVariantEffect` have no transition: one written there is accepted and dropped, even when
   `design_apply`'s warnings list it as rewritten. A ticker's speed is `velocity`; a scroll variant animates with the
@@ -270,35 +268,29 @@ keeps depends on the attribute:
   after hydration with Physics, and the layer vanishes for one frame when it ends.
 - Read the result back with `nodes_read`.
 
-## Motion recipes
+## Motion
 
 - Before building an animated pattern read its Framer guide: `framer_docs` guide "Effects"; "FAQ" for accordions,
-  "Navigations" for menus, "Overlays", "Buttons". Where those guides use an easing curve ("easing curves with a time"
-  for fade-ins), write a spring without bounce instead.
-- Appear: `appearEffect` `onMount` above the fold, `onInView` below it, from opacity 0 and a small y (8–24), a spring
-  without bounce (`spring-duration 0.5s 0 <delay>`), delays in steps for a sequence. `appearEffect.replay="false"`
-  makes `onInView` play once. An appear on a layer fully clipped in its start state never plays (`motion`, Appear
-  needs a visible layer).
-- Page transitions are `pageEffects` on a page's primary breakpoint (`design_guide` motion, Page transitions).
-- Hover on surfaces: `hoverEffect.backgroundColor` or `opacity`, and always `hoverEffect.scale="1"` with it: Framer
-  fills in 1.1 by itself, which jumps. Scale only when asked.
-- Variant changes animate through `transition`: give every variant of a component the same one.
-- A new `loopEffect` starts from Framer's preset, a full turn: always write `loopEffect.rotate="0"` (and any transform
-  you do not animate) and a `loopEffect.transition`: without one Framer stores a linear `tween 0,0,1,1 1s 0s`. A spring
-  eases into and out of every cycle, so a spin slows at each turn: give it a long spring (4–6s, as `effects_set` `spin`
-  does) on one small mark. Keep loops rare.
+  "Navigations" for menus, "Overlays", "Buttons".
+- Appear: `appearEffect` `onMount` plays on load (for layers in the first screen), `onInView` when the layer scrolls
+  into view; `appearEffect.replay="false"` makes `onInView` play once. An appear on a layer fully clipped in its start
+  state never plays (`motion`, Appear needs a visible layer).
+- Page transitions are `pageEffects` on a page's primary breakpoint (`framer_guide` motion, Page transitions).
+- Whenever a `hoverEffect` is written, write `hoverEffect.scale` too: Framer fills in 1.1 by itself, which jumps.
+- Variant changes animate through each variant's own `transition`.
+- A new `loopEffect` starts from Framer's preset, a full turn: write `loopEffect.rotate` (and any transform you do not
+  animate) and a `loopEffect.transition`: without one Framer stores a linear `tween 0,0,1,1 1s 0s`. A spring eases into
+  and out of every cycle, so a spin slows at each turn; a tween keeps it even.
 - A `loopEffect` written on a variant's copy of a layer lands on the primary and in every variant. For a loop that
   shows in one state only (a loader dot), hide that layer in the other variants with `visible="false"`.
-- Anything that opens (accordion, mobile menu, dropdown) must not show and hide content with `visible="false"`: that
-  pops. Give the closed variant a fixed height (its header row) and `overflow="clip"`, the open variant `height="auto"`
-  and `overflow="clip"`, both the same transition; swap or rotate the icon in the same variants; set
-  `flowEffect.transition` on the list holding the items and on the page breakpoint (the same transition) so the
-  sections below glide; fade the hidden part with opacity 0 in the closed variant; `userSelect="none"` on the
-  clickable texts. To make the content appear as it opens instead, hide it with `visible="false"` in the closed
-  variant and give it `appearEffect.trigger="onMount"`. Never for FAQ answers or other content people search for:
-  text hidden with `visible="false"` is not indexed (Framer Help). Keep it in the closed variant, clipped at height 0
+- Anything that opens (accordion, mobile menu, dropdown): `visible="false"` switches content instantly, with no
+  animation. To animate the opening, give the closed variant a fixed height (its header row) and `overflow="clip"`,
+  the open variant `height="auto"` and `overflow="clip"`, both the same transition; set `flowEffect.transition` on the
+  list holding the items and on the page breakpoint (the same transition) so the sections below move with it.
+  `userSelect="none"` on clickable texts keeps a double tap from selecting them. Text hidden with `visible="false"` is
+  not indexed (Framer Help): keep content people search for (FAQ answers) in the closed variant, clipped at height 0
   with opacity 0.
-- `textEffect` by word or character, on headings and short lines only, never on auto-fit text. Written through
+- `textEffect` by word or character, never on auto-fit text. Written through
   `design_apply`, a new one blurs every token by 10px: write `textEffect.style.blur="0px"` (`effects_set`
   `text-reveal` does). Its transition's delay is always stored as 0.05s; delay the effect with `textEffect.delay`.
   `trigger="onScrollTarget"` is accepted but has no target: use `onInView`. `tickerEffect` for marquees (it also runs
@@ -338,26 +330,26 @@ keeps depends on the attribute:
   Banner, Search…) are placed with `<ComponentInstanceNode component="<id>">` like the project's: take the id from
   `components_read`'s `framer` list and read its controls first (`components_read` with that id).
 - Video as a background: `$control__source="Upload"` `$control__file="<file_upload url>"`, loop, muted, playing,
-  `fit` cover and a poster image, pinned to all sides with width and height 100%. Re-encode it first (H.264, no audio,
-  faststart, under 4 MB). Media a state does not show still loads and plays: in a reel or slider that switches clips
-  by variants, every clip loads at once. Set `$control__playing="false"` on the clips a variant does not show, give
-  each clip a poster (its first frame, so nothing flashes), and show one clip or the poster on phones.
+  `fit` cover and a poster image, pinned to all sides with width and height 100%. Large files load slowly: H.264,
+  no audio track and faststart keep a background video light. Media a state does not show still loads and plays: in a
+  reel or slider that switches clips by variants, every clip loads at once. Set `$control__playing="false"` on the
+  clips a variant does not show, and give each clip a poster (its first frame, so nothing flashes).
 - Slideshow and Carousel slots take layers that are direct children of the page (beside the breakpoints). A Countdown
   date takes midnight only. A font control: `$control__font.fontSelector="GF;<Family>-<weight>"` and `fontSize`; one
   invalid field drops the whole font. Its `lineHeight` and `letterSpacing` are `[value, unit]` pairs (`[1.16,"em"]`),
   never a CSS string, and `fontSelector` goes in the same write as any other font field.
-- A Marketplace component the user links: read it with `marketplace_item` `inspect` first (whether it takes your own layers as slides, sizes to its container, takes the site's colors and type, uses a
-  tween to replace with a spring, was updated this year), then `component_insert`. Check it without a cursor and in
-  Preview: trails, tilts and magnetic effects do nothing on touch, counters show 00 and reveals their end state on the
-  canvas, scroll-pinned carousels take over the scroll, and Marketplace components expose no events. Its defaults are
-  its author's design: go through every control (debug guides off, grain under about 0.12, springs, offsets that show
-  slivers at 0 unless a stack is meant, one slide height). One that keeps its own fonts and colors: make it local
-  (`component_make_local`) and restyle it, or build it natively.
-- Shaders (`shaders_read`): one per page, as a hero or section background: an absolute Background frame with the
-  `ShaderNode` pinned to all sides and a shade above it for text. Gradient shaders take up to 8 colors: the palette's
-  base and ink tones and one second hue, never the action accent; a token follows dark mode. Image shaders
-  (fluted-glass and others) take `$control__texture.src` and `$control__texture.alt`; Framer re-uploads the image. The
-  `shader` name cannot change through a `SET`: delete the node and add a new one.
+- A Marketplace component the user links: read it with `marketplace_item` `inspect` first (whether it takes your own
+  layers as slides, sizes to its container, takes the site's colors and type, was updated this year), then
+  `component_insert`. Check it without a cursor and in Preview: trails, tilts and magnetic effects do nothing on touch,
+  counters show 00 and reveals their end state on the canvas, scroll-pinned carousels take over the scroll, and
+  Marketplace components expose no events. Its defaults are its author's: go through every control (debug guides,
+  grain, transitions, offsets, slide heights) and set it to the site's design. One that keeps its own fonts and
+  colors: make it local (`component_make_local`) and restyle it, or build it natively.
+- Shaders (`shaders_read`): as a background, an absolute frame with the `ShaderNode` pinned to all sides; text over a
+  shader needs its own contrast check. Gradient shaders take up to 8 colors, tokens included (a token follows dark
+  mode). Image shaders (fluted-glass and others) take `$control__texture.src` and `$control__texture.alt`; Framer
+  re-uploads the image. Each shader runs on the visitor's GPU. The `shader` name cannot change through a `SET`: delete
+  the node and add a new one.
 - `codeOverride` takes a code override's full id `codeFile/<fileId>:<export>` (only while code is switched on).
 
 ## Checking

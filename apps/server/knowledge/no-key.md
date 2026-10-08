@@ -29,15 +29,14 @@ how to get the same result anyway.
 
 ## Same result anyway
 
-- **Text color:** put the color on the text style (`color: { token }`); one style per color role.
+- **Text color:** put the color on the text style (`color: { token }`).
 - **Text links:** a link on a text node takes Framer's default link color (blue). Put the link on a frame around the
   text instead: a nav item or button frame with `layout="stack"` and padding.
-- **Headline wrapping:** `balance: true` on the heading styles.
-- **Equal heights, alignment, containers:** all layout attributes work; follow `layout`.
+- **Even line lengths:** `balance: true` on the text style.
+- **Equal heights, alignment, containers:** all layout attributes work (`layout`).
 - **Images:** `fill="https://…"` on a frame with a size (`width="1fr"`, `aspectRatio`, any px height) uploads the image
-  and fills the frame: use the client's images or image URLs they give; never icons instead.
-- **Breakpoints:** build the desktop layout so it holds at every width (fill widths, `maxWidth`, wrapping stacks),
-  then add Tablet and Phone with `breakpoints_add` and override their copies (`dsl`, Breakpoints). A phone menu that
-  opens needs a component, so a key: without one, keep the wordmark and one link in the phone header.
+  and fills the frame.
+- **Breakpoints:** fill widths, `maxWidth` and wrapping stacks adapt by themselves; add Tablet and Phone with
+  `breakpoints_add` and override their copies (`dsl`, Breakpoints). A menu that opens needs a component, so a key.
 
 When a batch asks for something on the key-only list, it is refused whole before any change; the message says what.

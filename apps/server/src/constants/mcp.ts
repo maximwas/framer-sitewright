@@ -16,29 +16,29 @@ export const ERROR_HINTS: Partial<Record<ErrorCode, string>> = {
 
 /**
  * The MCP `instructions`: only where to start and which tool to reach for. Claude Code keeps the first 2,048
- * characters of them, so everything else lives in design_guide (dsl: what Framer does without saying so) and in the
+ * characters of them, so everything else lives in framer_guide (dsl: what Framer does without saying so) and in the
  * tools' own descriptions.
  */
 export const SERVER_INSTRUCTIONS = [
   `${PRODUCT.title} edits the Framer project open in its plugin; nothing runs until the user opens the ${PRODUCT.title} plugin and clicks Connect. Start with project_overview; framer_status shows the connection, whether the project has a Server API key, and plan limits. For another project call framer_connect { project } first; for "this" or "the selected" call selection_get.`,
-  "First tell what is asked. Help with one part (a section, the CMS, motion) or a new page: read the site around it and its own styles (tokens, text styles, components, content width), then build only that, in them. A fix: change exactly what was asked, nothing around it, and check that spot on every breakpoint. Unsure which: ask. Before the first design_apply of a session read design_guide dsl: it holds what Framer does without saying so.",
+  "First tell what is asked. Help with one part (a section, the CMS, motion) or a new page: read the site around it and its own styles (tokens, text styles, components, content width), then build only that, in them. A fix: change exactly what was asked, nothing around it, and check that spot on every breakpoint. Unsure which: ask. Before the first design_apply of a session read framer_guide dsl: it holds what Framer does without saying so.",
   "Write pages with nodes_read (XML) and design_apply xml. Framer applies every command of a batch it can: fix what errors name and send only those commands again. Fix every audit defect before the next section.",
   "Without a Server API key design_apply makes frames and plain text only, and icons, the component catalog, screenshots and the DSL reference are unavailable.",
   "Before calling a page done: layout_audit and node_screenshot of every breakpoint. Before handover: seo_audit, links_check, images_check and a11y_audit.",
   "Call activity_checkpoint when a new user task starts; activity_undo and activity_restore take changes back, and userChanges in a result lists what the user undid since your last call: re-read before building on it.",
-  "Publish (project_publish) only when the user asks; write code (custom_code_set, code_file_write) when the user asks or design_guide dsl says code is the tool.",
+  "Publish (project_publish) only when the user asks; write code (custom_code_set, code_file_write) when the user asks or framer_guide dsl says code is the tool.",
   "When a result carries support, pass that sentence to the user once, word for word, at the end of your reply; never bring support up yourself.",
 ].join(" ");
 
 /** design_apply: XML first, since nesting shows the structure and nodes_read prints the same format. */
 export const DESIGN_APPLY_DESCRIPTION = [
   "Changes a page and returns Framer's diagnostics (errors, warnings, lint, renamedIds). Prefer xml; dsl (raw +Node/SET/DEL/MOVE/DUPE commands) runs after it, for moves and duplicates.",
-  "Without a Server API key it runs through the Plugin API: xml only, frames and plain text with layout, size, position, fill, radius, border, link and textStylePreset (design_guide dsl lists them), and overrides on breakpoint copies by compound id; anything else refuses the whole batch before a change.",
+  "Without a Server API key it runs through the Plugin API: xml only, frames and plain text with layout, size, position, fill, radius, border, link and textStylePreset (framer_guide dsl lists them), and overrides on breakpoint copies by compound id; anything else refuses the whole batch before a change.",
   'XML: tags are node types, attributes are DSL attributes (framer_docs), every value in quotes. An element without id is created: nested ones under their parent element, a top-level one under parent="<id>", at the end unless index="<n>" is given; key="hero" returns its real id in keys, and @hero in any value (scope, component, parent, var(--variable-@label), and the dsl part) points at it within the batch.',
   'An element with id gets a SET of only the attributes it lists; $delete="true" deletes it. Nesting existing nodes only addresses them: nothing moves and omitted children stay.',
   "Inside an existing rich text, blocks and runs without id are the ones at that position (as nodes_read prints them); give a new one a key.",
   'Text: plain text inside a RichTextNode, or <TextBlock tag="h1">…</TextBlock> blocks with <TextRun bold="true">…</TextRun> runs; write & and < as &amp; and &lt;. Nested attributes are dotted: hoverEffect.scale="1".',
-  'With a key, color text with a token on the RichTextNode itself, textColor="var(--token-<id>)", not only through its text style: only then does the token show in Framer\'s Color field. Framer applies every command it can and skips the failed ones: send only the failed commands again, fixed, never the whole batch (it would create its nodes twice). Pass pagePath for a node that is not on the home page (nodes_find and selection_get give it). Read design_guide dsl before the first batch.',
+  'With a key, color text with a token on the RichTextNode itself, textColor="var(--token-<id>)", not only through its text style: only then does the token show in Framer\'s Color field. Framer applies every command it can and skips the failed ones: send only the failed commands again, fixed, never the whole batch (it would create its nodes twice). Pass pagePath for a node that is not on the home page (nodes_find and selection_get give it). Read framer_guide dsl before the first batch.',
 ].join(" ");
 
 /** effects_set: the presets with what each is for, so the agent picks one instead of writing effect attributes. */

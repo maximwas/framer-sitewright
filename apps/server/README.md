@@ -4,6 +4,8 @@ An MCP server and CLI that let AI agents (Claude Code, Cursor, Codex) build and 
 sites: color tokens, text styles, pages, sections, components, images and icons. Every change goes into a local
 journal you can undo.
 
+[Website](https://maximwas.github.io/framer-sitewright/) · [Docs](https://maximwas.github.io/framer-sitewright/docs/) · [GitHub](https://github.com/maximwas/framer-sitewright)
+
 > Unofficial. Not affiliated with or endorsed by Framer. "Framer" is a trademark of Framer B.V.
 
 ## Quick start
@@ -17,7 +19,7 @@ npx -y sitewright@latest
 It asks where to connect Sitewright (Claude Code, Cursor, Codex or another MCP client), offers to add your projects'
 Server API keys, what the agent may do, and the Claude Code hooks for skills in the journal.
 
-Then open your project in Framer, run the **Sitewright** plugin and click **Connect**. A small window opens: keep it
+Then add the **Sitewright** plugin from the Framer Marketplace, open it in your project and click **Connect**. A small window opens: keep it
 open while your agent works. It is also the journal of everything the agent did.
 
 `npx sitewright setup --print` prints the commands and config blocks instead, for scripts and CI.
@@ -27,7 +29,7 @@ open while your agent works. It is also the journal of everything the agent did.
 | | What you need | What works |
 | --- | --- | --- |
 | **Plugin** (default) | The Sitewright plugin open in the Framer editor, and its window | Color tokens, text styles, fonts, editor selection, SVG, component controls, code files, and pages built from frames and text (layout, size, fill, radius, border, links, text styles); changes land live in the editor |
-| **Server API key** | Your own key: Framer → Site Settings → General → API Keys | Everything above, plus the rest of Framer's layout language (effects, transitions, variants, components, rich text, shadows, image fills), screenshots, the DSL reference, icon, component and photo catalogs |
+| **Server API key** | Your own key: Framer → Site Settings → General → API Keys | Everything above, plus the rest of Framer's layout language (effects, transitions, variants, components, rich text, shadows, image fills), screenshots, the DSL reference, icon, component and shader catalogs |
 
 Each Framer project has its own Server API key. Add as many as you work on; they are saved in `~/.sitewright/keys.json`
 (readable by you only), and Sitewright uses the key of the project the plugin is open in:
@@ -102,12 +104,13 @@ sitewright --help
   `contrast_check` (a color or token pair against WCAG), `template_audit` (a Marketplace template against Framer's
   checklist, section by section), `live_check` (the published site as visitors get it: values published as
   references, broken images and links, missing meta tags, heavy pages).
-- **Design guide:** `design_guide` — what Framer's DSL does without saying so, layout and motion rules, Marketplace
-  templates, and the checklist before handing a page over. The Claude Code skill (`setup --skill`) points the agent at it.
+- **Framer guide:** `framer_guide` — how Framer behaves: what the DSL does without saying so, how layout,
+  breakpoints and motion work, Framer's Marketplace template checklist, and how to check the result. No design advice:
+  the design stays yours. The Claude Code skill (`setup --skill`) points the agent at it.
 - **Components and assets:** `components_read`, `component_controls_set`, `component_insert` (a free Marketplace
   component or one of Framer's own, by module URL), `component_make_local` (a Marketplace component copied into the
-  project to restyle), `component_detach` (an instance as plain layers), `icons_search`, `image_upload`, `file_upload`
-  (videos, PDFs, fonts), `svg_add`.
+  project to restyle), `component_detach` (an instance as plain layers), `icons_search`, `shaders_read` (Framer's
+  shaders and their controls), `image_upload`, `file_upload` (videos, PDFs, fonts), `svg_add`.
 - **Marketplace:** `marketplace_item` — the items behind Marketplace links you give: description, author, price, preview and last update, and for a free
   component its controls, read from a copy placed on a temporary design page, to judge whether it fits.
 - **CMS:** `cms_collections_list`, `cms_collection_create`, `cms_collection_delete`, `cms_fields_set`,
@@ -116,8 +119,9 @@ sitewright --help
 - **Pages and the whole site:** `page_create`, `page_delete`, `page_duplicate` (a copy with its breakpoints, as a
   draft), `reference_screenshot` (any public page, e.g. a reference the user names), `publish_preview` (what a publish
   would change and what blocks it, without publishing), `nodes_find` (layers by name, text or type across
-  pages), `text_replace` (with a dry run; undoable), `redirects_list`, `redirects_set`, `publish_status` (what changed
-  since the last publish), `deployments_list`.
+  pages), `text_replace` (with a dry run; undoable), `redirects_list`, `redirects_set`, `site_settings_get`,
+  `site_settings_set` (site and page titles, descriptions, social images, favicons, search visibility),
+  `publish_status` (what changed since the last publish), `deployments_list`.
 - **Localization:** `locales_list`, `locale_add` (a new language, as a draft), `localization_get` (what still needs
   translating), `localization_set`.
 - **Code** (off until you allow it): `custom_code_get`, `custom_code_set`, `code_files_list`, `code_file_read`,
@@ -143,19 +147,24 @@ sitewright --help
 | `SITEWRIGHT_TRANSPORT` | `auto` | `auto` (through the plugin, nothing without it), `server-api` or `plugin` |
 | `SITEWRIGHT_HOME` | `~/.sitewright` | The journal, project keys, settings, logs and the bridge's port |
 | `SITEWRIGHT_BRIDGE_PORT` | `18710` | The local journal page and the plugin's bridge |
+| `SITEWRIGHT_PLUGIN_BRIDGE` | `on` | `off`: no bridge for the plugin |
+| `SITEWRIGHT_PLUGIN_ORIGINS` | | More plugin origins the journal window relays for (comma-separated), e.g. a plugin build of your own |
+| `SITEWRIGHT_CACHE_DIR` | `~/.cache/sitewright` | Where Framer's DSL reference is cached |
 | `SITEWRIGHT_HISTORY` | `on` | `off`: no journal, nothing to undo |
 | `SITEWRIGHT_SUPPORT_REMINDERS` | `on` | `off`: Claude never mentions how to support the project |
 | `LOG_LEVEL` | `info` | Logs go to stderr and to `~/.sitewright/logs/` |
 
 ## Privacy
 
-Your key and your project data stay on your machine. The server talks only to Framer and to the plugin on your
-computer. No telemetry, no account.
+Your key and your project data stay on your machine. The server talks to Framer and to the plugin on your computer;
+beyond that it reads only public pages a tool names: Marketplace items you link, reference pages and your published
+site. No telemetry, no account.
 
 ## Support
 
-Sitewright is free. At most once a week, after a change that worked, Claude may mention how to support its
-development; turn it off with the switch on the journal page or `SITEWRIGHT_SUPPORT_REMINDERS=off`.
+Sitewright is free and open source. If it saves you time, [donate](https://send.monobank.ua/jar/7o9oMrbXTj) or follow it on
+[Patreon](https://www.patreon.com/cw/VasianinMaksim). At most once a week, after a change that worked, Claude may mention it; turn that off
+with the switch on the journal page or `SITEWRIGHT_SUPPORT_REMINDERS=off`.
 
 ## License
 

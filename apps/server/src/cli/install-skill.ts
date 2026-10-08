@@ -5,7 +5,7 @@ import { knowledgeFile } from "../knowledge/guide.ts";
 
 /**
  * Puts the Sitewright skill where Claude Code loads skills, or brings an older copy up to date (keeping it as .bak).
- * The skill only points at design_guide, so the guide itself always comes from the installed server.
+ * The skill only points at framer_guide, so the guide itself always comes from the installed server.
  */
 export async function installSkill(homeDir: string): Promise<string> {
   const source = knowledgeFile("skill/SKILL.md");

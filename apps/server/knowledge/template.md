@@ -93,9 +93,9 @@ changes when the site is a product.
 
 - Site-wide values live on the root node (`site_settings_set`; the attributes are in `dsl`, Pages and layers). Pages
   override them only when they differ (the 404 sets `noIndex`).
-- Favicon: the brand mark as SVG, a light and a dark one; Apple touch icon: a 180×180 PNG of the mark on the base
-  color; social image: 1200×630, a screenshot of the hero (`node_screenshot` with `clip`). Update them whenever the
-  brand changes: old colors in the tab icon give a redesign away.
+- Favicon: SVG, a light and a dark one; Apple touch icon: a 180×180 PNG; social image: 1200×630 (a part of a page
+  can be captured with `node_screenshot` `clip`). They do not follow the site's styles: update them when the brand
+  changes.
 
 ## Carousels with slots
 
@@ -108,8 +108,7 @@ changes when the site is a product.
   the primary's slots. So build one carousel per width with its own slides (desktop 1120, tablet 680, phone 300) and
   show each on its breakpoints only (`visible`), instead of overriding the slots on a copy.
 - Object controls of a code component (its `transition`, arrow styles) go through `component_controls_set`, once per
-  instance and once per breakpoint copy: setting the primary does not reach the copies. Replace a tween default with a
-  spring there, and go through the rest of its defaults (`dsl`, Framer's own components and shaders). A transition Framer refuses comes back in
-  `notStored` and the tween stays: then ask the user to set the spring in the component's panel, and list it at
-  handoff.
+  instance and once per breakpoint copy: setting the primary does not reach the copies. Go through its defaults
+  (`dsl`, Framer's own components and shaders). A transition Framer refuses comes back in `notStored` and the default
+  stays: then ask the user to set it in the component's panel, and list it at handoff.
 

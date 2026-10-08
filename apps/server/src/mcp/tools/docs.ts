@@ -17,9 +17,9 @@ export function registerDocsTools(server: McpServer, context: ToolContext): void
   const topics = Object.keys(GUIDE_TOPICS) as [GuideTopic, ...GuideTopic[]];
 
   addTool(server, {
-    name: "design_guide",
-    title: "Design guide",
-    description: `How to change a Framer site so it holds together, from live builds: what Framer does without saying so, layout, motion and the checks. Read "dsl" before the first design_apply of a session, then the topic for the task. Topics: ${Object.entries(
+    name: "framer_guide",
+    title: "Framer guide",
+    description: `How to build in Framer, from live builds: what Framer does without saying so, how layout and motion work, and how to check the result. It gives no design advice: the design is the user's. Read "dsl" before the first design_apply of a session, then the topic for the task. Topics: ${Object.entries(
       GUIDE_TOPICS,
     )
       .map(([name, about]) => `${name} (${about})`)
@@ -40,10 +40,10 @@ export function registerDocsTools(server: McpServer, context: ToolContext): void
     run: async ({ topic }) => {
       const text = await readGuideTopic(topic);
 
-      // The journal's skills view shows that the agent followed the guide, and which part.
+      // The journal's skills view shows that the agent read the guide, and which part.
       await journal.noteSkill({
         at: new Date().toISOString(),
-        skill: "sitewright-design-guide",
+        skill: "sitewright-framer-guide",
         reference: topic,
       });
 
@@ -59,7 +59,7 @@ export function registerDocsTools(server: McpServer, context: ToolContext): void
     name: "framer_docs",
     title: "Framer DSL reference",
     description:
-      "Framer's official agent reference for the design DSL (commands, attributes, layout rules, CMS, variables, forms, effects), read live from Framer so it matches its current version. Start with section \"essentials\": its guardrails, core principles, command syntax with computed values, design rules and critical reminders in one read (continue with nextOffset). No arguments lists sections; pass section to read one, or query to search. guide reads one of Framer's implementation guides (FAQ, Navigations, Buttons, Effects, Overlays, Forms, Grids…): read the one for what you build before building it, they hold the recipes the reference lacks (e.g. how an accordion animates). Needs the project's Server API key (framer_status shows whether it is set).",
+      "Framer's official agent reference for its DSL (commands, attributes, layout, CMS, variables, forms, effects), read live from Framer so it matches its current version. Start with section \"essentials\": its guardrails, core principles, command syntax with computed values and critical reminders in one read (continue with nextOffset). No arguments lists sections; pass section to read one, or query to search. guide reads one of Framer's implementation guides (FAQ, Navigations, Buttons, Effects, Overlays, Forms, Grids…): read the one for what you build before building it, they hold the recipes the reference lacks (e.g. how an accordion animates). Needs the project's Server API key (framer_status shows whether it is set).",
     input: DocsInputSchema,
     output: DocsOutputSchema,
     annotations: {
@@ -168,7 +168,7 @@ function guideResult(name: string, guide: string, offset: number, limit: number)
   };
 }
 
-/** Framer's guardrails, core principles, command syntax, design rules and reminders as one read, page by page. */
+/** Framer's guardrails, core principles, command syntax and reminders as one read, page by page. */
 function essentialsResult(sections: DocSection[], offset: number, limit: number): DocsOutput {
   const { text, nextOffset } = sliceContent(essentialsOf(sections), offset, limit);
 

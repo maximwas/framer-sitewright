@@ -6,33 +6,29 @@ description: >
   misaligned, uneven or broken on phones.
 ---
 
-# Changing Framer sites with Sitewright
+# Building in Framer with Sitewright
 
-The guide is served by the MCP server, so it matches the installed version: read a topic with `design_guide`.
+Sitewright carries out the work in Framer; the design decisions are the user's and the site's. The guide to how
+Framer behaves is served by the MCP server, so it matches the installed version: read a topic with `framer_guide`.
 
 | When | Topic |
 | --- | --- |
 | Before the first `design_apply` of a session | `dsl` |
-| Placing anything: stacks, grids, containers, spacing, breakpoints, buttons, images | `layout` |
+| Placing anything: stacks, grids, sizes, breakpoints, images | `layout` |
 | Anything that moves or responds: menus, sliders, tabs, accordions, scroll scenes, page transitions | `motion` |
 | Before saying a page is done, and at handover | `verify` |
 | A template for the Framer Marketplace | `template` |
 | No Server API key (plugin only) | `no-key` |
 
-## Rules for every batch
+## For every batch
 
-- **Build in the site's own system:** its tokens, text styles, components, content width, spacing and radius.
+- **Build in the site's own system:** its tokens, text styles and components. Take anything the site has no style for
+  from the user.
 - **Write `stackAlignment` and `stackDistribution` on every stack you create:** a stack centers its children by
-  default. One edge per column, left by default.
-- **Equal heights:** grid `gridRowHeightType="auto"` with cells `height="1fr"`; cards in a row `height="1fr"` with
-  `stackDistribution="start"`.
-- **One content width** (`maxWidth` + side padding) for the header, every section and the footer.
-- **Links on frames,** not on text nodes (Framer's default blue); a component gets a Link property, never a wrapper
-  frame around its instance.
-- **Headings:** `balance: true` on their text styles.
-- **Spacing from the scale** (4…128), grouped by distance; text never touches a visible edge.
-- **Hover changes one thing** (a color or an arrow cue), and only on what is clickable.
-- **Anything that moves or responds:** write its states and transitions before building it and build every row
-  (`motion`, States first); then go through them on the published site or Preview in a real browser (`verify`).
+  default, which is rarely what the design means.
+- **Links on frames,** not on text nodes (those take Framer's default blue); a component gets a Link property, never a
+  wrapper frame around its instance.
+- **Anything that moves or responds:** list its states before building it and build every row (`motion`, States);
+  then go through them on the published site or Preview in a real browser (`verify`).
 - **After every `design_apply`, fix every defect in its `audit`;** before calling a page done, run `layout_audit` and
   look at every breakpoint.

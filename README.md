@@ -4,6 +4,8 @@ An MCP server that lets AI agents (Claude Code, Cursor, Codex) build and edit [F
 design tokens and text styles, pages, sections and components, images and icons. Every change goes into a local
 journal you can undo.
 
+[Website](https://maximwas.github.io/framer-sitewright/) · [Docs](https://maximwas.github.io/framer-sitewright/docs/) · [npm](https://www.npmjs.com/package/sitewright)
+
 > Unofficial. Not affiliated with or endorsed by Framer. "Framer" is a trademark of Framer B.V.
 
 ## Quick start
@@ -15,15 +17,15 @@ npx -y sitewright@latest
 ```
 
 It connects Claude Code, Cursor or Codex, offers to add your projects' Server API keys (one per project, kept on your
-computer), what the agent may do, and the skill hooks. Then open your project in Framer → Plugins → Sitewright →
-**Connect**. `npx sitewright setup --print` prints the commands and config blocks instead, for scripts and CI.
+computer), what the agent may do, and the skill hooks. Then add the Sitewright plugin from the Framer Marketplace,
+open it in your project (Plugins → Sitewright) and click **Connect**. `npx sitewright setup --print` prints the commands and config blocks instead, for scripts and CI.
 
 ## Two ways to reach Framer
 
 | | What you need | What works |
 | --- | --- | --- |
-| **Plugin** | The companion plugin open in the Framer editor (Marketplace release coming; for now `pnpm dev:plugin`). Its **Connect** button opens the journal window, which carries the plugin's connection: keep it open | Color tokens, text styles, fonts, selection, SVG, component controls, code files, and pages built from frames and text (layout, size, fill, radius, border, links, text styles) |
-| **Server API** | Your own key: Framer → Site Settings → General → API Keys | Everything above, plus the rest of Framer's agent DSL (effects, transitions, variants, components, rich text, shadows, image fills), screenshots, the DSL reference, icon, component and photo catalogs |
+| **Plugin** | The Sitewright plugin from the Framer Marketplace, open in the editor. Its **Connect** button opens the journal window, which carries the plugin's connection: keep it open | Color tokens, text styles, fonts, selection, SVG, component controls, code files, and pages built from frames and text (layout, size, fill, radius, border, links, text styles) |
+| **Server API** | Your own key: Framer → Site Settings → General → API Keys | Everything above, plus the rest of Framer's agent DSL (effects, transitions, variants, components, rich text, shadows, image fills), screenshots, the DSL reference, icon, component and shader catalogs |
 
 Each project has its own key. `npx sitewright key` (or Settings on the journal page) saves one per project in
 `~/.sitewright/keys.json`, and Sitewright uses the key of the project the plugin is open in. Nothing runs while the
@@ -34,23 +36,28 @@ When both are available, calls go to the plugin first and the DSL work goes to t
 
 ## What it does
 
-- **Brief:** the questions to ask before a site (purpose, pages, palette, theme, assets, motion, CMS, languages),
-  answered once and kept with the project.
 - **Design system:** color tokens with light and dark values, text styles with breakpoint sizes, font search.
 - **Pages:** read a page or a node as XML, change it with XML or raw DSL and get Framer's diagnostics back.
 - **Layout audit:** after every change and on request, checks for what looks broken on the published site: children
   lined up on different edges, cards of uneven height, text links in the default link color, sections wider than the
   rest, fixed sizes that break on phones, missing headings, uneven spacing and template habits.
+- **Breakpoints and motion:** Tablet and Phone breakpoints with their copies adapted; appear, hover, scroll, loops
+  and tickers as springs that settle without a bounce.
 - **Components:** variants, controls, hover and pressed states, interactions.
-- **Assets:** stock photos, uploads, SVG, icon sets.
-- **Marketplace:** browse templates and components in their current ranking and insert free components.
+- **Assets:** image and file uploads, SVG, icon sets.
+- **Marketplace:** reads the items you link (description, price, a free component's controls) and inserts free
+  components.
+- **CMS and languages:** collections, fields and items by slug; locales and what still needs translating.
+- **Code, when you allow it:** custom code, code components and overrides.
 - **Checks before handover:** SEO (titles, descriptions, h1, social image), broken links and anchors, the same photo
   twice, missing alt text, and text that does not stand out from its background (WCAG contrast).
 - **Journal with undo:** every call is recorded; undo the last change, a change and everything after it, or restore
   to a checkpoint. A local page (`sitewright open`) shows the journal, how each call reached Framer (Plugin API,
   Server API or Framer's agent layer), the skills Claude used, the settings (custom code, code components) and the project's Server API key.
-- **Knowledge:** `design_guide` and the Claude Code skill: what Framer does without saying so, layout and motion rules,
-  and the checks before handing a page over.
+- **Framer guide:** `framer_guide` tells the agent how Framer behaves: what its layout language does without saying
+  so, how layout, breakpoints and motion work, Framer's Marketplace template checklist, working without a key, and how
+  to check the result. It gives no design advice: the design stays yours. `sitewright setup --skill` adds a Claude
+  Code skill that points the agent at it.
 
 ## Privacy
 
@@ -100,8 +107,23 @@ pnpm install && pnpm build
 pnpm lint && pnpm typecheck && pnpm test
 pnpm check:pack          # pack like npm publish, install into an empty folder, run it there
 pnpm local:link          # the sitewright command from this clone, in any folder (pnpm local:unlink removes it)
-pnpm dev:plugin          # the companion plugin; in Framer: Plugins → Open Development Plugin
+pnpm dev:plugin          # the plugin from this clone; in Framer: Plugins → Open Development Plugin
+pnpm docs:tools          # rewrite the tool reference of the docs page from the built server
 ```
+
+### Releasing
+
+Set the same version in `apps/server`, `apps/plugin` and `apps/web`, commit, then push a tag:
+
+```bash
+git tag v1.2.3 && git push --follow-tags
+```
+
+The `Release` workflow checks that the tag matches the versions, runs the checks, publishes `sitewright` to npm
+(trusted publishing, with provenance) and creates a GitHub release with the plugin's zip. Framer has no API for plugin
+versions: upload that zip in the Marketplace dashboard (Publish New Version). After a plugin update, check that
+**Connect** still connects: the journal window relays only for the origins in `DEFAULT_PLUGIN_ORIGINS`
+(`packages/core/src/constants/bridge.ts`).
 
 | Path | Package | What |
 | --- | --- | --- |
