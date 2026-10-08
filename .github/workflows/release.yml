@@ -1,0 +1,52 @@
+name: Release
+
+# A tag v1.2.3 releases that version: the sitewright package goes to npm, the plugin is packed for the Framer
+# Marketplace, and a GitHub release carries the plugin zip. npm trusts this workflow (trusted publishing, configured on
+# the package's npm settings page), so the repository holds no token and the package gets provenance. Framer has no
+# API for plugin versions: the zip from the release is uploaded in the Marketplace dashboard by hand.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.11.0
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+      # Trusted publishing needs npm 11.5.1 or newer.
+      - run: npm install -g npm@11.17.0
+      - name: Tag matches the server, plugin and web versions
+        run: |
+          for app in server plugin web; do
+            version="v$(node -p "require('./apps/$app/package.json').version")"
+            test "$version" = "$GITHUB_REF_NAME" || { echo "apps/$app is $version, the tag is $GITHUB_REF_NAME"; exit 1; }
+          done
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      # Builds everything, packs the server like npm publish, installs it into an empty folder and runs it there.
+      - run: pnpm check:pack
+      # pnpm pack writes the catalog: versions into package.json; npm then publishes that tarball.
+      - run: pnpm --filter sitewright pack --pack-destination "$RUNNER_TEMP/package"
+      - run: npm publish "$RUNNER_TEMP"/package/*.tgz --access public
+      - name: Pack the plugin for the Framer Marketplace
+        working-directory: apps/plugin
+        run: npx -y framer-plugin-tools@1.2.2 pack --prebuilt -o "$RUNNER_TEMP/sitewright-plugin-${GITHUB_REF_NAME#v}.zip"
+      - name: GitHub release with the plugin zip
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" "$RUNNER_TEMP/sitewright-plugin-${GITHUB_REF_NAME#v}.zip" \
+            --title "Sitewright ${GITHUB_REF_NAME#v}" --generate-notes \
+            --notes "Install or update the MCP server: \`npx -y sitewright@latest\`. The plugin comes from the Framer Marketplace (Plugins → Sitewright); the zip below is the build submitted there."
