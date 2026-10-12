@@ -404,7 +404,8 @@ const pinnedInstanceAuto: NodeRule = (node) => {
       attr(node, end) !== null &&
       attr(node, start) !== "null" &&
       attr(node, end) !== "null" &&
-      (attr(node, size) ?? "auto") === "auto",
+      // Only a size read as fit: through the plugin a layer stretched by its pins reads with no size at all.
+      sizeKind(attr(node, size)) === "fit",
   );
 
   return axes.length === 0

@@ -620,17 +620,21 @@ describe("layout audit", () => {
   });
 
   it("regression: a component instance pinned to all sides keeps its auto size and collapses (seen: 200 x 200)", () => {
-    const pinned = (size: string) =>
+    const pinned = (size: string | undefined) =>
       node("ComponentInstanceNode", "Hero Reel", {
         position: "absolute",
         left: "0px",
         right: "0px",
         top: "0px",
         bottom: "0px",
-        width: size,
-        height: size,
+        ...(size === undefined
+          ? {}
+          : {
+              width: size,
+              height: size,
+            }),
       });
-    const collapsed = (size: string) =>
+    const collapsed = (size: string | undefined) =>
       auditTree(
         node(
           "FrameNode",
@@ -646,6 +650,9 @@ describe("layout audit", () => {
 
     expect(collapsed("auto")).toHaveLength(1);
     expect(collapsed("100%")).toEqual([]);
+    // Regression (12.10.2026, Grain, Grid and a hero video that filled their sections): through the plugin a layer
+    // stretched by its pins reads with no size at all. Unknown is not auto, so it is not flagged.
+    expect(collapsed(undefined)).toEqual([]);
   });
 
   it("regression: component instances filling a row that hugs them size it with their own content (seen: Steps, Plans)", () => {

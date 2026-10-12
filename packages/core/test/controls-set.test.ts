@@ -96,3 +96,77 @@ it("regression: uploads the images a carousel's list takes, which Framer drops a
   expect(state.instanceControls.carousel?.imageUrl).toBe("https://example.com/plain-string.jpg");
   expect(result.notStored).toEqual([]);
 });
+
+/** An instance as the plugin gives it: reads resolve tokens to colors, writes change only the controls they name. */
+function tokenBoundInstance(stored: Record<string, unknown>, resolved: (value: unknown) => unknown) {
+  const { runtime } = createFakeRuntime({});
+  const instance = () => ({
+    id: "clock",
+    controls: Object.fromEntries(Object.entries(stored).map(([key, value]) => [key, resolved(value)])),
+    setAttributes: async ({ controls }: { controls: Record<string, unknown> }) => {
+      Object.assign(stored, controls);
+    },
+  });
+  const port: FramerRuntime = {
+    ...runtime,
+    port: {
+      ...runtime.port,
+      getNode: async (nodeId) => (nodeId === "clock" ? instance() : null),
+    },
+  };
+
+  return port;
+}
+
+it("regression: setting one control keeps the token bound to another (seen: Time & Date's color became rgb)", async () => {
+  const stored: Record<string, unknown> = {
+    color: "var(--token-312cd7de)",
+    format: "24h",
+  };
+  const runtime = tokenBoundInstance(stored, (value) =>
+    value === "var(--token-312cd7de)" ? "rgb(255, 255, 255)" : value,
+  );
+
+  await runOperation(
+    componentControlsSet,
+    { runtime },
+    {
+      nodeId: "clock",
+      controls: { format: "12h" },
+    },
+  );
+
+  expect(stored).toEqual({
+    color: "var(--token-312cd7de)",
+    format: "12h",
+  });
+});
+
+it("regression: a font written by its selector counts as stored when Framer reads it back by family (seen: Urbanist)", async () => {
+  const stored: Record<string, unknown> = {};
+  const runtime = tokenBoundInstance(stored, (value) =>
+    typeof value === "object" && value !== null && "fontSelector" in value
+      ? {
+          fontFamily: "Urbanist",
+          fontWeight: 400,
+          fontStyle: "normal",
+          fontSize: "14px",
+        }
+      : value,
+  );
+  const result = await runOperation(
+    componentControlsSet,
+    { runtime },
+    {
+      nodeId: "clock",
+      controls: {
+        font: {
+          fontSelector: "GF;Urbanist-regular",
+          fontSize: 14,
+        },
+      },
+    },
+  );
+
+  expect(result.notStored).toEqual([]);
+});
