@@ -221,6 +221,25 @@ describe("XML: writing nodes", () => {
     expect(variable).toBeLessThan(text);
   });
 
+  it("regression: a new CMS list becomes a list before its item binds fields (seen: not in scope for the target)", () => {
+    const { commands } = xmlToDsl(
+      `<FrameNode parent="page" key="list" collectionList.collection="Services" collectionList.repeatedDescendantId="@card">
+        <ComponentInstanceNode key="card" component="cardComponent" $control__title="var(--variable-title)" $control__tone="Dark" />
+      </FrameNode>`,
+      tempIds,
+    );
+
+    expect(commands).toHaveLength(4);
+    expect(commands[0]).toMatch(/^\+FrameNode list_\d+ parent="page";$/);
+    expect(commands[1]).toMatch(
+      /^\+ComponentInstanceNode card_\d+ parent="list_\d+" component="cardComponent" \$control__tone="Dark";$/,
+    );
+    expect(commands[2]).toMatch(
+      /^SET list_\d+ collectionList\.collection="Services" collectionList\.repeatedDescendantId="card_\d+";$/,
+    );
+    expect(commands[3]).toMatch(/^SET card_\d+ \$control__title="var\(--variable-title\)";$/);
+  });
+
   it("regression: a list read back as JSON is written item by item, numbers unquoted (seen: a scroll effect's sections)", () => {
     const { commands } = xmlToDsl(
       '<RichTextNode id="a1" styleTransformEffect.sections="[{&quot;opacity&quot;:0.15,&quot;scale&quot;:1},{}]" $control__slides="[&quot;s1&quot;,&quot;s2&quot;]" />',

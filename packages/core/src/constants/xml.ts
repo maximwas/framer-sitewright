@@ -68,3 +68,9 @@ export const XML_RUN_CONTAINER_TYPES: ReadonlySet<string> = new Set(["TextBlock"
 
 /** Attributes that place an element, which Framer needs when it is created even if they name a later element. */
 export const PLACEMENT_ATTRIBUTES: ReadonlySet<string> = new Set(["parent", "component", "scope", "index"]);
+
+/** The attributes that make a frame a CMS list: its SET waits for the item it repeats, which the batch creates later. */
+export const XML_CMS_LIST_PREFIX = "collectionList.";
+
+/** A binding to a variable: a CMS field, a component's own variable. */
+export const XML_VARIABLE_BINDING = "var(--variable-";

@@ -1,5 +1,10 @@
 import { DSL_VARIABLE_TYPE } from "../constants/dsl.ts";
-import { PLACEMENT_ATTRIBUTES, XML_RUN_CONTAINER_TYPES } from "../constants/xml.ts";
+import {
+  PLACEMENT_ATTRIBUTES,
+  XML_CMS_LIST_PREFIX,
+  XML_RUN_CONTAINER_TYPES,
+  XML_VARIABLE_BINDING,
+} from "../constants/xml.ts";
 import { addNode, deleteNode, setNode } from "../dsl/commands.ts";
 import type { DslValue } from "../types/dsl.ts";
 import type { XmlCompiled, XmlElementNode, XmlParent, XmlVariable } from "../types/xml.ts";
@@ -158,7 +163,7 @@ class XmlCompiler {
       attributes.text = text;
     }
 
-    const { now, later } = this.#splitForward(attributes);
+    const { now, later } = this.#splitForward(attributes, parent?.inPendingList ?? false);
 
     this.commands.push(addNode(element.type, tempId, now));
     this.#created.add(tempId);
@@ -172,6 +177,8 @@ class XmlCompiler {
       id: tempId,
       type: element.type,
       isNew: true,
+      inPendingList:
+        (parent?.inPendingList ?? false) || Object.keys(later).some((name) => name.startsWith(XML_CMS_LIST_PREFIX)),
     };
 
     // A new block's text becomes runs, in order with the runs written as elements.
@@ -193,9 +200,14 @@ class XmlCompiler {
    * The attributes split by whether they may go now. An effect that names an element created later in the batch (a
    * scroll section's target, a scroll variant, a form's submit button) is refused until that element exists ("every
    * target must be a scroll target"), so the whole effect (every attribute of the same first segment) waits for it.
-   * What places the element (parent, component, scope) stays: Framer needs it at creation.
+   * What places the element (parent, component, scope) stays: Framer needs it at creation. Inside a new CMS list that
+   * waits for its item, bindings to variables wait too: a field is in scope only once the frame is a list ("not in scope
+   * for the target", seen 12.10.2026), and deferred SETs run in tree order, so the list's comes first.
    */
-  #splitForward(attributes: Readonly<Record<string, DslValue>>): {
+  #splitForward(
+    attributes: Readonly<Record<string, DslValue>>,
+    inPendingList = false,
+  ): {
     now: Record<string, DslValue>;
     later: Record<string, DslValue>;
   } {
@@ -208,10 +220,16 @@ class XmlCompiler {
       ),
     );
     const entries = Object.entries(attributes);
+    const waits = (name: string, value: DslValue) =>
+      groups.has(name.split(".")[0] ?? name) ||
+      (inPendingList &&
+        !PLACEMENT_ATTRIBUTES.has(name) &&
+        typeof value === "string" &&
+        value.includes(XML_VARIABLE_BINDING));
 
     return {
-      now: Object.fromEntries(entries.filter(([name]) => !groups.has(name.split(".")[0] ?? name))),
-      later: Object.fromEntries(entries.filter(([name]) => groups.has(name.split(".")[0] ?? name))),
+      now: Object.fromEntries(entries.filter(([name, value]) => !waits(name, value))),
+      later: Object.fromEntries(entries.filter(([name, value]) => waits(name, value))),
     };
   }
 
