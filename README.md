@@ -66,8 +66,8 @@ When both are available, calls go to the plugin first and the DSL work goes to t
 
 ## Privacy
 
-Your Framer key and your project data stay on your machine. The server talks only to Framer. There is no telemetry and
-no account.
+Your Framer key and your project data stay on your machine. The server talks to Framer, to your computer and to the
+public pages a tool is asked to read. There is no telemetry and no account. The full policy: [PRIVACY.md](PRIVACY.md).
 
 ## Skills in the journal
 

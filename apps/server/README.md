@@ -158,7 +158,7 @@ sitewright --help
 
 Your key and your project data stay on your machine. The server talks to Framer and to the plugin on your computer;
 beyond that it reads only public pages a tool names: Marketplace items you link, reference pages and your published
-site. No telemetry, no account.
+site. No telemetry, no account. The full policy: [privacy policy](https://maximwas.github.io/framer-sitewright/privacy/).
 
 ## Support
 

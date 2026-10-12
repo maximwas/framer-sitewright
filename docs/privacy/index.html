@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sitewright privacy policy</title>
+    <meta name="description" content="Sitewright runs on your computer: no Sitewright server, account, telemetry or analytics. What it stores, what it connects to, and how to delete it." />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../site.css" />
+  </head>
+  <body class="docs-page">
+    <a class="skip" href="#content">Skip to content</a>
+
+    <header class="top">
+      <div class="wrap">
+        <a class="brand" href="../" aria-label="Sitewright home">
+          <svg aria-hidden="true" viewBox="0 0 30 30">
+            <rect x="0.5" y="0.5" width="29" height="29" rx="7.5" fill="#1c1d21" stroke="#ffffff" stroke-opacity="0.16" />
+            <g transform="translate(4.2 4.2) scale(0.3375)"><path fill="#f4f2ec" d="M10 10h16v7h-9v9h-7zM54 10v16h-7v-9h-9v-7zM10 54V38h7v9h9v7zM54 54H38v-7h9v-9h7z" /><path fill="#f2a93b" d="M32 21l3.6 7.4L43 32l-7.4 3.6L32 43l-3.6-7.4L21 32l7.4-3.6z" /></g>
+          </svg>
+          Sitewright <span class="brand-sub">Privacy</span>
+        </a>
+        <nav class="links" aria-label="Sections">
+          <a href="../docs/">Docs</a>
+          <a href="../">Home</a>
+        </nav>
+        <a class="gh" href="https://github.com/maximwas/framer-sitewright">
+          <svg aria-hidden="true" viewBox="0 0 16 16" fill="currentColor">
+            <path
+              d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"
+            />
+          </svg>
+          GitHub
+        </a>
+      </div>
+    </header>
+
+    <div class="wrap docs">
+      <aside class="toc" aria-label="On this page">
+        <details open>
+          <summary>On this page</summary>
+          <nav>
+            <a href="#in-short">In short</a>
+            <a href="#what-runs-where">What runs where</a>
+            <a href="#data-stored-on-your-computer">Data stored on your computer</a>
+            <a href="#network-connections">Network connections</a>
+            <a href="#your-ai-agent">Your AI agent</a>
+            <a href="#support-links">Support links</a>
+            <a href="#deleting-your-data">Deleting your data</a>
+            <a href="#changes-and-contact">Changes and contact</a>
+          </nav>
+        </details>
+      </aside>
+
+      <main id="content" class="prose">
+        <section id="top">
+          <p class="kicker">Privacy</p>
+          <h1>Privacy policy</h1>
+          <p class="lead">Effective October 12, 2026. This policy covers Sitewright: the <code>sitewright</code> MCP server and CLI (npm), the Sitewright plugin for Framer, and the journal page they serve on your computer. Sitewright is free, open source (MIT) and maintained by Maksym Vasianin. It is unofficial and not affiliated with Framer.</p>
+        </section>
+        <section id="in-short">
+          <h2>In short</h2>
+          <ul>
+            <li>Sitewright runs on your computer. There is no Sitewright server, account, telemetry, analytics or advertising.</li>
+            <li>The maintainer receives none of your data: not your projects, your keys, your prompts or how you use the tools.</li>
+            <li>Sitewright talks to Framer, to your computer, and to the public pages a tool is asked to read. Nothing else.</li>
+            <li>What a tool returns goes to the AI agent you use, under that agent's own policy (see below).</li>
+          </ul>
+        </section>
+        <section id="what-runs-where">
+          <h2>What runs where</h2>
+          <ul>
+            <li><strong>The MCP server</strong> runs on your computer, started by your AI client (Claude Code, Cursor, Codex or another MCP client).</li>
+            <li><strong>The plugin</strong> runs inside the Framer editor. It makes no network requests of its own: it only exchanges messages with the journal window on your computer.</li>
+            <li><strong>The journal page</strong> is served at <code>http://127.0.0.1:18710</code> (or the port you set), on your computer only. Its connections accept only that page.</li>
+          </ul>
+        </section>
+        <section id="data-stored-on-your-computer">
+          <h2>Data stored on your computer</h2>
+          <p>Everything Sitewright keeps is in <code>~/.sitewright</code> (or <code>SITEWRIGHT_HOME</code>) and <code>~/.cache/sitewright</code>:</p>
+          <div class="table"><table>
+            <thead><tr><th scope="col">File</th><th scope="col">What it holds</th></tr></thead>
+            <tbody>
+              <tr><th scope="row"><code>keys.json</code></th><td>The Framer Server API keys you add, one per project. Readable by your user only.</td></tr>
+              <tr><th scope="row"><code>history/</code></th><td>The journal of each project: what each call read or changed, with the before and after states that undo needs. A cleared journal moves to <code>history/archive/</code>.</td></tr>
+              <tr><th scope="row"><code>settings.json</code></th><td>Your switches: plugin first, custom code, code components, support reminders.</td></tr>
+              <tr><th scope="row"><code>logs/</code></th><td>What the server did. API keys and tokens are redacted.</td></tr>
+              <tr><th scope="row"><code>bridge.json</code></th><td>The local port and a random token Sitewright's own processes use to reach each other. Readable by your user only.</td></tr>
+              <tr><th scope="row"><code>skill-notes/</code></th><td>Only if you add the optional Claude Code hooks: which skills Claude used in a conversation, so the journal can show them. Each file is removed when its server process ends.</td></tr>
+              <tr><th scope="row"><code>support.json</code></th><td>When the support note was last shown.</td></tr>
+              <tr><th scope="row"><code>~/.cache/sitewright</code></th><td>A copy of Framer's public DSL reference, so it is not downloaded on every start.</td></tr>
+            </tbody>
+          </table></div>
+        </section>
+        <section id="network-connections">
+          <h2>Network connections</h2>
+          <p>Sitewright connects only to:</p>
+          <ul>
+            <li><strong>Framer</strong>, to read and change the project you work on: through the plugin in your editor and, if you add a key, through Framer's Server API for that project. Your project data stays in Framer, under Framer's policies.</li>
+            <li><strong>Public pages a tool is asked to read:</strong> Marketplace items you link (framer.com), a reference page you ask to screenshot (captured by Framer's browser), and your own published site with the links and images on it (<code>live_check</code>).</li>
+            <li><strong>Your computer</strong> (<code>127.0.0.1</code>), for the journal page.</li>
+          </ul>
+        </section>
+        <section id="your-ai-agent">
+          <h2>Your AI agent</h2>
+          <p>Sitewright's tools answer your AI agent: page structure, text, styles, CMS items, screenshots and the like. The agent sends them to its model provider (for example Anthropic, OpenAI or Cursor) under that provider's terms and privacy policy. Sitewright does not control what your agent or its provider does with them.</p>
+        </section>
+        <section id="support-links">
+          <h2>Support links</h2>
+          <p>At most once a week, after a change that worked, a tool result may carry one sentence with links to donate (Ko-fi and a monobank jar). Turn it off with the switch on the journal page or <code>SITEWRIGHT_SUPPORT_REMINDERS=off</code>. Sitewright sends nothing to those sites; if you open them, their own policies apply. Installing from npm or GitHub falls under their policies as well.</p>
+        </section>
+        <section id="deleting-your-data">
+          <h2>Deleting your data</h2>
+          <ul>
+            <li>Remove a project's key with <code>sitewright key remove</code>, or delete <code>~/.sitewright</code> and <code>~/.cache/sitewright</code> to remove everything Sitewright stored.</li>
+            <li>Remove the MCP server from your AI client and the plugin from Framer. Changes already made in your Framer project stay there until you change them.</li>
+          </ul>
+        </section>
+        <section id="changes-and-contact">
+          <h2>Changes and contact</h2>
+          <p>Changes to this policy are made in this file, and its history shows every version. Questions: open an issue at <a href="https://github.com/maximwas/framer-sitewright/issues">https://github.com/maximwas/framer-sitewright/issues</a>.</p>
+        </section>
+      </main>
+    </div>
+
+    <footer>
+      <div class="wrap">
+        <p>
+          Sitewright is free and open source under the
+          <a href="https://github.com/maximwas/framer-sitewright/blob/main/LICENSE">MIT license</a>. Unofficial: not
+          affiliated with or endorsed by Framer. “Framer” is a trademark of Framer B.V.
+        </p>
+        <p><a href="../">Home</a> · <a href="../docs/">Docs</a> · <a href="https://github.com/maximwas/framer-sitewright">GitHub</a> · <a href="https://ko-fi.com/maksymvasianin">Ko-fi</a> · <a href="https://send.monobank.ua/jar/7o9oMrbXTj">monobank</a> · <a href="./">Privacy</a></p>
+      </div>
+    </footer>
+  </body>
+</html>
