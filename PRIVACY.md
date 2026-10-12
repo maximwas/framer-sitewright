@@ -42,8 +42,9 @@ Sitewright connects only to:
 - **Framer**, to read and change the project you work on: through the plugin in your editor and, if you add a key,
   through Framer's Server API for that project. Your project data stays in Framer, under Framer's policies.
 - **Public pages a tool is asked to read:** Marketplace items you link (framer.com), a reference page you ask to
-  screenshot (captured by Framer's browser), and your own published site with the links and images on it
-  (`live_check`).
+  screenshot (captured by Framer's browser), a reference image you give `image_compare` by URL, and your own
+  published site with the links and images on it (`live_check`). A reference image given as a file is read on your
+  computer and goes nowhere.
 - **Your computer** (`127.0.0.1`), for the journal page.
 
 ## Your AI agent

@@ -6,6 +6,8 @@ import { joinCommands } from "../../dsl/commands.ts";
 import { separateControls } from "../../dsl/controls.ts";
 import { deferIconInitialValues } from "../../dsl/icon-variables.ts";
 import { parseDsl } from "../../dsl/parse.ts";
+import { splitPluginWrites } from "../../dsl/plugin-writes.ts";
+import { normalizeDslResult } from "../../dsl/result.ts";
 import { keptSprings, springWarnings } from "../../dsl/springs.ts";
 import { isolateTempIds, nextTempId } from "../../dsl/temp-ids.ts";
 import { OperationError } from "../../errors.ts";
@@ -27,6 +29,16 @@ import { pageRootId } from "../nodes/read-tree.ts";
 import { auditTouched } from "./audit-touched.ts";
 import { fractionalPxWarnings } from "./fractional-px.ts";
 import { projectIconControlWarnings } from "./icon-controls.ts";
+import { lockedWarnings } from "./locked.ts";
+import { writeThroughPlugin } from "./plugin-writes.ts";
+import {
+  inheritedOverrideWarnings,
+  motionWarnings,
+  readTargets,
+  setTargets,
+  unchangedWarnings,
+} from "./stored-checks.ts";
+import { refuseUnknownTokens } from "./unknown-tokens.ts";
 import { resolveVariableIds } from "./variable-ids.ts";
 import { loadVariableTargets } from "./variable-targets.ts";
 
@@ -120,19 +132,30 @@ async function applyBatch(
       ),
     ),
   );
-  const commands = springs.dsl;
+  const sided = splitPluginWrites(springs.dsl);
+  const commands = sided.dsl;
 
-  if (commands.trim() === "") {
+  if (commands.trim() === "" && sided.writes.length === 0) {
     throw new OperationError("INVALID_INPUT", "Nothing to apply.", "Pass xml, dsl or both.");
   }
 
   const parsed = parseDsl(commands);
+
+  // Before the plugin's writes were taken out of the DSL: a border control's color is checked too.
+  await refuseUnknownTokens(runtime.port, parseDsl(springs.dsl));
+
   // The reads around applyChanges only help: none may fail the batch. After it, a failure would make the model retry a
   // batch Framer applied already, and design_apply is not idempotent.
   const variables = await loadVariableTargets(agent, pagePath, parsed, () =>
     pageRootId(runtime, pagePath).catch(() => null),
   ).catch(() => new Set<string>());
-  const apply = () => applyDsl(agent, commands, pagePath);
+  // What the batch sets on nodes that exist, read before and after it: Framer drops some writes without an error.
+  const targets = setTargets(parsed);
+  const before = targets === null ? null : await readTargets(agent, pagePath, [...targets.keys()]).catch(() => null);
+  const apply = () =>
+    commands.trim() === ""
+      ? Promise.resolve(normalizeDslResult({ message: "Commands applied cleanly." }))
+      : applyDsl(agent, commands, pagePath);
   const applied = await (history === undefined
     ? apply()
     : withDslHistory(
@@ -146,11 +169,27 @@ async function applyBatch(
         apply,
       )
   ).catch(assetRefusal);
+  const sides = await writeThroughPlugin(context, sided.writes, applied.renamedIds);
+  const after =
+    targets === null || before === null
+      ? null
+      : await readTargets(agent, pagePath, [...targets.keys()]).catch(() => null);
+  const storedWarnings =
+    targets === null || before === null
+      ? []
+      : [
+          ...inheritedOverrideWarnings(targets, before),
+          ...motionWarnings(targets, before),
+          ...(after === null ? [] : unchangedWarnings(targets, before, after)),
+        ];
   const iconWarnings = await projectIconControlWarnings(agent, pagePath, parsed, applied.renamedIds).catch(() => []);
   const result = withOwnNames(
-    withWarnings(applied, [
+    withWarnings(withErrors(applied, sides.errors), [
+      ...sides.warnings,
+      ...storedWarnings,
       ...iconWarnings,
       ...fractionalPxWarnings(parsed, applied.renamedIds),
+      ...lockedWarnings(parsed, applied.renamedIds),
       ...springWarnings(springs.converted),
     ]),
     raw?.created ?? {},
@@ -179,6 +218,16 @@ function withOwnNames(result: DslResult, created: Readonly<Record<string, string
         renamedIds: Object.fromEntries(
           Object.entries(result.renamedIds).map(([tempId, id]) => [sent.get(tempId) ?? tempId, id]),
         ),
+      };
+}
+
+function withErrors(result: DslResult, errors: readonly DslIssue[]): DslResult {
+  return errors.length === 0
+    ? result
+    : {
+        ...result,
+        ok: false,
+        errors: [...result.errors, ...errors],
       };
 }
 

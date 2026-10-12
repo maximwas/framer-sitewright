@@ -21,6 +21,7 @@ import type {
   JournalProjectsSchema,
   JournalSchema,
   LinkStyleStateSchema,
+  NodeLockStateSchema,
   NodeSnapshotSchema,
   NodeStateSchema,
   RevertReportSchema,
@@ -80,6 +81,10 @@ export type NodeStep = Extract<UndoStep, { kind: "node" }>;
 export type StyleStep = Exclude<UndoStep, { kind: "node" }>;
 
 export type CmsItemStep = Extract<UndoStep, { kind: "cms-item" }>;
+
+export type NodeLockState = z.infer<typeof NodeLockStateSchema>;
+
+export type NodeLockStep = Extract<UndoStep, { kind: "node-lock" }>;
 
 /** An item as the revert currently sees it; `handle` is null for items a dry run only pretends to create. */
 export interface WorkingEntry<State, Handle> {

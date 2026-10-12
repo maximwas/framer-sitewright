@@ -121,6 +121,7 @@ it("speaks the bridge protocol for the plugin: hello, then requests run in the p
         kind: "status",
         state: "connected",
         closeCode: null,
+        serverVersion: "0",
       }),
     ),
   );

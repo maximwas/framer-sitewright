@@ -909,7 +909,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="pages" data-group>
-  <h3>Pages, layout and redirects <span>20</span></h3>
+  <h3>Pages, layout and redirects <span>22</span></h3>
   <p class="group-intro">Create, duplicate and delete pages, read one as XML, find layers and replace text across pages, read and set the site's and pages' titles, descriptions, images and search settings, change pages and their motion, check what looks broken, adapt them to tablet and phone, look at them and at a reference, and redirect old paths.</p>
   <article class="tool" id="page_create" data-tool="page_create Create a page creates an empty web page at a path (&quot;/about&quot;) or a design page (a canvas for drafts) by name. build its content with design_apply; add breakpoints with breakpoints_add. undo does not remove pages.">
     <header>
@@ -1000,14 +1000,14 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="nodes_query" data-tool="nodes_query Query layers by attributes finds layers across the site's pages (or one page) whose dsl attributes meet every condition, e.g. all text smaller than 14px, every frame with an image fill, links with no link style: [{ attribute: &quot;opacity&quot;, op: &quot;lessthan&quot;, value: &quot;1&quot; }]. operators: equals, contains, lessthan, greaterthan (numbers compare as numbers, 16px is 16), exists, notexists. returns each layer with its page and the attributes the conditions name; change them with design_apply. attributes are read as the plugin api gives them, on each page's main breakpoint.">
+  <article class="tool" id="nodes_query" data-tool="nodes_query Query layers by attributes finds layers across the site's pages (or one page) whose dsl attributes meet every condition, e.g. all text smaller than 14px, every frame with an image fill, links with no link style: [{ attribute: &quot;opacity&quot;, op: &quot;lessthan&quot;, value: &quot;1&quot; }]. operators: equals, contains, lessthan, greaterthan (numbers compare as numbers, 16px is 16), exists, notexists. returns each layer with its page and the attributes the conditions name; change them with design_apply. attributes are read as the plugin api gives them, on each page's main breakpoint: units can differ from nodes_read, which reads through the server api (a size in percent here, in px there).">
     <header>
       <h4><a href="#nodes_query">nodes_query</a></h4>
       <span class="badge read">Reads</span>
       <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
     </header>
     <p class="tool-title">Query layers by attributes</p>
-    <p>Finds layers across the site's pages (or one page) whose DSL attributes meet every condition, e.g. all text smaller than 14px, every frame with an image fill, links with no link style: [{ attribute: &quot;opacity&quot;, op: &quot;lessThan&quot;, value: &quot;1&quot; }]. Operators: equals, contains, lessThan, greaterThan (numbers compare as numbers, 16px is 16), exists, notExists. Returns each layer with its page and the attributes the conditions name; change them with <a href="#design_apply"><code>design_apply</code></a>. Attributes are read as the Plugin API gives them, on each page's main breakpoint.</p>
+    <p>Finds layers across the site's pages (or one page) whose DSL attributes meet every condition, e.g. all text smaller than 14px, every frame with an image fill, links with no link style: [{ attribute: &quot;opacity&quot;, op: &quot;lessThan&quot;, value: &quot;1&quot; }]. Operators: equals, contains, lessThan, greaterThan (numbers compare as numbers, 16px is 16), exists, notExists. Returns each layer with its page and the attributes the conditions name; change them with <a href="#design_apply"><code>design_apply</code></a>. Attributes are read as the Plugin API gives them, on each page's main breakpoint: units can differ from <a href="#nodes_read"><code>nodes_read</code></a>, which reads through the Server API (a size in percent here, in px there).</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
@@ -1015,6 +1015,22 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <tr><th scope="row"><code>type</code></th><td><code class="type">string</code></td><td>Only layers of this type, e.g. &quot;FrameNode&quot;, &quot;RichTextNode&quot;.</td></tr>
       <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>One page; omit to look through every web page.</td></tr>
       <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td> <span class="def">default <code>50</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="nodes_lock" data-tool="nodes_lock Lock or unlock layers locks layers in the framer editor so they cannot be selected or moved by accident (a grain or grid overlay, a background video), or unlocks them with locked: false. design_apply cannot do it: framer ignores locked in the dsl. works with or without the server api key. returns the layers it changed, those already as asked, and ids it found no layer for. find locked layers with nodes_query [{ attribute: &quot;locked&quot;, op: &quot;equals&quot;, value: &quot;true&quot; }]. undo takes it back.">
+    <header>
+      <h4><a href="#nodes_lock">nodes_lock</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Lock or unlock layers</p>
+    <p>Locks layers in the Framer editor so they cannot be selected or moved by accident (a grain or grid overlay, a background video), or unlocks them with locked: false. <a href="#design_apply"><code>design_apply</code></a> cannot do it: Framer ignores locked in the DSL. Works with or without the Server API key. Returns the layers it changed, those already as asked, and ids it found no layer for. Find locked layers with <a href="#nodes_query"><code>nodes_query</code></a> [{ attribute: &quot;locked&quot;, op: &quot;equals&quot;, value: &quot;true&quot; }]. Undo takes it back.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>nodeIds</code></th><td><code class="type">string[]</code></td><td>The layers to lock or unlock, by id (from nodes_read, nodes_find, nodes_query or selection_get). <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>locked</code></th><td><code class="type">boolean</code></td><td>true locks the layers, false unlocks them. <span class="def">default <code>true</code></span></td></tr>
       </tbody>
     </table></div>
   </article>
@@ -1200,6 +1216,24 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>Node id from nodes_read or design_apply renamedIds. <span class="req">required</span></td></tr>
       <tr><th scope="row"><code>scale</code></th><td><code class="type">0.5 | 1 | 2</code></td><td>Pixel density. <span class="def">default <code>1</code></span></td></tr>
       <tr><th scope="row"><code>clip</code></th><td><code class="type">object</code></td><td>Region of the node to capture, in CSS pixels before scale.<ul class="fields"><li><code>x</code> <code class="type">number</code></li><li><code>y</code> <code class="type">number</code></li><li><code>width</code> <code class="type">number</code></li><li><code>height</code> <code class="type">number</code></li></ul></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="image_compare" data-tool="image_compare Compare a node with a reference image captures a node like node_screenshot and compares it with a reference png (a figma export, by absolute path or https url): the y of every horizontal line or edge and the x of every vertical one, paired between the two. the answer lists edges that match, edges off by a few px (where each is, and by how much the node's is off: positive is lower or further right), edges of the reference the node lacks, and edges only the node has. export the reference at the same scale and size as the capture (clip and scale work as in node_screenshot). needs the project's server api key.">
+    <header>
+      <h4><a href="#image_compare">image_compare</a></h4>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Compare a node with a reference image</p>
+    <p>Captures a node like <a href="#node_screenshot"><code>node_screenshot</code></a> and compares it with a reference PNG (a Figma export, by absolute path or https URL): the y of every horizontal line or edge and the x of every vertical one, paired between the two. The answer lists edges that match, edges off by a few px (where each is, and by how much the node's is off: positive is lower or further right), edges of the reference the node lacks, and edges only the node has. Export the reference at the same scale and size as the capture (clip and scale work as in <a href="#node_screenshot"><code>node_screenshot</code></a>). Needs the project's Server API key.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>Node id from nodes_read or design_apply renamedIds. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>scale</code></th><td><code class="type">0.5 | 1 | 2</code></td><td>Pixel density. <span class="def">default <code>1</code></span></td></tr>
+      <tr><th scope="row"><code>clip</code></th><td><code class="type">object</code></td><td>Region of the node to capture, in CSS pixels before scale.<ul class="fields"><li><code>x</code> <code class="type">number</code></li><li><code>y</code> <code class="type">number</code></li><li><code>width</code> <code class="type">number</code></li><li><code>height</code> <code class="type">number</code></li></ul></td></tr>
+      <tr><th scope="row"><code>reference</code></th><td><code class="type">string</code></td><td>The reference image, a PNG: an absolute path on this computer (a Figma export) or an https URL. Export it at the same scale as `scale`, so both images have the same size. <span class="req">required</span></td></tr>
       </tbody>
     </table></div>
   </article>
@@ -1400,7 +1434,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="assets" data-group>
-  <h3>Components and assets <span>12</span></h3>
+  <h3>Components and assets <span>13</span></h3>
   <p class="group-intro">Components and their controls, components from the Marketplace, icon sets, shaders, your own images, files and SVG.</p>
   <article class="tool" id="components_read" data-tool="components_read Read components lists the project's components with their exact controls ($control__variant options, $control__&lt;name&gt; for each variable) before you place or change instances. control names are the ones listed here, e.g. $control__showicon; do not derive them from variable names. code components are listed in codecomponents and framer's own (video, google maps, embed, slideshow, carousel, countdown, cookie banner, search…) in framer: place any of them with +componentinstancenode component=&quot;&lt;id&gt;&quot;, and pass its id in ids to read its controls first. needs the project's server api key (framer_status shows whether it is set).">
     <header>
@@ -1434,19 +1468,36 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="component_controls_set" data-tool="component_controls_set Set component controls sets control values on a component instance, object controls included: a code component's arrows, dots or clipping, which design_apply refuses (&quot;unsupported type object&quot;). names are the component's own, without $control__; an object merges with the instance's current value, so { arrows: { show: false } } keeps the other arrow settings. simple controls (text, numbers, slots) still go through design_apply. image urls in image fields (image, images, photo, poster, logo… alone, in a list or in a list's entries) are uploaded first, since framer keeps only uploaded images there: this is how a marketplace carousel gets your photos ({ slides: [{ image: &quot;&lt;url&gt;&quot;, caption: &quot;…&quot; }] }). the answer holds the controls as framer kept them; notstored lists what it refused without an error (a transition object, a list of images): set those with design_apply $control__… or ask the user to set them in the editor. undo does not restore controls set here.">
+  <article class="tool" id="component_controls_set" data-tool="component_controls_set Set component controls sets control values on a component instance, object controls included: a code component's arrows, dots or clipping, which design_apply refuses (&quot;unsupported type object&quot;). names are the component's own (&quot;border&quot;), as design_apply writes them (&quot;border&quot;) or a variable id; an object merges with the instance's current value, so { arrows: { show: false } } keeps the other arrow settings. a border control takes &quot;1px solid &lt;color&gt;&quot; or, per side in css order, &quot;0 0 1px 1px solid var(--token-&lt;id&gt;)&quot;, which design_apply cannot write (nodes_read shows such a border as one width). simple controls (text, numbers, slots) still go through design_apply. image urls in image fields (image, images, photo, poster, logo… alone, in a list or in a list's entries) are uploaded first, since framer keeps only uploaded images there: this is how a marketplace carousel gets your photos ({ slides: [{ image: &quot;&lt;url&gt;&quot;, caption: &quot;…&quot; }] }). the answer holds the controls as framer kept them; notstored lists what it refused without an error (a transition object, a list of images): set those with design_apply $control__… or ask the user to set them in the editor. undo does not restore controls set here.">
     <header>
       <h4><a href="#component_controls_set">component_controls_set</a></h4>
       <span class="badge write">Changes</span>
       <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
     </header>
     <p class="tool-title">Set component controls</p>
-    <p>Sets control values on a component instance, object controls included: a code component's arrows, dots or clipping, which <a href="#design_apply"><code>design_apply</code></a> refuses (&quot;unsupported type object&quot;). Names are the component's own, without $control__; an object merges with the instance's current value, so { arrows: { show: false } } keeps the other arrow settings. Simple controls (text, numbers, slots) still go through <a href="#design_apply"><code>design_apply</code></a>. Image URLs in image fields (image, images, photo, poster, logo… alone, in a list or in a list's entries) are uploaded first, since Framer keeps only uploaded images there: this is how a Marketplace carousel gets your photos ({ slides: [{ image: &quot;&lt;url&gt;&quot;, caption: &quot;…&quot; }] }). The answer holds the controls as Framer kept them; notStored lists what it refused without an error (a transition object, a list of images): set those with <a href="#design_apply"><code>design_apply</code></a> $control__… or ask the user to set them in the editor. Undo does not restore controls set here.</p>
+    <p>Sets control values on a component instance, object controls included: a code component's arrows, dots or clipping, which <a href="#design_apply"><code>design_apply</code></a> refuses (&quot;unsupported type object&quot;). Names are the component's own (&quot;Border&quot;), as <a href="#design_apply"><code>design_apply</code></a> writes them (&quot;border&quot;) or a variable id; an object merges with the instance's current value, so { arrows: { show: false } } keeps the other arrow settings. A border control takes &quot;1px solid &lt;color&gt;&quot; or, per side in CSS order, &quot;0 0 1px 1px solid var(--token-&lt;id&gt;)&quot;, which <a href="#design_apply"><code>design_apply</code></a> cannot write (<a href="#nodes_read"><code>nodes_read</code></a> shows such a border as one width). Simple controls (text, numbers, slots) still go through <a href="#design_apply"><code>design_apply</code></a>. Image URLs in image fields (image, images, photo, poster, logo… alone, in a list or in a list's entries) are uploaded first, since Framer keeps only uploaded images there: this is how a Marketplace carousel gets your photos ({ slides: [{ image: &quot;&lt;url&gt;&quot;, caption: &quot;…&quot; }] }). The answer holds the controls as Framer kept them; notStored lists what it refused without an error (a transition object, a list of images): set those with <a href="#design_apply"><code>design_apply</code></a> $control__… or ask the user to set them in the editor. Undo does not restore controls set here.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
       <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>The component instance (ComponentInstanceNode) to set. <span class="req">required</span></td></tr>
-      <tr><th scope="row"><code>controls</code></th><td><code class="type">object</code></td><td>Control values by the names the component declares, without $control__ (e.g. arrows, dots). An object control merges with the instance's current value. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>controls</code></th><td><code class="type">object</code></td><td>Control values by the names the component declares (e.g. arrows, dots, Border) or by variable id. An object control merges with the instance's current value. A border control also takes &quot;1px solid &lt;color&gt;&quot; or, per side in CSS order, &quot;0 0 1px 1px solid var(--token-&lt;id&gt;)&quot;. <span class="req">required</span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="component_border_variable_add" data-tool="component_border_variable_add Add a border variable to a component adds a border-type variable to a project component, which design_apply cannot create: the control its instances set their border with, per side too. the default is &quot;1px solid &lt;color&gt;&quot; or per side in css order &quot;0 0 1px 0 solid &lt;color&gt;&quot;; the color may be var(--token-&lt;id&gt;). bind it with design_apply: set &lt;variant frame id&gt; &lt;bind from the answer&gt;. the next call opens a fresh server api session, so the dsl sees the new variable. then set instances with component_controls_set or $control__&lt;name&gt;. undo does not remove the variable. needs the project's server api key.">
+    <header>
+      <h4><a href="#component_border_variable_add">component_border_variable_add</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
+    </header>
+    <p class="tool-title">Add a border variable to a component</p>
+    <p>Adds a border-type variable to a project component, which <a href="#design_apply"><code>design_apply</code></a> cannot create: the control its instances set their border with, per side too. The default is &quot;1px solid &lt;color&gt;&quot; or per side in CSS order &quot;0 0 1px 0 solid &lt;color&gt;&quot;; the color may be var(--token-&lt;id&gt;). Bind it with <a href="#design_apply"><code>design_apply</code></a>: SET &lt;variant frame id&gt; &lt;bind from the answer&gt;. The next call opens a fresh Server API session, so the DSL sees the new variable. Then set instances with <a href="#component_controls_set"><code>component_controls_set</code></a> or $control__&lt;name&gt;. Undo does not remove the variable. Needs the project's Server API key.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>componentId</code></th><td><code class="type">string</code></td><td>The component (ComponentNode) to add it to, from components_read. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>name</code></th><td><code class="type">string</code></td><td>The control's name in the panel and on instances, e.g. &quot;Border&quot;. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>default</code></th><td><code class="type">string</code></td><td>Its default: &quot;1px solid &lt;color&gt;&quot;, or per side in CSS order &quot;0 0 1px 0 solid &lt;color&gt;&quot;; the color may be var(--token-&lt;id&gt;). <span class="def">default <code>&quot;1px solid rgb(0, 0, 0)&quot;</code></span></td></tr>
       </tbody>
     </table></div>
   </article>

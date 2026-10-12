@@ -3,6 +3,7 @@ import { iconsSearch } from "./assets/icons-search.ts";
 import { shadersRead } from "./assets/shaders-read.ts";
 import { cmsCollectionDelete } from "./cms/collections.ts";
 import { colorTokensSwap } from "./color-tokens/swap.ts";
+import { componentBorderVariableAdd } from "./components/border-variable-add.ts";
 import { componentsRead } from "./components/components-read.ts";
 import { componentDetach } from "./components/detach.ts";
 import { componentMakeLocal } from "./components/make-local.ts";
@@ -22,6 +23,7 @@ const AGENT_ONLY_OPERATIONS: readonly AnyOperation[] = [
   componentsRead,
   componentMakeLocal,
   componentDetach,
+  componentBorderVariableAdd,
   cmsCollectionDelete,
   colorTokensSwap,
   nodesClone,

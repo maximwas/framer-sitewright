@@ -102,6 +102,7 @@ export class BridgeClient {
         this.#setStatus({
           state: "connected",
           sessionId: message.sessionId,
+          serverVersion: message.server.version,
         });
         break;
       case "request":

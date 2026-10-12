@@ -57,6 +57,16 @@ export const ScreenshotInputSchema = z.strictObject({
     .describe("Region of the node to capture, in CSS pixels before scale."),
 });
 
+/** image_compare: a node captured like node_screenshot, and the reference image it should match. */
+export const ImageCompareInputSchema = ScreenshotInputSchema.extend({
+  reference: z
+    .string()
+    .min(1)
+    .describe(
+      "The reference image, a PNG: an absolute path on this computer (a Figma export) or an https URL. Export it at the same scale as `scale`, so both images have the same size.",
+    ),
+});
+
 /** framer_status and framer_connect: both transports, and what the project's plan allows as far as known. */
 export const StatusOutputSchema = RouterStatusSchema.extend({
   capabilities: CapabilitiesSchema.nullable().describe(

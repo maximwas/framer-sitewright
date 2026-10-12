@@ -45,3 +45,11 @@ export interface SpringConversion {
   /** null: left out, where Framer keeps no spring. */
   readonly to: string | null;
 }
+
+/**
+ * A write of a batch the DSL cannot make and the plugin can, done after the batch (see splitPluginWrites): a border
+ * control per side, or an attribute back to its default. `nodeId` is as the batch names the node.
+ */
+export type PluginWrite =
+  | { readonly kind: "control"; readonly nodeId: string; readonly control: string; readonly value: string }
+  | { readonly kind: "reset"; readonly nodeId: string; readonly attribute: string };

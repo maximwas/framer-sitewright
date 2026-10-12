@@ -95,7 +95,8 @@ sitewright --help
   `link_styles_delete` (text links without Framer's default blue, with hover and the current page), `styles_usage`
   (where each token and style is used, and what nothing uses).
 - **Pages and nodes:** `project_overview`, `nodes_read`, `design_apply`, `layout_audit`, `selection_get`,
-  `node_screenshot`, `breakpoints_add`, `framer_docs`.
+  `node_screenshot`, `image_compare` (a node against a reference PNG: the rows and columns where lines and edges
+  differ), `breakpoints_add`, `framer_docs`.
 - **Motion:** `effects_set` — appear sequences, text reveals, hover and press, loops, scroll growth, parallax and
   tickers in one call, with every value written and springs without bounce of the kind Framer keeps.
 - **Checks before handover:** `seo_audit` (titles, descriptions, one h1, noindex, social image, favicon),
@@ -107,7 +108,8 @@ sitewright --help
 - **Framer guide:** `framer_guide` — how Framer behaves: what the DSL does without saying so, how layout,
   breakpoints and motion work, Framer's Marketplace template checklist, and how to check the result. No design advice:
   the design stays yours. The Claude Code skill (`setup --skill`) points the agent at it.
-- **Components and assets:** `components_read`, `component_controls_set`, `component_insert` (a free Marketplace
+- **Components and assets:** `components_read`, `component_controls_set` (per-side borders too),
+  `component_border_variable_add` (a border control the DSL cannot create), `component_insert` (a free Marketplace
   component or one of Framer's own, by module URL), `component_make_local` (a Marketplace component copied into the
   project to restyle), `component_detach` (an instance as plain layers), `icons_search`, `shaders_read` (Framer's
   shaders and their controls), `image_upload`, `file_upload` (videos, PDFs, fonts), `svg_add`.
@@ -127,9 +129,9 @@ sitewright --help
 - **Code** (off until you allow it): `custom_code_get`, `custom_code_set`, `code_files_list`, `code_file_read`,
   `code_files_read`, `code_file_write`, `code_file_patch` (find-and-replace edits), `code_file_rename`,
   `code_file_check` (TypeScript errors), `code_file_delete`, `theme_toggle_add` (a light and dark switch).
-- **Find and change in bulk:** `nodes_query` (layers by attribute conditions), `component_instances`, `fonts_used`,
-  `color_token_swap` (one token for another, site-wide), `styles_copy`, `node_clone` (a copy that follows no
-  component).
+- **Find and change in bulk:** `nodes_query` (layers by attribute conditions), `nodes_lock` (lock or unlock layers),
+  `component_instances`, `fonts_used`, `color_token_swap` (one token for another, site-wide), `styles_copy`,
+  `node_clone` (a copy that follows no component).
 - **The editor** (through the plugin): `nodes_select`, `node_show`, `nodes_zoom`, `selection_wait`,
   `plugin_data_get`, `plugin_data_set`, `framer_user`, `breakpoints_suggest`.
 - **Audits:** `site_audit` (every check on every page, rolled up), `performance_audit` (page weight and nesting),

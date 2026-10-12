@@ -146,10 +146,20 @@ function boxBorder(border: string | null): boolean {
 
 /** Where a fill-width text's lines sit: its own alignment, else its text style's. */
 export function textAnchorOf(node: SerializedNode, context: AuditContext): string {
-  const own = attr(node, "textAlignment");
+  const own = attr(node, "textAlignment") ?? paragraphAlignment(node);
   const alignment = own ?? context.textStyle(node.attributes?.["textStylePreset"])?.alignment ?? "left";
 
   return anchor(alignment);
+}
+
+/**
+ * The alignment a rich text's paragraphs share, set on the blocks rather than the text (centered in the editor's
+ * paragraph settings); null when they set none or differ.
+ */
+function paragraphAlignment(node: SerializedNode): string | null {
+  const alignments = new Set(childrenOf(node).flatMap((block) => attr(block, "textAlignment") ?? []));
+
+  return alignments.size === 1 ? ([...alignments][0] ?? null) : null;
 }
 
 /** start, center or end, whatever the alignment's spelling. */

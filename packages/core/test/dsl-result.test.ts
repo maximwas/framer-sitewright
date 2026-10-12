@@ -104,3 +104,31 @@ describe("normalizeDslResult", () => {
     ).toBe(true);
   });
 });
+
+// Framer's linter misfires on component canvases: variants side by side "overlap", and a hover variant's background
+// drawn by a layer of its own is not the background it checks text against (seen 12.10.2026).
+it("regression: marks Framer's lint messages known to misfire as low confidence, with why", () => {
+  const { lint } = normalizeDslResult({
+    message: "Lint: 3 warnings.",
+    linter: {
+      warnings: {
+        "Ground nodes overlap": ["a", "b"],
+        "Text has low contrast against its background (2.1:1)": ["t"],
+        "Content should set a maxWidth": ["x"],
+      },
+    },
+  });
+
+  expect(lint).toEqual([
+    expect.objectContaining({
+      message: "Ground nodes overlap",
+      confidence: "low",
+      note: expect.stringContaining("variants"),
+    }),
+    expect.objectContaining({
+      confidence: "low",
+      note: expect.stringContaining("layer"),
+    }),
+    expect.not.objectContaining({ confidence: "low" }),
+  ]);
+});

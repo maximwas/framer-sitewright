@@ -3,6 +3,9 @@ import type { SetupStep } from "../types/ui.ts";
 
 const commands = setupCommands(PRODUCT.packageName);
 
+/** What updates the MCP server: the setup run with the newest package, which the AI client then starts. */
+export const UPDATE_COMMAND = commands.wizard;
+
 /** How to set Sitewright up, in the order the plugin shows it. */
 export const SETUP_STEPS: readonly SetupStep[] = [
   {

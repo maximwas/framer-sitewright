@@ -22,6 +22,8 @@ export const WindowToPluginSchema = z.discriminatedUnion("kind", [
     kind: z.literal("status"),
     state: z.enum(["connecting", "connected", "retrying", "stopped"]),
     closeCode: z.number().int().nullable(),
+    /** The MCP server's version, once connected: the plugin asks for an update when it is older than the plugin. */
+    serverVersion: z.string().max(64).nullable().optional(),
   }),
   z.object({
     ...envelope,

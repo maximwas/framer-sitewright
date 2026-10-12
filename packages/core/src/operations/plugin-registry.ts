@@ -32,6 +32,7 @@ import { breakpointsAdd } from "./nodes/breakpoints.ts";
 import { breakpointsSuggest } from "./nodes/breakpoints-suggest.ts";
 import { stylesCopy } from "./nodes/copy-styles.ts";
 import { nodesFind } from "./nodes/find.ts";
+import { nodesLock } from "./nodes/lock.ts";
 import { nodesQuery } from "./nodes/query.ts";
 import { nodesRead } from "./nodes/read.ts";
 import { selectionGet } from "./nodes/selection.ts";
@@ -106,6 +107,7 @@ export const PLUGIN_OPERATIONS: readonly AnyOperation[] = [
   pagesDelete,
   nodesFind,
   nodesQuery,
+  nodesLock,
   breakpointsSuggest,
   editorSelect,
   editorNavigate,

@@ -77,6 +77,30 @@ function style(name: string, tag: string, alignment: string, fontSize: number): 
 const rulesOf = (issues: { rule: string }[]) => new Set(issues.map((found) => found.rule));
 
 describe("layout audit", () => {
+  it("regression: reads a text's alignment from its paragraphs, so centered text is not a mixed edge (seen: Dalgona hero)", () => {
+    const centered = node(
+      "RichTextNode",
+      "Lead",
+      {
+        textStylePreset: "Body",
+        width: "1fr",
+      },
+      [node("TextBlock", "", { textAlignment: "center" })],
+    );
+    const column = node(
+      "FrameNode",
+      "Hero",
+      {
+        layout: "stack",
+        stackDirection: "vertical",
+        stackAlignment: "center",
+      },
+      [node("FrameNode", "Button", { width: "auto" }), centered],
+    );
+
+    expect(rulesOf(auditTree(column, context()))).not.toContain("mixed-alignment");
+  });
+
   it("finds the defect classes of a generated page: edges, ragged cards, text links, widths, habits", () => {
     const card = (number: string, title: string) =>
       node(

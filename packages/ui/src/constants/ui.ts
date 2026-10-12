@@ -25,6 +25,7 @@ import {
   Layers,
   LayoutGrid,
   Link2,
+  Lock,
   type LucideIcon,
   MonitorSmartphone,
   MousePointer2,
@@ -63,12 +64,14 @@ export const OUTCOME_DOTS: Readonly<Record<ActivitySummary["outcome"], Tone | nu
 export const BADGE_TEXT = "leading-none [text-box:trim-both_cap_alphabetic]";
 
 /** An item's icon when it went through no kind of change the panel knows: a text or link style, or a plain node. */
-export const ITEM_ICONS: Readonly<Record<"text-style" | "link-style" | "node" | "cms-item", LucideIcon>> = {
-  "text-style": CaseSensitive,
-  "link-style": Link2,
-  "cms-item": Database,
-  node: Square,
-};
+export const ITEM_ICONS: Readonly<Record<"text-style" | "link-style" | "node" | "cms-item" | "node-lock", LucideIcon>> =
+  {
+    "text-style": CaseSensitive,
+    "link-style": Link2,
+    "cms-item": Database,
+    node: Square,
+    "node-lock": Lock,
+  };
 
 /**
  * Each kind of change: its icon and color (icons read better than dots). A chip takes the tint and leading icon of the
@@ -227,6 +230,7 @@ export const OPERATION_ICONS: Readonly<Record<string, LucideIcon>> = {
   "components.setControls": SlidersHorizontal,
   "nodes.copyStyles": Palette,
   "nodes.clone": CopyPlus,
+  "nodes.lock": Lock,
   design: Layers,
   editor: MousePointer2,
   files: FileUp,

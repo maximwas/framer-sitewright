@@ -27,8 +27,15 @@ something else; every rule here was seen on a live project.
 - One invalid `$control__` value on an instance drops every `$control__` of that command, and the error names only
   the invalid one. Read the instance back after an error on it, or set a risky control (a link to an anchor) in a
   command of its own.
-- A `var(--token-<id>)` of a token that does not exist is accepted without an error: take ids from
+- Framer accepts a `var(--token-<id>)` of a token that does not exist and draws its default color (a typo made text
+  black). `design_apply` refuses such a batch before anything is written and names the likely token: take ids from
   `color_tokens_list`.
+- `design_apply` reads back the existing nodes a batch sets and warns when a `SET` left a value as it was: Framer
+  dropped it without an error. Read the node with `nodes_read` and write it another way.
+- Back to the default: `attribute="null"` (`fill`, `border`, `maxWidth`, `minHeight`…). On a node directly on the page
+  (not inside a breakpoint) `maxWidth` and `minHeight` do not apply at all. `zIndex="null"` is refused and
+  `zIndex="0"` is a stacking context of its own, not the default: `design_apply` resets `zIndex="null"` through the
+  plugin (undo does not restore it).
 - A temp id works only inside its batch: `design_apply` sends the temp ids a batch creates under names of its own
   (every agent on a project shares one Server API session, where another agent's `q2` would answer) and answers with
   your names in `renamedIds`. In later batches use the real ids from `renamedIds` and `keys`.
@@ -122,6 +129,17 @@ something else; every rule here was seen on a live project.
   `borderRadius="999px"` left the corners square, because the name is `radius`. Effect fields too
   (`appearEffect.direction`, `scrollVariantEffect.variant`). Copy attribute names from `nodes_read` of a similar node
   or from `framer_docs`, never from CSS, and read effects back with `nodes_read`.
+- `locked="true"` is accepted and ignored the same way: the editor's lock is not in the DSL. Lock and unlock layers
+  with `nodes_lock`.
+- A variant keeps no override equal to what it inherits: the write is dropped, and the variant then follows every
+  later change of the primary (`design_apply` warns). Change a value on the primary, or give the variant a different
+  one.
+- A variant's override outlives a change of the primary: a hover variant that set a white border color before the
+  primary had a border keeps that white once the primary gets one. After changing a primary, read its variants with
+  `nodes_read` and clear overrides that no longer apply (`attribute="null"` on the variant's copy).
+- An instance's border control set per side reads in `nodes_read` as `"0px 0px 1px 1px solid <color>"` (top, right,
+  bottom, left). The DSL writes only one width for all sides; `design_apply` sends a per-side value through the plugin,
+  and `component_controls_set` takes it too. A border-type variable cannot be created in the DSL.
 - Setting `text` on a variant or breakpoint copy of styled text drops its text style: repeat `textStylePreset` in the
   same `SET`.
 - On a variant copy of text bound to a variable (`text="var(--variable-…)"`), the first `text` you write stores the

@@ -22,6 +22,7 @@ import { applyAliases } from "./aliases.ts";
 import { CmsItemRevert } from "./cms-revert.ts";
 import { NodeRevertRun } from "./dsl/node-revert-run.ts";
 import { LinkStyleRevert } from "./link-style-revert.ts";
+import { NodeLockRevert } from "./node-lock-revert.ts";
 import { decide } from "./revert-decision.ts";
 import { colorStyleState, textStyleState } from "./style-states.ts";
 
@@ -40,6 +41,7 @@ export class RevertRun {
   readonly #nodes: NodeRevertRun | PluginNodeRevert;
   readonly #cms: CmsItemRevert;
   readonly #links: LinkStyleRevert;
+  readonly #locks: NodeLockRevert;
   /** Font handles by family, weight and style: many text styles share a font, and each lookup is a Framer call. */
   readonly #fonts = new Map<string, Promise<FontData | null>>();
 
@@ -54,6 +56,7 @@ export class RevertRun {
     this.#texts = current.texts.map((handle) => entry(handle, textStyleState(handle)));
     this.#cms = new CmsItemRevert(runtime, options, this.#remap);
     this.#links = new LinkStyleRevert(runtime, options, this.#remap);
+    this.#locks = new NodeLockRevert(runtime, options);
     // Without framer.agent (no Server API key) node steps go back through the Plugin API.
     this.#nodes =
       runtime.agent === null
@@ -83,7 +86,9 @@ export class RevertRun {
     let outcome: RevertOutcome;
     let note: string | null = null;
 
-    if (step.kind === "cms-item") {
+    if (step.kind === "node-lock") {
+      outcome = await this.#locks.revert(step);
+    } else if (step.kind === "cms-item") {
       outcome = await this.#cms.revert(step);
     } else if (step.kind === "link-style") {
       ({ outcome, note } = await this.#links.revert(step));

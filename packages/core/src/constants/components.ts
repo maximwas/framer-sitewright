@@ -55,3 +55,29 @@ export const FREE_PLACEMENT = {
 
 /** A font control's selector, "GF;Urbanist-regular" or "GF;Urbanist-700": the family between the source and the weight. */
 export const FONT_SELECTOR = /^[A-Z]+;(.+)-[a-z0-9]+$/;
+
+/** The id of a project component in an instance's componentIdentifier ("local-module:canvasComponent/<id>:default"). */
+export const CANVAS_COMPONENT_ID = /canvasComponent\/([^:/]+)/;
+
+/** The line styles a border control takes. */
+export const BORDER_STYLES: readonly string[] = ["solid", "dashed", "dotted", "double"];
+
+/** The width keys of a border control's value: one width for every side, or one per side. */
+export const BORDER_WIDTH_KEYS: readonly string[] = [
+  "borderWidth",
+  "borderTopWidth",
+  "borderRightWidth",
+  "borderBottomWidth",
+  "borderLeftWidth",
+];
+
+/** A border control's widths when it is set per side, in CSS order: top, right, bottom, left. */
+export const BORDER_SIDE_KEYS: readonly string[] = [
+  "borderTopWidth",
+  "borderRightWidth",
+  "borderBottomWidth",
+  "borderLeftWidth",
+];
+
+/** A width in a border shorthand: a number of px, the unit optional. */
+export const BORDER_SHORTHAND_WIDTH = /^\d+(?:\.\d+)?(?:px)?$/;

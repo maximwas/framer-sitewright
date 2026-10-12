@@ -2,6 +2,7 @@ import { OperationError } from "../../errors.ts";
 import { readPluginTree } from "../../plugin-nodes/read.ts";
 import type { SerializedNode } from "../../types/dsl.ts";
 import type { FramerRuntime } from "../../types/framer.ts";
+import { withBorderSides } from "./border-sides.ts";
 
 /** The id of the web page at `pagePath`. */
 export async function pageRootId(runtime: FramerRuntime, pagePath: string): Promise<string> {
@@ -42,7 +43,7 @@ export async function readNodeTree(
     { pagePath },
   );
 
-  return (node ?? null) as SerializedNode | null;
+  return withBorderSides(runtime.port, (node ?? null) as SerializedNode | null);
 }
 
 /** The tree with only the attributes asked for, as serialize()'s attributeFilter gives it; all of them without a filter. */

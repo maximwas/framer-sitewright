@@ -16,7 +16,7 @@ export function applyAliases(steps: readonly UndoStep[], aliases: ReadonlyMap<st
   const resolve = (id: string) => latestId(id, aliases);
 
   return steps.map((step): UndoStep => {
-    if (step.kind === "color-style" || step.kind === "cms-item") {
+    if (step.kind === "color-style" || step.kind === "cms-item" || step.kind === "node-lock") {
       return {
         ...step,
         id: resolve(step.id),

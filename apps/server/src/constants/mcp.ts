@@ -138,3 +138,15 @@ export const MAX_IMAGE_SIDE_PX = 2000;
 
 /** What Framer answers when asked to export a component node instead of one of its variants. */
 export const COMPONENT_EXPORT_ERROR = /exportable ground node/i;
+
+/** How much the luminance (0–255) must change between neighbouring pixels for image_compare to call it an edge. */
+export const EDGE_STEP = 24;
+
+/** The share of a row (or column) that must change for image_compare to count it as a line or an edge across it. */
+export const EDGE_MIN_SHARE = 0.04;
+
+/** How far apart (px) image_compare still pairs an edge of the node with one of the reference: further is missing. */
+export const EDGE_MAX_SHIFT = 12;
+
+/** How many rows or columns of each kind image_compare lists. */
+export const EDGE_LIST_MAX = 40;

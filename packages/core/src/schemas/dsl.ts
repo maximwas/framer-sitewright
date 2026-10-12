@@ -26,6 +26,9 @@ export const DslLintIssueSchema = z.object({
   message: z.string(),
   severity: z.enum(["error", "warning"]),
   details: z.array(z.unknown()),
+  /** "low" for a message Framer's linter is known to raise where nothing is wrong; `note` says when. */
+  confidence: z.literal("low").exactOptional(),
+  note: z.string().exactOptional(),
 });
 
 export const DslResultSchema = z.object({

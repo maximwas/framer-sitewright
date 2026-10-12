@@ -2,12 +2,15 @@ import { StatusNote, StatusPill, SupportLinks, Toaster, WindowBar } from "@sitew
 import { MotionConfig } from "motion/react";
 import { useRef } from "react";
 import { useStore } from "zustand";
+import { version as pluginVersion } from "../package.json";
 import { ActionButton } from "./components/ActionButton.tsx";
 import { SetupGuide } from "./components/SetupGuide.tsx";
+import { UpdateNote } from "./components/UpdateNote.tsx";
 import { fitPluginWindow } from "./framer/plugin.ts";
 import { useFitWindow } from "./hooks/use-fit-window.ts";
 import type { AppProps } from "./types/ui.ts";
 import { describeStatus } from "./utils/describe-status.ts";
+import { serverUpdate } from "./utils/update.ts";
 
 /**
  * The plugin's window, kept small: whether Claude Code can reach this project and the one button that matters now.
@@ -18,6 +21,7 @@ export function App({ link }: AppProps) {
   const status = useStore(link.status);
   const copy = describeStatus(status);
   const connected = status.state === "connected";
+  const update = serverUpdate(status, pluginVersion);
   const content = useRef<HTMLDivElement>(null);
 
   useFitWindow(content, fitPluginWindow);
@@ -33,6 +37,7 @@ export function App({ link }: AppProps) {
           </WindowBar>
           <div className="flex flex-col gap-3 p-3.5">
             {!connected && <StatusNote state={status.state} detail={copy.detail} />}
+            {update !== null && <UpdateNote serverVersion={update.serverVersion} />}
             <ActionButton link={link} />
             {!connected && <SetupGuide />}
             <SupportLinks />

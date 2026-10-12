@@ -7,7 +7,9 @@ import { attributeText, contrastOf, finding, solidColor } from "./values.ts";
 /**
  * What people who read with difficulty or without a mouse run into: text that does not stand out from the solid
  * color behind it (WCAG AA: 4.5:1, 3:1 for large text), and links that hold no text for a screen reader to say.
- * Text over a photo or a gradient is left out: its background is no single color.
+ * Text over a photo or a gradient is left out: its background is no single color. A background can be a layer of its
+ * own, stretched over its parent behind the text (a card's Background frame, a hover variant's fill): the siblings
+ * after it are checked against that layer, not the parents' fills (seen 12.10.2026).
  */
 export function a11yFindings(page: CheckedPage, context: SiteCheckContext): SiteFinding[] {
   if (page.content === null) {
@@ -65,8 +67,27 @@ export function a11yFindings(page: CheckedPage, context: SiteCheckContext): Site
       return;
     }
 
+    let behind = own;
+
     for (const child of childrenOf(node)) {
-      visit(child, own);
+      visit(child, behind);
+
+      if (isBackgroundLayer(child)) {
+        behind = solidColor(attributeText(child, "fill"), context);
+      }
     }
   }
+}
+
+/** A filled layer stretched over its whole parent, without text: what the siblings after it sit on. */
+function isBackgroundLayer(node: SerializedNode): boolean {
+  const pinned = ["top", "right", "bottom", "left"].every((pin) => attributeText(node, pin) === "0px");
+  const filling = attributeText(node, "width") === "100%" && attributeText(node, "height") === "100%";
+
+  return (
+    attributeText(node, "position") === "absolute" &&
+    attributeText(node, "fill") !== null &&
+    (pinned || filling) &&
+    walk(node).every((inner) => !isText(inner))
+  );
 }

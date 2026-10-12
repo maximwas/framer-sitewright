@@ -9,7 +9,7 @@ export type LinkStatus =
   | { readonly state: "waiting" }
   | { readonly state: "connecting" }
   | { readonly state: "retrying" }
-  | { readonly state: "connected" }
+  | { readonly state: "connected"; readonly serverVersion: string | null }
   | { readonly state: "stopped"; readonly closeCode: number | null };
 
 /** Runs one operation by name; with `journal`, it records undo steps and resolves with `{ output, journal }`. */

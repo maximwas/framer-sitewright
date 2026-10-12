@@ -51,6 +51,10 @@ function styleCategories(step: UndoStep): Set<ChangeCategory> {
     return new Set(["content"]);
   }
 
+  if (step.kind === "node-lock") {
+    return new Set(["settings"]);
+  }
+
   return new Set([step.kind === "color-style" ? "colors" : "styles"]);
 }
 

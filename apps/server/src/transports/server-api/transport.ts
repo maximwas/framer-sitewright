@@ -1,8 +1,8 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import { type FramerRuntime, type Operation, OperationError, runOperation } from "@sitewright/core";
-import type { Framer } from "framer-api";
+import { ErrorCode, type Framer, FramerAPIError } from "framer-api";
 import type * as z from "zod";
-import { SERVER_API_SETUP_HINT } from "../../constants/transports.ts";
+import { SERVER_API_SETUP_HINT, STALE_NODE_MESSAGE } from "../../constants/transports.ts";
 import type {
   CallTrace,
   FramerTransport,
@@ -63,7 +63,23 @@ export class ServerApiTransport implements FramerTransport {
         { replay },
       );
 
-    return trace === undefined ? run() : this.#traces.run(trace, run);
+    const attempt = () => (trace === undefined ? run() : this.#traces.run(trace, run));
+
+    // A connection keeps the project as it was when it opened: a node the user added in the editor since is "not
+    // found" (seen 12.10.2026). Reconnect then; a read runs once more, anything else is left to the caller.
+    return attempt().catch(async (error: unknown) => {
+      if (!isNodeNotFound(error)) {
+        throw error;
+      }
+
+      await this.reconnect();
+
+      if (!replay) {
+        throw error;
+      }
+
+      return attempt();
+    });
   }
 
   /** Runs `fn` on this connection's runtime. Server-API-only features (DSL reference, screenshots) use it directly. */
@@ -139,3 +155,12 @@ export const unconfiguredServerApi: FramerTransport = {
     Promise.reject(new OperationError("NOT_CONFIGURED", "The Server API is not configured.", SERVER_API_SETUP_HINT)),
   close: () => Promise.resolve(),
 };
+
+/** Framer found no node by an id: on a connection older than the user's edits, the node may exist now. */
+function isNodeNotFound(error: unknown): boolean {
+  if (error instanceof FramerAPIError) {
+    return error.code === ErrorCode.NODE_NOT_FOUND;
+  }
+
+  return error instanceof OperationError && error.code === "NOT_FOUND" && STALE_NODE_MESSAGE.test(error.message);
+}

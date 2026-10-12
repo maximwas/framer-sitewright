@@ -128,3 +128,11 @@ When the design asks for items of one height:
 
 - Stacks have no baseline alignment. A value with a smaller unit: `stackAlignment="end"` with matching px line
   heights, or nudge the smaller text with padding. Keep value and unit in a stack, never in a frame without layout.
+
+## From a Figma design
+
+- A text style with a line height in percent (`120%`) gives text blocks fractional heights; Figma gives the line height
+  in px. Write the px line height Figma shows, so heights come out whole and match.
+- Figma draws a Line 1px above its y coordinate: place it 1px higher in Framer.
+- A Figma stroke "included in layout" takes 1px inside the card. A Framer border takes no space: add 1px to the
+  padding.
