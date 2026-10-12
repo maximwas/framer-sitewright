@@ -52,3 +52,6 @@ export const FREE_PLACEMENT = {
   left: "0px",
   top: "0px",
 } as const;
+
+/** A font control's selector, "GF;Urbanist-regular" or "GF;Urbanist-700": the family between the source and the weight. */
+export const FONT_SELECTOR = /^[A-Z]+;(.+)-[a-z0-9]+$/;

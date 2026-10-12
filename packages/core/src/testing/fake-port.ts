@@ -787,8 +787,12 @@ export function createFakePort(state: FakeFramerState, nextId: (prefix: string) 
         : {
             id: nodeId,
             controls,
+            // Like Framer: a write changes the controls it names and keeps the rest.
             setAttributes: async ({ controls: next }: { controls: Record<string, unknown> }) => {
-              state.instanceControls[nodeId] = next;
+              state.instanceControls[nodeId] = {
+                ...state.instanceControls[nodeId],
+                ...next,
+              };
             },
           };
     },

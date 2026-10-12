@@ -1,4 +1,5 @@
 import { IMAGE_CONTROL_KEYS } from "../constants/assets.ts";
+import { FONT_SELECTOR } from "../constants/components.ts";
 import type { ControlledNode } from "../types/framer-port.ts";
 import { isPlainObject } from "./guards.ts";
 
@@ -42,7 +43,25 @@ export function mergeControls(
 
 /** Whether a control holds the value written: objects compare by their fields, in any order. */
 export function holdsValue(stored: unknown, written: unknown): boolean {
-  return JSON.stringify(sortedKeys(stored)) === JSON.stringify(sortedKeys(written));
+  return JSON.stringify(sortedKeys(stored)) === JSON.stringify(sortedKeys(written)) || holdsFont(stored, written);
+}
+
+/**
+ * A font control is written by its selector ("GF;Urbanist-regular") and read back by family, weight and style, so it
+ * holds the font written when the families match.
+ */
+function holdsFont(stored: unknown, written: unknown): boolean {
+  if (!isPlainObject(stored) || !isPlainObject(written) || typeof written["fontSelector"] !== "string") {
+    return false;
+  }
+
+  const family = FONT_SELECTOR.exec(written["fontSelector"])?.[1];
+
+  return (
+    family !== undefined &&
+    typeof stored["fontFamily"] === "string" &&
+    stored["fontFamily"].toLowerCase() === family.toLowerCase()
+  );
 }
 
 function sortedKeys(value: unknown): unknown {

@@ -5,7 +5,9 @@ import { defineOperation } from "../define.ts";
 
 /**
  * Sets control values on a component instance through setAttributes, objects included: a code component's object
- * controls (arrows, dots, clipping) are refused by the DSL as "unsupported type object" (seen 01.10.2026).
+ * controls (arrows, dots, clipping) are refused by the DSL as "unsupported type object" (seen 01.10.2026). Only the
+ * controls named are written: the plugin reads the others resolved (a color token as rgb), so writing them back would
+ * unbind them (seen 12.10.2026).
  */
 export const componentControlsSet = defineOperation({
   name: "components.setControls",
@@ -47,10 +49,11 @@ export const componentControlsSet = defineOperation({
       }),
     );
     const next = mergeControls(node.controls, uploaded);
+    const written = Object.fromEntries(Object.keys(uploaded).map((key) => [key, next[key]]));
 
     const name = node.name ?? null;
 
-    await node.setAttributes({ controls: next });
+    await node.setAttributes({ controls: written });
     history?.markIncomplete(`Controls of ${name ?? nodeId} set: undo does not restore component controls.`);
 
     // Framer refuses some values without an error (a transition object, an image list): read what it kept.
