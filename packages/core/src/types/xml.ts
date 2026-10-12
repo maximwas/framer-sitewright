@@ -42,6 +42,8 @@ export interface XmlParent {
   readonly id: string;
   readonly type: string;
   readonly isNew: boolean;
+  /** A new CMS list above this element becomes a list only after its item exists (its SET is deferred). */
+  readonly inPendingList?: boolean;
 }
 
 /** One position in the printed tree: the parent's id prefixes positional ids of rich text content. */
