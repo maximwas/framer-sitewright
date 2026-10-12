@@ -9,7 +9,7 @@ journal you can undo.
 [![npm version](https://img.shields.io/npm/v/sitewright)](https://www.npmjs.com/package/sitewright)
 [![npm downloads](https://img.shields.io/npm/dm/sitewright)](https://www.npmjs.com/package/sitewright)
 [![License: MIT](https://img.shields.io/npm/l/sitewright)](LICENSE)
-[![M8ven Score](https://m8ven.ai/badge/mcp/maximwas-framer-sitewright-dcee57?v=89b80c3e2376f5f9abed0a137e388017)](https://m8ven.ai/mcp/maximwas-framer-sitewright-dcee57?s=readme)
+[![M8ven Score](https://m8ven.ai/badge/mcp/maximwas-framer-sitewright-dcee57?v=602713e789d434ee9860726e6fa20d23)](https://m8ven.ai/mcp/maximwas-framer-sitewright-dcee57?s=readme)
 
 > Unofficial. Not affiliated with or endorsed by Framer. "Framer" is a trademark of Framer B.V.
 
