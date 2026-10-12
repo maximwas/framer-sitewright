@@ -84,7 +84,7 @@ function compoundOf(id: string, created: Readonly<Record<string, string>>): stri
   return undefined;
 }
 
-/** A value that is a created temp id, or holds one as var(--variable-<id>), with the id renamed. */
+/** A value that is a created temp id, or holds one as var(--variable-<id>) or var(--token-<id>), with the id renamed. */
 function renameValue(value: string, created: Readonly<Record<string, string>>): string {
   const own = created[value] ?? compoundOf(value, created);
 
@@ -92,9 +92,9 @@ function renameValue(value: string, created: Readonly<Record<string, string>>): 
     return own;
   }
 
-  return value.replace(/var\(--variable-([^)]+)\)/g, (match, id: string) => {
+  return value.replace(/var\(--(variable|token)-([^)]+)\)/g, (match, kind: string, id: string) => {
     const renamed = created[id];
 
-    return renamed === undefined ? match : `var(--variable-${renamed})`;
+    return renamed === undefined ? match : `var(--${kind}-${renamed})`;
   });
 }

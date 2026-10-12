@@ -28,3 +28,12 @@ export const CODE_COMPILE_MS = 4_000;
 
 /** Operations after which the Server API session is reopened: they change what its project snapshot lists (code). */
 export const SERVER_API_STALE_AFTER: ReadonlySet<string> = new Set(["codeFiles.write", "codeFiles.delete"]);
+
+/** How Sitewright says a node id has no node: on an old connection it may be a node added since. */
+export const STALE_NODE_MESSAGE = /node not found|does not exist|could not be found|was not found|no node/i;
+
+/**
+ * Operations after which the Server API's next call opens a new session at once: the DSL session does not see a
+ * component variable the Plugin API added ("Expected an existing variable", seen 12.10.2026).
+ */
+export const SERVER_API_STALE_NOW: ReadonlySet<string> = new Set(["components.addBorderVariable"]);

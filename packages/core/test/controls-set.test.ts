@@ -170,3 +170,74 @@ it("regression: a font written by its selector counts as stored when Framer read
 
   expect(result.notStored).toEqual([]);
 });
+
+it("regression: sets a border control by its name from a CSS-like shorthand, per side, and counts it stored (seen: Stat Card)", async () => {
+  const stored: Record<string, unknown> = {
+    QURtWbmH5: {
+      borderColor: "rgb(0, 0, 0)",
+      borderStyle: "solid",
+      borderWidth: 1,
+    },
+  };
+  const { runtime: base } = createFakeRuntime({
+    colorStyles: [
+      {
+        id: "line",
+        name: "Line",
+        path: "/Line",
+        light: "rgb(255, 0, 0)",
+        dark: null,
+      },
+    ],
+  });
+  // Like Framer: controls by variable id, a token read back as its color, a write replacing the controls it names.
+  const runtime: FramerRuntime = {
+    ...base,
+    port: {
+      ...base.port,
+      getNode: async (nodeId) => {
+        if (nodeId === "cmp9") {
+          return {
+            id: "cmp9",
+            getVariables: async () => [
+              {
+                id: "QURtWbmH5",
+                name: "Border",
+                type: "border",
+              },
+            ],
+          };
+        }
+
+        return nodeId === "card"
+          ? {
+              id: "card",
+              componentIdentifier: "local-module:canvasComponent/cmp9:default",
+              controls: JSON.parse(JSON.stringify(stored).replaceAll("var(--token-line)", "rgb(255, 0, 0)")),
+              setAttributes: async ({ controls }: { controls: Record<string, unknown> }) => {
+                Object.assign(stored, controls);
+              },
+            }
+          : null;
+      },
+    },
+  };
+  const result = await runOperation(
+    componentControlsSet,
+    { runtime },
+    {
+      nodeId: "card",
+      controls: { border: "0 0 1px 1px solid var(--token-line)" },
+    },
+  );
+
+  expect(stored.QURtWbmH5).toEqual({
+    borderColor: "var(--token-line)",
+    borderStyle: "solid",
+    borderTopWidth: 0,
+    borderRightWidth: 0,
+    borderBottomWidth: 1,
+    borderLeftWidth: 1,
+  });
+  expect(result.notStored).toEqual([]);
+});

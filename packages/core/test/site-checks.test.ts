@@ -227,6 +227,41 @@ describe("site checks", () => {
     expect(a11yFindings(page("/", content), context).map(({ nodeName }) => nodeName)).toEqual(["Grey on orange"]);
   });
 
+  it("regression: checks text against a background layer of its own, not only its parents' fills (seen: a dark card's Background layer)", () => {
+    const content = node("FrameNode", "Desktop", { fill: "var(--token-paper)" }, [
+      node("FrameNode", "Card", {}, [
+        node("FrameNode", "Background", {
+          position: "absolute",
+          top: "0px",
+          right: "0px",
+          bottom: "0px",
+          left: "0px",
+          fill: "var(--token-ink)",
+        }),
+        node("RichTextNode", "Light on the dark layer", {
+          textStylePreset: "Body",
+          textColor: "var(--token-paper)",
+        }),
+      ]),
+      node("FrameNode", "Photo card", {}, [
+        node("FrameNode", "Photo", {
+          position: "absolute",
+          top: "0px",
+          right: "0px",
+          bottom: "0px",
+          left: "0px",
+          fill: "https://framerusercontent.com/images/p.jpg",
+        }),
+        node("RichTextNode", "Over the photo layer", {
+          textStylePreset: "Body",
+          textColor: "var(--token-paper)",
+        }),
+      ]),
+    ]);
+
+    expect(a11yFindings(page("/", content), context)).toEqual([]);
+  });
+
   it("measures contrast like WCAG", () => {
     expect(contrastOf("#000000", "#ffffff")).toEqual({
       ratio: 21,

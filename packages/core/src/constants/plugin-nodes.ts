@@ -29,11 +29,12 @@ export const PIN_ATTRIBUTES: ReadonlySet<string> = new Set([
 export const BREAKPOINT_PLACEMENT_ATTRIBUTES: ReadonlySet<string> = new Set(["width", "position", ...PIN_ATTRIBUTES]);
 
 /**
- * Plugin API values left out when reading, as the DSL leaves them out: the defaults (visible, fully opaque, not
- * rotated, not wrapping).
+ * Plugin API values left out when reading, as the DSL leaves them out: the defaults (visible, unlocked, fully opaque,
+ * not rotated, not wrapping).
  */
 export const PLUGIN_DEFAULT_VALUES: Readonly<Record<string, string>> = {
   visible: "true",
+  locked: "false",
   opacity: "1",
   rotation: "0deg",
   stackWrapEnabled: "false",
@@ -53,6 +54,12 @@ export const PLUGIN_ATTRIBUTE_RULES: readonly AttributeRule[] = [
   {
     dsl: "visible",
     plugin: "visible",
+    kind: "boolean",
+  },
+  // The editor's lock: only the Plugin API has it, the DSL takes it and ignores it.
+  {
+    dsl: "locked",
+    plugin: "locked",
     kind: "boolean",
   },
   {

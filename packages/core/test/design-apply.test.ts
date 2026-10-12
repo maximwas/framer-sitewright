@@ -328,11 +328,105 @@ describe("design.apply", () => {
       },
     );
 
+    // The fake answers without applying, so the read-back also says nothing was stored.
+    expect(result.warnings).toContainEqual({
+      message: expect.stringContaining('maxWidth="569.15px" has a fractional px value'),
+      targets: ["img"],
+    });
+  });
+
+  it("regression: says Framer ignores locked in the DSL and names nodes_lock (seen: SET locked applied cleanly, nothing locked)", async () => {
+    const { runtime, state } = createFakeRuntime();
+
+    state.serializedNodes.grain = {
+      type: "ComponentInstanceNode",
+      id: "grain",
+    };
+    state.nextApplyResult = {
+      message: "Commands applied cleanly.",
+      renamedIds: {},
+    };
+
+    const result = await runOperation(
+      designApply,
+      { runtime },
+      { xml: '<ComponentInstanceNode id="grain" locked="true" />' },
+    );
+
     expect(result.warnings).toEqual([
       {
-        message: expect.stringContaining('maxWidth="569.15px"'),
-        targets: ["img"],
+        message: expect.stringContaining("nodes_lock"),
+        targets: ["grain"],
       },
     ]);
   });
+
+  it("regression: refuses a batch naming a color token the project lacks, before Framer sees it (seen: a typo in the id turned text black)", async () => {
+    const { runtime, state } = createFakeRuntime({
+      colorStyles: [
+        {
+          id: "b6195e1c",
+          name: "Ink",
+          path: "/Brand/Ink",
+          light: "rgb(15, 23, 42)",
+          dark: null,
+        },
+      ],
+    });
+
+    state.serializedNodes.title = {
+      type: "RichTextNode",
+      id: "title",
+    };
+
+    await expect(
+      runOperation(designApply, { runtime }, { xml: '<RichTextNode id="title" textColor="var(--token-b7195e1c)" />' }),
+    ).rejects.toMatchObject({
+      code: "INVALID_INPUT",
+      message: expect.stringContaining("b7195e1c"),
+      hint: expect.stringContaining("b6195e1c (Brand/Ink)"),
+    });
+    expect(state.appliedDsl).toEqual([]);
+
+    // A token the same batch creates is known, and its reference follows the token's new temp id.
+    await runOperation(
+      designApply,
+      { runtime },
+      { dsl: '+ColorStyleTokenNode accent name="Accent" light="#ff0000";\nSET title textColor="var(--token-accent)";' },
+    );
+
+    const sent = state.appliedDsl[0] ?? "";
+    const tokenId = /\+ColorStyleTokenNode (\S+)/.exec(sent)?.[1];
+
+    expect(tokenId).not.toBe("accent");
+    expect(sent).toContain(`textColor="var(--token-${tokenId})"`);
+  });
+});
+
+it('regression: resets zIndex through the plugin, which the DSL refuses (seen: zIndex="null" refused, "0" is not the default)', async () => {
+  const { runtime, state } = createFakeRuntime({
+    canvas: [
+      {
+        id: "card",
+        parentId: "breakpoint-desktop",
+        className: "FrameNode",
+        name: "Card",
+        attributes: { zIndex: 3 },
+      },
+    ],
+  });
+  const history = new HistoryRecorder();
+  const result = await runOperation(
+    designApply,
+    {
+      runtime,
+      history,
+    },
+    { dsl: 'SET card zIndex="null" name="Card";' },
+  );
+
+  expect(state.appliedDsl.at(-1)).toBe('SET card name="Card";');
+  expect(state.canvas[0]?.attributes?.zIndex).toBeNull();
+  expect(result.errors).toEqual([]);
+  expect(history.incomplete).toMatch(/zIndex/);
 });

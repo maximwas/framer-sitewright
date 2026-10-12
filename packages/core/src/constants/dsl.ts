@@ -92,3 +92,70 @@ export const SPRING_DURATION_STEP_S = 0.05;
 
 /** The attributes that hold a transition: a node's, an effect's (`*.transition`) and an overlay backdrop's. */
 export const TRANSITION_ATTRIBUTE = /^(?:transition|.+\.transition|backdrop\.(?:enter|exit))$/;
+
+/** The editor's layer lock: the DSL takes it and ignores it, only the Plugin API sets it (nodes_lock). */
+export const DSL_LOCK_ATTRIBUTE = "locked";
+
+/** How many edits apart an unknown token id may be from a token's for design_apply to name that token as the likely one. */
+export const TOKEN_TYPO_DISTANCE = 3;
+
+/** Attributes the DSL cannot reset (zIndex="null" is refused, "0" is a stacking context of its own) but the plugin can. */
+export const PLUGIN_RESET_ATTRIBUTES: ReadonlySet<string> = new Set(["zIndex"]);
+
+/**
+ * Attributes design_apply reads back after a SET, to say when Framer left one as it was: plain values whose stored form
+ * compares reliably. Effects, transitions, text and zIndex (serialize hides 0) are left out.
+ */
+export const STORED_CHECK_ATTRIBUTES: ReadonlySet<string> = new Set([
+  "opacity",
+  "visible",
+  "width",
+  "height",
+  "minWidth",
+  "maxWidth",
+  "minHeight",
+  "maxHeight",
+  "gap",
+  "padding",
+  "radius",
+  "position",
+  "top",
+  "right",
+  "bottom",
+  "left",
+  "layout",
+  "stackDirection",
+  "stackAlignment",
+  "stackDistribution",
+  "gridColumnCount",
+  "overflow",
+  "aspectRatio",
+  "fill",
+  "textColor",
+  "textStylePreset",
+  "link",
+]);
+
+/** What serialize leaves out because it is the default: an attribute missing after a read has this value. */
+export const STORED_DEFAULTS: Readonly<Record<string, string>> = {
+  opacity: "1",
+  visible: "true",
+};
+
+/** How many existing nodes design_apply reads back around a batch; a bigger batch is not checked. */
+export const STORED_CHECK_MAX_NODES = 40;
+
+/**
+ * Framer lint messages known to misfire, and why: design_apply marks them low confidence so real problems stand out
+ * (seen 12.10.2026 on a component's canvas).
+ */
+export const LOW_CONFIDENCE_LINT: readonly { readonly pattern: RegExp; readonly note: string }[] = [
+  {
+    pattern: /ground nodes overlap/i,
+    note: "Framer counts a component's variants, placed side by side on its canvas, as overlapping: ignore it there.",
+  },
+  {
+    pattern: /contrast/i,
+    note: "Framer checks text against the fills of its parents only: a background drawn by a layer of its own (common in hover variants) is not seen. Check with node_screenshot.",
+  },
+];

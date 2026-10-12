@@ -2,6 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/server";
 import {
   deploymentsList,
   nodesFind,
+  nodesLock,
   nodesQuery,
   pagesCreate,
   pagesDelete,
@@ -50,7 +51,13 @@ export function registerPageTools(server: McpServer, context: ToolContext): void
     name: "nodes_query",
     title: "Query layers by attributes",
     description:
-      'Finds layers across the site\'s pages (or one page) whose DSL attributes meet every condition, e.g. all text smaller than 14px, every frame with an image fill, links with no link style: [{ attribute: "opacity", op: "lessThan", value: "1" }]. Operators: equals, contains, lessThan, greaterThan (numbers compare as numbers, 16px is 16), exists, notExists. Returns each layer with its page and the attributes the conditions name; change them with design_apply. Attributes are read as the Plugin API gives them, on each page\'s main breakpoint.',
+      'Finds layers across the site\'s pages (or one page) whose DSL attributes meet every condition, e.g. all text smaller than 14px, every frame with an image fill, links with no link style: [{ attribute: "opacity", op: "lessThan", value: "1" }]. Operators: equals, contains, lessThan, greaterThan (numbers compare as numbers, 16px is 16), exists, notExists. Returns each layer with its page and the attributes the conditions name; change them with design_apply. Attributes are read as the Plugin API gives them, on each page\'s main breakpoint: units can differ from nodes_read, which reads through the Server API (a size in percent here, in px there).',
+  });
+  addOperationTool(server, context, nodesLock, {
+    name: "nodes_lock",
+    title: "Lock or unlock layers",
+    description:
+      'Locks layers in the Framer editor so they cannot be selected or moved by accident (a grain or grid overlay, a background video), or unlocks them with locked: false. design_apply cannot do it: Framer ignores locked in the DSL. Works with or without the Server API key. Returns the layers it changed, those already as asked, and ids it found no layer for. Find locked layers with nodes_query [{ attribute: "locked", op: "equals", value: "true" }]. Undo takes it back.',
   });
 
   addOperationTool(server, context, textReplace, {

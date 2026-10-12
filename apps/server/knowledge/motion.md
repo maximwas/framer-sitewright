@@ -87,6 +87,17 @@ How Framer builds common scroll mechanics without WebGL:
   button keeps its width.
 - Phones have no hover: content or actions shown only on hover need a tap or an always-visible equivalent.
 
+## Transitions that jump on the site
+
+The canvas does not run these; they show only in Preview or on the published site.
+
+- A width or height animated to `0px` does not ease: the layer snaps. Animate to `1px` with `overflow="clip"`, or
+  animate scale or position instead.
+- Background blur (`backdropBlur`) cannot be faded: a layer with it, animated by `opacity`, switches the blur on in one
+  step. Move it in (position, scale) and keep its opacity at 1.
+- An `appearEffect` on a layer takes over its opacity: a variant change of that layer's opacity no longer animates. Put
+  the appear effect on a wrapper and the variant change on the layer inside.
+
 ## Appear needs a visible layer
 
 - An `appearEffect` plays when its own layer comes into view, measured with its start state applied. A layer that the

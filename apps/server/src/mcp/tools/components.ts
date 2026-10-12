@@ -1,5 +1,6 @@
 import type { McpServer } from "@modelcontextprotocol/server";
 import {
+  componentBorderVariableAdd,
   componentControlsSet,
   componentDetach,
   componentInsert,
@@ -33,13 +34,19 @@ export function registerComponentTools(server: McpServer, context: ToolContext):
     name: "component_controls_set",
     title: "Set component controls",
     description:
-      'Sets control values on a component instance, object controls included: a code component\'s arrows, dots or clipping, which design_apply refuses ("unsupported type object"). Names are the component\'s own, without $control__; an object merges with the instance\'s current value, so { arrows: { show: false } } keeps the other arrow settings. Simple controls (text, numbers, slots) still go through design_apply. Image URLs in image fields (image, images, photo, poster, logo… alone, in a list or in a list\'s entries) are uploaded first, since Framer keeps only uploaded images there: this is how a Marketplace carousel gets your photos ({ slides: [{ image: "<url>", caption: "…" }] }). The answer holds the controls as Framer kept them; notStored lists what it refused without an error (a transition object, a list of images): set those with design_apply $control__… or ask the user to set them in the editor. Undo does not restore controls set here.',
+      'Sets control values on a component instance, object controls included: a code component\'s arrows, dots or clipping, which design_apply refuses ("unsupported type object"). Names are the component\'s own ("Border"), as design_apply writes them ("border") or a variable id; an object merges with the instance\'s current value, so { arrows: { show: false } } keeps the other arrow settings. A border control takes "1px solid <color>" or, per side in CSS order, "0 0 1px 1px solid var(--token-<id>)", which design_apply cannot write (nodes_read shows such a border as one width). Simple controls (text, numbers, slots) still go through design_apply. Image URLs in image fields (image, images, photo, poster, logo… alone, in a list or in a list\'s entries) are uploaded first, since Framer keeps only uploaded images there: this is how a Marketplace carousel gets your photos ({ slides: [{ image: "<url>", caption: "…" }] }). The answer holds the controls as Framer kept them; notStored lists what it refused without an error (a transition object, a list of images): set those with design_apply $control__… or ask the user to set them in the editor. Undo does not restore controls set here.',
   });
   addOperationTool(server, context, componentMakeLocal, {
     name: "component_make_local",
     title: "Make a component local",
     description:
       "Copies an external component (from the Marketplace or a shared library) into the project and points the instance at the copy, so you can restyle it with the site's color tokens and text styles. Choose it over component_controls_set when the controls cannot reach the colors or type you need. A component designed in Framer becomes a project component: edit its layers with design_apply. A code component becomes a code file of the project (codeFile in the answer): edit it with code_file_read and code_file_write; Framer refuses to copy some code components. Without replaceAll, Framer first answers status needs_confirmation and changes nothing: ask the user whether only this instance or every instance should use the copy, then call again with replaceAll false or true. To edit one placement as plain layers, call component_detach afterwards. Undo does not take it back. Needs the project's Server API key (framer_status shows whether it is set).",
+  });
+  addOperationTool(server, context, componentBorderVariableAdd, {
+    name: "component_border_variable_add",
+    title: "Add a border variable to a component",
+    description:
+      'Adds a border-type variable to a project component, which design_apply cannot create: the control its instances set their border with, per side too. The default is "1px solid <color>" or per side in CSS order "0 0 1px 0 solid <color>"; the color may be var(--token-<id>). Bind it with design_apply: SET <variant frame id> <bind from the answer>. The next call opens a fresh Server API session, so the DSL sees the new variable. Then set instances with component_controls_set or $control__<name>. Undo does not remove the variable. Needs the project\'s Server API key.',
   });
   addOperationTool(server, context, componentDetach, {
     name: "component_detach",

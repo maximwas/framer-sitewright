@@ -3,7 +3,7 @@ import type { PluginInfo } from "@sitewright/core";
 /** Where this window's session with the MCP server, on the plugin's behalf, stands. */
 export type BridgeStatus =
   | { readonly state: "connecting"; readonly attempt: number }
-  | { readonly state: "connected"; readonly sessionId: string }
+  | { readonly state: "connected"; readonly sessionId: string; readonly serverVersion: string }
   | { readonly state: "retrying"; readonly inMs: number; readonly closeCode: number }
   | { readonly state: "stopped"; readonly closeCode: number; readonly reason: string };
 

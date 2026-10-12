@@ -5,6 +5,15 @@ import { createFakeRuntime } from "../src/testing/index.ts";
 
 it("copies only the attributes of the chosen groups that the source has, to every target in one batch", async () => {
   const { runtime, state } = createFakeRuntime({
+    colorStyles: [
+      {
+        id: "surface",
+        name: "Surface",
+        path: "/Surface",
+        light: "rgb(255, 255, 255)",
+        dark: null,
+      },
+    ],
     serializedNodes: {
       card: {
         type: "FrameNode",

@@ -63,6 +63,8 @@ export const OPERATION_LABELS: Readonly<Record<string, string>> = {
   "colorTokens.swap": "Token swapped",
   "nodes.copyStyles": "Styles copied",
   "nodes.clone": "Layer copied",
+  "nodes.lock": "Layers locked",
+  "components.addBorderVariable": "Border variable added",
   "codeFiles.readMany": "Read code files",
   "codeFiles.patch": "Code file edited",
   "codeFiles.rename": "Code file renamed",
@@ -121,8 +123,11 @@ export const ACTIVITY_LAYERS = ["plugin-api", "server-api", "framer-agent"] as c
 /** Who asked for an entry: the AI through an MCP tool, or the user in the journal window. */
 export const ACTIVITY_ACTORS = ["ai", "user"] as const;
 
-/** What an undo step is about: a color token, a text or link style, a node changed through the DSL, a CMS item. */
-export const UNDO_STEP_KINDS = ["color-style", "text-style", "link-style", "node", "cms-item"] as const;
+/**
+ * What an undo step is about: a color token, a text or link style, a node changed through the DSL, a CMS item, a
+ * layer's lock (the Plugin API's, which the DSL ignores).
+ */
+export const UNDO_STEP_KINDS = ["color-style", "text-style", "link-style", "node", "cms-item", "node-lock"] as const;
 
 /** How a DSL command changed a canvas node. */
 export const NODE_CHANGES = ["created", "updated", "moved", "deleted"] as const;

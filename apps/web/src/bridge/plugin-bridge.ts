@@ -226,6 +226,7 @@ export class PluginBridge {
         kind: "status",
         state: status.state,
         closeCode: status.state === "retrying" || status.state === "stopped" ? status.closeCode : null,
+        serverVersion: status.state === "connected" ? status.serverVersion : null,
       }),
     );
   }

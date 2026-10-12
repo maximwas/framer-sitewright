@@ -57,3 +57,6 @@ export const QUERY_CONDITIONS_MAX = 10;
  */
 export const SELECTION_WAIT_MAX_SECONDS = 25;
 export const SELECTION_WAIT_DEFAULT_SECONDS = 20;
+
+/** How many layers one nodes_lock call locks or unlocks. */
+export const NODES_LOCK_MAX = 200;

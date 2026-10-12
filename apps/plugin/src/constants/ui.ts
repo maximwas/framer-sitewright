@@ -73,7 +73,7 @@ export const STOP_COPY: Readonly<Record<number, StatusCopy>> = {
   },
   [CloseCode.VersionMismatch]: {
     title: "Version mismatch",
-    detail: "Update the plugin and the MCP server to the same version.",
+    detail: "The plugin and the MCP server speak different versions: update the server as below.",
     tone: "neutral",
   },
 };

@@ -102,9 +102,14 @@ it("opens the journal window, says hello until it answers, and shows the window'
       kind: "status",
       state: "connected",
       closeCode: null,
+      serverVersion: "1.1.0",
     }),
   );
-  expect(link.status.getState()).toEqual({ state: "connected" });
+  // The server's version comes along, for the plugin to ask for an update when it is older.
+  expect(link.status.getState()).toEqual({
+    state: "connected",
+    serverVersion: "1.1.0",
+  });
 
   // A second click brings the answered window forward instead of reloading it.
   link.show();
@@ -221,7 +226,10 @@ it("stops hearing the window, the page's visibility and the editor theme once di
       closeCode: null,
     }),
   );
-  expect(link.status.getState()).toEqual({ state: "connected" });
+  expect(link.status.getState()).toEqual({
+    state: "connected",
+    serverVersion: null,
+  });
 
   link.dispose();
   expect(disconnect).toHaveBeenCalled();
@@ -233,7 +241,10 @@ it("stops hearing the window, the page's visibility and the editor theme once di
       closeCode: null,
     }),
   );
-  expect(link.status.getState()).toEqual({ state: "connected" });
+  expect(link.status.getState()).toEqual({
+    state: "connected",
+    serverVersion: null,
+  });
 
   const before = posted.length;
 

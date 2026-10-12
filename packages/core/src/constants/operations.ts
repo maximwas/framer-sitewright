@@ -8,6 +8,7 @@ export const AGENT_ONLY_OPERATION_NAMES: readonly string[] = [
   "components.read",
   "components.makeLocal",
   "components.detach",
+  "components.addBorderVariable",
   "cms.collections.delete",
   "colorTokens.swap",
   "nodes.clone",

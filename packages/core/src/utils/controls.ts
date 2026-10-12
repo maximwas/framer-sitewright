@@ -1,6 +1,9 @@
 import { IMAGE_CONTROL_KEYS } from "../constants/assets.ts";
-import { FONT_SELECTOR } from "../constants/components.ts";
-import type { ControlledNode } from "../types/framer-port.ts";
+import { CANVAS_COMPONENT_ID, FONT_SELECTOR } from "../constants/components.ts";
+import { DSL_CONTROL_PREFIX } from "../constants/dsl.ts";
+import { TOKEN_REFERENCE } from "../constants/history.ts";
+import type { ComponentVariableInfo } from "../types/components.ts";
+import type { ControlledNode, FramerPort } from "../types/framer-port.ts";
 import { isPlainObject } from "./guards.ts";
 
 /** A component instance whose control values setAttributes can change. */
@@ -111,4 +114,87 @@ export async function withUploadedImages(
   };
 
   return (await visit(controls, false)) as Record<string, unknown>;
+}
+
+/**
+ * The variables of the project component an instance is of; none for a code component, an external one, or when they
+ * cannot be read. Its instances key their controls by variable id.
+ */
+export async function componentVariablesOf(port: FramerPort, node: unknown): Promise<ComponentVariableInfo[]> {
+  const identifier =
+    isPlainObject(node) && typeof node.componentIdentifier === "string" ? node.componentIdentifier : "";
+  const componentId = CANVAS_COMPONENT_ID.exec(identifier)?.[1];
+
+  if (componentId === undefined) {
+    return [];
+  }
+
+  try {
+    const component = await port.getNode(componentId);
+
+    if (!isPlainObject(component) || typeof component.getVariables !== "function") {
+      return [];
+    }
+
+    const variables: unknown = await component.getVariables.call(component);
+
+    return Array.isArray(variables)
+      ? variables.flatMap((variable) =>
+          isPlainObject(variable) && typeof variable.id === "string"
+            ? [
+                {
+                  id: variable.id,
+                  name: typeof variable.name === "string" ? variable.name : variable.id,
+                  type: typeof variable.type === "string" ? variable.type : "",
+                },
+              ]
+            : [],
+        )
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * The key an instance holds a control under: the key as written when the instance has it, else the id of the variable
+ * it names, by id, by name ("Border") or as the DSL writes it ("border", "$control__border"), in any case.
+ */
+export function controlKey(
+  key: string,
+  controls: Readonly<Record<string, unknown>>,
+  variables: readonly ComponentVariableInfo[],
+): string {
+  if (key in controls) {
+    return key;
+  }
+
+  const bare = key.startsWith(DSL_CONTROL_PREFIX) ? key.slice(DSL_CONTROL_PREFIX.length) : key;
+  const loose = (text: string) => text.replace(/[^a-z0-9]/gi, "").toLowerCase();
+
+  return variables.find((variable) => variable.id === bare || loose(variable.name) === loose(bare))?.id ?? bare;
+}
+
+/**
+ * A written value with each token reference as the token's color: the plugin reads a bound control back resolved
+ * (var(--token-…) as rgb), so this is what a stored value is compared with.
+ */
+export function withTokenColors(
+  value: unknown,
+  tokens: readonly { readonly id: string; readonly light: string }[],
+): unknown {
+  if (typeof value === "string") {
+    return value.replace(
+      TOKEN_REFERENCE,
+      (match, id: string) => tokens.find((token) => token.id === id)?.light ?? match,
+    );
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => withTokenColors(item, tokens));
+  }
+
+  return isPlainObject(value)
+    ? Object.fromEntries(Object.entries(value).map(([key, item]) => [key, withTokenColors(item, tokens)]))
+    : value;
 }

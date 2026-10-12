@@ -159,7 +159,12 @@ export class WindowLink {
                 state: "stopped",
                 closeCode: message.closeCode,
               }
-            : { state: message.state },
+            : message.state === "connected"
+              ? {
+                  state: "connected",
+                  serverVersion: message.serverVersion ?? null,
+                }
+              : { state: message.state },
         );
         break;
       case "run":

@@ -13,6 +13,7 @@ import {
   OPEN_PLUGIN_HINT,
   SERVER_API_SETUP_HINT,
   SERVER_API_STALE_AFTER,
+  SERVER_API_STALE_NOW,
 } from "../constants/transports.ts";
 import type {
   FramerTransport,
@@ -131,6 +132,9 @@ export class TransportRouter {
     // The Server API session keeps the project as it connected: its component list would miss the new code.
     if (SERVER_API_STALE_AFTER.has(operation.name)) {
       this.#codeChangedAt = Date.now();
+    } else if (SERVER_API_STALE_NOW.has(operation.name)) {
+      // Nothing to compile: the next call reconnects without waiting.
+      this.#codeChangedAt = Date.now() - CODE_COMPILE_MS;
     }
 
     return output;

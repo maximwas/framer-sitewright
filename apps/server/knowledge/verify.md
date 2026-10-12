@@ -31,6 +31,11 @@ their design or brief, not with rules of taste.
   For a `FixedOverlayNode`, `DUPE <its child> parent="<breakpoint id>"` with `design_apply` dsl, capture the copy, then
   `DEL` it. A copied `RelativeOverlayNode` stays an overlay: check it in Preview.
 - Without a key: ask the user to look at the editor, or publish when they ask and look at the published site.
+- `node_screenshot` does not draw the background blur of code components: check those in Preview.
+- Matching a design to the pixel: `image_compare` captures the node and pairs its lines and edges with a reference PNG
+  exported at the same scale, row by row and column by column, and says which are off and by how much.
+- `nodes_query` reads layers through the plugin (Plugin API values), `nodes_read` through the Server API (the DSL's):
+  the same size can come back in percent from one and in px from the other. Compare values from one reader.
 
 ## Behaviour in a real browser
 

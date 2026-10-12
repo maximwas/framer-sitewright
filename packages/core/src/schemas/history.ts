@@ -108,7 +108,19 @@ export const CmsItemStateSchema = z.object({
   fieldData: z.record(z.string(), z.unknown()),
 });
 
+/** A layer's lock as undo writes it back; `path` names the layer in lists. */
+export const NodeLockStateSchema = z.object({
+  path: z.string(),
+  locked: z.boolean(),
+});
+
 export const UndoStepSchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("node-lock"),
+    id: z.string(),
+    before: NodeLockStateSchema,
+    after: NodeLockStateSchema,
+  }),
   z.object({
     kind: z.literal("cms-item"),
     id: z.string(),

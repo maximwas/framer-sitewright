@@ -1,4 +1,4 @@
-import { DSL_ASSET_FAILURE, DSL_PARTIAL_APPLY_HINT } from "../constants/dsl.ts";
+import { DSL_ASSET_FAILURE, DSL_PARTIAL_APPLY_HINT, LOW_CONFIDENCE_LINT } from "../constants/dsl.ts";
 import { RawDslResultSchema } from "../schemas/dsl.ts";
 import type { DslIssue, DslLintIssue, DslResult } from "../types/dsl.ts";
 
@@ -10,11 +10,21 @@ function toIssues(map: Record<string, unknown[]> | undefined): DslIssue[] {
 }
 
 function toLint(map: Record<string, unknown[]> | undefined, severity: "error" | "warning"): DslLintIssue[] {
-  return Object.entries(map ?? {}).map(([message, details]) => ({
-    message,
-    severity,
-    details,
-  }));
+  return Object.entries(map ?? {}).map(([message, details]) => {
+    const known = LOW_CONFIDENCE_LINT.find(({ pattern }) => pattern.test(message));
+
+    return {
+      message,
+      severity,
+      details,
+      ...(known === undefined
+        ? {}
+        : {
+            confidence: "low" as const,
+            note: known.note,
+          }),
+    };
+  });
 }
 
 /** Framer may send an empty `parseErrors` ([], {} or ""); only a non-empty one means the DSL did not parse. */

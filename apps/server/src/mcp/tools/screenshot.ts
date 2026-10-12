@@ -10,7 +10,10 @@ import {
 } from "@sitewright/core";
 import { fetchScreenshotImage } from "../../assets/screenshot-image.ts";
 import { COMPONENT_EXPORT_ERROR, MAX_IMAGE_SIDE_PX } from "../../constants/mcp.ts";
-import { ScreenshotInputSchema } from "../../schemas/mcp.ts";
+import { diffEdges, edgesOf } from "../../images/edge-diff.ts";
+import { decodePng } from "../../images/png-decode.ts";
+import { referenceBytes } from "../../images/reference-image.ts";
+import { ImageCompareInputSchema, ScreenshotInputSchema } from "../../schemas/mcp.ts";
 import type { ImageSize, ToolContext } from "../../types/mcp.ts";
 import { operationAnnotations } from "../add-tool.ts";
 import { describeError } from "../describe-error.ts";
@@ -20,6 +23,84 @@ import { readPngSize } from "../png-size.ts";
 export function registerScreenshotTools(server: McpServer, context: ToolContext): void {
   registerNodeScreenshotTool(server, context);
   registerReferenceScreenshotTool(server, context);
+  registerImageCompareTool(server, context);
+}
+
+/**
+ * A node against a reference image (a Figma export): where their lines and edges differ, by row and column, so a node
+ * can be lined up with its design to the pixel without reading pixels by hand (seen 12.10.2026).
+ */
+function registerImageCompareTool(server: McpServer, { transports, journal }: ToolContext): void {
+  server.registerTool(
+    "image_compare",
+    {
+      title: "Compare a node with a reference image",
+      description:
+        "Captures a node like node_screenshot and compares it with a reference PNG (a Figma export, by absolute path or https URL): the y of every horizontal line or edge and the x of every vertical one, paired between the two. The answer lists edges that match, edges off by a few px (where each is, and by how much the node's is off: positive is lower or further right), edges of the reference the node lacks, and edges only the node has. Export the reference at the same scale and size as the capture (clip and scale work as in node_screenshot). Needs the project's Server API key.",
+      inputSchema: ImageCompareInputSchema,
+      annotations: {
+        readOnlyHint: true,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+    },
+    async ({ nodeId, scale, clip, reference }) => {
+      const options: ScreenshotOptions = {
+        format: "png",
+        scale,
+        ...(clip === undefined ? {} : { clip }),
+      };
+
+      try {
+        const result = await journal.read(
+          "image_compare",
+          "Compare with reference",
+          "server-api",
+          () => ({
+            subject: `Scale ${scale}`,
+            nodes: [
+              {
+                id: nodeId,
+                name: nodeId,
+              },
+            ],
+          }),
+          () =>
+            transports.withServerApi(
+              async (runtime) => {
+                const { taken } = await capture(runtime, nodeId, options);
+                const node = decodePng(taken.data);
+                const wanted = decodePng(await referenceBytes(reference));
+                const ours = edgesOf(node);
+                const theirs = edgesOf(wanted);
+
+                return {
+                  size: {
+                    node: `${node.width}×${node.height}`,
+                    reference: `${wanted.width}×${wanted.height}`,
+                  },
+                  rows: diffEdges(theirs.rows, ours.rows),
+                  columns: diffEdges(theirs.columns, ours.columns),
+                };
+              },
+              { sameProjectAsActive: true },
+            ),
+        );
+        const sameSize = result.size.node === result.size.reference;
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: `${sameSize ? "" : `The sizes differ (node ${result.size.node}, reference ${result.size.reference}): export the reference at the capture's scale and size, or edges are off by the difference. `}${JSON.stringify(result)}`,
+            },
+          ],
+        };
+      } catch (error) {
+        throw new Error(describeError(error), { cause: error });
+      }
+    },
+  );
 }
 
 function registerNodeScreenshotTool(server: McpServer, { transports, journal }: ToolContext): void {

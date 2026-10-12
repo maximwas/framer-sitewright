@@ -1,4 +1,4 @@
-import { colorTokensUpsert, designApply, projectOverview, requireAgent } from "@sitewright/core";
+import { colorTokensUpsert, designApply, nodesRead, projectOverview, requireAgent } from "@sitewright/core";
 import { createFakeRuntime } from "@sitewright/core/testing";
 import { ErrorCode, type Framer, FramerAPIError } from "framer-api";
 import { describe, expect, it, vi } from "vitest";
@@ -69,6 +69,36 @@ describe("ServerApiTransport", () => {
 
     expect(viaAuto.usedAgent).toBe(true);
     expect(viaPluginApi.usedAgent).toBe(false);
+  });
+
+  it("regression: a read that finds no node reconnects and reads once more (seen: Node not found after edits in the editor)", async () => {
+    const { runtime } = createFakeRuntime({
+      serializedNodes: {
+        card: {
+          type: "FrameNode",
+          id: "card",
+          attributes: {},
+        },
+      },
+    });
+    const agent = requireAgent(runtime);
+    // The old connection still has the project as it was before the user added the card.
+    const stale = {
+      ...runtime,
+      agent: {
+        ...agent,
+        serialize: async () => {
+          throw new FramerAPIError("Node not found", ErrorCode.NODE_NOT_FOUND);
+        },
+      },
+    };
+    const connect = vi.fn(async () => fakeFramer());
+    const createRuntime = vi.fn().mockReturnValueOnce(stale).mockReturnValue(runtime);
+    const transport = new ServerApiTransport(session(connect), createRuntime);
+    const read = await transport.run(nodesRead, { nodeId: "card" });
+
+    expect(read.xml).toContain('id="card"');
+    expect(connect).toHaveBeenCalledTimes(2);
   });
 
   it("regression: does not replay design.apply after a lost session", async () => {
