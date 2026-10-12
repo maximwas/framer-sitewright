@@ -4,16 +4,17 @@ import type { LinkStatus } from "../types/link.ts";
 import type { StatusCopy } from "../types/ui.ts";
 
 /**
- * The plugin's window: top right, out of the way of the canvas, wide enough for the setup commands and tall enough
- * that every state shows without scrolling (the tallest measured 611px of content at this width, 629px at 400).
+ * The plugin's window: top right, out of the way of the canvas, wide enough for the setup commands. It opens tall
+ * enough for the setup steps a first run shows, then follows its content (fitPluginWindow): connected, it is only the
+ * status, one button and the support line. The user can resize it down to minHeight; the content scrolls then.
  */
 export const PLUGIN_WINDOW: UIOptions = {
   position: "top right",
   width: 420,
-  height: 616,
+  height: 512,
   resizable: true,
   minWidth: 320,
-  minHeight: 200,
+  minHeight: 120,
   maxWidth: 560,
   maxHeight: 900,
 };

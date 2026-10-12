@@ -321,6 +321,12 @@ export const COMPONENT_NODE_TYPES: ReadonlySet<string> = new Set([
 ]);
 
 /** Readable names for nodes without one, by type. */
+/**
+ * Control values that are not text, so they cannot name an instance in the journal: a token or variable, a color, a
+ * link or an image URL, a path.
+ */
+export const NON_TEXT_CONTROL_VALUE = /^(?:var\(|#[0-9a-f]{3,8}$|(?:rgb|hsl)a?\(|(?:https?|data|mailto|tel):|\/)/i;
+
 export const NODE_TYPE_LABELS: Readonly<Record<string, string>> = {
   FrameNode: "Frame",
   RichTextNode: "Text",

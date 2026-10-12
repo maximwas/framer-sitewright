@@ -1,5 +1,5 @@
 import type * as z from "zod";
-import { NODE_TYPE_LABELS, OPERATION_LABELS } from "../constants/history.ts";
+import { NODE_TYPE_LABELS, NON_TEXT_CONTROL_VALUE, OPERATION_LABELS } from "../constants/history.ts";
 import type { ActivityItemSchema } from "../schemas/history.ts";
 import type { ActivityEntry, ActivitySummary, EntryRef, RevertState, UndoStep } from "../types/history.ts";
 import { categoriesOf, itemCategories } from "./change-categories.ts";
@@ -232,7 +232,11 @@ export function labelOf(step: UndoStep): string {
   const type = NODE_TYPE_LABELS[step.type] ?? step.type;
   const attributes = step.after?.attributes ?? step.before?.attributes ?? {};
   const control = Object.entries(attributes).find(
-    ([key, value]) => key.startsWith("$control__") && key !== "$control__variant" && typeof value === "string",
+    ([key, value]) =>
+      key.startsWith("$control__") &&
+      key !== "$control__variant" &&
+      typeof value === "string" &&
+      !NON_TEXT_CONTROL_VALUE.test(value),
   )?.[1];
 
   return typeof control === "string" && control !== "" ? `${type}: ${control}` : type;

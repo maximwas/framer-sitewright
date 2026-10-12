@@ -503,6 +503,22 @@ describe("activity journal: undo and redo chains", () => {
     ]);
     expect(labelOf(instance)).toBe("Instance: Get started");
     expect(labelOf(frame)).toBe("Frame");
+
+    // Regression (12.10.2026): an instance whose first string control was a color token showed as
+    // "Instance: var(--token-312cd7de-…)" in the journal. Only controls that read as text name it.
+    const tinted = node("updated", "ComponentInstanceNode", {
+      $control__tint: "var(--token-312cd7de-45ca-4a61-b725-ff2f019086ee)",
+      $control__image: "https://framerusercontent.com/images/a.png",
+      $control__accent: "rgb(0, 153, 255)",
+      $control__title: "Pricing",
+    });
+    const swatch = node("updated", "ComponentInstanceNode", {
+      $control__tint: "var(--token-312cd7de-45ca-4a61-b725-ff2f019086ee)",
+      $control__background: "#0099ff",
+    });
+
+    expect(labelOf(tinted)).toBe("Instance: Pricing");
+    expect(labelOf(swatch)).toBe("Instance");
   });
 
   it("regression: a node set and moved in one batch is one item, not two with the same key", () => {

@@ -67,6 +67,26 @@ export function showPluginWindow(): void {
 }
 
 /**
+ * Sets the window's height to its content, within PLUGIN_WINDOW's limits, and keeps the width the user gave it. Framer
+ * documents showUI's sizes as the window's initial ones: should a later call not resize it, the window still resizes
+ * by hand down to minHeight.
+ */
+export function fitPluginWindow(contentHeight: number): void {
+  const minHeight = PLUGIN_WINDOW.minHeight ?? 0;
+  const maxHeight = PLUGIN_WINDOW.maxHeight ?? Number.POSITIVE_INFINITY;
+
+  void framer.showUI({
+    width: Math.round(window.innerWidth),
+    height: Math.min(maxHeight, Math.max(minHeight, contentHeight)),
+    resizable: PLUGIN_WINDOW.resizable ?? false,
+    minWidth: PLUGIN_WINDOW.minWidth ?? 0,
+    minHeight,
+    maxWidth: PLUGIN_WINDOW.maxWidth ?? Number.POSITIVE_INFINITY,
+    maxHeight,
+  });
+}
+
+/**
  * Who the plugin is, for the hello: its project, and the project's editor link when Framer gives it. A project Framer
  * does not name is null: failing the hello would only loop.
  */
