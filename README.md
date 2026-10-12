@@ -6,6 +6,8 @@ journal you can undo.
 
 [Website](https://maximwas.github.io/framer-sitewright/) · [Docs](https://maximwas.github.io/framer-sitewright/docs/) · [npm](https://www.npmjs.com/package/sitewright)
 
+[![M8ven Score](https://m8ven.ai/badge/mcp/maximwas-framer-sitewright-dcee57?v=89b80c3e2376f5f9abed0a137e388017)](https://m8ven.ai/mcp/maximwas-framer-sitewright-dcee57?s=readme)
+
 > Unofficial. Not affiliated with or endorsed by Framer. "Framer" is a trademark of Framer B.V.
 
 ## Quick start
