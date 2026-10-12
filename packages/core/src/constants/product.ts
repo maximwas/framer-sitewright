@@ -14,17 +14,17 @@ export const PRODUCT = {
 } as const;
 
 /**
- * Where people can support the project, the one-time donation first (a monobank jar takes any Visa or Mastercard,
- * foreign ones too); Patreon carries the posts. Empty hides every support button.
+ * Where people can support the project with a one-time donation: Ko-fi first (cards and PayPal, for supporters abroad),
+ * then a monobank jar (any Visa or Mastercard). Empty hides every support button.
  */
 export const SUPPORT_LINKS: readonly SupportLink[] = [
   {
-    label: "Donate",
-    url: "https://send.monobank.ua/jar/7o9oMrbXTj",
+    label: "Ko-fi",
+    url: "https://ko-fi.com/maksymvasianin",
   },
   {
-    label: "Patreon",
-    url: "https://www.patreon.com/cw/VasianinMaksim",
+    label: "monobank",
+    url: "https://send.monobank.ua/jar/7o9oMrbXTj",
   },
 ];
 

@@ -138,7 +138,7 @@ versions: upload that zip in the Marketplace dashboard (Publish New Version). Af
 
 ## Support
 
-Sitewright is free and open source. If it saves you time, [donate](https://send.monobank.ua/jar/7o9oMrbXTj) or follow it on [Patreon](https://www.patreon.com/cw/VasianinMaksim). At most once a week, after a change that worked,
+Sitewright is free and open source. If it saves you time, donate on [Ko-fi](https://ko-fi.com/maksymvasianin) or to a [monobank jar](https://send.monobank.ua/jar/7o9oMrbXTj). At most once a week, after a change that worked,
 Claude may mention it; turn that off with the switch on the journal page or
 `SITEWRIGHT_SUPPORT_REMINDERS=off`.
 
