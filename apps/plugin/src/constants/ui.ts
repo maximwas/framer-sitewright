@@ -6,7 +6,8 @@ import type { StatusCopy } from "../types/ui.ts";
 /**
  * The plugin's window: top right, out of the way of the canvas, wide enough for the setup commands. It opens tall
  * enough for the setup steps a first run shows, then follows its content (fitPluginWindow): connected, it is only the
- * status, one button and the support line. The user can resize it down to minHeight; the content scrolls then.
+ * status, one button and the support line; folded by the user, only its bar (minHeight). Resized by hand smaller than
+ * its content, the content scrolls.
  */
 export const PLUGIN_WINDOW: UIOptions = {
   position: "top right",
@@ -14,10 +15,13 @@ export const PLUGIN_WINDOW: UIOptions = {
   height: 512,
   resizable: true,
   minWidth: 320,
-  minHeight: 120,
+  minHeight: 54,
   maxWidth: 560,
   maxHeight: 900,
 };
+
+/** Where the plugin keeps whether its window is folded, so it opens the way the user left it. */
+export const WINDOW_STORAGE_KEY = "sitewright:plugin-window";
 
 /** The journal window: small, beside the editor. */
 export const JOURNAL_WINDOW_FEATURES = "popup,width=440,height=760";

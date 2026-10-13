@@ -19,3 +19,9 @@ export interface SetupStep {
 export interface AppProps {
   readonly link: WindowLink;
 }
+
+/** Whether the user folded the plugin window to its bar. */
+export interface PluginWindowState {
+  readonly collapsed: boolean;
+  toggle(): void;
+}
