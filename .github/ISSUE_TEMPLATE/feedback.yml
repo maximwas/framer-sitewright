@@ -1,0 +1,15 @@
+name: Feedback
+description: How Sitewright works for you, what you like and what you would change.
+labels: ["feedback"]
+body:
+  - type: textarea
+    id: feedback
+    attributes:
+      label: Your feedback
+    validations:
+      required: true
+  - type: input
+    id: use
+    attributes:
+      label: What you use it for
+      placeholder: Client sites, templates for the Marketplace, your own site…

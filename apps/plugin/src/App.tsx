@@ -1,4 +1,13 @@
-import { Collapse, IconButton, StatusNote, StatusPill, SupportLinks, Toaster, WindowBar } from "@sitewright/ui";
+import {
+  Collapse,
+  FeedbackLink,
+  IconButton,
+  StatusNote,
+  StatusPill,
+  SupportLinks,
+  Toaster,
+  WindowBar,
+} from "@sitewright/ui";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { MotionConfig } from "motion/react";
 import { useRef } from "react";
@@ -51,7 +60,10 @@ export function App({ link }: AppProps) {
               {update !== null && <UpdateNote serverVersion={update.serverVersion} />}
               <ActionButton link={link} />
               {!connected && <SetupGuide />}
-              <SupportLinks />
+              <div className="flex flex-col gap-1">
+                <SupportLinks />
+                <FeedbackLink />
+              </div>
             </div>
           </Collapse>
         </div>

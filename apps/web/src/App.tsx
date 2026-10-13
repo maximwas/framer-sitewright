@@ -1,4 +1,4 @@
-import { ActivityPanel, SupportLinks, Toaster, useActivityFeed } from "@sitewright/ui";
+import { ActivityPanel, FeedbackLink, SupportLinks, Toaster, useActivityFeed } from "@sitewright/ui";
 import { MotionConfig } from "motion/react";
 import { useStore } from "zustand";
 import { AppHeader } from "./components/AppHeader.tsx";
@@ -18,8 +18,9 @@ export function App({ client }: AppProps) {
         <div className="relative flex h-full min-h-0 w-full max-w-2xl flex-col overflow-hidden bg-sw-surface sm:rounded-2xl sm:border sm:border-sw-line-strong sm:shadow-sw">
           <AppHeader connection={connection} />
           <ActivityPanel feed={feed} />
-          <div className="px-3.5 pb-2 empty:hidden">
+          <div className="flex flex-col gap-1 px-3.5 pb-2">
             <SupportLinks />
+            <FeedbackLink />
           </div>
         </div>
       </main>

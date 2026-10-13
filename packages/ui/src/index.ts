@@ -2,6 +2,7 @@
 export { ActivityApiClient } from "./api/activity-api-client.ts";
 export { ServerCalls } from "./api/server-calls.ts";
 export { ActivityPanel } from "./components/ActivityPanel.tsx";
+export { FeedbackLink } from "./components/FeedbackLink.tsx";
 export { SupportLinks } from "./components/SupportLinks.tsx";
 export { NORMAL_CLOSURE } from "./constants/connection.ts";
 export { EASE_OUT, FADE, SPRING } from "./constants/toolkit.ts";
