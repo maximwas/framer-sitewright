@@ -162,6 +162,11 @@ Your key and your project data stay on your machine. The server talks to Framer 
 beyond that it reads only public pages a tool names: Marketplace items you link, reference pages and your published
 site. No telemetry, no account. The full policy: [privacy policy](https://maximwas.github.io/framer-sitewright/privacy/).
 
+## Changelog
+
+Every release, with its date and what changed: [CHANGELOG.md](https://github.com/maximwas/framer-sitewright/blob/main/CHANGELOG.md),
+also on the [website](https://maximwas.github.io/framer-sitewright/changelog/).
+
 ## Feedback and bugs
 
 Found a bug, missing something, or have feedback? [Open an issue](https://github.com/maximwas/framer-sitewright/issues/new/choose):

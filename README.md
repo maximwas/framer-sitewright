@@ -119,16 +119,18 @@ pnpm docs:tools          # rewrite the tool reference of the docs page from the 
 ### Releasing
 
 `main` takes changes only through pull requests, with the `check` job of CI passing; direct pushes and force pushes
-are blocked. Set the same version in `apps/server`, `apps/plugin` and `apps/web` on a branch, open a pull request and
-merge it, then tag the merge commit:
+are blocked. Set the same version in `apps/server`, `apps/plugin` and `apps/web` on a branch, give it its section in
+`CHANGELOG.md` (`## 1.2.3 — <date>`; the format is at the top of that file) and run `pnpm docs:changelog` for the
+website's page, open a pull request and merge it, then tag the merge commit:
 
 ```bash
 git switch main && git pull
 git tag v1.2.3 && git push origin v1.2.3
 ```
 
-The `Release` workflow checks that the tag matches the versions, runs the checks, publishes `sitewright` to npm
-(trusted publishing, with provenance) and creates a GitHub release with the plugin's zip. Framer has no API for plugin
+The `Release` workflow checks that the tag matches the versions and has its section in `CHANGELOG.md`, runs the checks,
+publishes `sitewright` to npm (trusted publishing, with provenance) and creates a GitHub release with the plugin's zip
+and that section as its notes. Framer has no API for plugin
 versions: upload that zip in the Marketplace dashboard (Publish New Version). After a plugin update, check that
 **Connect** still connects: the journal window relays only for the origins in `DEFAULT_PLUGIN_ORIGINS`
 (`packages/core/src/constants/bridge.ts`).
@@ -140,6 +142,11 @@ versions: upload that zip in the Marketplace dashboard (Publish New Version). Af
 | `apps/web` | `@sitewright/web` | The local page with the journal and settings, and the window that carries the plugin's connection; shipped inside the server package |
 | `packages/core` | `@sitewright/core` | Framer operations, the bridge protocol, undo; no Node and no Framer SDK |
 | `packages/ui` | `@sitewright/ui` | The journal panel (React) of the local page, and the theme the plugin shares |
+
+## Changelog
+
+Every release, with its date and what changed: [CHANGELOG.md](https://github.com/maximwas/framer-sitewright/blob/main/CHANGELOG.md),
+also on the [website](https://maximwas.github.io/framer-sitewright/changelog/).
 
 ## Feedback and bugs
 

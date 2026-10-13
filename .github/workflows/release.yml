@@ -1,7 +1,7 @@
 name: Release
 
 # A tag v1.2.3 releases that version: the sitewright package goes to npm, the plugin is packed for the Framer
-# Marketplace, and a GitHub release carries the plugin zip. npm trusts this workflow (trusted publishing, configured on
+# Marketplace, and a GitHub release carries the plugin zip, with the version's section of CHANGELOG.md as its notes. npm trusts this workflow (trusted publishing, configured on
 # the package's npm settings page), so the repository holds no token and the package gets provenance. Framer has no
 # API for plugin versions: the zip from the release is uploaded in the Marketplace dashboard by hand.
 on:
@@ -31,6 +31,9 @@ jobs:
             version="v$(node -p "require('./apps/$app/package.json').version")"
             test "$version" = "$GITHUB_REF_NAME" || { echo "apps/$app is $version, the tag is $GITHUB_REF_NAME"; exit 1; }
           done
+      - name: CHANGELOG.md has this version
+        run: |
+          grep -q "^## ${GITHUB_REF_NAME#v} — " CHANGELOG.md || { echo "Add a '## ${GITHUB_REF_NAME#v} — <YYYY-MM-DD>' section to CHANGELOG.md"; exit 1; }
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm typecheck
@@ -47,6 +50,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          # The release's notes: this version's section of CHANGELOG.md, then how to install.
+          awk -v heading="## ${GITHUB_REF_NAME#v} — " 'index($0, heading) == 1 { on = 1; next } on && /^## / { exit } on' CHANGELOG.md > "$RUNNER_TEMP/notes.md"
+          printf '\nInstall or update the MCP server: `npx -y sitewright@latest`. The plugin comes from the Framer Marketplace (Plugins → Sitewright); the zip below is the build submitted there.\n' >> "$RUNNER_TEMP/notes.md"
           gh release create "$GITHUB_REF_NAME" "$RUNNER_TEMP/sitewright-plugin-${GITHUB_REF_NAME#v}.zip" \
-            --title "Sitewright ${GITHUB_REF_NAME#v}" --generate-notes \
-            --notes "Install or update the MCP server: \`npx -y sitewright@latest\`. The plugin comes from the Framer Marketplace (Plugins → Sitewright); the zip below is the build submitted there."
+            --title "Sitewright ${GITHUB_REF_NAME#v}" --notes-file "$RUNNER_TEMP/notes.md"

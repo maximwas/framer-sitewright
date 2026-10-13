@@ -19,6 +19,11 @@ jobs:
           node-version: 24.11.0
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # The website's changelog page is written from CHANGELOG.md: it must match it.
+      - name: The changelog page matches CHANGELOG.md
+        run: |
+          pnpm docs:changelog
+          git diff --exit-code docs/changelog || { echo "Run pnpm docs:changelog and commit docs/changelog"; exit 1; }
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
