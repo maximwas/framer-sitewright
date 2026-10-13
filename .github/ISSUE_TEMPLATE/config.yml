@@ -1,5 +1,11 @@
 blank_issues_enabled: true
 contact_links:
+  - name: A question
+    url: https://github.com/maximwas/framer-sitewright/discussions/categories/q-a
+    about: Ask in Discussions (Q&A), where the answer helps the next person too.
+  - name: Ideas, show and tell, and talk
+    url: https://github.com/maximwas/framer-sitewright/discussions
+    about: Share what you built with Sitewright, float an idea, or talk about Framer and AI agents.
   - name: Documentation
     url: https://maximwas.github.io/framer-sitewright/docs/
     about: Setup, every tool, and how Sitewright reaches Framer.
