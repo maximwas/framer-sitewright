@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sitewright changelog</title>
+    <meta name="description" content="Every release of Sitewright, the MCP server and Framer plugin: the version, the day and what changed." />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../site.css" />
+    <script src="changelog.js" defer></script>
+  </head>
+  <body class="docs-page">
+    <a class="skip" href="#content">Skip to content</a>
+
+    <header class="top">
+      <div class="wrap">
+        <a class="brand" href="../" aria-label="Sitewright home">
+          <svg aria-hidden="true" viewBox="0 0 30 30">
+            <rect x="0.5" y="0.5" width="29" height="29" rx="7.5" fill="#1c1d21" stroke="#ffffff" stroke-opacity="0.16" />
+            <g transform="translate(4.2 4.2) scale(0.3375)"><path fill="#f4f2ec" d="M10 10h16v7h-9v9h-7zM54 10v16h-7v-9h-9v-7zM10 54V38h7v9h9v7zM54 54H38v-7h9v-9h7z" /><path fill="#f2a93b" d="M32 21l3.6 7.4L43 32l-7.4 3.6L32 43l-3.6-7.4L21 32l7.4-3.6z" /></g>
+          </svg>
+          Sitewright <span class="brand-sub">Changelog</span>
+        </a>
+        <nav class="links" aria-label="Sections">
+          <a href="../docs/">Docs</a>
+          <a href="../">Home</a>
+        </nav>
+        <a class="gh" href="https://github.com/maximwas/framer-sitewright">
+          <svg aria-hidden="true" viewBox="0 0 16 16" fill="currentColor">
+            <path
+              d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"
+            />
+          </svg>
+          GitHub
+        </a>
+      </div>
+    </header>
+
+    <div class="wrap docs">
+      <aside class="toc" aria-label="Versions">
+        <details open>
+          <summary>Versions</summary>
+          <nav>
+            <p class="toc-title">1.1</p>
+            <a href="#v1-1-2"><span>1.1.2</span><time datetime="2026-10-13">Oct 13</time></a>
+            <a href="#v1-1-1"><span>1.1.1</span><time datetime="2026-10-13">Oct 13</time></a>
+            <a href="#v1-1-0"><span>1.1.0</span><time datetime="2026-10-12">Oct 12</time></a>
+            <p class="toc-title">1.0</p>
+            <a href="#v1-0-11"><span>1.0.11</span><time datetime="2026-10-12">Oct 12</time></a>
+            <a href="#v1-0-10"><span>1.0.10</span><time datetime="2026-10-12">Oct 12</time></a>
+            <a href="#v1-0-9"><span>1.0.9</span><time datetime="2026-10-12">Oct 12</time></a>
+            <a href="#v1-0-8"><span>1.0.8</span><time datetime="2026-10-12">Oct 12</time></a>
+            <a href="#v1-0-7"><span>1.0.7</span><time datetime="2026-10-08">Oct 8</time></a>
+            <a href="#v1-0-6"><span>1.0.6</span><time datetime="2026-10-08">Oct 8</time></a>
+            <a href="#v1-0-5"><span>1.0.5</span><time datetime="2026-10-08">Oct 8</time></a>
+            <a href="#v1-0-4"><span>1.0.4</span><time datetime="2026-10-08">Oct 8</time></a>
+            <a href="#v1-0-3"><span>1.0.3</span><time datetime="2026-10-08">Oct 8</time></a>
+            <a href="#v1-0-2"><span>1.0.2</span><time datetime="2026-10-08">Oct 8</time></a>
+            <a href="#v1-0-1"><span>1.0.1</span><time datetime="2026-10-08">Oct 8</time></a>
+            <a href="#v1-0-0"><span>1.0.0</span><time datetime="2026-10-08">Oct 8</time></a>
+          </nav>
+        </details>
+      </aside>
+
+      <main id="content" class="prose changelog">
+        <section id="top">
+          <p class="kicker">Changelog</p>
+          <h1>What changed in each release</h1>
+          <p class="lead">Every release of Sitewright, newest first: the version, the day it was released, and what changed. The npm package and the Framer plugin share one version. Update the MCP server with <code>npx -y sitewright@latest</code>; Framer updates the plugin.</p>
+        </section>
+        <div class="releases">
+        <section class="release" id="v1-1-2">
+          <div class="release-head">
+            <h2>1.1.2</h2>
+            <time datetime="2026-10-13">October 13, 2026</time>
+            <span class="release-latest">Latest</span>
+          </div>
+          <h3 class="change change-added">Added</h3>
+          <ul>
+            <li>GitHub issue forms for a bug report, an idea and feedback.</li>
+            <li>The plugin and the journal page say where to report a bug or an idea, under the donation links. The READMEs, the npm page, the website, the docs and the privacy page link to the forms too.</li>
+          </ul>
+        </section>
+        <section class="release" id="v1-1-1">
+          <div class="release-head">
+            <h2>1.1.1</h2>
+            <time datetime="2026-10-13">October 13, 2026</time>
+          </div>
+          <h3 class="change change-added">Added</h3>
+          <ul>
+            <li>The plugin window folds to its bar and opens again with the chevron in its bar, and opens the way you left it.</li>
+          </ul>
+        </section>
+        <section class="release" id="v1-1-0">
+          <div class="release-head">
+            <h2>1.1.0</h2>
+            <time datetime="2026-10-12">October 12, 2026</time>
+          </div>
+          <h3 class="change change-added">Added</h3>
+          <ul>
+            <li><code>nodes_lock</code> locks and unlocks layers, with or without a Server API key. Undo unlocks only what it locked, and <code>nodes_query</code> finds locked layers.</li>
+            <li><code>component_border_variable_add</code> adds a border control to a component, which <code>design_apply</code> cannot create.</li>
+            <li><code>image_compare</code> captures a node and compares its lines and edges with a reference PNG, such as a Figma export, row by row and column by column.</li>
+            <li><code>design_apply</code> reads back the layers it set and warns when Framer kept a value as it was, when a variant's override equals what it inherits (Framer drops it), and about variant changes that jump on the site.</li>
+            <li>The plugin asks you to update the MCP server, with the command, when the server is older than the plugin.</li>
+            <li><code>framer_guide</code> covers resets to the default, variant overrides, motion pitfalls and moving a Figma design.</li>
+          </ul>
+          <h3 class="change change-changed">Changed</h3>
+          <ul>
+            <li><code>design_apply</code> refuses a batch that names a color token the project lacks, before anything is written, and names the token you most likely meant.</li>
+            <li><code>design_apply</code> writes border controls per side and resets <code>zIndex</code> through the plugin, where the DSL refuses them.</li>
+            <li><code>component_controls_set</code> takes a control by its name and a border as <code>"0 0 1px 1px solid &lt;color&gt;"</code>.</li>
+            <li><code>nodes_read</code> shows the sides of an instance's border.</li>
+            <li>Framer lint messages known to misfire are marked low confidence, with the reason.</li>
+            <li>A read that finds no layer on an old Server API session reconnects and reads once more.</li>
+          </ul>
+          <h3 class="change change-fixed">Fixed</h3>
+          <ul>
+            <li>A token created and used in the same <code>design_apply</code> batch is bound correctly.</li>
+            <li><code>component_controls_set</code> no longer reports a border it wrote as not stored.</li>
+            <li>The layout audit reads a text's paragraph alignment, and the accessibility audit sees background layers.</li>
+          </ul>
+        </section>
+        <section class="release" id="v1-0-11">
+          <div class="release-head">
+            <h2>1.0.11</h2>
+            <time datetime="2026-10-12">October 12, 2026</time>
+          </div>
+          <h3 class="change change-fixed">Fixed</h3>
+          <ul>
+            <li>A CMS Collection List created in one <code>design_apply</code> batch binds its item's fields. Framer used to refuse them as not in scope.</li>
+          </ul>
+        </section>
+        <section class="release" id="v1-0-10">
+          <div class="release-head">
+            <h2>1.0.10</h2>
+            <time datetime="2026-10-12">October 12, 2026</time>
+          </div>
+          <h3 class="change change-fixed">Fixed</h3>
+          <ul>
+            <li><code>layout_audit</code> no longer reports instances stretched by their pins (a grain, a grid, a background video) as collapsed.</li>
+            <li><code>component_controls_set</code> writes only the controls you name, so the others keep their token bindings, and it recognizes fonts Framer stores by family.</li>
+          </ul>
+        </section>
+        <section class="release" id="v1-0-9">
+          <div class="release-head">
+            <h2>1.0.9</h2>
+            <time datetime="2026-10-12">October 12, 2026</time>
+          </div>
+          <h3 class="change change-changed">Changed</h3>
+          <ul>
+            <li>The plugin window is compact and follows its content: once connected, it shows the status, one button and the support line.</li>
+            <li>The journal names items by their text, not by a token value.</li>
+          </ul>
+        </section>
+        <section class="release" id="v1-0-8">
+          <div class="release-head">
+            <h2>1.0.8</h2>
+            <time datetime="2026-10-12">October 12, 2026</time>
+          </div>
+          <h3 class="change change-changed">Changed</h3>
+          <ul>
+            <li>Donations go to Ko-fi and a monobank jar instead of Patreon.</li>
+          </ul>
+        </section>
+        <section class="release" id="v1-0-7">
+          <div class="release-head">
+            <h2>1.0.7</h2>
+            <time datetime="2026-10-08">October 8, 2026</time>
+          </div>
+          <h3 class="change change-fixed">Fixed</h3>
+          <ul>
+            <li>The plugin removes its listeners when it closes. This is the first version approved on the Framer Marketplace.</li>
+          </ul>
+        </section>
+        <section class="release" id="v1-0-6">
+          <div class="release-head">
+            <h2>1.0.6</h2>
+            <time datetime="2026-10-08">October 8, 2026</time>
+          </div>
+          <h3 class="change change-changed">Changed</h3>
+          <ul>
+            <li>The plugin ships every source module as its own readable file, for Framer's Marketplace review.</li>
+          </ul>
+        </section>
+        <section class="release" id="v1-0-5">
+          <div class="release-head">
+            <h2>1.0.5</h2>
+            <time datetime="2026-10-08">October 8, 2026</time>
+          </div>
+          <h3 class="change change-changed">Changed</h3>
+          <ul>
+            <li>The plugin contains only the operations it runs, readable and without network code, for Framer's Marketplace review.</li>
+          </ul>
+        </section>
+        <section class="release" id="v1-0-4">
+          <div class="release-head">
+            <h2>1.0.4</h2>
+            <time datetime="2026-10-08">October 8, 2026</time>
+          </div>
+          <h3 class="change change-changed">Changed</h3>
+          <ul>
+            <li>Sitewright gives no design advice: <code>design_guide</code> became <code>framer_guide</code>, a guide to how Framer behaves.</li>
+          </ul>
+        </section>
+        <section class="release" id="v1-0-3">
+          <div class="release-head">
+            <h2>1.0.3</h2>
+            <time datetime="2026-10-08">October 8, 2026</time>
+          </div>
+          <h3 class="change change-fixed">Fixed</h3>
+          <ul>
+            <li>Connect works in the plugin installed from the Framer Marketplace.</li>
+          </ul>
+        </section>
+        <section class="release" id="v1-0-2">
+          <div class="release-head">
+            <h2>1.0.2</h2>
+            <time datetime="2026-10-08">October 8, 2026</time>
+          </div>
+          <h3 class="change change-changed">Changed</h3>
+          <ul>
+            <li>A new mark in the plugin's icon, the journal, the website and the docs.</li>
+          </ul>
+        </section>
+        <section class="release" id="v1-0-1">
+          <div class="release-head">
+            <h2>1.0.1</h2>
+            <time datetime="2026-10-08">October 8, 2026</time>
+          </div>
+          <h3 class="change change-changed">Changed</h3>
+          <ul>
+            <li>The npm page links the website as the homepage.</li>
+          </ul>
+        </section>
+        <section class="release" id="v1-0-0">
+          <div class="release-head">
+            <h2>1.0.0</h2>
+            <time datetime="2026-10-08">October 8, 2026</time>
+          </div>
+          <h3 class="change change-added">Added</h3>
+          <ul>
+            <li>The first public release: the <code>sitewright</code> MCP server and CLI on npm, the Sitewright plugin for Framer, and the local journal that records every change and undoes it.</li>
+          </ul>
+        </section>
+        </div>
+      </main>
+    </div>
+
+    <footer>
+      <div class="wrap">
+        <p>
+          Sitewright is free and open source under the
+          <a href="https://github.com/maximwas/framer-sitewright/blob/main/LICENSE">MIT license</a>. Unofficial: not
+          affiliated with or endorsed by Framer. “Framer” is a trademark of Framer B.V.
+        </p>
+        <p><a href="../">Home</a> · <a href="../docs/">Docs</a> · <a href="https://github.com/maximwas/framer-sitewright">GitHub</a> · <a href="https://github.com/maximwas/framer-sitewright/issues/new/choose">Report a bug or an idea</a> · <a href="https://ko-fi.com/maksymvasianin">Ko-fi</a> · <a href="https://send.monobank.ua/jar/7o9oMrbXTj">monobank</a> · <a href="../privacy/">Privacy</a> · <a href="./">Changelog</a></p>
+      </div>
+    </footer>
+  </body>
+</html>
