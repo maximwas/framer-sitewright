@@ -26,7 +26,7 @@ export {
 export { ACTIVITY_VIEWS, PREVIEW_IMAGE_ORIGINS } from "./constants/history.ts";
 export { MOTION_PRESET_NOTES, MOTION_PRESETS } from "./constants/motion.ts";
 export { AGENT_ONLY_OPERATION_NAMES } from "./constants/operations.ts";
-export { KEY_SETUP_HINT, PRODUCT, SUPPORT_LINKS } from "./constants/product.ts";
+export { FEEDBACK_URL, KEY_SETUP_HINT, PRODUCT, SUPPORT_LINKS } from "./constants/product.ts";
 export { SETTING_ITEMS } from "./constants/settings.ts";
 export { PLUGIN_CHANGED_EVENT, WEB_SOCKET_PATH, WebCloseCode } from "./constants/web.ts";
 export { findSection, searchSections, sliceContent, splitSections } from "./docs/sections.ts";

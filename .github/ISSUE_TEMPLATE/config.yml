@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://maximwas.github.io/framer-sitewright/docs/
+    about: Setup, every tool, and how Sitewright reaches Framer.

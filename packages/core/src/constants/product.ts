@@ -30,3 +30,6 @@ export const SUPPORT_LINKS: readonly SupportLink[] = [
 
 /** What to do when a call needs the project's Server API key. */
 export const KEY_SETUP_HINT = `Add this project's Server API key (Framer: Site Settings → General → API Keys): in the journal page (Settings), or \`npx ${PRODUCT.packageName} key\` in a terminal.`;
+
+/** Where people report a bug, ask for a feature or leave feedback: GitHub's issue form chooser. */
+export const FEEDBACK_URL = "https://github.com/maximwas/framer-sitewright/issues/new/choose";

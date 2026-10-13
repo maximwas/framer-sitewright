@@ -1,0 +1,57 @@
+name: Bug report
+description: Something in Sitewright (the MCP server, the Framer plugin or the journal) does not work as it should.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report it. Please leave out API keys and anything private from your project.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you asked your AI agent to do, and what went wrong. The error message, if there was one.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: How to make it happen again
+      description: The steps, the tool that failed (for example design_apply) and what you passed to it, if you know.
+      placeholder: |
+        1. ...
+        2. ...
+  - type: input
+    id: server-version
+    attributes:
+      label: Sitewright version
+      description: The output of `npx -y sitewright@latest --version`, or the version in framer_status.
+    validations:
+      required: true
+  - type: dropdown
+    id: connection
+    attributes:
+      label: How Sitewright reaches Framer
+      options:
+        - The plugin only (no Server API key)
+        - The plugin and a Server API key
+        - Not sure
+    validations:
+      required: true
+  - type: input
+    id: client
+    attributes:
+      label: AI client
+      placeholder: Claude Code, Cursor, Codex…
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Anything relevant from `sitewright logs` (keys and tokens are redacted there).
+      render: text

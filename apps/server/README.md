@@ -162,6 +162,12 @@ Your key and your project data stay on your machine. The server talks to Framer 
 beyond that it reads only public pages a tool names: Marketplace items you link, reference pages and your published
 site. No telemetry, no account. The full policy: [privacy policy](https://maximwas.github.io/framer-sitewright/privacy/).
 
+## Feedback and bugs
+
+Found a bug, missing something, or have feedback? [Open an issue](https://github.com/maximwas/framer-sitewright/issues/new/choose):
+there are forms for a bug report, an idea and general feedback. For a bug, the Sitewright version
+(`npx -y sitewright@latest --version`) and anything relevant from `sitewright logs` help most.
+
 ## Support
 
 Sitewright is free and open source. If it saves you time, donate on [Ko-fi](https://ko-fi.com/maksymvasianin) or to a

@@ -141,6 +141,12 @@ versions: upload that zip in the Marketplace dashboard (Publish New Version). Af
 | `packages/core` | `@sitewright/core` | Framer operations, the bridge protocol, undo; no Node and no Framer SDK |
 | `packages/ui` | `@sitewright/ui` | The journal panel (React) of the local page, and the theme the plugin shares |
 
+## Feedback and bugs
+
+Found a bug, missing something, or have feedback? [Open an issue](https://github.com/maximwas/framer-sitewright/issues/new/choose):
+there are forms for a bug report, an idea and general feedback. For a bug, the Sitewright version
+(`npx -y sitewright@latest --version`) and anything relevant from `sitewright logs` help most.
+
 ## Support
 
 Sitewright is free and open source. If it saves you time, donate on [Ko-fi](https://ko-fi.com/maksymvasianin) or to a [monobank jar](https://send.monobank.ua/jar/7o9oMrbXTj). At most once a week, after a change that worked,
