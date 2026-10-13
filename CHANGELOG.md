@@ -16,6 +16,14 @@ How to write this file (people and agents alike):
 - After editing, run `pnpm docs:changelog` to rewrite the website's page (docs/changelog/index.html).
 -->
 
+## Unreleased
+
+### Added
+
+- A changelog: this file and its page on the website, with every release, its date and what changed.
+- GitHub Discussions for questions, ideas and showing what you built, linked from the issue chooser, the READMEs and
+  the website.
+
 ## 1.1.2 — 2026-10-13
 
 ### Added

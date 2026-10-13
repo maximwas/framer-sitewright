@@ -154,6 +154,8 @@ Found a bug, missing something, or have feedback? [Open an issue](https://github
 there are forms for a bug report, an idea and general feedback. For a bug, the Sitewright version
 (`npx -y sitewright@latest --version`) and anything relevant from `sitewright logs` help most.
 
+Questions, ideas and what you built with Sitewright go to [Discussions](https://github.com/maximwas/framer-sitewright/discussions).
+
 ## Support
 
 Sitewright is free and open source. If it saves you time, donate on [Ko-fi](https://ko-fi.com/maksymvasianin) or to a [monobank jar](https://send.monobank.ua/jar/7o9oMrbXTj). At most once a week, after a change that worked,
