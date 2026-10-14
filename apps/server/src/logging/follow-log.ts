@@ -1,14 +1,14 @@
-import { watch } from "node:fs";
+import { mkdirSync, unwatchFile, watch, watchFile } from "node:fs";
 import { open, stat } from "node:fs/promises";
 import { basename, dirname } from "node:path";
-import { LOG_TAIL_LINES } from "../constants/logging.ts";
+import { LOG_POLL_MS, LOG_TAIL_LINES } from "../constants/logging.ts";
 import { prettyLine } from "./pretty-line.ts";
 
 /**
- * Prints the last lines of the shared log, then every line any sitewright process appends, until interrupted. A file
- * that got shorter was set aside by a starting process: it is followed from its start.
+ * Prints the last lines of the shared log, then every line any sitewright process appends, until the signal stops it
+ * (Ctrl+C ends the command). A file that got shorter was set aside by a starting process: it is followed from its start.
  */
-export async function followLog(file: string, print: (line: string) => void): Promise<void> {
+export async function followLog(file: string, print: (line: string) => void, signal?: AbortSignal): Promise<void> {
   let offset = 0;
   let pending = "";
   let reading = Promise.resolve();
@@ -45,19 +45,40 @@ export async function followLog(file: string, print: (line: string) => void): Pr
     }
   };
 
+  // A machine whose servers have not written yet has no logs folder: made here, so it can be watched.
+  mkdirSync(dirname(file), {
+    recursive: true,
+    mode: 0o700,
+  });
+
   const size = (await stat(file).catch(() => null))?.size ?? 0;
 
   offset = size;
   await printTail(file, size, print);
   print(`— following ${file} (Ctrl+C to stop) —`);
 
-  watch(dirname(file), (_event, changed) => {
+  const read = () => {
+    reading = reading.then(readNew, readNew);
+  };
+  // The folder watch sees a file set aside or made anew at once; the poll sees lines written through an open file.
+  const watcher = watch(dirname(file), (_event, changed) => {
     if (changed === null || changed === basename(file)) {
-      reading = reading.then(readNew, readNew);
+      read();
     }
   });
 
-  await new Promise(() => undefined);
+  watchFile(file, { interval: LOG_POLL_MS }, read);
+
+  await new Promise<void>((resolve) => {
+    if (signal?.aborted) {
+      resolve();
+    }
+
+    signal?.addEventListener("abort", () => resolve(), { once: true });
+  });
+  watcher.close();
+  unwatchFile(file, read);
+  await reading;
 }
 
 async function printTail(file: string, size: number, print: (line: string) => void): Promise<void> {
