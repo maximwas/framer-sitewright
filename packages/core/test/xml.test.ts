@@ -140,6 +140,15 @@ describe("XML: printing nodes", () => {
     expect(commands).toContain('SET v:q9nef13Ci:0:1 bold="true" text="\u00a0";');
     expect(commands).toContain('SET v:q9nef13Ci:0:2 text="\u2003";');
   });
+
+  it("regression: a plain space typed between two runs stays one space (seen: two spaces written)", () => {
+    const { commands } = xmlToDsl(
+      '<RichTextNode id="q9nef13Ci"><TextBlock tag="p"><TextRun bold="true">Save</TextRun> <TextRun bold="true">now</TextRun></TextBlock></RichTextNode>',
+      tempIds,
+    );
+
+    expect(commands).toContain('SET v:q9nef13Ci:0:1 text=" ";');
+  });
 });
 
 describe("XML: writing nodes", () => {

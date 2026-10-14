@@ -34,6 +34,7 @@ How to write this file (people and agents alike):
   height with empty space below.
 - `design_apply` reads a text run of only a no-break or an em space as it is written, without an added space, so the
   XML `nodes_read` gives sent back unchanged changes nothing.
+- `design_apply` writes a plain space typed between two text runs as one space, not two.
 
 ## 1.1.2 — 2026-10-13
 
