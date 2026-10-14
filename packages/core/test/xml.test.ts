@@ -99,6 +99,47 @@ describe("XML: printing nodes", () => {
       'SET wJcqWZRG7 name="Button";',
     ]);
   });
+
+  it("regression: a run of only a no-break or an em space reads back as written (seen: one space too many)", () => {
+    const spaced: SerializedNode = {
+      type: "RichTextNode",
+      id: "q9nef13Ci",
+      name: "Price",
+      $parentId: "AzQXwt390",
+      attributes: {},
+      children: [
+        {
+          type: "TextBlock",
+          id: "v:q9nef13Ci:0",
+          attributes: { tag: "p" },
+          children: [
+            {
+              type: "TextRun",
+              id: "v:q9nef13Ci:0:0",
+              attributes: { text: "10" },
+            },
+            {
+              type: "TextRun",
+              id: "v:q9nef13Ci:0:1",
+              attributes: {
+                text: "\u00a0",
+                bold: true,
+              },
+            },
+            {
+              type: "TextRun",
+              id: "v:q9nef13Ci:0:2",
+              attributes: { text: "\u2003" },
+            },
+          ],
+        },
+      ],
+    };
+    const { commands } = xmlToDsl(nodeToXml(spaced), tempIds);
+
+    expect(commands).toContain('SET v:q9nef13Ci:0:1 bold="true" text="\u00a0";');
+    expect(commands).toContain('SET v:q9nef13Ci:0:2 text="\u2003";');
+  });
 });
 
 describe("XML: writing nodes", () => {
