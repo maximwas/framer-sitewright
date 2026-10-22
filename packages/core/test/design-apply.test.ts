@@ -335,6 +335,25 @@ describe("design.apply", () => {
     });
   });
 
+  it("regression: a fractional px letter spacing is no defect (seen: letterSpacing=-0.36px flagged)", async () => {
+    const { runtime, state } = createFakeRuntime();
+
+    state.serializedNodes.text = {
+      type: "RichTextNode",
+      id: "text",
+    };
+    state.nextApplyResult = {
+      message: "Commands applied cleanly.",
+      renamedIds: {},
+    };
+
+    const result = await runOperation(designApply, { runtime }, { dsl: 'SET text letterSpacing="-0.36px";' });
+
+    expect(result.warnings).not.toContainEqual(
+      expect.objectContaining({ message: expect.stringContaining("fractional px") }),
+    );
+  });
+
   it("regression: says Framer ignores locked in the DSL and names nodes_lock (seen: SET locked applied cleanly, nothing locked)", async () => {
     const { runtime, state } = createFakeRuntime();
 

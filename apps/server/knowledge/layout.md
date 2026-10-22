@@ -116,6 +116,11 @@ When the design asks for items of one height:
   fill, no children and `height="auto"` collapses to 0. A circle is `width` + `aspectRatio="1"`.
 - A file narrower than about twice its shown width looks soft on high-density screens. `altText` on every meaningful
   image (`images_check` and `a11y_audit` look for it).
+- An image fill always covers its frame (Framer's Fill mode), cropped around `fillImagePositionX`/`Y`. Fit, Stretch
+  and Tile cannot be set by API: the DSL has no attribute for them (a guessed name is dropped without an error) and the
+  Plugin API has none either. For the whole image visible (contain), give its frame the image's own ratio
+  (`width="fit-image"`, or `aspectRatio` = image width / height) and center that frame in the box. For a tiled pattern,
+  ask the user to switch the fill to Tile in the editor.
 
 ## Links on buttons and text
 
@@ -133,6 +138,8 @@ When the design asks for items of one height:
 
 - A text style with a line height in percent (`120%`) gives text blocks fractional heights; Figma gives the line height
   in px. Write the px line height Figma shows, so heights come out whole and match.
+- Figma gives letter spacing in percent of the font size: write it as em (-2% is `letterSpacing="-0.02em"`). A text node
+  takes em, though Framer's reference lists only px and rem.
 - Figma draws a Line 1px above its y coordinate: place it 1px higher in Framer.
 - A Figma stroke "included in layout" takes 1px inside the card. A Framer border takes no space: add 1px to the
   padding.

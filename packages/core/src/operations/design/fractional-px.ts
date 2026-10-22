@@ -12,7 +12,8 @@ export function fractionalPxWarnings(
   return commands.flatMap((command) =>
     command.verb === "ADD" || command.verb === "SET"
       ? Object.entries(command.attributes).flatMap(([key, value]) =>
-          FRACTIONAL_PX.test(value)
+          // Letter spacing is fractional by nature: -2% of 18px is -0.36px.
+          FRACTIONAL_PX.test(value) && !key.endsWith("letterSpacing")
             ? [
                 {
                   message: `${key}="${value}" has a fractional px value: write whole numbers, e.g. 569px rather than 569.15px.`,

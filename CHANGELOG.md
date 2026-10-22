@@ -16,6 +16,17 @@ How to write this file (people and agents alike):
 - After editing, run `pnpm docs:changelog` to rewrite the website's page (docs/changelog/index.html).
 -->
 
+## Unreleased
+
+### Changed
+
+- `framer_guide` says how to show a whole image or a tiled one, which the API cannot set on an image fill, and that a
+  text node takes letter spacing in em, as Figma gives it.
+
+### Fixed
+
+- `design_apply` no longer warns about a letter spacing in fractional px, such as -0.36px.
+
 ## 1.1.3 — 2026-10-22
 
 ### Added
