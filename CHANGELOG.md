@@ -40,6 +40,8 @@ How to write this file (people and agents alike):
   site-wide runs no longer stop at "Page not found".
 - A site-wide `seo_audit`, `links_check`, `images_check`, `a11y_audit`, `rich_text_audit` or `template_audit` goes on
   past a page Framer cannot read and names it in its summary, instead of stopping at it.
+- `styles_usage` for one page counts the styles inside the components placed on it, and inside the components those
+  place, so a style used only there no longer shows as unused.
 
 ## 1.1.3 — 2026-10-22
 

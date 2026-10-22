@@ -26,6 +26,6 @@ export function registerLinkStyleTools(server: McpServer, context: ToolContext):
     name: "styles_usage",
     title: "Show where styles are used",
     description:
-      "Shows which color tokens, text styles and link styles the site uses: for each, how many layers use it (a layer counts once across breakpoints) and where (page paths, components, design pages, layouts); a token also lists the text and link styles that bind it. What nothing uses comes back in unused. Read the whole site (no pagePath) before deleting or swapping a style: with pagePath it reads one page, and unused means unused there. Code files are not searched.",
+      "Shows which color tokens, text styles and link styles the site uses: for each, how many layers use it (a layer counts once across breakpoints) and where (page paths, components, design pages, layouts); a token also lists the text and link styles that bind it. What nothing uses comes back in unused. Read the whole site (no pagePath) before deleting or swapping a style: with pagePath it reads one page and the components placed on it, and unused means unused there. Tokens bound in the controls of instances count, code components' included; code files themselves are not searched.",
   });
 }

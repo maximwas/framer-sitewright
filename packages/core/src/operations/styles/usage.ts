@@ -50,11 +50,30 @@ export const stylesUsage = defineOperation({
       new StyleNames(links),
     );
     const failed: string[] = [];
+    // A page read also reads the components placed on it, and the ones those place: their styles show on the page.
+    const components = pagePath === undefined ? new Map<string, string>() : await componentNames(agent);
+    const queue = [...scopes];
+    const queued = new Set(queue.map(({ id }) => id));
 
     // One scope at a time: a page's layers can run to thousands of nodes.
-    for (const scope of scopes) {
+    for (let scope = queue.shift(); scope !== undefined; scope = queue.shift()) {
       try {
-        tally.add(await readScope(agent, scope));
+        const usage = await readScope(agent, scope);
+
+        tally.add(usage);
+
+        for (const id of placedComponents(usage.layers)) {
+          const name = components.get(id);
+
+          if (name !== undefined && !queued.has(id)) {
+            queued.add(id);
+            queue.push({
+              id,
+              label: `component ${name}`,
+              pagePath: undefined,
+            });
+          }
+        }
       } catch (error) {
         failed.push(`${scope.label} (${errorMessage(error)})`);
       }
@@ -140,6 +159,25 @@ export async function usageScopes(
   );
 
   return [...pages, ...others];
+}
+
+/** The project's components by id, with the name usedIn shows. */
+async function componentNames(agent: AgentPort): Promise<Map<string, string>> {
+  return new Map(
+    serializedList(await agent.getNodesOfTypes({ types: ["ComponentNode"] })).map((node) => [
+      node.id,
+      node.name ?? node.id,
+    ]),
+  );
+}
+
+/** The components a scope's instances place, by id: an instance names its component in `component`. */
+function placedComponents(layers: unknown): string[] {
+  return serializedList(layers).flatMap((node) => {
+    const component: unknown = (node as Record<string, unknown>)["component"] ?? node.attributes?.["component"];
+
+    return node.type === "ComponentInstanceNode" && typeof component === "string" ? [component] : [];
+  });
 }
 
 /** Framer's list of the styles a scope uses, and its layers; a web page is read on its own path. */

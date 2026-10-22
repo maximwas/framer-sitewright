@@ -200,4 +200,26 @@ describe("styles.usage", () => {
     ]);
     expect(usage.note).toContain("whole site");
   });
+
+  it("regression: a page read counts the styles inside the components placed on it (seen: a style used there shown unused)", async () => {
+    const { runtime, state } = project();
+
+    state.layers["page-about"]?.push({
+      type: "ComponentInstanceNode",
+      id: "i1",
+      component: "comp-header",
+    });
+
+    const usage = await runOperation(stylesUsage, { runtime }, { pagePath: "/about" });
+
+    expect(usage.textStyles.used).toEqual([
+      {
+        id: "text-body",
+        path: "Body",
+        layers: 1,
+        usedIn: ["component Navigation/Header"],
+      },
+    ]);
+    expect(usage.linkStyles.unused).toEqual(["Links/Spare"]);
+  });
 });

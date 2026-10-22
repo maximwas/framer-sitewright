@@ -40,4 +40,4 @@ export const USAGE_SCOPE_KINDS: ReadonlyMap<string, string> = new Map([
 
 /** What a page-only reading cannot tell. */
 export const PAGE_USAGE_NOTE =
-  "Only this page was read: a style unused here may be used on other pages or in components. Read the whole site (no pagePath) before deleting a style.";
+  "Only this page and the components placed on it were read: a style unused here may be used on other pages or in other components. Read the whole site (no pagePath) before deleting a style.";
