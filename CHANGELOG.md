@@ -50,6 +50,9 @@ How to write this file (people and agents alike):
   gives `$rect` on every page, not only the home page.
 - `live_check` follows a sitemap index (one sitemap per locale) to the pages in its sitemaps, instead of checking the
   sitemaps as pages, and takes `paths` to check pages the sitemap leaves out, such as ones hidden from search.
+- `reference_screenshot` takes `part` to read a long page in bands at full width, instead of one narrow strip.
+- `node_screenshot` too big at scale 0.5 says to capture it in parts with `clip`, not to use scale 0.5, and says that
+  Framer draws a CMS page's Tablet and Phone breakpoints with the components' default content.
 
 ## 1.1.3 — 2026-10-22
 

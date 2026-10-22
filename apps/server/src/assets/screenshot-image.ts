@@ -1,4 +1,5 @@
 import { OperationError } from "@sitewright/core";
+import sharp from "sharp";
 import { CDN_SCALE_DOWN_PARAM, MAX_IMAGE_SIDE_PX, SCREENSHOT_FETCH_TIMEOUT_MS } from "../constants/mcp.ts";
 import { readPngSize } from "../mcp/png-size.ts";
 import type { ImageSize, ScreenshotImage } from "../types/mcp.ts";
@@ -43,6 +44,49 @@ export async function fetchScreenshotImage(
     ...scaled,
     size,
     shown,
+  };
+}
+
+/**
+ * One band of a page's screenshot, `part.top` to `part.top + part.height` in the page's CSS px, so a long page reads at
+ * full width instead of whole and narrow; still too big for the model, it is scaled down to fit.
+ */
+export async function fetchScreenshotPart(
+  imageUrl: string,
+  part: { readonly top: number; readonly height: number },
+  viewportWidth: number,
+  fetchImage: typeof fetch = fetch,
+): Promise<ScreenshotImage> {
+  const full = await download(imageUrl, fetchImage);
+  const { width = 0, height = 0 } = await sharp(full.data).metadata();
+  // The capture can be wider than the window (a dense screen): CSS px times this are the image's px.
+  const ratio = width / viewportWidth;
+  const top = Math.min(Math.round(part.top * ratio), Math.max(0, height - 1));
+  const band = Math.max(1, Math.min(Math.round(part.height * ratio), height - top));
+  const data = await sharp(full.data)
+    .extract({
+      left: 0,
+      top,
+      width,
+      height: band,
+    })
+    .resize({
+      width: MAX_IMAGE_SIDE_PX,
+      height: MAX_IMAGE_SIDE_PX,
+      fit: "inside",
+      withoutEnlargement: true,
+    })
+    .jpeg()
+    .toBuffer();
+
+  return {
+    data: new Uint8Array(data),
+    mimeType: "image/jpeg",
+    size: {
+      width,
+      height,
+    },
+    shown: sizeOf(data),
   };
 }
 

@@ -1,5 +1,6 @@
+import sharp from "sharp";
 import { expect, it } from "vitest";
-import { fetchScreenshotImage } from "../src/assets/screenshot-image.ts";
+import { fetchScreenshotImage, fetchScreenshotPart } from "../src/assets/screenshot-image.ts";
 
 const IMAGE_URL = "https://framerusercontent.com/screenshots/on-demand/shot.jpg";
 
@@ -66,6 +67,40 @@ it("asks Framer's CDN for a scaled copy of a full page longer than the model tak
       width: 224,
       height: 2000,
     },
+  });
+});
+
+it("regression: cuts one band of a long page at full width (seen: a 16403 px page shown 48×2000)", async () => {
+  // A page twice as dense as its 600 px window: 1200×8000 image px.
+  const page = await sharp({
+    create: {
+      width: 1200,
+      height: 8000,
+      channels: 3,
+      background: "#ffffff",
+    },
+  })
+    .jpeg()
+    .toBuffer();
+  const fetchImage = (async () => new Response(new Uint8Array(page))) as unknown as typeof fetch;
+
+  const image = await fetchScreenshotPart(
+    IMAGE_URL,
+    {
+      top: 1000,
+      height: 900,
+    },
+    600,
+    fetchImage,
+  );
+
+  expect(image.size).toEqual({
+    width: 1200,
+    height: 8000,
+  });
+  expect(image.shown).toEqual({
+    width: 1200,
+    height: 1800,
   });
 });
 
