@@ -43,6 +43,7 @@
           <summary>Versions</summary>
           <nav>
             <p class="toc-title">1.2</p>
+            <a href="#v1-2-3"><span>1.2.3</span><time datetime="2026-10-22">Oct 22</time></a>
             <a href="#v1-2-2"><span>1.2.2</span><time datetime="2026-10-22">Oct 22</time></a>
             <a href="#v1-2-1"><span>1.2.1</span><time datetime="2026-10-22">Oct 22</time></a>
             <a href="#v1-2-0"><span>1.2.0</span><time datetime="2026-10-22">Oct 22</time></a>
@@ -75,11 +76,39 @@
           <p class="lead">Every release of Sitewright, newest first: the version, the day it was released, and what changed. The npm package and the Framer plugin share one version. Update the MCP server with <code>npx -y sitewright@latest</code>; Framer updates the plugin.</p>
         </section>
         <div class="releases">
+        <section class="release" id="v1-2-3">
+          <div class="release-head">
+            <h2>1.2.3</h2>
+            <time datetime="2026-10-22">October 22, 2026</time>
+            <span class="release-latest">Latest</span>
+          </div>
+          <h3 class="change change-added">Added</h3>
+          <ul>
+            <li><code>image_compare</code> takes <code>referenceAlign</code> <code>bottom</code> to line up a node and a design that differ in height at their bottoms, such as a 100vh hero.</li>
+            <li><code>components_read</code> shows how to write a link control, a link to a CMS page included.</li>
+            <li><code>design_apply</code> takes <code>lint</code> <code>all</code> for every lint finding on the page.</li>
+          </ul>
+          <h3 class="change change-changed">Changed</h3>
+          <ul>
+            <li><code>design_apply</code> answers with Framer's lint findings about the layers the batch touched, not the whole page's, and says how many it left out.</li>
+            <li><code>component_controls_set</code> names the field Framer dropped from an object control, such as <code>arrows.iconPrev</code>, instead of the whole control.</li>
+          </ul>
+          <h3 class="change change-fixed">Fixed</h3>
+          <ul>
+            <li><code>design_apply</code> keeps a straight quote in a component control's value when it sets several controls of an instance at once, instead of cutting the value at the quote.</li>
+            <li><code>design_apply</code> sets a text where the same command removes its CMS binding, instead of keeping the value the CMS last showed.</li>
+            <li><code>component_controls_set</code> uploads image URLs in an object control's icon fields, such as a carousel's <code>arrows.iconPrev</code>, which Framer dropped.</li>
+            <li><code>images_upload</code> and <code>image_upload</code> give a large image the time it needs to reach Framer, instead of timing out after 30 seconds.</li>
+            <li>A refused link control in <code>design_apply</code> says how to write a link to a CMS page.</li>
+            <li><code>layout_audit</code> no longer reports an image pinned on all sides inside a stack as collapsed: read through the plugin, such a layer lost its pins.</li>
+            <li>Undoing a change that unbound a text from a CMS field binds it again with its text style and color, instead of leaving it in the default font.</li>
+            <li><code>layout_audit</code> of one layer, <code>nodes_read</code> and the other reads through the plugin find a layer on a page the editor does not show, instead of answering that it was not found.</li>
+          </ul>
+        </section>
         <section class="release" id="v1-2-2">
           <div class="release-head">
             <h2>1.2.2</h2>
             <time datetime="2026-10-22">October 22, 2026</time>
-            <span class="release-latest">Latest</span>
           </div>
           <h3 class="change change-added">Added</h3>
           <ul>
