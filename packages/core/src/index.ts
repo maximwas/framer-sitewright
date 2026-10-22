@@ -12,6 +12,7 @@ export {
 export { localAppOrigins, parsePluginMessage, parseWindowMessage, relayMessage } from "./bridge/relay.ts";
 export { SVG_DATA_URL_PREFIX } from "./constants/assets.ts";
 export {
+  AGENT_CHANGED_EVENT,
   BRIDGE_INFO_PATH,
   BRIDGE_PATH,
   BRIDGE_PROTOCOL_VERSION,
@@ -35,6 +36,7 @@ export { withDslPagePaths } from "./framer/page-paths.ts";
 export { agentRequiredError, requireAgent, requireScreenshot } from "./framer/runtime.ts";
 export {
   aliasesOf,
+  changedLayers,
   describeOperation,
   isRedoable,
   isUndoable,
@@ -43,6 +45,7 @@ export {
   revertState,
   revertTitle,
   summarizeEntry,
+  workedLayers,
 } from "./history/activity.ts";
 export { describeCall, trimDetail } from "./history/activity-detail.ts";
 export { applyAliases } from "./history/aliases.ts";
@@ -123,6 +126,7 @@ export { textStylesDelete } from "./operations/text-styles/delete.ts";
 export { textStylesList } from "./operations/text-styles/list.ts";
 export { textStylesUpsert } from "./operations/text-styles/upsert.ts";
 export {
+  AgentChangedSchema,
   EventMessageSchema,
   JournaledResultSchema,
   PluginInfoSchema,
@@ -146,6 +150,7 @@ export { SiteFindingSchema } from "./schemas/site-checks.ts";
 export { RevealParamsSchema, RevealResultSchema, WebClientMessageSchema } from "./schemas/web.ts";
 export { bySeverity } from "./site-checks/values.ts";
 export type {
+  AgentChanged,
   CallResultMessage,
   PluginInfo,
   PluginToServer,

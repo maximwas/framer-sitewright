@@ -4,7 +4,14 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./App.tsx";
 import { JOURNAL_WINDOW_FEATURES } from "./constants/ui.ts";
-import { isAllowedTo, pluginRuntime, readPluginInfo, revealOnRequest, showPluginWindow } from "./framer/plugin.ts";
+import {
+  isAllowedTo,
+  pluginRuntime,
+  readPluginInfo,
+  revealOnRequest,
+  selectChanged,
+  showPluginWindow,
+} from "./framer/plugin.ts";
 import { runInPlugin } from "./link/run-in-plugin.ts";
 import { WindowLink } from "./link/window-link.ts";
 
@@ -16,6 +23,7 @@ const link = new WindowLink({
 });
 
 link.onEvent(revealOnRequest);
+link.onEvent(selectChanged);
 
 // The font library takes over 30 s through the plugin: load it in the background once, so font searches find it ready.
 void runInPlugin(pluginRuntime, isAllowedTo, "fonts.search", { query: "serif" }, { journal: false }).catch(

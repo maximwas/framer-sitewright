@@ -93,6 +93,11 @@ export const EventMessageSchema = z.object({
   data: z.unknown().optional(),
 });
 
+/** The data of AGENT_CHANGED_EVENT: the layers a call of Claude's changed or read (see workedLayers). */
+export const AgentChangedSchema = z.object({
+  nodeIds: z.array(z.string()),
+});
+
 // journal panel -> server: the local app's page asks the server something (see ActivityCallSchema), answered by call_result
 export const CallMessageSchema = z.object({
   type: z.literal("call"),
