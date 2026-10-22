@@ -48,6 +48,8 @@ How to write this file (people and agents alike):
   an attribute it cannot read, such as `textColor`, naming the tool that reads it, instead of finding nothing.
 - `nodes_read` without `pagePath` reads a node on the page it is on and names that page, instead of answering "/", and
   gives `$rect` on every page, not only the home page.
+- `live_check` follows a sitemap index (one sitemap per locale) to the pages in its sitemaps, instead of checking the
+  sitemaps as pages, and takes `paths` to check pages the sitemap leaves out, such as ones hidden from search.
 
 ## 1.1.3 — 2026-10-22
 

@@ -10,6 +10,7 @@ import {
   LIVE_CONCURRENCY,
   LIVE_IMAGES_MAX,
   LIVE_LINKS_MAX,
+  LIVE_SITEMAPS_MAX,
   LIVE_TIMEOUT_MS,
   LIVE_USER_AGENT,
 } from "../constants/live-check.ts";
@@ -44,7 +45,10 @@ interface SharedUrl {
  * values, broken images and links, missing metadata, h1 headings, weight and mixed content. Only public URLs are
  * read; nothing is published.
  */
-export async function liveCheck({ url, limit }: LiveCheckInput, deps: LiveCheckDeps): Promise<LiveCheckOutput> {
+export async function liveCheck(
+  { url, limit, paths: asked = [] }: LiveCheckInput,
+  deps: LiveCheckDeps,
+): Promise<LiveCheckOutput> {
   const project = url === undefined ? await deps.site() : null;
   const start = url ?? project?.url;
 
@@ -57,10 +61,15 @@ export async function liveCheck({ url, limit }: LiveCheckInput, deps: LiveCheckD
   }
 
   const base = new URL(start);
-  const sitemap = await fetchText(deps, new URL("/sitemap.xml", base.origin).href);
-  const listed = sitemap === null ? [] : sitemapPaths(sitemap);
+  const listed = await sitemapPagePaths(deps, base.origin);
   const all = listed.length > 0 ? listed : (project?.paths ?? [base.pathname]);
-  const paths = pickPages(base.pathname === "/" ? all : [base.pathname, ...all], limit);
+  // The paths asked for come first and always: a page hidden from search is in no sitemap.
+  const paths = [
+    ...new Set([
+      ...asked,
+      ...pickPages(base.pathname === "/" ? all : [base.pathname, ...all], Math.max(0, limit - asked.length)),
+    ]),
+  ];
   const pages = await inTurns(paths, (path) => fetchPage(deps, path, new URL(path, base.origin).href));
   const byPath = new Map(pages.map((page) => [page.path, page]));
   const findings: SiteFinding[] = pages.flatMap((page) => {
@@ -209,6 +218,34 @@ async function fetchPage(deps: LiveCheckDeps, path: string, url: string): Promis
       scan: null,
     };
   }
+}
+
+/**
+ * The page paths of the site's sitemap. A sitemap index (one sitemap per locale) lists sitemaps, not pages: each is
+ * read in turn, on the origin being checked, up to LIVE_SITEMAPS_MAX.
+ */
+async function sitemapPagePaths(deps: LiveCheckDeps, origin: string): Promise<string[]> {
+  const sitemap = await fetchText(deps, new URL("/sitemap.xml", origin).href);
+
+  if (sitemap === null) {
+    return [];
+  }
+
+  if (!/<sitemapindex\b/i.test(sitemap)) {
+    return sitemapPaths(sitemap);
+  }
+
+  const children = await Promise.all(
+    sitemapPaths(sitemap)
+      .slice(0, LIVE_SITEMAPS_MAX)
+      .map((path) => fetchText(deps, new URL(path, origin).href)),
+  );
+
+  return [
+    ...new Set(
+      children.flatMap((child) => (child === null || /<sitemapindex\b/i.test(child) ? [] : sitemapPaths(child))),
+    ),
+  ];
 }
 
 async function fetchText(deps: LiveCheckDeps, url: string): Promise<string | null> {

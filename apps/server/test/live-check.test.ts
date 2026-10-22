@@ -97,6 +97,31 @@ describe("live_check", () => {
     ]);
   });
 
+  it("regression: follows a sitemap index to its sitemaps and checks the paths it is given (seen: sitemap_en.xml read as a page)", async () => {
+    const index = `<?xml version="1.0"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<sitemap><loc>https://north.studio/sitemap_en.xml</loc></sitemap><sitemap><loc>https://north.studio/sitemap_nl.xml</loc></sitemap></sitemapindex>`;
+    const { fetch } = fakeFetch({
+      [`${SITE}/sitemap.xml`]: index,
+      [`${SITE}/sitemap_en.xml`]: `<urlset><url><loc>https://north.studio/</loc></url></urlset>`,
+      [`${SITE}/sitemap_nl.xml`]: `<urlset><url><loc>https://north.studio/nl</loc></url></urlset>`,
+      [`${SITE}/`]: HOME,
+      [`${SITE}/nl`]: ABOUT,
+      [`${SITE}/hidden`]: ABOUT,
+    });
+    const result = await liveCheck(
+      {
+        limit: 10,
+        paths: ["/hidden"],
+      },
+      {
+        fetch,
+        site: async () => published,
+      },
+    );
+
+    expect(result.pages.map(({ path }) => path).sort()).toEqual(["/", "/hidden", "/nl"]);
+  });
+
   it("checks the published pages of the sitemap, each image and link once, and says what the editor has not published", async () => {
     const { fetch, calls } = fakeFetch({
       [`${SITE}/sitemap.xml`]: SITEMAP,

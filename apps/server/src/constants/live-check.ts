@@ -2,6 +2,9 @@
 export const LIVE_PAGES_DEFAULT = 20;
 export const LIVE_PAGES_MAX = 50;
 
+/** How many sitemaps of a sitemap index live_check reads: one per locale on most sites. */
+export const LIVE_SITEMAPS_MAX = 10;
+
 /** Images and internal links it requests at most, each once however many pages show it. */
 export const LIVE_IMAGES_MAX = 120;
 export const LIVE_LINKS_MAX = 120;
