@@ -98,6 +98,7 @@ const EXPECTED_TOOLS = [
   "localization_get",
   "localization_set",
   "marketplace_item",
+  "marketplace_item_inspect",
   "node_clone",
   "node_screenshot",
   "node_show",
@@ -256,6 +257,9 @@ describe("tools/list", () => {
       idempotentHint: true,
       openWorldHint: true,
     });
+    // Reading Marketplace pages changes nothing; only inspecting places components (seen: a read-only agent refused).
+    expect(annotations.marketplace_item).toMatchObject({ readOnlyHint: true });
+    expect(annotations.marketplace_item_inspect).toMatchObject({ readOnlyHint: false });
     expect(annotations.design_apply).toEqual({
       readOnlyHint: false,
       destructiveHint: true,

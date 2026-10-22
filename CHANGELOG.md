@@ -29,6 +29,8 @@ How to write this file (people and agents alike):
 
 ### Changed
 
+- `marketplace_item` only reads Marketplace pages and is marked read-only, so an agent limited to reading can use it;
+  reading a free component's controls on a temporary page is the new `marketplace_item_inspect` (it was `inspect`).
 - `image_upload` and `file_upload` take a path relative to the project folder too, not only an absolute one.
 - `svg_add` takes an .svg file by path, sets the layer's width with `width` (the height follows the viewBox), and with
   `keepViewBox` keeps the empty space around the drawing, which Framer otherwise crops away.

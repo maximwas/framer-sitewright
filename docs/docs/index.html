@@ -1456,7 +1456,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
   </article>
 </section>
 <section class="tool-group" id="assets" data-group>
-  <h3>Components and assets <span>14</span></h3>
+  <h3>Components and assets <span>15</span></h3>
   <p class="group-intro">Components and their controls, components from the Marketplace, icon sets, shaders, your own images, files and SVG.</p>
   <article class="tool" id="components_read" data-tool="components_read Read components lists the project's components with their exact controls ($control__variant options, $control__&lt;name&gt; for each variable) before you place or change instances. control names are the ones listed here, e.g. $control__showicon; do not derive them from variable names. code components are listed in codecomponents and framer's own (video, google maps, embed, slideshow, carousel, countdown, cookie banner, search…) in framer: place any of them with +componentinstancenode component=&quot;&lt;id&gt;&quot;, and pass its id in ids to read its controls first. needs the project's server api key (framer_status shows whether it is set).">
     <header>
@@ -1571,19 +1571,33 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="marketplace_item" data-tool="marketplace_item Look at Marketplace items reads marketplace item pages — links the user gives you (&quot;add this one, does it suit us?&quot;) — and returns what each is: the author's description, author, price (null = free), preview, categories, when it was last updated, and for a free component the moduleurl for component_insert. with inspect true, each free component is inserted on a temporary page, its controls are read with their defaults, types and the tool that writes each, and the page is deleted again. judge the fit from that before inserting it: does it take your own content (a slot takes ids of layers on the page; a list of images or of { image, … } entries takes image urls through component_controls_set, which uploads them), does it size to its container or measure its first slide once (then one instance per breakpoint width), can its colors and type match the tokens, does it use a tween (set a spring with component_controls_set), was it updated recently. open previewurl with your browser tools to see it move.">
+  <article class="tool" id="marketplace_item" data-tool="marketplace_item Look at Marketplace items reads marketplace item pages — links the user gives you (&quot;add this one, does it suit us?&quot;) — and returns what each is: the author's description, author, price (null = free), preview, categories, when it was last updated, and for a free component the moduleurl for component_insert. it changes nothing in the project. to read a free component's controls before placing it, use marketplace_item_inspect. open previewurl with your browser tools to see it move.">
     <header>
       <h4><a href="#marketplace_item">marketplace_item</a></h4>
-      <span class="badge write">Changes</span>
-      <span class="badge needs-partial" title="Works without a key; a Server API key adds more">Plugin · more with a key</span>
+      <span class="badge read">Reads</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
     </header>
     <p class="tool-title">Look at Marketplace items</p>
-    <p>Reads Marketplace item pages — links the user gives you (&quot;add this one, does it suit us?&quot;) — and returns what each is: the author's description, author, price (null = free), preview, categories, when it was last updated, and for a free component the moduleUrl for <a href="#component_insert"><code>component_insert</code></a>. With inspect true, each free component is inserted on a temporary page, its controls are read with their defaults, types and the tool that writes each, and the page is deleted again. Judge the fit from that before inserting it: does it take your own content (a slot takes ids of layers on the page; a list of images or of { image, … } entries takes image URLs through <a href="#component_controls_set"><code>component_controls_set</code></a>, which uploads them), does it size to its container or measure its first slide once (then one instance per breakpoint width), can its colors and type match the tokens, does it use a tween (set a spring with <a href="#component_controls_set"><code>component_controls_set</code></a>), was it updated recently. Open previewUrl with your browser tools to see it move.</p>
+    <p>Reads Marketplace item pages — links the user gives you (&quot;add this one, does it suit us?&quot;) — and returns what each is: the author's description, author, price (null = free), preview, categories, when it was last updated, and for a free component the moduleUrl for <a href="#component_insert"><code>component_insert</code></a>. It changes nothing in the project. To read a free component's controls before placing it, use <a href="#marketplace_item_inspect"><code>marketplace_item_inspect</code></a>. Open previewUrl with your browser tools to see it move.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
       <tr><th scope="row"><code>links</code></th><td><code class="type">string[]</code></td><td>Marketplace item pages: links the user gave (https://www.framer.com/marketplace/components/&lt;slug&gt;/), or component slugs. <span class="req">required</span></td></tr>
-      <tr><th scope="row"><code>inspect</code></th><td><code class="type">boolean</code></td><td>Insert each free component on a temporary design page, read its controls and defaults, then delete the page. <span class="def">default <code>false</code></span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="marketplace_item_inspect" data-tool="marketplace_item_inspect Inspect Marketplace components does what marketplace_item does, and also inserts each free component on a temporary page, reads its controls with their defaults, types and the tool that writes each, and deletes the page again. judge the fit from that before inserting it: does it take your own content (a slot takes ids of layers on the page; a list of images or of { image, … } entries takes image urls through component_controls_set, which uploads them), does it size to its container or measure its first slide once (then one instance per breakpoint width), can its colors and type match the tokens, does it use a tween (set a spring with component_controls_set), was it updated recently.">
+    <header>
+      <h4><a href="#marketplace_item_inspect">marketplace_item_inspect</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-partial" title="Works without a key; a Server API key adds more">Plugin · more with a key</span>
+    </header>
+    <p class="tool-title">Inspect Marketplace components</p>
+    <p>Does what <a href="#marketplace_item"><code>marketplace_item</code></a> does, and also inserts each free component on a temporary page, reads its controls with their defaults, types and the tool that writes each, and deletes the page again. Judge the fit from that before inserting it: does it take your own content (a slot takes ids of layers on the page; a list of images or of { image, … } entries takes image URLs through <a href="#component_controls_set"><code>component_controls_set</code></a>, which uploads them), does it size to its container or measure its first slide once (then one instance per breakpoint width), can its colors and type match the tokens, does it use a tween (set a spring with <a href="#component_controls_set"><code>component_controls_set</code></a>), was it updated recently.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>links</code></th><td><code class="type">string[]</code></td><td>Marketplace item pages: links the user gave (https://www.framer.com/marketplace/components/&lt;slug&gt;/), or component slugs. <span class="req">required</span></td></tr>
       </tbody>
     </table></div>
   </article>

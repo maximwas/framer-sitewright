@@ -388,7 +388,7 @@ written. For springs:
   date takes midnight only. A font control: `$control__font.fontSelector="GF;<Family>-<weight>"` and `fontSize`; one
   invalid field drops the whole font. Its `lineHeight` and `letterSpacing` are `[value, unit]` pairs (`[1.16,"em"]`),
   never a CSS string, and `fontSelector` goes in the same write as any other font field.
-- A Marketplace component the user links: read it with `marketplace_item` `inspect` first (whether it takes your own
+- A Marketplace component the user links: read it with `marketplace_item_inspect` first (whether it takes your own
   layers as slides, sizes to its container, takes the site's colors and type, was updated this year), then
   `component_insert`. Check it without a cursor and in Preview: trails, tilts and magnetic effects do nothing on touch,
   counters show 00 and reveals their end state on the canvas, scroll-pinned carousels take over the scroll, and
