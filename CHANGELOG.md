@@ -52,6 +52,8 @@ How to write this file (people and agents alike):
 - `live_check` follows a sitemap index (one sitemap per locale) to the pages in its sitemaps, instead of checking the
   sitemaps as pages, and takes `paths` to check pages the sitemap leaves out, such as ones hidden from search.
 - `reference_screenshot` takes `part` to read a long page in bands at full width, instead of one narrow strip.
+- `image_compare` takes `referenceClip` to compare one part of a design (a container) and `referenceFit` `width` to
+  scale a wider design to the capture, and reads a PNG or JPEG reference by a path relative to the project folder too.
 - `components_read` and `code_files_read` take `outline` for a short answer: each control on one line with an enum's
   first options, and a file's declaring lines with their numbers, instead of tens of thousands of characters.
 - `component_instances` names each instance's breakpoint and variant, lists every breakpoint's copy, and adds the

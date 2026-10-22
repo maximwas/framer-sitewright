@@ -13,7 +13,7 @@ import { fetchScreenshotImage, fetchScreenshotPart } from "../../assets/screensh
 import { COMPONENT_EXPORT_ERROR, MAX_IMAGE_SIDE_PX } from "../../constants/mcp.ts";
 import { diffEdges, edgesOf } from "../../images/edge-diff.ts";
 import { decodePng } from "../../images/png-decode.ts";
-import { referenceBytes } from "../../images/reference-image.ts";
+import { referenceBytes, referenceImage } from "../../images/reference-image.ts";
 import { ImageCompareInputSchema, ScreenshotInputSchema } from "../../schemas/mcp.ts";
 import type { ImageSize, ToolContext } from "../../types/mcp.ts";
 import { operationAnnotations } from "../add-tool.ts";
@@ -37,7 +37,7 @@ function registerImageCompareTool(server: McpServer, { transports, journal }: To
     {
       title: "Compare a node with a reference image",
       description:
-        "Captures a node like node_screenshot and compares it with a reference PNG (a Figma export, by absolute path or https URL): the y of every horizontal line or edge and the x of every vertical one, paired between the two. The answer lists edges that match, edges off by a few px (where each is, and by how much the node's is off: positive is lower or further right), edges of the reference the node lacks, and edges only the node has. Export the reference at the same scale and size as the capture (clip and scale work as in node_screenshot). Needs the project's Server API key.",
+        "Captures a node like node_screenshot and compares it with a reference PNG (a Figma export, by absolute path or https URL): the y of every horizontal line or edge and the x of every vertical one, paired between the two. The answer lists edges that match, edges off by a few px (where each is, and by how much the node's is off: positive is lower or further right), edges of the reference the node lacks, and edges only the node has. The two must show the same thing at the same size: capture the node (clip and scale as in node_screenshot), cut the matching part of the reference with referenceClip, and pass referenceFit width when the design is wider than the breakpoint (a 1440 design against a 1200 section). Needs the project's Server API key.",
       inputSchema: ImageCompareInputSchema,
       annotations: {
         readOnlyHint: true,
@@ -45,7 +45,7 @@ function registerImageCompareTool(server: McpServer, { transports, journal }: To
         openWorldHint: true,
       },
     },
-    async ({ nodeId, scale, clip, reference }) => {
+    async ({ nodeId, scale, clip, reference, referenceClip, referenceFit }) => {
       const options: ScreenshotOptions = {
         format: "png",
         scale,
@@ -71,7 +71,10 @@ function registerImageCompareTool(server: McpServer, { transports, journal }: To
               async (runtime) => {
                 const { taken } = await capture(runtime, nodeId, options);
                 const node = decodePng(taken.data);
-                const wanted = decodePng(await referenceBytes(reference));
+                const wanted = await referenceImage(await referenceBytes(reference), {
+                  clip: referenceClip,
+                  width: referenceFit === "width" ? node.width : undefined,
+                });
                 const ours = edgesOf(node);
                 const theirs = edgesOf(wanted);
 

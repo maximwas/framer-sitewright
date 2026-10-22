@@ -142,7 +142,7 @@ export const localeAdd = defineOperation({
       throw new OperationError(
         "WRITE_FAILED",
         `Framer answered that it added ${created.name} (${created.code}), but the project has no such locale.`,
-        "Ask the user to add it in the editor (Localization): a project whose plan does not include localization may refuse locales without an error.",
+        "Seen once right after a reconnect: ask the user to reconnect the plugin and try again, or to add the locale in the editor (Localization).",
       );
     }
 
