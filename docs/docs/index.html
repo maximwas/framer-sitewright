@@ -862,14 +862,14 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="styles_usage" data-tool="styles_usage Show where styles are used shows which color tokens, text styles and link styles the site uses: for each, how many layers use it (a layer counts once across breakpoints) and where (page paths, components, design pages, layouts); a token also lists the text and link styles that bind it. what nothing uses comes back in unused. read the whole site (no pagepath) before deleting or swapping a style: with pagepath it reads one page, and unused means unused there. code files are not searched.">
+  <article class="tool" id="styles_usage" data-tool="styles_usage Show where styles are used shows which color tokens, text styles and link styles the site uses: for each, how many layers use it (a layer counts once across breakpoints) and where (page paths, components, design pages, layouts); a token also lists the text and link styles that bind it. what nothing uses comes back in unused. read the whole site (no pagepath) before deleting or swapping a style: with pagepath it reads one page and the components placed on it, and unused means unused there. tokens bound in the controls of instances count, code components' included; code files themselves are not searched.">
     <header>
       <h4><a href="#styles_usage">styles_usage</a></h4>
       <span class="badge read">Reads</span>
       <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
     </header>
     <p class="tool-title">Show where styles are used</p>
-    <p>Shows which color tokens, text styles and link styles the site uses: for each, how many layers use it (a layer counts once across breakpoints) and where (page paths, components, design pages, layouts); a token also lists the text and link styles that bind it. What nothing uses comes back in unused. Read the whole site (no pagePath) before deleting or swapping a style: with pagePath it reads one page, and unused means unused there. Code files are not searched.</p>
+    <p>Shows which color tokens, text styles and link styles the site uses: for each, how many layers use it (a layer counts once across breakpoints) and where (page paths, components, design pages, layouts); a token also lists the text and link styles that bind it. What nothing uses comes back in unused. Read the whole site (no pagePath) before deleting or swapping a style: with pagePath it reads one page and the components placed on it, and unused means unused there. Tokens bound in the controls of instances count, code components' included; code files themselves are not searched.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
@@ -963,20 +963,20 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="nodes_read" data-tool="nodes_read Read nodes reads a node (or the page root, or up to 50 nodes at once with nodeids) with its children to a given depth, as xml by default: tags are node types, attributes are ids, names and dsl attributes, $-attributes are read-only metadata. blocks and runs of a rich text show no id: theirs follow from position (v:&lt;text id&gt;:&lt;n&gt;, then :&lt;m&gt;). edit the xml and send it back with design_apply xml. format &quot;json&quot; returns raw serialize(). keep depth low and filter attributes on big pages. without a server api key it reads through the plugin api: the same xml with fewer attributes, and the plain text of a rich text instead of blocks and runs.">
+  <article class="tool" id="nodes_read" data-tool="nodes_read Read nodes reads a node (or the page root, or up to 50 nodes at once with nodeids) with its children to a given depth, as xml by default: tags are node types, attributes are ids, names and dsl attributes, $-attributes are read-only metadata. blocks and runs of a rich text show no id: theirs follow from position (v:&lt;text id&gt;:&lt;n&gt;, then :&lt;m&gt;). edit the xml and send it back with design_apply xml. format &quot;json&quot; returns raw serialize(). keep depth low and filter attributes on big pages. without pagepath a node is read on the page it is on. $rect comes from framer's layout: through the server api only the home page is laid out, so elsewhere read sizes from the attributes or with node_screenshot. without a server api key it reads through the plugin api: the same xml with fewer attributes, and the plain text of a rich text instead of blocks and runs.">
     <header>
       <h4><a href="#nodes_read">nodes_read</a></h4>
       <span class="badge read">Reads</span>
       <span class="badge needs-partial" title="Works without a key; a Server API key adds more">Plugin · more with a key</span>
     </header>
     <p class="tool-title">Read nodes</p>
-    <p>Reads a node (or the page root, or up to 50 nodes at once with nodeIds) with its children to a given depth, as XML by default: tags are node types, attributes are ids, names and DSL attributes, $-attributes are read-only metadata. Blocks and runs of a rich text show no id: theirs follow from position (v:&lt;text id&gt;:&lt;n&gt;, then :&lt;m&gt;). Edit the XML and send it back with <a href="#design_apply"><code>design_apply</code></a> xml. format &quot;json&quot; returns raw serialize(). Keep depth low and filter attributes on big pages. Without a Server API key it reads through the Plugin API: the same XML with fewer attributes, and the plain text of a rich text instead of blocks and runs.</p>
+    <p>Reads a node (or the page root, or up to 50 nodes at once with nodeIds) with its children to a given depth, as XML by default: tags are node types, attributes are ids, names and DSL attributes, $-attributes are read-only metadata. Blocks and runs of a rich text show no id: theirs follow from position (v:&lt;text id&gt;:&lt;n&gt;, then :&lt;m&gt;). Edit the XML and send it back with <a href="#design_apply"><code>design_apply</code></a> xml. format &quot;json&quot; returns raw serialize(). Keep depth low and filter attributes on big pages. Without pagePath a node is read on the page it is on. $rect comes from Framer's layout: through the Server API only the home page is laid out, so elsewhere read sizes from the attributes or with <a href="#node_screenshot"><code>node_screenshot</code></a>. Without a Server API key it reads through the Plugin API: the same XML with fewer attributes, and the plain text of a rich text instead of blocks and runs.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
       <tr><th scope="row"><code>nodeId</code></th><td><code class="type">string</code></td><td>Node id. Omit to read the page root of pagePath.</td></tr>
       <tr><th scope="row"><code>nodeIds</code></th><td><code class="type">string[]</code></td><td>Several nodes in one call instead of nodeId: their XML one after another; ids not found go to missing.</td></tr>
-      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>Page path, e.g. &quot;/&quot; or &quot;/about&quot;. <span class="def">default <code>&quot;/&quot;</code></span></td></tr>
+      <tr><th scope="row"><code>pagePath</code></th><td><code class="type">string</code></td><td>Page path, e.g. &quot;/about&quot;. Omit for the home page, or with nodeId for the page the node is on.</td></tr>
       <tr><th scope="row"><code>depth</code></th><td><code class="type">number</code></td><td>How many child levels to include. <span class="def">default <code>2</code></span></td></tr>
       <tr><th scope="row"><code>attributes</code></th><td><code class="type">string[]</code></td><td>Only these attributes, e.g. [&quot;fill&quot;, &quot;layout&quot;, &quot;$rect&quot;]. [] returns structure only.</td></tr>
       <tr><th scope="row"><code>format</code></th><td><code class="type">&quot;xml&quot; | &quot;json&quot;</code></td><td>xml: the tree as elements (compact, writable back with design_apply); json: raw serialize(). <span class="def">default <code>&quot;xml&quot;</code></span></td></tr>
@@ -1001,14 +1001,14 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="nodes_query" data-tool="nodes_query Query layers by attributes finds layers across the site's pages (or one page) whose dsl attributes meet every condition, e.g. all text smaller than 14px, every frame with an image fill, links with no link style: [{ attribute: &quot;opacity&quot;, op: &quot;lessthan&quot;, value: &quot;1&quot; }]. operators: equals, contains, lessthan, greaterthan (numbers compare as numbers, 16px is 16), exists, notexists. returns each layer with its page and the attributes the conditions name; change them with design_apply. attributes are read as the plugin api gives them, on each page's main breakpoint: units can differ from nodes_read, which reads through the server api (a size in percent here, in px there).">
+  <article class="tool" id="nodes_query" data-tool="nodes_query Query layers by attributes finds layers across the site's pages (or one page) whose dsl attributes meet every condition, e.g. every frame with an image fill, text in a font, layers with a fixed width: [{ attribute: &quot;opacity&quot;, op: &quot;lessthan&quot;, value: &quot;1&quot; }]. it tests what the plugin api gives: name, visibility, position and pins, sizes, overflow, link, fill, radius, border, layout, stack and grid settings, textstylepreset, and a text's fontname, fontweight and fontstyle; it refuses other attributes (textcolor, fontsize, linkstylepreset) and names what reads them. operators: equals, contains, lessthan, greaterthan (numbers compare as numbers, 16px is 16), exists, notexists. returns each layer with its page and the attributes the conditions name; change them with design_apply. attributes are read on each page's main breakpoint: units can differ from nodes_read, which reads through the server api (a size in percent here, in px there).">
     <header>
       <h4><a href="#nodes_query">nodes_query</a></h4>
       <span class="badge read">Reads</span>
       <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
     </header>
     <p class="tool-title">Query layers by attributes</p>
-    <p>Finds layers across the site's pages (or one page) whose DSL attributes meet every condition, e.g. all text smaller than 14px, every frame with an image fill, links with no link style: [{ attribute: &quot;opacity&quot;, op: &quot;lessThan&quot;, value: &quot;1&quot; }]. Operators: equals, contains, lessThan, greaterThan (numbers compare as numbers, 16px is 16), exists, notExists. Returns each layer with its page and the attributes the conditions name; change them with <a href="#design_apply"><code>design_apply</code></a>. Attributes are read as the Plugin API gives them, on each page's main breakpoint: units can differ from <a href="#nodes_read"><code>nodes_read</code></a>, which reads through the Server API (a size in percent here, in px there).</p>
+    <p>Finds layers across the site's pages (or one page) whose DSL attributes meet every condition, e.g. every frame with an image fill, text in a font, layers with a fixed width: [{ attribute: &quot;opacity&quot;, op: &quot;lessThan&quot;, value: &quot;1&quot; }]. It tests what the Plugin API gives: name, visibility, position and pins, sizes, overflow, link, fill, radius, border, layout, stack and grid settings, textStylePreset, and a text's fontName, fontWeight and fontStyle; it refuses other attributes (textColor, fontSize, linkStylePreset) and names what reads them. Operators: equals, contains, lessThan, greaterThan (numbers compare as numbers, 16px is 16), exists, notExists. Returns each layer with its page and the attributes the conditions name; change them with <a href="#design_apply"><code>design_apply</code></a>. Attributes are read on each page's main breakpoint: units can differ from <a href="#nodes_read"><code>nodes_read</code></a>, which reads through the Server API (a size in percent here, in px there).</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
@@ -1203,14 +1203,14 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="node_screenshot" data-tool="node_screenshot Screenshot a node renders a node (breakpoint, section, component variant) to png so you can verify the visual result. needs the project's server api key. images longer than 2000 px on a side are refused: capture a region with clip, or use scale 0.5.">
+  <article class="tool" id="node_screenshot" data-tool="node_screenshot Screenshot a node renders a node (breakpoint, section, component variant) to png so you can verify the visual result. needs the project's server api key. images longer than 2000 px on a side are refused: capture a region with clip, or use scale 0.5. on a cms detail page framer draws the tablet and phone breakpoints with the components' default content, not the cms item: check those on the published page (reference_screenshot of its url).">
     <header>
       <h4><a href="#node_screenshot">node_screenshot</a></h4>
       <span class="badge read">Reads</span>
       <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
     </header>
     <p class="tool-title">Screenshot a node</p>
-    <p>Renders a node (breakpoint, section, component variant) to PNG so you can verify the visual result. Needs the project's Server API key. Images longer than 2000 px on a side are refused: capture a region with clip, or use scale 0.5.</p>
+    <p>Renders a node (breakpoint, section, component variant) to PNG so you can verify the visual result. Needs the project's Server API key. Images longer than 2000 px on a side are refused: capture a region with clip, or use scale 0.5. On a CMS detail page Framer draws the Tablet and Phone breakpoints with the components' default content, not the CMS item: check those on the published page (<a href="#reference_screenshot"><code>reference_screenshot</code></a> of its URL).</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
@@ -1238,14 +1238,14 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="reference_screenshot" data-tool="reference_screenshot Screenshot a web page screenshots any public web page in framer's browser: a reference site the user likes, a competitor's, or the published site (its url is in publish_preview or publish_status). use it to study a reference's layout, spacing, type and rhythm before designing, or to check the live site after a publish. the capture is the whole page at the window width given (390 for a phone, 810 for a tablet, default 1200), light or dark. a page longer than 2000 px comes scaled down to fit (a tall page gets narrow), and the text gives the full size and the full-size image's url to open in a browser. local, private and login-only pages cannot be captured: ask the user for a screenshot instead. needs the project's server api key. returns the image and a line with its sizes and url.">
+  <article class="tool" id="reference_screenshot" data-tool="reference_screenshot Screenshot a web page screenshots any public web page in framer's browser: a reference site the user likes, a competitor's, or the published site (its url is in publish_preview or publish_status). use it to study a reference's layout, spacing, type and rhythm before designing, or to check the live site after a publish. the capture is the whole page at the window width given (390 for a phone, 810 for a tablet, default 1200), light or dark. a page longer than 2000 px comes scaled down to fit (a tall page gets narrow): read it in bands at full width with part { top, height } in the page's px, the text gives the page's full size. local, private and login-only pages cannot be captured: ask the user for a screenshot instead. needs the project's server api key. returns the image and a line with its sizes and url.">
     <header>
       <h4><a href="#reference_screenshot">reference_screenshot</a></h4>
       <span class="badge read">Reads</span>
       <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
     </header>
     <p class="tool-title">Screenshot a web page</p>
-    <p>Screenshots any public web page in Framer's browser: a reference site the user likes, a competitor's, or the published site (its URL is in <a href="#publish_preview"><code>publish_preview</code></a> or <a href="#publish_status"><code>publish_status</code></a>). Use it to study a reference's layout, spacing, type and rhythm before designing, or to check the live site after a publish. The capture is the whole page at the window width given (390 for a phone, 810 for a tablet, default 1200), light or dark. A page longer than 2000 px comes scaled down to fit (a tall page gets narrow), and the text gives the full size and the full-size image's URL to open in a browser. Local, private and login-only pages cannot be captured: ask the user for a screenshot instead. Needs the project's Server API key. Returns the image and a line with its sizes and URL.</p>
+    <p>Screenshots any public web page in Framer's browser: a reference site the user likes, a competitor's, or the published site (its URL is in <a href="#publish_preview"><code>publish_preview</code></a> or <a href="#publish_status"><code>publish_status</code></a>). Use it to study a reference's layout, spacing, type and rhythm before designing, or to check the live site after a publish. The capture is the whole page at the window width given (390 for a phone, 810 for a tablet, default 1200), light or dark. A page longer than 2000 px comes scaled down to fit (a tall page gets narrow): read it in bands at full width with part { top, height } in the page's px, the text gives the page's full size. Local, private and login-only pages cannot be captured: ask the user for a screenshot instead. Needs the project's Server API key. Returns the image and a line with its sizes and URL.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
@@ -1253,6 +1253,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <tr><th scope="row"><code>width</code></th><td><code class="type">number</code></td><td>Browser width in px: 390 for a phone, 810 for a tablet. Default 1200.</td></tr>
       <tr><th scope="row"><code>height</code></th><td><code class="type">number</code></td><td>Browser height in px, which sizes 100vh sections; the capture is the whole page anyway. Default 1080, 844 below 600 wide.</td></tr>
       <tr><th scope="row"><code>theme</code></th><td><code class="type">&quot;light&quot; | &quot;dark&quot;</code></td><td>The color scheme the page is opened in. <span class="def">default <code>&quot;light&quot;</code></span></td></tr>
+      <tr><th scope="row"><code>part</code></th><td><code class="type">object</code></td><td>One band of the page, in its CSS px: e.g. { top: 0, height: 1800 }, then top 1800.<ul class="fields"><li><code>top</code> <code class="type">number</code></li><li><code>height</code> <code class="type">number</code></li></ul></td></tr>
       </tbody>
     </table></div>
   </article>
@@ -1286,14 +1287,14 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
 <section class="tool-group" id="checks" data-group>
   <h3>Checks before handover <span>10</span></h3>
   <p class="group-intro">What looks fine in the editor and still fails on the published site: search titles and descriptions, broken links and anchors, the same photo twice, missing alt text, text that does not stand out from its background, copy left over from a template, and the published site itself.</p>
-  <article class="tool" id="site_audit" data-tool="site_audit Audit the whole site runs seo_audit, links_check, images_check, a11y_audit and (unless layout is false) layout_audit on every page in one call, and rolls them up: per check the defects, likely and taste findings and the three pages with the most, the rules hit most often, and every defect in full. the overview before handover; run a check on its own for its likely and taste findings. needs the project's server api key.">
+  <article class="tool" id="site_audit" data-tool="site_audit Audit the whole site runs seo_audit, links_check, images_check, a11y_audit and (unless layout is false) layout_audit on every page in one call, and rolls them up: per check the defects, likely and taste findings, the rules it hit and the three pages with the most, the rules hit most often, and every defect in full. a check that failed or a page it could not read is in failed and leads the summary. the overview before handover; run a check on its own for its likely and taste findings. needs the project's server api key.">
     <header>
       <h4><a href="#site_audit">site_audit</a></h4>
       <span class="badge read">Reads</span>
       <span class="badge needs-key" title="Needs the project's Server API key">Server API key</span>
     </header>
     <p class="tool-title">Audit the whole site</p>
-    <p>Runs <a href="#seo_audit"><code>seo_audit</code></a>, <a href="#links_check"><code>links_check</code></a>, <a href="#images_check"><code>images_check</code></a>, a11y_audit and (unless layout is false) <a href="#layout_audit"><code>layout_audit</code></a> on every page in one call, and rolls them up: per check the defects, likely and taste findings and the three pages with the most, the rules hit most often, and every defect in full. The overview before handover; run a check on its own for its likely and taste findings. Needs the project's Server API key.</p>
+    <p>Runs <a href="#seo_audit"><code>seo_audit</code></a>, <a href="#links_check"><code>links_check</code></a>, <a href="#images_check"><code>images_check</code></a>, a11y_audit and (unless layout is false) <a href="#layout_audit"><code>layout_audit</code></a> on every page in one call, and rolls them up: per check the defects, likely and taste findings, the rules it hit and the three pages with the most, the rules hit most often, and every defect in full. A check that failed or a page it could not read is in failed and leads the summary. The overview before handover; run a check on its own for its likely and taste findings. Needs the project's Server API key.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
@@ -1430,12 +1431,13 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <tbody>
       <tr><th scope="row"><code>url</code></th><td><code class="type">string</code></td><td>A published site to check, e.g. https://example.framer.app/ (any public site; its own sitemap is read). Omit for the connected project's site: production, else staging.</td></tr>
       <tr><th scope="row"><code>limit</code></th><td><code class="type">number</code></td><td>Most pages to fetch: every top-level page first, then CMS pages taken evenly from each collection. <span class="def">default <code>20</code></span></td></tr>
+      <tr><th scope="row"><code>paths</code></th><td><code class="type">string[]</code></td><td>Pages to check besides the sitemap's, first: a page hidden from search is not in it, e.g. [&quot;/thanks&quot;].</td></tr>
       </tbody>
     </table></div>
   </article>
 </section>
 <section class="tool-group" id="assets" data-group>
-  <h3>Components and assets <span>13</span></h3>
+  <h3>Components and assets <span>14</span></h3>
   <p class="group-intro">Components and their controls, components from the Marketplace, icon sets, shaders, your own images, files and SVG.</p>
   <article class="tool" id="components_read" data-tool="components_read Read components lists the project's components with their exact controls ($control__variant options, $control__&lt;name&gt; for each variable) before you place or change instances. control names are the ones listed here, e.g. $control__showicon; do not derive them from variable names. code components are listed in codecomponents and framer's own (video, google maps, embed, slideshow, carousel, countdown, cookie banner, search…) in framer: place any of them with +componentinstancenode component=&quot;&lt;id&gt;&quot;, and pass its id in ids to read its controls first. needs the project's server api key (framer_status shows whether it is set).">
     <header>
@@ -1449,6 +1451,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
       <tr><th scope="row"><code>ids</code></th><td><code class="type">string[]</code></td><td>Component ids to read controls for. Omit for every canvas component of the project.</td></tr>
+      <tr><th scope="row"><code>outline</code></th><td><code class="type">boolean</code></td><td>Each control as one line (type, an enum's first options), Framer's components by name only: a short overview; read the ones you place in full. <span class="def">default <code>false</code></span></td></tr>
       </tbody>
     </table></div>
   </article>
@@ -1533,14 +1536,14 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="component_instances" data-tool="component_instances Find a component's instances lists every instance of one component across the site's pages (or one page), each with its id, name and page: what a change to the component reaches, or which placements to tune with component_controls_set. pass the component's id from components_read or its name (&quot;content/card&quot;).">
+  <article class="tool" id="component_instances" data-tool="component_instances Find a component's instances lists every instance of one component across the site's pages (or one page), each with its id, name, page, breakpoint and variant, and the instances of components that hold it (via names that component): what a change to the component reaches, or which placements to tune with component_controls_set. pass the component's id from components_read or its name (&quot;content/card&quot;). without a server api key it lists breakpoints but not variants or holders.">
     <header>
       <h4><a href="#component_instances">component_instances</a></h4>
       <span class="badge read">Reads</span>
       <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
     </header>
     <p class="tool-title">Find a component's instances</p>
-    <p>Lists every instance of one component across the site's pages (or one page), each with its id, name and page: what a change to the component reaches, or which placements to tune with <a href="#component_controls_set"><code>component_controls_set</code></a>. Pass the component's id from <a href="#components_read"><code>components_read</code></a> or its name (&quot;Content/Card&quot;).</p>
+    <p>Lists every instance of one component across the site's pages (or one page), each with its id, name, page, breakpoint and variant, and the instances of components that hold it (via names that component): what a change to the component reaches, or which placements to tune with <a href="#component_controls_set"><code>component_controls_set</code></a>. Pass the component's id from <a href="#components_read"><code>components_read</code></a> or its name (&quot;Content/Card&quot;). Without a Server API key it lists breakpoints but not variants or holders.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
@@ -1597,14 +1600,14 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="image_upload" data-tool="image_upload Upload an image uploads an image to the project's assets and returns its url, for a fill, a logo or a favicon. pass exactly one of: url (https), path (absolute path to a local png, jpg, gif, webp, avif or svg), or svg (svg markup: own icons, logos and illustrations drawn as vectors).">
+  <article class="tool" id="image_upload" data-tool="image_upload Upload an image uploads an image to the project's assets and returns its url, for a fill, a logo or a favicon. pass exactly one of: url (https), path (a local png, jpg, gif, webp, avif or svg; absolute, or relative to the project folder the server runs in), or svg (svg markup: own icons, logos and illustrations drawn as vectors). several local files at once: images_upload.">
     <header>
       <h4><a href="#image_upload">image_upload</a></h4>
       <span class="badge write">Changes</span>
       <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
     </header>
     <p class="tool-title">Upload an image</p>
-    <p>Uploads an image to the project's assets and returns its url, for a fill, a logo or a favicon. Pass exactly one of: url (https), path (absolute path to a local png, jpg, gif, webp, avif or svg), or svg (SVG markup: own icons, logos and illustrations drawn as vectors).</p>
+    <p>Uploads an image to the project's assets and returns its url, for a fill, a logo or a favicon. Pass exactly one of: url (https), path (a local png, jpg, gif, webp, avif or svg; absolute, or relative to the project folder the server runs in), or svg (SVG markup: own icons, logos and illustrations drawn as vectors). Several local files at once: <a href="#images_upload"><code>images_upload</code></a>.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
@@ -1616,14 +1619,29 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="file_upload" data-tool="file_upload Upload a file puts a file that is not an image into the project's assets — a video for a code component's file control, a pdf, a font — and returns its url. pass exactly one of: url (https, framer downloads it) or path (absolute path to a local mp4, m4v, mov, webm, pdf, woff, woff2, ttf or otf). images go through image_upload.">
+  <article class="tool" id="images_upload" data-tool="images_upload Upload images uploads up to 20 local images in one call (png, jpg, gif, webp, avif or svg; paths absolute or relative to the project folder the server runs in), each named after its file, and returns every path with its url. a file that fails is listed in failed with why; the others still upload.">
+    <header>
+      <h4><a href="#images_upload">images_upload</a></h4>
+      <span class="badge write">Changes</span>
+      <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
+    </header>
+    <p class="tool-title">Upload images</p>
+    <p>Uploads up to 20 local images in one call (png, jpg, gif, webp, avif or svg; paths absolute or relative to the project folder the server runs in), each named after its file, and returns every path with its url. A file that fails is listed in failed with why; the others still upload.</p>
+    <div class="params"><table>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
+      <tbody>
+      <tr><th scope="row"><code>paths</code></th><td><code class="type">string[]</code></td><td> <span class="req">required</span></td></tr>
+      </tbody>
+    </table></div>
+  </article>
+  <article class="tool" id="file_upload" data-tool="file_upload Upload a file puts a file that is not an image into the project's assets — a video for a code component's file control, a pdf, a font — and returns its url. pass exactly one of: url (https, framer downloads it) or path (a local mp4, m4v, mov, webm, pdf, woff, woff2, ttf or otf; absolute, or relative to the project folder the server runs in). images go through image_upload.">
     <header>
       <h4><a href="#file_upload">file_upload</a></h4>
       <span class="badge write">Changes</span>
       <span class="badge needs-plugin" title="Works through the plugin alone, without a Server API key">Plugin</span>
     </header>
     <p class="tool-title">Upload a file</p>
-    <p>Puts a file that is not an image into the project's assets — a video for a code component's File control, a PDF, a font — and returns its url. Pass exactly one of: url (https, Framer downloads it) or path (absolute path to a local mp4, m4v, mov, webm, pdf, woff, woff2, ttf or otf). Images go through <a href="#image_upload"><code>image_upload</code></a>.</p>
+    <p>Puts a file that is not an image into the project's assets — a video for a code component's File control, a PDF, a font — and returns its url. Pass exactly one of: url (https, Framer downloads it) or path (a local mp4, m4v, mov, webm, pdf, woff, woff2, ttf or otf; absolute, or relative to the project folder the server runs in). Images go through <a href="#image_upload"><code>image_upload</code></a>.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
@@ -1633,21 +1651,24 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       </tbody>
     </table></div>
   </article>
-  <article class="tool" id="svg_add" data-tool="svg_add Add an SVG layer adds svg markup as an editable vector layer — own icons, logos, illustrations — and returns the new layer's id (nodeids). without parentid framer puts it into the layer selected in the editor; with it, it moves there. its size cannot be set through the dsl: to reuse a logo or icon across the site, ask the user to add the layer to a project vector set (vectors panel; the api cannot), then place it as an iconnode of that set. works through the sitewright plugin only.">
+  <article class="tool" id="svg_add" data-tool="svg_add Add an SVG layer adds an svg as an editable vector layer — own icons, logos, illustrations — from markup (svg) or an .svg file (path, absolute or relative to the project folder), and returns the new layer's id (nodeids). framer sizes it by the root's width and height and crops it to the drawing: width sets the layer's width (height follows the viewbox), keepviewbox keeps the empty space around the drawing. without parentid framer puts it into the layer selected in the editor; with it, it moves there. to reuse a logo or icon across the site, ask the user to add the layer to a project vector set (vectors panel; the api cannot), then place it as an iconnode of that set. works through the sitewright plugin only.">
     <header>
       <h4><a href="#svg_add">svg_add</a></h4>
       <span class="badge write">Changes</span>
       <span class="badge needs-editor" title="Runs in the open editor, through the plugin">Plugin only</span>
     </header>
     <p class="tool-title">Add an SVG layer</p>
-    <p>Adds SVG markup as an editable vector layer — own icons, logos, illustrations — and returns the new layer's id (nodeIds). Without parentId Framer puts it into the layer selected in the editor; with it, it moves there. Its size cannot be set through the DSL: to reuse a logo or icon across the site, ask the user to add the layer to a project vector set (Vectors panel; the API cannot), then place it as an IconNode of that set. Works through the Sitewright plugin only.</p>
+    <p>Adds an SVG as an editable vector layer — own icons, logos, illustrations — from markup (svg) or an .svg file (path, absolute or relative to the project folder), and returns the new layer's id (nodeIds). Framer sizes it by the root's width and height and crops it to the drawing: width sets the layer's width (height follows the viewBox), keepViewBox keeps the empty space around the drawing. Without parentId Framer puts it into the layer selected in the editor; with it, it moves there. To reuse a logo or icon across the site, ask the user to add the layer to a project vector set (Vectors panel; the API cannot), then place it as an IconNode of that set. Works through the Sitewright plugin only.</p>
     <div class="params"><table>
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
-      <tr><th scope="row"><code>svg</code></th><td><code class="type">string</code></td><td>SVG markup with width, height and viewBox. <span class="req">required</span></td></tr>
       <tr><th scope="row"><code>name</code></th><td><code class="type">string</code></td><td></td></tr>
       <tr><th scope="row"><code>parentId</code></th><td><code class="type">string</code></td><td>Layer to put the vector into. Without it Framer puts it into the layer selected in the editor.</td></tr>
       <tr><th scope="row"><code>index</code></th><td><code class="type">number</code></td><td>Position among parentId's children; last by default.</td></tr>
+      <tr><th scope="row"><code>svg</code></th><td><code class="type">string</code></td><td>SVG markup with a viewBox.</td></tr>
+      <tr><th scope="row"><code>path</code></th><td><code class="type">string</code></td><td>An .svg file, instead of svg.</td></tr>
+      <tr><th scope="row"><code>width</code></th><td><code class="type">number</code></td><td>Layer width in px; the height follows the viewBox.</td></tr>
+      <tr><th scope="row"><code>keepViewBox</code></th><td><code class="type">boolean</code></td><td>Keep the viewBox's empty space around the drawing, as an icon's padding.</td></tr>
       </tbody>
     </table></div>
   </article>
@@ -1974,6 +1995,7 @@ npx -y sitewright@latest setup --hooks --yes    # add them (a .bak copy of your 
       <thead><tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">What</th></tr></thead>
       <tbody>
       <tr><th scope="row"><code>names</code></th><td><code class="type">string[]</code></td><td>File names or paths. <span class="req">required</span></td></tr>
+      <tr><th scope="row"><code>outline</code></th><td><code class="type">boolean</code></td><td>Only the lines that declare (exports, functions, types, property control keys), numbered: a short look before reading a file whole. <span class="def">default <code>false</code></span></td></tr>
       </tbody>
     </table></div>
   </article>
