@@ -173,3 +173,18 @@ it("lists the default locale in a project without added locales, as Framer leave
 
   expect(locales.map(({ code, default: isDefault }) => [code, isDefault])).toEqual([["en-US", true]]);
 });
+
+it("regression: a page path finds that page's group, which Framer names by the page's name (seen: \"/\" found nothing)", async () => {
+  const { runtime } = fakeProject();
+
+  const home = await runOperation(
+    localizationGet,
+    { runtime },
+    {
+      locale: "nl",
+      group: "/",
+    },
+  );
+
+  expect(home.sources.map(({ group }) => group)).toEqual(["Home", "Home"]);
+});

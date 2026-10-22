@@ -55,6 +55,9 @@ How to write this file (people and agents alike):
   first options, and a file's declaring lines with their numbers, instead of tens of thousands of characters.
 - `component_instances` names each instance's breakpoint and variant, lists every breakpoint's copy, and adds the
   instances of components that hold the one asked for, with `via` naming the holder.
+- `fonts_used` names text styles by their full path and leaves out a font Framer reports with no family, instead of an
+  empty row.
+- `localization_get` finds a page's texts by the page's path in `group`, as its description says.
 - `node_screenshot` too big at scale 0.5 says to capture it in parts with `clip`, not to use scale 0.5, and says that
   Framer draws a CMS page's Tablet and Phone breakpoints with the components' default content.
 

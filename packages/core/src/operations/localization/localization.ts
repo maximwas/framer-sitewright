@@ -185,10 +185,16 @@ export const localizationGet = defineOperation({
   async run({ runtime }, { locale: query, type, group, missing, offset, limit }) {
     const locale = findLocale((await siteLocales(runtime.port)).locales, query);
     const wanted = group?.toLowerCase();
+    // Framer names a page's group by the page's name, and gives it the page's id: a path finds it by that id.
+    const pageIds = new Set(
+      group?.startsWith("/") === true
+        ? (await runtime.port.getNodesWithType("WebPageNode")).filter(({ path }) => path === group).map(({ id }) => id)
+        : [],
+    );
     const groups = (await localizationGroups(runtime.port)).filter(
       (entry) =>
         (type === undefined || entry.type === type) &&
-        (wanted === undefined || entry.name.toLowerCase().includes(wanted)) &&
+        (wanted === undefined || entry.name.toLowerCase().includes(wanted) || pageIds.has(entry.id)) &&
         !(missing && entry.statusByLocale[locale.id] === "excluded"),
     );
     const sources = groups.flatMap((entry) =>
