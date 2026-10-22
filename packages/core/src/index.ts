@@ -117,6 +117,7 @@ export { a11yAudit, contrastCheck, imagesCheck, linksCheck, seoAudit } from "./o
 export { referenceScreenshot } from "./operations/site/reference-screenshot.ts";
 export { siteSettingsGet, siteSettingsSet } from "./operations/site/settings.ts";
 export { templateAudit } from "./operations/site/template-audit.ts";
+export { tokensMatch } from "./operations/styles/match.ts";
 export { stylesUsage } from "./operations/styles/usage.ts";
 export { textStylesDelete } from "./operations/text-styles/delete.ts";
 export { textStylesList } from "./operations/text-styles/list.ts";

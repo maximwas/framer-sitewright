@@ -137,6 +137,7 @@ const EXPECTED_TOOLS = [
   "text_styles_list",
   "text_styles_upsert",
   "theme_toggle_add",
+  "tokens_match",
 ];
 
 const logger = createLogger("silent");

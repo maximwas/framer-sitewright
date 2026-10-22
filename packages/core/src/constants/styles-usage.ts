@@ -38,6 +38,25 @@ export const USAGE_SCOPE_KINDS: ReadonlyMap<string, string> = new Map([
   ["LayoutTemplateNode", "layout"],
 ]);
 
+/** The px a rem is, as browsers set it by default. */
+export const ROOT_FONT_SIZE_PX = 16;
+
+/**
+ * How tokens_match weighs a text style's differences from a design's font into one score: per px of size, line height
+ * and letter spacing, per 100 of weight, and a flat cost for another family.
+ */
+export const FONT_MATCH_WEIGHTS = {
+  family: 20,
+  weight: 2,
+  size: 1,
+  lineHeight: 0.5,
+  letterSpacing: 2,
+} as const;
+
+/** How many candidates tokens_match gives per value by default, and at most. */
+export const TOKEN_MATCH_LIMIT = 3;
+export const TOKEN_MATCH_LIMIT_MAX = 10;
+
 /** What a page-only reading cannot tell. */
 export const PAGE_USAGE_NOTE =
   "Only this page and the components placed on it were read: a style unused here may be used on other pages or in other components. Read the whole site (no pagePath) before deleting a style.";

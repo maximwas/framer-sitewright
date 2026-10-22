@@ -62,6 +62,7 @@ export const OPERATION_LABELS: Readonly<Record<string, string>> = {
   "motion.effectsSet": "Effects",
   "pages.duplicate": "Duplicate page",
   "styles.usage": "Styles in use",
+  "tokens.match": "Match to tokens",
   "shaders.read": "Shaders",
   "project.publishPreview": "Publish preview",
   "pages.create": "New page",

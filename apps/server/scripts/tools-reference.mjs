@@ -52,6 +52,7 @@ const GROUPS = [
       "link_styles_upsert",
       "link_styles_delete",
       "styles_usage",
+      "tokens_match",
       "fonts_search",
       "fonts_used",
     ],
