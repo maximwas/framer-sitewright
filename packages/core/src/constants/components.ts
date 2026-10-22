@@ -81,3 +81,6 @@ export const BORDER_SIDE_KEYS: readonly string[] = [
 
 /** A width in a border shorthand: a number of px, the unit optional. */
 export const BORDER_SHORTHAND_WIDTH = /^\d+(?:\.\d+)?(?:px)?$/;
+
+/** How many of an enum control's options components_read's outline names before counting the rest. */
+export const OUTLINE_OPTIONS_MAX = 8;

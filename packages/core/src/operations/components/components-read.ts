@@ -3,7 +3,7 @@ import { requireAgent } from "../../framer/runtime.ts";
 import { serializedById } from "../../history/dsl/serialized.ts";
 import { CodeComponentEntriesSchema, ComponentCatalogSchema, ControlsByIdSchema } from "../../schemas/assets.ts";
 import type { SerializedNode } from "../../types/dsl.ts";
-import { withComponentFacts } from "../../utils/component-controls.ts";
+import { outlineControls, withComponentFacts } from "../../utils/component-controls.ts";
 import { countOf } from "../../utils/text.ts";
 import { defineOperation } from "../define.ts";
 
@@ -19,6 +19,12 @@ export const componentsRead = defineOperation({
       .max(50)
       .exactOptional()
       .describe("Component ids to read controls for. Omit for every canvas component of the project."),
+    outline: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Each control as one line (type, an enum's first options), Framer's components by name only: a short overview; read the ones you place in full.",
+      ),
   }),
   output: z.object({
     components: z.array(
@@ -45,7 +51,7 @@ export const componentsRead = defineOperation({
       }),
     ),
   }),
-  async run({ runtime }, { ids }) {
+  async run({ runtime }, { ids, outline }) {
     const agent = requireAgent(runtime);
     const catalog = ComponentCatalogSchema.parse(await agent.listComponents());
     const canvas = catalog.project.canvas;
@@ -85,11 +91,13 @@ export const componentsRead = defineOperation({
       components: wanted.map((id) => {
         const node = nodes.get(id);
 
+        const full = withComponentFacts(controls[id] ?? null, node);
+
         return {
           id,
           // The node's name keeps its folder ("Lab/Button"); the catalog drops it.
           name: typeof node?.name === "string" ? node.name : (names.get(id) ?? id),
-          controls: withComponentFacts(controls[id] ?? null, node),
+          controls: outline ? (outlineControls(full) ?? full) : full,
         };
       }),
       codeFiles: Object.keys(catalog.project.code),
@@ -97,7 +105,7 @@ export const componentsRead = defineOperation({
       framer: catalog.additional.map(({ id, displayName, keywords }) => ({
         id,
         name: displayName,
-        keywords: keywords ?? null,
+        keywords: outline ? null : (keywords ?? null),
       })),
     };
   },

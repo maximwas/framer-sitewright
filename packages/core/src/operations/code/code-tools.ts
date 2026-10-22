@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { CODE_FILES_READ_MAX, CODE_LINT_RULES, CODE_PATCH_EDITS_MAX } from "../../constants/code.ts";
+import { CODE_FILES_READ_MAX, CODE_LINT_RULES, CODE_OUTLINE_LINE, CODE_PATCH_EDITS_MAX } from "../../constants/code.ts";
 import { OperationError } from "../../errors.ts";
 import { CodeFileSummarySchema } from "../../schemas/code.ts";
 import type { CodeDiagnosticData, CodeFileHandle, FramerPort } from "../../types/framer-port.ts";
@@ -44,6 +44,14 @@ async function diagnosticsOf(file: CodeFileHandle): Promise<z.output<typeof Diag
   return [...typed.map((found) => diagnostic(found, "error")), ...linted.map((found) => diagnostic(found, "warning"))];
 }
 
+/** A file's declaring lines with their numbers, e.g. "12: export default function Ticker(…". */
+export function codeOutline(content: string): string {
+  return content
+    .split("\n")
+    .flatMap((line, index) => (CODE_OUTLINE_LINE.test(line) ? [`${index + 1}: ${line.trimEnd()}`] : []))
+    .join("\n");
+}
+
 export const codeFilesRead = defineOperation({
   name: "codeFiles.readMany",
   effect: "read",
@@ -51,12 +59,23 @@ export const codeFilesRead = defineOperation({
   permissions: [],
   input: z.strictObject({
     names: z.array(z.string().min(1)).min(1).max(CODE_FILES_READ_MAX).describe("File names or paths."),
+    outline: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Only the lines that declare (exports, functions, types, property control keys), numbered: a short look before reading a file whole.",
+      ),
   }),
   output: z.object({
-    files: z.array(CodeFileSummarySchema.extend({ content: z.string() })),
+    files: z.array(
+      CodeFileSummarySchema.extend({
+        content: z.string(),
+        lines: z.number().int(),
+      }),
+    ),
     missing: z.array(z.string()),
   }),
-  async run({ runtime }, { names }) {
+  async run({ runtime }, { names, outline }) {
     const files = await runtime.port.getCodeFiles();
     const found = names.map((name) => files.find((file) => matches(file, name)));
 
@@ -67,7 +86,8 @@ export const codeFilesRead = defineOperation({
           : [
               {
                 ...summaryOf(file),
-                content: file.content,
+                content: outline ? codeOutline(file.content) : file.content,
+                lines: file.content.split("\n").length,
               },
             ],
       ),
