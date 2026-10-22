@@ -64,3 +64,9 @@ export const MOTION_DEFAULTS = {
 
 /** Scroll transforms keep physics: a slow critically damped spring smooths the scroll without lag. */
 export const SCROLL_SPRING = "spring-physics 120 22 1 0s";
+
+/** The keys that hold the opacity a preset starts from: an appear's enter, a text effect's style, a scroll's first section. */
+export const START_OPACITY = /^(?:appearEffect\.enter|textEffect\.style|styleTransformEffect\.sections\.0)\.opacity$/;
+
+/** A transition effects_set takes: a spring only, by physics or by time (Maxim's rule: no tween or bezier). */
+export const SPRING_TRANSITION = /^spring-(?:physics|duration)\s/;

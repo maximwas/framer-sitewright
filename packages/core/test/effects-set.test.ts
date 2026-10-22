@@ -29,6 +29,40 @@ describe("effects_set", () => {
     expect(text).toContain('appearEffect.enter.opacity="0"');
   });
 
+  it("overrides a preset's trigger, start opacity and spring (seen: presets rewritten by hand to keep springs only)", () => {
+    const [appear] = presetCommands("fade-up", ["a"], {
+      trigger: "onMount",
+      opacity: 0.2,
+      transition: "spring-physics 200 30 1 0s",
+    });
+    const [scroll] = presetCommands("parallax", ["p"], {
+      trigger: "onScrollTarget",
+      opacity: 0.5,
+    });
+
+    expect(appear).toContain('appearEffect.trigger="onMount"');
+    expect(appear).toContain('appearEffect.enter.opacity="0.2"');
+    expect(appear).toContain('appearEffect.enter.transition="spring-physics 200 30 1 0s"');
+    expect(scroll).toContain('styleTransformEffect.trigger="onScrollTarget"');
+    expect(scroll).toContain("styleTransformEffect.sections.0.opacity=0.5");
+  });
+
+  it("takes only a spring as a transition: no tween or bezier", async () => {
+    const { runtime } = createFakeRuntime();
+
+    await expect(
+      runOperation(
+        effectsSet,
+        { runtime },
+        {
+          preset: "fade-up",
+          nodeIds: ["a"],
+          options: { transition: "tween 0.44,0,0.56,1 0.4s 0s" },
+        },
+      ),
+    ).rejects.toThrow(/spring only/);
+  });
+
   it("regression: a text reveal starts sharp: Framer blurs every word by 10px unless told", () => {
     expect(presetCommands("text-reveal", ["t"], {})[0]).toContain('textEffect.style.blur="0px"');
   });

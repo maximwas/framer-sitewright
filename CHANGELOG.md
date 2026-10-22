@@ -71,6 +71,8 @@ How to write this file (people and agents alike):
   nothing, instead of reporting it added.
 - The journal names every action in words, such as "New locale" and "SEO audit", instead of an internal name such as
   localization.addLocale.
+- `effects_set` takes `trigger`, `opacity` and `transition` in its options to change a preset's trigger, the opacity
+  it starts from and its spring; a transition must be a spring.
 - `effects_set` `hero-sequence` moves the first layer (the heading, the page's largest element) without fading it, so
   it no longer delays the page's Largest Contentful Paint.
 - `framer_read` points to the section of `framer_docs` that lists its query types, and `component_insert` no longer

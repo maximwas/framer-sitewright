@@ -1,4 +1,4 @@
-import { LAYER_EFFECTS, MOTION_DEFAULTS, SCROLL_SPRING } from "../constants/motion.ts";
+import { LAYER_EFFECTS, MOTION_DEFAULTS, SCROLL_SPRING, START_OPACITY } from "../constants/motion.ts";
 import type { MotionOptions, MotionPreset } from "../types/motion.ts";
 
 /**
@@ -14,17 +14,40 @@ export function presetCommands(preset: MotionPreset, nodeIds: readonly string[],
   return nodeIds.map((id, index) => {
     const at = (stagger: number) => seconds(delay + index * (options.stagger ?? stagger));
     const spring = (time: number, start: string) => `spring-duration ${seconds(duration ?? time)} 0 ${start}`;
-    const pairs = attributesFor(preset, options, {
-      at,
-      spring,
-      first: index === 0,
-    });
+    const pairs = withOverrides(
+      attributesFor(preset, options, {
+        at,
+        spring,
+        first: index === 0,
+      }),
+      options,
+    );
 
     return `SET ${id} ${pairs.map(([key, value]) => (typeof value === "number" ? `${key}=${value}` : `${key}="${value}"`)).join(" ")};`;
   });
 }
 
 type Pairs = [string, string | number][];
+
+/** A preset's values with the caller's trigger, start opacity and spring in place of its own, where it has them. */
+function withOverrides(pairs: Pairs, { trigger, opacity, transition }: MotionOptions): Pairs {
+  return pairs.map(([key, value]): [string, string | number] => {
+    if (trigger !== undefined && key.endsWith(".trigger")) {
+      return [key, trigger];
+    }
+
+    if (opacity !== undefined && START_OPACITY.test(key)) {
+      // Scroll sections take numbers without quotes, the others text.
+      return [key, typeof value === "number" ? opacity : String(opacity)];
+    }
+
+    if (transition !== undefined && key.endsWith(".transition")) {
+      return [key, transition];
+    }
+
+    return [key, value];
+  });
+}
 
 function attributesFor(
   preset: MotionPreset,

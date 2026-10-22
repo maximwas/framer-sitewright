@@ -16,4 +16,10 @@ export interface MotionOptions {
   readonly duration?: number | undefined;
   /** For "remove": the effects to take off; all of them when omitted. */
   readonly effects?: readonly LayerEffect[] | undefined;
+  /** Replaces the preset's trigger (onInView, onMount, onScroll, onScrollTarget…). */
+  readonly trigger?: string | undefined;
+  /** Replaces the opacity the preset starts from. */
+  readonly opacity?: number | undefined;
+  /** Replaces the preset's transition with this spring, as the DSL writes it. */
+  readonly transition?: string | undefined;
 }

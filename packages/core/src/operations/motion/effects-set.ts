@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { LAYER_EFFECTS, MOTION_PRESETS } from "../../constants/motion.ts";
+import { LAYER_EFFECTS, MOTION_PRESETS, SPRING_TRANSITION } from "../../constants/motion.ts";
 import { presetCommands } from "../../utils/motion.ts";
 import { countOf } from "../../utils/text.ts";
 import { defineOperation } from "../define.ts";
@@ -34,6 +34,21 @@ export const effectsSet = defineOperation({
           .min(1)
           .exactOptional()
           .describe('For "remove": which effects to take off; all of them when omitted.'),
+        trigger: z
+          .enum(["onInView", "onMount", "onScroll", "onScrollTarget", "onScrollDirection"])
+          .exactOptional()
+          .describe(
+            "Replaces the preset's trigger, e.g. onScrollTarget for a parallax that moves all the way through.",
+          ),
+        opacity: z.number().min(0).max(1).exactOptional().describe("Replaces the opacity the preset starts from."),
+        transition: z
+          .string()
+          .regex(
+            SPRING_TRANSITION,
+            "A spring only: spring-physics <stiffness> <damping> <mass> <delay>, or spring-duration",
+          )
+          .exactOptional()
+          .describe('Replaces the preset\'s spring, as the DSL writes it, e.g. "spring-physics 200 30 1 0s".'),
       })
       .default({}),
   }),
