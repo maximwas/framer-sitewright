@@ -86,7 +86,7 @@ export function registerCheckTools(server: McpServer, context: ToolContext): voi
     name: "site_audit",
     title: "Audit the whole site",
     description:
-      "Runs seo_audit, links_check, images_check, a11y_audit and (unless layout is false) layout_audit on every page in one call, and rolls them up: per check the defects, likely and taste findings and the three pages with the most, the rules hit most often, and every defect in full. The overview before handover; run a check on its own for its likely and taste findings. Needs the project's Server API key.",
+      "Runs seo_audit, links_check, images_check, a11y_audit and (unless layout is false) layout_audit on every page in one call, and rolls them up: per check the defects, likely and taste findings, the rules it hit and the three pages with the most, the rules hit most often, and every defect in full. A check that failed or a page it could not read is in failed and leads the summary. The overview before handover; run a check on its own for its likely and taste findings. Needs the project's Server API key.",
   });
   addOperationTool(server, context, performanceAudit, {
     name: "performance_audit",

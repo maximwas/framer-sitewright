@@ -42,6 +42,8 @@ How to write this file (people and agents alike):
   past a page Framer cannot read and names it in its summary, instead of stopping at it.
 - `styles_usage` for one page counts the styles inside the components placed on it, and inside the components those
   place, so a style used only there no longer shows as unused.
+- `site_audit` starts its summary with the checks that failed and the pages they could not read, and lists the rules
+  each check hit, so its layout roll-up names the same rules `layout_audit` does.
 
 ## 1.1.3 — 2026-10-22
 

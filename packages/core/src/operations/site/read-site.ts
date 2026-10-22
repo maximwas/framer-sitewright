@@ -68,9 +68,12 @@ export async function readSitePages(
   };
 }
 
+/** How a check's summary starts the list of pages it could not read (site_audit looks for it). */
+export const UNREAD_NOTE = " Not read, so not checked: ";
+
 /** The pages a check could not read, for the end of its summary; "" when it read them all. */
 export function unreadNote(unread: readonly string[]): string {
-  return unread.length === 0 ? "" : ` Not read, so not checked: ${unread.join("; ")}.`;
+  return unread.length === 0 ? "" : `${UNREAD_NOTE}${unread.join("; ")}.`;
 }
 
 /** The site's own metadata on the root node, when the read can see it (the Server API). */

@@ -3,6 +3,7 @@ import type { SiteFinding } from "../types/site-checks.ts";
 /** How many pages and rules the roll-up names. */
 export const WORST_PAGES = 3;
 export const TOP_RULES = 15;
+export const CHECK_RULES = 10;
 
 /** One check's findings counted by severity, with the pages that have the most. */
 export function rollUp(check: string, findings: readonly SiteFinding[]) {
@@ -17,6 +18,7 @@ export function rollUp(check: string, findings: readonly SiteFinding[]) {
     defects: findings.filter(({ severity }) => severity === "defect").length,
     likely: findings.filter(({ severity }) => severity === "likely").length,
     taste: findings.filter(({ severity }) => severity === "taste").length,
+    rules: topRules(findings).slice(0, CHECK_RULES),
     worstPages: [...byPage]
       .sort(([pageA, a], [pageB, b]) => b - a || pageA.localeCompare(pageB))
       .slice(0, WORST_PAGES)
