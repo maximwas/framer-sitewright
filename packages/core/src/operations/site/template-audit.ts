@@ -47,7 +47,7 @@ export const templateAudit = defineOperation({
     const [{ pages, rootId, unread }, context, audit, collections] = await Promise.all([
       readSitePages(runtime),
       siteCheckContext(runtime),
-      auditContext(runtime.port),
+      auditContext(runtime.port, runtime.agent !== null),
       readCollections(runtime.port),
     ]);
     const site = await readSiteMetadata(runtime, rootId);

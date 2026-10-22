@@ -55,6 +55,7 @@ function context(overrides: Partial<Record<string, Partial<AuditTextStyle>>> = {
     textStyle: (preset) => (typeof preset === "string" ? (styles[preset] ?? null) : null),
     textStyles: Object.values(styles),
     hasTokens,
+    ownTextAlignment: true,
   };
 }
 
@@ -99,6 +100,56 @@ describe("layout audit", () => {
     );
 
     expect(rulesOf(auditTree(column, context()))).not.toContain("mixed-alignment");
+  });
+
+  it("regression: a read without texts' own alignment does not judge their edge (seen: Turi /trips, centered text flagged)", () => {
+    // Read through the Plugin API: the text's own textAlignment="center" is not in the tree, its style says left.
+    const lead = node("RichTextNode", "Lead", {
+      textStylePreset: "Body",
+      width: "1fr",
+    });
+    const column = node(
+      "FrameNode",
+      "Hero",
+      {
+        layout: "stack",
+        stackDirection: "vertical",
+        stackAlignment: "center",
+      },
+      [node("FrameNode", "Button", { width: "auto" }), lead],
+    );
+
+    expect(
+      rulesOf(
+        auditTree(column, {
+          ...context(),
+          ownTextAlignment: false,
+        }),
+      ),
+    ).not.toContain("mixed-alignment");
+    // Through the Server API the tree carries it: no own alignment means the style's, and that edge is mixed.
+    expect(rulesOf(auditTree(column, context()))).toContain("mixed-alignment");
+  });
+
+  it("regression: an image pinned to its parent's top and bottom has the parent's height (seen: Turi hero photo flagged)", () => {
+    const photo = node("FrameNode", "Photo", {
+      fill: "https://framerusercontent.com/images/hero.jpg",
+      position: "absolute",
+      top: "0px",
+      right: "0px",
+      bottom: "0px",
+      left: "0px",
+    });
+    const loose = node("FrameNode", "Loose photo", {
+      fill: "https://framerusercontent.com/images/hero.jpg",
+      height: "auto",
+    });
+    const hero = node("FrameNode", "Hero", { height: "720px" }, [photo, loose]);
+    const flagged = auditTree(hero, context())
+      .filter(({ rule }) => rule === "image-collapse")
+      .map(({ nodeName }) => nodeName);
+
+    expect(flagged).toEqual(["Loose photo"]);
   });
 
   it("finds the defect classes of a generated page: edges, ragged cards, text links, widths, habits", () => {

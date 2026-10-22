@@ -16,6 +16,17 @@ How to write this file (people and agents alike):
 - After editing, run `pnpm docs:changelog` to rewrite the website's page (docs/changelog/index.html).
 -->
 
+## Unreleased
+
+### Fixed
+
+- `layout_audit` and `design_apply`'s audit no longer call a centered text a mixed edge when they read through the
+  plugin, which does not show a text's own alignment.
+- `layout_audit` no longer reports an image pinned to its parent's top and bottom as collapsed: it takes the parent's
+  height.
+- `design_apply` drops Framer's "too close" lint for layers at a negative spacing, which are hidden or moved away rather
+  than neighbours.
+
 ## 1.2.0 — 2026-10-22
 
 ### Added

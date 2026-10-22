@@ -32,7 +32,8 @@ export const layoutAudit = defineOperation({
     const id = nodeId ?? (await pageRootId(runtime, pagePath));
     const [tree, context] = await Promise.all([
       readNodeTree(runtime, id, LAYOUT_AUDIT_DEPTH, pagePath),
-      auditContext(runtime.port),
+      // The Server API's read carries a text's own alignment; the plugin's does not.
+      auditContext(runtime.port, runtime.agent !== null),
     ]);
 
     if (tree === null) {
