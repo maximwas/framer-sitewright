@@ -42,6 +42,8 @@
         <details open>
           <summary>Versions</summary>
           <nav>
+            <p class="toc-title">1.2</p>
+            <a href="#v1-2-0"><span>1.2.0</span><time datetime="2026-10-22">Oct 22</time></a>
             <p class="toc-title">1.1</p>
             <a href="#v1-1-3"><span>1.1.3</span><time datetime="2026-10-22">Oct 22</time></a>
             <a href="#v1-1-2"><span>1.1.2</span><time datetime="2026-10-13">Oct 13</time></a>
@@ -71,11 +73,58 @@
           <p class="lead">Every release of Sitewright, newest first: the version, the day it was released, and what changed. The npm package and the Framer plugin share one version. Update the MCP server with <code>npx -y sitewright@latest</code>; Framer updates the plugin.</p>
         </section>
         <div class="releases">
+        <section class="release" id="v1-2-0">
+          <div class="release-head">
+            <h2>1.2.0</h2>
+            <time datetime="2026-10-22">October 22, 2026</time>
+            <span class="release-latest">Latest</span>
+          </div>
+          <h3 class="change change-added">Added</h3>
+          <ul>
+            <li><code>framer_status</code> and <code>framer_connect</code> say which Sitewright answers: its version, and whether it runs from npm or a local build, and from where.</li>
+            <li><code>nodes_find</code> and <code>component_instances</code> search the layout templates too, the shared header and footer, labelled "layout &lt;name&gt;", when no page is named and the project has a Server API key; pages are still searched through the plugin, as fast as before.</li>
+            <li><code>tokens_match</code> finds the site's nearest color tokens and text styles for colors and fonts taken from a design, with the distance or what differs, so every value can be named by a token or a style.</li>
+            <li><code>images_upload</code> uploads up to 20 local images in one call and returns each path with its url; a file that fails is listed with why, and the others still upload.</li>
+          </ul>
+          <h3 class="change change-changed">Changed</h3>
+          <ul>
+            <li><code>marketplace_item</code> only reads Marketplace pages and is marked read-only, so an agent limited to reading can use it; reading a free component's controls on a temporary page is the new <code>marketplace_item_inspect</code> (it was <code>inspect</code>).</li>
+            <li><code>image_upload</code> and <code>file_upload</code> take a path relative to the project folder too, not only an absolute one.</li>
+            <li><code>svg_add</code> takes an .svg file by path, sets the layer's width with <code>width</code> (the height follows the viewBox), and with <code>keepViewBox</code> keeps the empty space around the drawing, which Framer otherwise crops away.</li>
+          </ul>
+          <ul>
+            <li><code>framer_guide</code> says how to show a whole image or a tiled one, which the API cannot set on an image fill, and that a text node takes letter spacing in em, as Figma gives it.</li>
+          </ul>
+          <h3 class="change change-fixed">Fixed</h3>
+          <ul>
+            <li><code>design_apply</code> no longer warns about a letter spacing in fractional px, such as -0.36px.</li>
+            <li>Tools that read a page through the Server API find a CMS detail page by the path <code>project_overview</code> shows (<code>/blog/:slug</code>): <code>seo_audit</code>, <code>links_check</code>, <code>images_check</code>, <code>a11y_audit</code>, <code>rich_text_audit</code>, <code>styles_usage</code> and the site-wide runs no longer stop at "Page not found".</li>
+            <li>A site-wide <code>seo_audit</code>, <code>links_check</code>, <code>images_check</code>, <code>a11y_audit</code>, <code>rich_text_audit</code> or <code>template_audit</code> goes on past a page Framer cannot read and names it in its summary, instead of stopping at it.</li>
+            <li><code>styles_usage</code> for one page counts the styles inside the components placed on it, and inside the components those place, so a style used only there no longer shows as unused.</li>
+            <li><code>site_audit</code> starts its summary with the checks that failed and the pages they could not read, and lists the rules each check hit, so its layout roll-up names the same rules <code>layout_audit</code> does.</li>
+            <li><code>nodes_query</code> finds text by <code>fontName</code>, <code>fontWeight</code> and <code>fontStyle</code> (a styled text by its style's font), and refuses an attribute it cannot read, such as <code>textColor</code>, naming the tool that reads it, instead of finding nothing.</li>
+            <li><code>nodes_read</code> without <code>pagePath</code> reads a node on the page it is on and names that page, instead of answering "/". Without a Server API key it gives each node's <code>$rect</code> from the editor; its description says the Server API lays out only the home page, so <code>$rect</code> is missing elsewhere.</li>
+            <li><code>live_check</code> follows a sitemap index (one sitemap per locale) to the pages in its sitemaps, instead of checking the sitemaps as pages, and takes <code>paths</code> to check pages the sitemap leaves out, such as ones hidden from search.</li>
+            <li><code>reference_screenshot</code> takes <code>part</code> to read a long page in bands at full width, instead of one narrow strip.</li>
+            <li><code>image_compare</code> takes <code>referenceClip</code> to compare one part of a design (a container) and <code>referenceFit</code> <code>width</code> to scale a wider design to the capture, and reads a PNG or JPEG reference by a path relative to the project folder too.</li>
+            <li><code>components_read</code> and <code>code_files_read</code> take <code>outline</code> for a short answer: each control on one line with an enum's first options, and a file's declaring lines with their numbers, instead of tens of thousands of characters.</li>
+            <li><code>component_instances</code> names each instance's breakpoint and variant, lists every breakpoint's copy, and adds the instances of components that hold the one asked for, with <code>via</code> naming the holder.</li>
+            <li><code>fonts_used</code> names text styles by their full path and leaves out a font Framer reports with no family, instead of an empty row.</li>
+            <li><code>localization_get</code> finds a page's texts by the page's path in <code>group</code>, as its description says.</li>
+            <li><code>locale_add</code> checks that the project has the new locale and says so when Framer answered it added one but kept nothing, instead of reporting it added.</li>
+            <li>The journal names every action in words, such as "New locale" and "SEO audit", instead of an internal name such as localization.addLocale.</li>
+            <li><code>effects_set</code> takes <code>trigger</code>, <code>opacity</code> and <code>transition</code> in its options to change a preset's trigger, the opacity it starts from and its spring; a transition must be a spring.</li>
+            <li><code>effects_set</code> <code>hero-sequence</code> moves the first layer (the heading, the page's largest element) without fading it, so it no longer delays the page's Largest Contentful Paint.</li>
+            <li><code>framer_read</code> points to the section of <code>framer_docs</code> that lists its query types, and <code>component_insert</code> no longer says undo cannot remove what it inserts.</li>
+            <li><code>framer_docs</code> <code>essentials</code> starts with how Framer's agent tools map to Sitewright's and which of its rules do not apply.</li>
+            <li><code>framer_guide</code> adds the order a whole site needs, the CMS "Item" choice that the DSL cannot write, and nine Framer pitfalls (a frame's default 100px height, <code>CREATE_VARIANT</code> ignoring <code>name</code>, a blur lost under a faded parent and more); the <code>parallax</code> preset says it moves while its frame enters the window.</li>
+            <li><code>node_screenshot</code> too big at scale 0.5 says to capture it in parts with <code>clip</code>, not to use scale 0.5, and says that Framer draws a CMS page's Tablet and Phone breakpoints with the components' default content.</li>
+          </ul>
+        </section>
         <section class="release" id="v1-1-3">
           <div class="release-head">
             <h2>1.1.3</h2>
             <time datetime="2026-10-22">October 22, 2026</time>
-            <span class="release-latest">Latest</span>
           </div>
           <h3 class="change change-added">Added</h3>
           <ul>
