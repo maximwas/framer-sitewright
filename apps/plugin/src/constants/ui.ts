@@ -6,14 +6,14 @@ import type { StatusCopy } from "../types/ui.ts";
 /**
  * The plugin's window: top right, out of the way of the canvas, wide enough for the setup commands. It opens tall
  * enough for the setup steps a first run shows, then follows its content (fitPluginWindow): connected, it is only the
- * status, one button and the support line; folded by the user, only its bar (minHeight). Resized by hand smaller than
- * its content, the content scrolls.
+ * status, one button and the support line; folded by the user, only its bar (minHeight). The user resizes only its
+ * width: Framer keeps the height of a window resizable by height and ignores the height a later showUI asks for.
  */
 export const PLUGIN_WINDOW: UIOptions = {
   position: "top right",
   width: 420,
   height: 512,
-  resizable: true,
+  resizable: "width",
   minWidth: 320,
   minHeight: 54,
   maxWidth: 560,

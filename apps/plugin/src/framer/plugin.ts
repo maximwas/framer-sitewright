@@ -4,6 +4,7 @@ import type { FramerPort, FramerRuntime, PluginInfo, PluginPermission } from "@s
 import { toastStore } from "@sitewright/ui";
 import { version as pluginVersion } from "../../package.json";
 import { NEW_TEXT_PLACEHOLDER, PLUGIN_WINDOW, REVEAL_MAX_ZOOM } from "../constants/ui.ts";
+import { fittedWindow } from "../utils/window-options.ts";
 import { revealNode } from "./reveal.ts";
 
 // Compile-time conformance: if @framer/plugin drifts from the structural port, this line stops compiling.
@@ -66,24 +67,9 @@ export function showPluginWindow(): void {
   void framer.showUI(PLUGIN_WINDOW);
 }
 
-/**
- * Sets the window's height to its content, within PLUGIN_WINDOW's limits, and keeps the width the user gave it. Framer
- * documents showUI's sizes as the window's initial ones: should a later call not resize it, the window still resizes
- * by hand down to minHeight.
- */
+/** Sets the window's height to its content, within PLUGIN_WINDOW's limits, and keeps the width the user gave it. */
 export function fitPluginWindow(contentHeight: number): void {
-  const minHeight = PLUGIN_WINDOW.minHeight ?? 0;
-  const maxHeight = PLUGIN_WINDOW.maxHeight ?? Number.POSITIVE_INFINITY;
-
-  void framer.showUI({
-    width: Math.round(window.innerWidth),
-    height: Math.min(maxHeight, Math.max(minHeight, contentHeight)),
-    resizable: PLUGIN_WINDOW.resizable ?? false,
-    minWidth: PLUGIN_WINDOW.minWidth ?? 0,
-    minHeight,
-    maxWidth: PLUGIN_WINDOW.maxWidth ?? Number.POSITIVE_INFINITY,
-    maxHeight,
-  });
+  void framer.showUI(fittedWindow(contentHeight, window.innerWidth));
 }
 
 /**

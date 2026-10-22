@@ -24,6 +24,15 @@ How to write this file (people and agents alike):
 - GitHub Discussions for questions, ideas and showing what you built, linked from the issue chooser, the READMEs and
   the website.
 
+### Changed
+
+- The plugin window resizes only in width by hand; its height follows its content.
+
+### Fixed
+
+- The plugin window shrinks to its bar when you fold it and grows back when you unfold it, instead of keeping its
+  height with empty space below.
+
 ## 1.1.2 — 2026-10-13
 
 ### Added
