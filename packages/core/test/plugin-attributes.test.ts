@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { fromPluginNode, toPluginAttributes } from "../src/plugin-nodes/attributes.ts";
 import { withFills } from "../src/plugin-nodes/fills.ts";
-import type { ColorStyleHandle, TextStyleHandle } from "../src/types/framer-port.ts";
+import { readPluginTree } from "../src/plugin-nodes/read.ts";
+import type { ColorStyleHandle, FramerPort, TextStyleHandle } from "../src/types/framer-port.ts";
 
 const brand = {
   id: "tok-brand",
@@ -196,6 +197,62 @@ describe("Plugin API nodes as the DSL prints them", () => {
         position: "relative",
         width: "auto",
       },
+    });
+  });
+
+  it("regression: finds a layer on a page the editor does not show, under that page, with its parent", async () => {
+    // Seen 22.10.2026: the plugin's getNode found no layer off the open page, and layout_audit said "not found".
+    const children: Record<string, unknown[]> = {
+      page: [
+        {
+          __class: "FrameNode",
+          id: "desktop",
+          layout: "stack",
+        },
+      ],
+      desktop: [
+        {
+          __class: "FrameNode",
+          id: "probe",
+          name: "Audit probe",
+        },
+      ],
+    };
+    const port = {
+      getNode: async () => null,
+      getParent: async () => null,
+      getChildren: async (id: string) => children[id] ?? [],
+    } as unknown as FramerPort;
+
+    expect(await readPluginTree(port, "probe", 0, async () => "page")).toMatchObject({
+      id: "probe",
+      name: "Audit probe",
+      $parentId: "desktop",
+    });
+    expect(await readPluginTree(port, "probe", 0)).toBeNull();
+  });
+
+  it("regression: keeps a stack child's pins when it is pinned to the right or bottom, absolute indeed", () => {
+    // Seen on Turi and in Spotless Troll: a photo pinned on all sides in a stack read as relative without pins, so
+    // layout_audit reported it as collapsed.
+    expect(
+      fromPluginNode(
+        {
+          __class: "FrameNode",
+          position: "absolute",
+          top: "0px",
+          right: "0px",
+          bottom: "0px",
+          left: "0px",
+        },
+        "stack",
+      ).attributes,
+    ).toEqual({
+      position: "absolute",
+      top: "0px",
+      right: "0px",
+      bottom: "0px",
+      left: "0px",
     });
   });
 

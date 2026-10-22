@@ -9,16 +9,86 @@ import { idOf, layoutOf, nameOf, nodeRecord, textOf } from "./node-record.ts";
  * same XML printer and the same undo snapshots work without the agent. A rich text's plain text is its `text`; its
  * blocks and runs, and the attributes only the DSL has, are not there. null when the node is gone.
  */
-export async function readPluginTree(port: FramerPort, id: string, depth: number): Promise<SerializedNode | null> {
+export async function readPluginTree(
+  port: FramerPort,
+  id: string,
+  depth: number,
+  within?: () => Promise<string | null>,
+): Promise<SerializedNode | null> {
+  const found = await locate(port, id, within);
+
+  return found === null ? null : describe(port, found.node, found.parentId, layoutOf(found.parent), depth);
+}
+
+/**
+ * A node by id, with its parent. Framer's plugin finds a layer by id only on the page open in the editor, yet reads
+ * children on any page (seen 22.10.2026: layout_audit of a layer said "not found"): elsewhere the layer is looked for
+ * level by level under the node `within` names, its page.
+ */
+async function locate(
+  port: FramerPort,
+  id: string,
+  within: (() => Promise<string | null>) | undefined,
+): Promise<{ node: PluginNodeRecord; parent: PluginNodeRecord | null; parentId: string | null } | null> {
   const node = nodeRecord(await port.getNode(id));
 
-  if (node === null) {
-    return null;
+  if (node !== null) {
+    const parent = nodeRecord(await port.getParent(id));
+
+    return {
+      node,
+      parent,
+      parentId: parent === null ? null : idOf(parent),
+    };
   }
 
-  const parent = nodeRecord(await port.getParent(id));
+  const rootId = within === undefined ? null : await within();
+  let level: { record: PluginNodeRecord | null; id: string }[] =
+    rootId === null
+      ? []
+      : [
+          {
+            record: null,
+            id: rootId,
+          },
+        ];
 
-  return describe(port, node, parent === null ? null : idOf(parent), layoutOf(parent), depth);
+  while (level.length > 0) {
+    const children = await Promise.all(
+      level.map(async (parent) => ({
+        parent,
+        children: await port.getChildren(parent.id),
+      })),
+    );
+    const next: { record: PluginNodeRecord; id: string }[] = [];
+
+    for (const { parent, children: found } of children) {
+      for (const child of found) {
+        const record = nodeRecord(child);
+
+        if (record === null) {
+          continue;
+        }
+
+        if (idOf(record) === id) {
+          return {
+            node: record,
+            parent: parent.record,
+            parentId: parent.id,
+          };
+        }
+
+        next.push({
+          record,
+          id: idOf(record),
+        });
+      }
+    }
+
+    level = next;
+  }
+
+  return null;
 }
 
 async function describe(

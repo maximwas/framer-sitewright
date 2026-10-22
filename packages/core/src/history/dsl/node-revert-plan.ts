@@ -1,3 +1,4 @@
+import { REBOUND_TEXT_ATTRIBUTES, VARIABLE_BOUND_TEXT } from "../../constants/history.ts";
 import { deleteNode, formatDslAttributes } from "../../dsl/commands.ts";
 import type { SerializedNode } from "../../types/dsl.ts";
 import type {
@@ -33,6 +34,7 @@ class NodeRevertPlanner {
   readonly #alias = new Map<string, string>();
   readonly #options: NodeRevertOptions;
   readonly #commands: string[] = [];
+  readonly #followUp: string[] = [];
   readonly #pending: PendingOverride[] = [];
   readonly #removePages: string[] = [];
   readonly #recreated = new Map<string, string>();
@@ -50,6 +52,7 @@ class NodeRevertPlanner {
 
     return {
       commands: this.#commands,
+      followUp: this.#followUp,
       decisions,
       recreated: this.#recreated,
       pendingOverrides: this.#pending,
@@ -117,6 +120,24 @@ class NodeRevertPlanner {
     }
 
     const notes = this.#set(id, before.attributes);
+    const rebound = before.attributes["text"];
+
+    // In a batch of its own: Framer resets the style after every command of the batch that binds the text (seen live).
+    if (typeof rebound === "string" && VARIABLE_BOUND_TEXT.test(rebound)) {
+      notes.push(
+        ...this.#set(
+          id,
+          Object.fromEntries(
+            REBOUND_TEXT_ATTRIBUTES.flatMap((key) => {
+              const value = node.attributes[key];
+
+              return value === undefined || value === null ? [] : [[key, value]];
+            }),
+          ),
+          this.#followUp,
+        ),
+      );
+    }
 
     if (textChanged) {
       notes.push(...this.#restoreContent(node, id, before.nodes));
@@ -286,11 +307,11 @@ class NodeRevertPlanner {
     return notes;
   }
 
-  #set(id: string, attributes: DslAttributeMap): string[] {
+  #set(id: string, attributes: DslAttributeMap, batch: string[] = this.#commands): string[] {
     const { text, skipped } = formatDslAttributes(attributes);
 
     if (text !== "") {
-      this.#commands.push(`SET ${id} ${text};`);
+      batch.push(`SET ${id} ${text};`);
     }
 
     return skippedNote(skipped);

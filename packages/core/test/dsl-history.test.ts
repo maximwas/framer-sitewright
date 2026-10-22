@@ -509,6 +509,34 @@ describe("DSL history: undo plan", () => {
     ]);
   });
 
+  it("regression: binds a text to its CMS field again and then, in a batch of its own, sets its style back", () => {
+    // Seen 22.10.2026: undoing an unbind wrote text="var(--variable-…)" back, and Framer reset the text to Inter 16px,
+    // the style set in the same batch included.
+    const unbound = step({
+      id: "title",
+      type: "RichTextNode",
+      change: "updated",
+      before: state({ attributes: { text: "var(--variable-hxea)" } }),
+      after: state({ attributes: { text: null } }),
+    });
+    const now = node("title", {
+      textStylePreset: "Lab CMS/Heading 1",
+      textColor: "var(--token-82b8)",
+    });
+
+    const plan = planNodeRevert(
+      [unbound],
+      current({
+        ...now,
+        type: "RichTextNode",
+      }),
+      options(true),
+    );
+
+    expect(plan.commands).toEqual(['SET title text="var(--variable-hxea)";']);
+    expect(plan.followUp).toEqual(['SET title textStylePreset="Lab CMS/Heading 1" textColor="var(--token-82b8)";']);
+  });
+
   it("restores rich text by recreating its blocks, and moves a node back to its old place", () => {
     const text = step({
       id: "title",

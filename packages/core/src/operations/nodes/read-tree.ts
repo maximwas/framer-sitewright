@@ -109,7 +109,10 @@ export async function readNodeTree(
   attributes?: readonly string[],
 ): Promise<SerializedNode | null> {
   if (runtime.agent === null) {
-    return filterAttributes(await readPluginTree(runtime.port, id, depth), attributes);
+    return filterAttributes(
+      await readPluginTree(runtime.port, id, depth, () => pageRootId(runtime, pagePath).catch(() => null)),
+      attributes,
+    );
   }
 
   const node = await runtime.agent.serialize(

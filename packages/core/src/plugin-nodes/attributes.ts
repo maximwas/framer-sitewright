@@ -77,7 +77,9 @@ export function fromPluginNode(
 ): { type: string; attributes: Record<string, string> } {
   const className = typeof node.__class === "string" ? node.__class : "Node";
   const type = DSL_TYPE_OF_PLUGIN_CLASS[className] ?? className;
-  const flows = parentLayout !== null && FLOW_LAYOUTS.has(parentLayout);
+  // A flowing child reads as absolute at 0,0 (its top and left); one pinned to the right or bottom is absolute indeed.
+  const pinnedFar = [node["right"], node["bottom"]].some((pin) => pin !== null && pin !== undefined);
+  const flows = parentLayout !== null && FLOW_LAYOUTS.has(parentLayout) && !pinnedFar;
   const attributes: Record<string, string> = {};
 
   for (const rule of PLUGIN_ATTRIBUTE_RULES) {

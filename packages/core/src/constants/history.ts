@@ -337,6 +337,15 @@ export const LAYOUT_ATTRIBUTES: ReadonlySet<string> = new Set([
   "visible",
 ]);
 
+/** A text bound to a CMS field or a variable, as its `text` reads. */
+export const VARIABLE_BOUND_TEXT = /^var\(--variable-/;
+
+/**
+ * What Framer resets on a text that gets bound to a CMS field again (it went to Inter 16px black, seen 22.10.2026):
+ * undo sets these back after the binding.
+ */
+export const REBOUND_TEXT_ATTRIBUTES = ["textStylePreset", "textColor"] as const;
+
 /** Node types that are a component, a variant or an instance of one. */
 export const COMPONENT_NODE_TYPES: ReadonlySet<string> = new Set([
   "ComponentNode",

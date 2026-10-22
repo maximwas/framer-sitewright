@@ -16,6 +16,12 @@ export const HEARTBEAT_MS = 15_000;
 /** How long the plugin has to answer one request. */
 export const REQUEST_TIMEOUT_MS = 30_000;
 
+/**
+ * Extra time a request gets per MiB it carries: an image travels inside its request as a data URL, and the plugin
+ * passes it on to Framer's upload (an 8 MB JPEG timed out at 30 s, 22.10.2026).
+ */
+export const REQUEST_TIMEOUT_PER_MIB_MS = 15_000;
+
 /** How long close() lets clients answer the 1001 goodbye before cutting them off. */
 export const CLOSE_GRACE_MS = 1_000;
 

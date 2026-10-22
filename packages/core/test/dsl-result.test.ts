@@ -21,6 +21,15 @@ describe("normalizeDslResult", () => {
     });
   });
 
+  it("regression: a refused link control says how to write a link to a CMS page", () => {
+    // Seen on Turi: Framer refused $control__link.collectionItem="<item id>" without saying what it takes.
+    const result = normalizeDslResult({
+      errors: { 'Value {"collectionItem":"nEyVVbs6V"} is not valid for control "link".': ["SET card"] },
+    });
+
+    expect(result.errors[0]?.message).toMatch(/\$control__<name>\.href="\/<collection path>\/:slug"/);
+  });
+
   it("says that the commands without errors were applied, so only the failed ones go again", () => {
     // Framer applies every command it can: re-sending the whole batch would create its nodes a second time.
     const result = normalizeDslResult({

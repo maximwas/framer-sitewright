@@ -6,10 +6,10 @@ import {
   PEER_PATH,
   PEER_PROTOCOL_VERSION,
   PEER_TIMEOUT_MARGIN_MS,
-  REQUEST_TIMEOUT_MS,
 } from "../constants/bridge.ts";
 import { OwnerToPeerSchema } from "../schemas/peer.ts";
 import type { OwnerClientOptions, OwnerToPeer, PeerToOwner, PluginLink } from "../types/bridge.ts";
+import { requestTimeoutMs } from "../utils/request-timeout.ts";
 import { PendingRequests } from "./pending-requests.ts";
 
 /**
@@ -105,14 +105,15 @@ export class OwnerClient implements PluginLink {
     }
 
     const id = String(++this.#sequence);
-    const answer = this.#pending.track(id, op, REQUEST_TIMEOUT_MS + PEER_TIMEOUT_MARGIN_MS);
+    const timeoutMs = requestTimeoutMs(input);
+    const answer = this.#pending.track(id, op, timeoutMs + PEER_TIMEOUT_MARGIN_MS);
 
     this.#send(socket, {
       type: "request",
       id,
       op,
       input: input ?? null,
-      timeoutMs: REQUEST_TIMEOUT_MS,
+      timeoutMs,
       ...(journal ? { journal } : {}),
     });
 

@@ -82,6 +82,12 @@ export const ImageCompareInputSchema = ScreenshotInputSchema.extend({
     .describe(
       "width scales the reference (after referenceClip) to the capture's width: a 1440 design against a 1200 breakpoint.",
     ),
+  referenceAlign: z
+    .enum(["top", "bottom"])
+    .default("top")
+    .describe(
+      "Which edges of the two line up when their heights differ: bottom for a section that grows from its bottom, such as a 100vh hero (800 in Framer against 792 in the design).",
+    ),
 });
 
 /** framer_status and framer_connect: both transports, and what the project's plan allows as far as known. */

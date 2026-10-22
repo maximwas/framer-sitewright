@@ -114,10 +114,25 @@ export const componentControlsSet = defineOperation({
       nodeId,
       name,
       controls: { ...stored },
-      notStored: Object.keys(controls).filter((control) => {
+      notStored: Object.keys(controls).flatMap((control) => {
         const key = controlKey(control, node.controls, variables);
+        const kept = stored[key];
+        const wanted = withTokenColors(next[key], tokens);
 
-        return !holdsValue(stored[key], withTokenColors(next[key], tokens));
+        if (holdsValue(kept, wanted)) {
+          return [];
+        }
+
+        // An object control Framer kept in part names the fields it dropped (arrows.iconPrev), not the whole object.
+        const written = isPlainObject(uploaded[key]) ? Object.keys(uploaded[key]) : [];
+        const dropped =
+          isPlainObject(kept) && isPlainObject(wanted)
+            ? written.filter((field) => !holdsValue(kept[field], wanted[field]))
+            : [];
+
+        return dropped.length === 0 || dropped.length === written.length
+          ? [control]
+          : dropped.map((field) => `${control}.${field}`);
       }),
     };
   },

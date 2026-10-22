@@ -86,6 +86,10 @@ export class NodeRevertRun {
       if (overrides.length > 0) {
         issues.push(...(await this.#applyDsl(agent, pagePath, overrides)).errors);
       }
+
+      if (plan.followUp.length > 0) {
+        issues.push(...(await this.#applyDsl(agent, pagePath, plan.followUp)).errors);
+      }
     }
 
     if (plan.removePages.length > 0) {

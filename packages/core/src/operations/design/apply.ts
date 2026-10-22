@@ -10,6 +10,7 @@ import { splitPluginWrites } from "../../dsl/plugin-writes.ts";
 import { normalizeDslResult } from "../../dsl/result.ts";
 import { keptSprings, springWarnings } from "../../dsl/springs.ts";
 import { isolateTempIds, nextTempId } from "../../dsl/temp-ids.ts";
+import { deferUnboundValues } from "../../dsl/unbind.ts";
 import { OperationError } from "../../errors.ts";
 import { withDslHistory } from "../../history/dsl/dsl-history.ts";
 import { applyXmlWithPluginApi } from "../../plugin-nodes/apply.ts";
@@ -20,6 +21,7 @@ import type { AuditIssue } from "../../types/layout-audit.ts";
 import type { OperationContext } from "../../types/operations.ts";
 import type { XmlCompiled } from "../../types/xml.ts";
 import { errorMessage } from "../../utils/errors.ts";
+import { lintOnLayers, touchedLayers } from "../../utils/lint-scope.ts";
 import { previewImagesIn } from "../../utils/text.ts";
 import { withinTime } from "../../utils/time.ts";
 import { resolveKeyReferences } from "../../xml/xml-keys.ts";
@@ -67,6 +69,12 @@ export const designApply = defineOperation({
         'Framer DSL commands, each ending with ";", applied after the XML. See framer_docs "Updating the Project".',
       ),
     pagePath: z.string().startsWith("/").default("/").describe("Page the commands apply to."),
+    lint: z
+      .enum(["touched", "all"])
+      .exactOptional()
+      .describe(
+        "touched (default): Framer's lint findings about the layers this batch changed or put new layers into; all: every finding on the page.",
+      ),
   }),
   output: DesignApplyResultSchema,
   async run(context, input) {
@@ -98,7 +106,12 @@ export const designApply = defineOperation({
 
 async function applyBatch(
   context: OperationContext,
-  { xml, dsl, pagePath }: { readonly xml?: string; readonly dsl?: string; readonly pagePath: string },
+  {
+    xml,
+    dsl,
+    pagePath,
+    lint,
+  }: { readonly xml?: string; readonly dsl?: string; readonly pagePath: string; readonly lint?: "touched" | "all" },
 ): Promise<DesignApplyResult> {
   const { runtime, history } = context;
 
@@ -128,7 +141,9 @@ async function applyBatch(
   const springs = keptSprings(
     deferAbsoluteCentering(
       separateControls(
-        deferIconInitialValues(joinCommands([...(compiled?.commands ?? []), ...(raw === null ? [] : [raw.dsl])])),
+        deferUnboundValues(
+          deferIconInitialValues(joinCommands([...(compiled?.commands ?? []), ...(raw === null ? [] : [raw.dsl])])),
+        ),
       ),
     ),
   );
@@ -183,8 +198,24 @@ async function applyBatch(
           ...(after === null ? [] : unchangedWarnings(targets, before, after)),
         ];
   const iconWarnings = await projectIconControlWarnings(agent, pagePath, parsed, applied.renamedIds).catch(() => []);
+  const scoped = lint === "all" ? null : lintOnLayers(applied.lint, touchedLayers(parsed, applied.renamedIds));
+  const linted =
+    scoped === null
+      ? applied
+      : {
+          ...applied,
+          lint: scoped.lint,
+        };
   const result = withOwnNames(
-    withWarnings(withErrors(applied, sides.errors), [
+    withWarnings(withErrors(linted, sides.errors), [
+      ...(scoped === null || scoped.left === 0
+        ? []
+        : [
+            {
+              message: `${scoped.left} lint findings about layers this batch did not touch are left out; lint "all" lists them.`,
+              targets: [],
+            },
+          ]),
       ...sides.warnings,
       ...storedWarnings,
       ...iconWarnings,

@@ -37,7 +37,7 @@ function registerImageCompareTool(server: McpServer, { transports, journal }: To
     {
       title: "Compare a node with a reference image",
       description:
-        "Captures a node like node_screenshot and compares it with a reference PNG (a Figma export, by absolute path or https URL): the y of every horizontal line or edge and the x of every vertical one, paired between the two. The answer lists edges that match, edges off by a few px (where each is, and by how much the node's is off: positive is lower or further right), edges of the reference the node lacks, and edges only the node has. The two must show the same thing at the same size: capture the node (clip and scale as in node_screenshot), cut the matching part of the reference with referenceClip, and pass referenceFit width when the design is wider than the breakpoint (a 1440 design against a 1200 section). Needs the project's Server API key.",
+        "Captures a node like node_screenshot and compares it with a reference PNG (a Figma export, by absolute path or https URL): the y of every horizontal line or edge and the x of every vertical one, paired between the two. The answer lists edges that match, edges off by a few px (where each is, and by how much the node's is off: positive is lower or further right), edges of the reference the node lacks, and edges only the node has. The two must show the same thing at the same size: capture the node (clip and scale as in node_screenshot), cut the matching part of the reference with referenceClip, pass referenceFit width when the design is wider than the breakpoint (a 1440 design against a 1200 section), and referenceAlign bottom when the two differ in height and line up at the bottom (a 100vh hero). Needs the project's Server API key.",
       inputSchema: ImageCompareInputSchema,
       annotations: {
         readOnlyHint: true,
@@ -45,7 +45,7 @@ function registerImageCompareTool(server: McpServer, { transports, journal }: To
         openWorldHint: true,
       },
     },
-    async ({ nodeId, scale, clip, reference, referenceClip, referenceFit }) => {
+    async ({ nodeId, scale, clip, reference, referenceClip, referenceFit, referenceAlign }) => {
       const options: ScreenshotOptions = {
         format: "png",
         scale,
@@ -77,13 +77,18 @@ function registerImageCompareTool(server: McpServer, { transports, journal }: To
                 });
                 const ours = edgesOf(node);
                 const theirs = edgesOf(wanted);
+                // Aligned at the bottom, the reference's rows move down by what the node is taller.
+                const offset = referenceAlign === "bottom" ? node.height - wanted.height : 0;
 
                 return {
                   size: {
                     node: `${node.width}×${node.height}`,
                     reference: `${wanted.width}×${wanted.height}`,
                   },
-                  rows: diffEdges(theirs.rows, ours.rows),
+                  rows: diffEdges(
+                    theirs.rows.map((y) => y + offset),
+                    ours.rows,
+                  ),
                   columns: diffEdges(theirs.columns, ours.columns),
                 };
               },
@@ -96,7 +101,7 @@ function registerImageCompareTool(server: McpServer, { transports, journal }: To
           content: [
             {
               type: "text",
-              text: `${sameSize ? "" : `The sizes differ (node ${result.size.node}, reference ${result.size.reference}): export the reference at the capture's scale and size, or edges are off by the difference. `}${JSON.stringify(result)}`,
+              text: `${sameSize ? "" : `The sizes differ (node ${result.size.node}, reference ${result.size.reference}): ${referenceAlign === "bottom" ? "rows are compared from the bottom, columns from the left" : "export the reference at the capture's scale and size, or edges are off by the difference; referenceAlign bottom lines up a section that grows from its bottom"}. `}${JSON.stringify(result)}`,
             },
           ],
         };

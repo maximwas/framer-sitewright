@@ -1,4 +1,4 @@
-import { OUTLINE_OPTIONS_MAX } from "../constants/components.ts";
+import { LINK_CONTROL_TYPE, OUTLINE_OPTIONS_MAX } from "../constants/components.ts";
 import { isPlainObject } from "./guards.ts";
 
 /**
@@ -58,10 +58,20 @@ export function withComponentFacts(controls: unknown, node: unknown): unknown {
               ...control,
               options: variants,
             }
-          : withVariable(key, control, variables.get(key)),
+          : withLinkWrite(key, withVariable(key, control, variables.get(key))),
       ]),
     ),
   };
+}
+
+/** A link control is written by its parts: a CMS page takes its path pattern and the item's slug, not a value. */
+function withLinkWrite(key: string, control: unknown): unknown {
+  return isPlainObject(control) && typeof control.type === "string" && LINK_CONTROL_TYPE.test(control.type)
+    ? {
+        ...control,
+        write: `${key}.href="<url or /page path>"; a CMS page: ${key}.href="/<collection path>/:slug" ${key}.collectionItem="<item slug>"`,
+      }
+    : control;
 }
 
 function withVariable(key: string, control: unknown, variable: Readonly<Record<string, unknown>> | undefined): unknown {

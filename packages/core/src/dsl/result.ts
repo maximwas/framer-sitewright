@@ -1,11 +1,17 @@
-import { DSL_ASSET_FAILURE, DSL_PARTIAL_APPLY_HINT, LOW_CONFIDENCE_LINT, TOO_CLOSE_LINT } from "../constants/dsl.ts";
+import {
+  DSL_ASSET_FAILURE,
+  DSL_ERROR_HINTS,
+  DSL_PARTIAL_APPLY_HINT,
+  LOW_CONFIDENCE_LINT,
+  TOO_CLOSE_LINT,
+} from "../constants/dsl.ts";
 import { RawDslResultSchema } from "../schemas/dsl.ts";
 import type { DslIssue, DslLintIssue, DslResult } from "../types/dsl.ts";
 import { isPlainObject } from "../utils/guards.ts";
 
 function toIssues(map: Record<string, unknown[]> | undefined): DslIssue[] {
   return Object.entries(map ?? {}).map(([message, targets]) => ({
-    message,
+    message: [message, DSL_ERROR_HINTS.find(({ pattern }) => pattern.test(message))?.hint].filter(Boolean).join(" "),
     targets: targets.map((target) => (typeof target === "string" ? target : JSON.stringify(target))),
   }));
 }

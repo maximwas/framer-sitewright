@@ -265,6 +265,8 @@ export interface NodeRevertPlan {
   /** Original id → temp id of every node the batch recreates. */
   readonly recreated: ReadonlyMap<string, string>;
   readonly pendingOverrides: readonly PendingOverride[];
+  /** A second DSL batch, after the first: what Framer resets within the batch that causes it (a rebound text's style). */
+  readonly followUp: readonly string[];
   /** Web pages to remove: the DSL cannot delete them. */
   readonly removePages: readonly string[];
 }

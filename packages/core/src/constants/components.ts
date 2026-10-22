@@ -3,6 +3,12 @@ export const MAKE_LOCAL_UNDO_NOTE =
   "Undo does not turn a local copy back into the external component: the copy stays in the project.";
 export const DETACH_UNDO_NOTE = "Undo does not bring a detached instance back: insert the component again.";
 
+/**
+ * A link control's type as readComponentControls gives it: not "link" but the forms it takes, "External URL | internal
+ * page path … | ComputedValue<link> | null" (seen 22.10.2026).
+ */
+export const LINK_CONTROL_TYPE = /^link$|ComputedValue<link>/;
+
 /** How far up the parents an inserted layer's web page is looked for; deeper, its undo runs on the home page. */
 export const PAGE_LOOKUP_DEPTH = 32;
 

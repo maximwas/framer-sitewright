@@ -12,7 +12,7 @@ import {
   type ServerToPlugin,
 } from "@sitewright/core";
 import { type WebSocket, WebSocketServer } from "ws";
-import { CLOSE_GRACE_MS, HEARTBEAT_MS, REQUEST_TIMEOUT_MS } from "../constants/bridge.ts";
+import { CLOSE_GRACE_MS, HEARTBEAT_MS } from "../constants/bridge.ts";
 import { WEB_MAX_PAYLOAD_BYTES } from "../constants/web.ts";
 import type {
   BridgeLog,
@@ -23,6 +23,7 @@ import type {
   UpgradePolicy,
   UpgradeRejection,
 } from "../types/bridge.ts";
+import { requestTimeoutMs } from "../utils/request-timeout.ts";
 import { serveLocalApp } from "../web/local-app.ts";
 import { PanelSession } from "../web/panel-session.ts";
 import { closeGracefully, listenOnLoopback } from "./http-lifecycle.ts";
@@ -163,13 +164,14 @@ export class BridgeServer
     }
 
     const id = String(++this.#sequence);
-    const answer = session.pending.track(id, op, REQUEST_TIMEOUT_MS);
+    const timeoutMs = requestTimeoutMs(input);
+    const answer = session.pending.track(id, op, timeoutMs);
     const message: ServerToPlugin = {
       type: "request",
       id,
       op,
       input: input ?? null,
-      timeoutMs: REQUEST_TIMEOUT_MS,
+      timeoutMs,
       ...(journal ? { journal } : {}),
     };
 

@@ -1,4 +1,4 @@
-import { DSL_CONTROL_PREFIX } from "../constants/dsl.ts";
+import { DSL_ATTRIBUTE, DSL_CONTROL_PREFIX } from "../constants/dsl.ts";
 import { joinCommands } from "./commands.ts";
 import { parseDslCommand, splitDslCommands } from "./parse.ts";
 
@@ -14,11 +14,12 @@ export function separateControls(dsl: string): string {
     const command = parseDslCommand(raw);
     const groups = new Map<string, string[]>();
 
-    for (const [key, value] of Object.entries(command.attributes)) {
+    // The pairs as written, quotes still escaped: a parsed value has them unescaped and would end at its first quote.
+    for (const [pair, key = ""] of raw.matchAll(DSL_ATTRIBUTE)) {
       if (key.startsWith(DSL_CONTROL_PREFIX)) {
         const control = key.slice(DSL_CONTROL_PREFIX.length).split(".")[0] ?? key;
 
-        groups.set(control, [...(groups.get(control) ?? []), `${key}="${value}"`]);
+        groups.set(control, [...(groups.get(control) ?? []), pair]);
       }
     }
 

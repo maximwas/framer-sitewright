@@ -20,10 +20,11 @@ export const SVG_DATA_URL_PREFIX = "data:image/svg+xml;base64,";
 export const FILE_DATA_URL_BRIDGE_MAX = 3_500_000;
 
 /**
- * Control fields that take an image (alone, in a list, or in a list's entries) in Marketplace components: Framer keeps
- * there only an uploaded image, and drops a URL without a word (seen 06.10.2026 on 7 of 8 popular carousels).
+ * Words of a control field's name that make it an image field (alone, in a list, or in a list's entries, as `image`,
+ * `photos`, `iconPrev`): Framer keeps there only an uploaded image, and drops a URL without a word (seen 06.10.2026 on 7
+ * of 8 popular carousels, and 22.10.2026 on a carousel's arrows.iconPrev).
  */
-export const IMAGE_CONTROL_KEYS: ReadonlySet<string> = new Set([
+export const IMAGE_FIELD_WORDS: ReadonlySet<string> = new Set([
   "image",
   "images",
   "photo",
@@ -37,5 +38,9 @@ export const IMAGE_CONTROL_KEYS: ReadonlySet<string> = new Set([
   "logos",
   "cover",
   "background",
-  "backgroundImage",
+  "icon",
+  "icons",
 ]);
+
+/** Words of a field's name that keep a URL as text, even next to an image word (`imageUrl`, `logoLink`). */
+export const TEXT_FIELD_WORDS: ReadonlySet<string> = new Set(["url", "link", "href", "alt", "text", "name", "title"]);

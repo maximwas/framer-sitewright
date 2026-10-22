@@ -1,10 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { deferAbsoluteCentering } from "../src/dsl/absolute-centering.ts";
 import { deferIconInitialValues } from "../src/dsl/icon-variables.ts";
+import { parseDsl } from "../src/dsl/parse.ts";
+import { deferUnboundValues } from "../src/dsl/unbind.ts";
 import { HistoryRecorder } from "../src/history/recorder.ts";
 import { runOperation } from "../src/operations/define.ts";
 import { designApply } from "../src/operations/design/apply.ts";
 import { createFakeRuntime } from "../src/testing/index.ts";
+import { lintOnLayers, touchedLayers } from "../src/utils/lint-scope.ts";
 
 describe("design.apply", () => {
   it("moves an icon variable's initialValue to a SET and leaves other DSL as written", () => {
@@ -30,6 +33,77 @@ describe("design.apply", () => {
     expect(state.appliedDsl.at(-1)).not.toMatch(/\bink\b(?!_| )/);
     expect(Object.keys(result.renamedIds)).toEqual(["ink"]);
     expect(state.colorStyles.find((token) => token.path === "/Ink")?.light).toBe("rgb(34, 34, 34)");
+  });
+
+  it("regression: a straight quote in an XML value reaches Framer escaped, not cutting the value short", async () => {
+    // Seen on Turi: $control__label="43°01'00&quot;N 42°43'00&quot;E" was stored as 43°01'00. Two controls in one
+    // command are split into a command each, and the split wrote the value back without escaping its quotes.
+    const { runtime, state } = createFakeRuntime();
+
+    await runOperation(
+      designApply,
+      { runtime },
+      {
+        xml: `<ComponentInstanceNode id="pin" $control__label="43°01'00&quot;N 42°43'00&quot;E" $control__title="Kazbegi" />`,
+      },
+    );
+
+    expect(state.appliedDsl.join("\n")).toBe(
+      `SET pin $control__label="43°01'00\\"N 42°43'00\\"E";\nSET pin $control__title="Kazbegi";`,
+    );
+  });
+
+  it("regression: a text set where its CMS binding is removed goes after the unbinding, in a SET of its own", () => {
+    // Seen on Turi: SET t text.from="null" text="9 DAYS" unbound the text but left the CMS value "9" on it.
+    expect(deferUnboundValues('SET t text.from="null" text="9 DAYS" name="Days";\nSET u text="Hi";')).toBe(
+      'SET t text.from="null" name="Days";\nSET t text="9 DAYS";\nSET u text="Hi";',
+    );
+  });
+
+  it("regression: answers with the lint about the layers a batch touched, not the whole page's", () => {
+    // Seen on Turi: one DEL of an empty frame came back with 105 lint findings about the rest of the page.
+    const layers = touchedLayers(parseDsl('+FrameNode f1 parent="hero";\nSET card name="Card";'), { f1: "Abc123xyz" });
+    const scoped = lintOnLayers(
+      [
+        {
+          message: "Node is visually clipped by an ancestor.",
+          severity: "warning",
+          details: [
+            {
+              id: "Abc123xyz",
+              clippedBy: "hero",
+            },
+            {
+              id: "tablet-copy",
+              clippedBy: "x",
+            },
+          ],
+        },
+        {
+          message: "Low contrast.",
+          severity: "warning",
+          details: [{ id: "old-title" }],
+        },
+      ],
+      layers,
+    );
+
+    expect([...layers]).toEqual(["Abc123xyz", "hero", "card"]);
+    expect(scoped).toEqual({
+      lint: [
+        {
+          message: "Node is visually clipped by an ancestor.",
+          severity: "warning",
+          details: [
+            {
+              id: "Abc123xyz",
+              clippedBy: "hero",
+            },
+          ],
+        },
+      ],
+      left: 2,
+    });
   });
 
   it("sends variant springs as Framer keeps them and says where to switch to Physics", async () => {

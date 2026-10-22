@@ -1,4 +1,4 @@
-import { IMAGE_CONTROL_KEYS } from "../constants/assets.ts";
+import { IMAGE_FIELD_WORDS, TEXT_FIELD_WORDS } from "../constants/assets.ts";
 import { CANVAS_COMPONENT_ID, FONT_SELECTOR } from "../constants/components.ts";
 import { DSL_CONTROL_PREFIX } from "../constants/dsl.ts";
 import { TOKEN_REFERENCE } from "../constants/history.ts";
@@ -105,7 +105,7 @@ export async function withUploadedImages(
     if (isPlainObject(value)) {
       return Object.fromEntries(
         await Promise.all(
-          Object.entries(value).map(async ([key, item]) => [key, await visit(item, IMAGE_CONTROL_KEYS.has(key))]),
+          Object.entries(value).map(async ([key, item]) => [key, await visit(item, isImageField(key))]),
         ),
       );
     }
@@ -114,6 +114,16 @@ export async function withUploadedImages(
   };
 
   return (await visit(controls, false)) as Record<string, unknown>;
+}
+
+/** Whether a field takes an image, by the words of its name: `iconPrev` does, `imageUrl` keeps a URL as text. */
+export function isImageField(key: string): boolean {
+  const words = key
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .toLowerCase()
+    .split(/[\s_-]+/);
+
+  return words.some((word) => IMAGE_FIELD_WORDS.has(word)) && !words.some((word) => TEXT_FIELD_WORDS.has(word));
 }
 
 /**

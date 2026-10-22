@@ -94,3 +94,20 @@ it("regression: lists the variants and option values the component really has (s
     },
   });
 });
+
+it("regression: says how to write a link control, a link to a CMS page included (seen: an item id refused)", () => {
+  // The type as readComponentControls gives it (seen 22.10.2026 on Lab/Button, shortened), not "link".
+  const type =
+    'External URL | internal page path | CMS detail page path with a dynamic path variable like ":slug" (must also pass link.collectionItem) | ComputedValue<link> | null';
+  const read = withComponentFacts({ controls: { $control__link: { type } } }, { type: "ComponentNode" });
+
+  expect(read).toEqual({
+    controls: {
+      $control__link: {
+        type,
+        write:
+          '$control__link.href="<url or /page path>"; a CMS page: $control__link.href="/<collection path>/:slug" $control__link.collectionItem="<item slug>"',
+      },
+    },
+  });
+});

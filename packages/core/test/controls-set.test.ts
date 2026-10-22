@@ -3,6 +3,7 @@ import { componentControlsSet } from "../src/operations/components/controls-set.
 import { runOperation } from "../src/operations/define.ts";
 import { createFakeRuntime } from "../src/testing/index.ts";
 import type { FramerRuntime } from "../src/types/framer.ts";
+import { isImageField } from "../src/utils/controls.ts";
 
 it("regression: says which controls Framer did not keep, instead of echoing the request (seen: a transition object)", async () => {
   const { runtime, state } = createFakeRuntime({
@@ -95,6 +96,73 @@ it("regression: uploads the images a carousel's list takes, which Framer drops a
   // A control that takes the URL as text keeps it as text.
   expect(state.instanceControls.carousel?.imageUrl).toBe("https://example.com/plain-string.jpg");
   expect(result.notStored).toEqual([]);
+});
+
+it("regression: uploads an object control's icons and names a field Framer dropped (seen: arrows.iconPrev on a carousel)", async () => {
+  const { runtime, state } = createFakeRuntime({ instanceControls: { carousel: { arrows: { show: true } } } });
+  const prev = "https://framerusercontent.com/images/prev.png";
+  const result = await runOperation(
+    componentControlsSet,
+    { runtime },
+    {
+      nodeId: "carousel",
+      controls: {
+        arrows: {
+          iconPrev: prev,
+          iconUrl: "https://example.com/kept-as-text.png",
+        },
+      },
+    },
+  );
+
+  expect(state.uploadedImages.map(({ url }) => url)).toEqual([prev]);
+  expect(result.notStored).toEqual([]);
+  expect(isImageField("iconNext")).toBe(true);
+  expect(isImageField("logoLink")).toBe(false);
+});
+
+it("names the fields of an object control Framer kept only in part", async () => {
+  const { runtime, state } = createFakeRuntime({ instanceControls: { carousel: { arrows: { show: true } } } });
+  const dropping: FramerRuntime = {
+    ...runtime,
+    port: {
+      ...runtime.port,
+      getNode: async (nodeId) => {
+        const node = (await runtime.port.getNode(nodeId)) as { controls: Record<string, unknown> } | null;
+
+        return node === null
+          ? null
+          : {
+              ...node,
+              setAttributes: async ({ controls }: { controls: Record<string, unknown> }) => {
+                const arrows = controls["arrows"] as Record<string, unknown>;
+
+                state.instanceControls[nodeId] = {
+                  arrows: {
+                    ...arrows,
+                    iconNext: undefined,
+                  },
+                };
+              },
+            };
+      },
+    },
+  };
+  const result = await runOperation(
+    componentControlsSet,
+    { runtime: dropping },
+    {
+      nodeId: "carousel",
+      controls: {
+        arrows: {
+          show: false,
+          iconNext: "https://framerusercontent.com/images/next.png",
+        },
+      },
+    },
+  );
+
+  expect(result.notStored).toEqual(["arrows.iconNext"]);
 });
 
 /** An instance as the plugin gives it: reads resolve tokens to colors, writes change only the controls they name. */

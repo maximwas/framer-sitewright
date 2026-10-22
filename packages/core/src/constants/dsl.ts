@@ -149,6 +149,15 @@ export const STORED_CHECK_MAX_NODES = 40;
  * Framer lint messages known to misfire, and why: design_apply marks them low confidence so real problems stand out
  * (seen 12.10.2026 on a component's canvas).
  */
+/** Framer errors that do not say how to write the value instead, and what design_apply adds to them. */
+export const DSL_ERROR_HINTS: readonly { readonly pattern: RegExp; readonly hint: string }[] = [
+  {
+    // Seen 22.10.2026: `$control__link="/trips/:slug" $control__link.collectionItem="<item id>"` was refused.
+    pattern: /"(?:collectionItem|href)"[\s\S]*not valid for control/i,
+    hint: 'A link control is written by its parts: $control__<name>.href="/<collection path>/:slug" and $control__<name>.collectionItem="<item slug>" (the slug, not the item id).',
+  },
+];
+
 /** Framer's lint for siblings it finds too close; a pair at a negative spacing is dropped (one is hidden or moved). */
 export const TOO_CLOSE_LINT = /too close/i;
 

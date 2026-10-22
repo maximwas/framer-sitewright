@@ -16,6 +16,40 @@ How to write this file (people and agents alike):
 - After editing, run `pnpm docs:changelog` to rewrite the website's page (docs/changelog/index.html).
 -->
 
+## Unreleased
+
+### Added
+
+- `image_compare` takes `referenceAlign` `bottom` to line up a node and a design that differ in height at their
+  bottoms, such as a 100vh hero.
+- `components_read` shows how to write a link control, a link to a CMS page included.
+- `design_apply` takes `lint` `all` for every lint finding on the page.
+
+### Changed
+
+- `design_apply` answers with Framer's lint findings about the layers the batch touched, not the whole page's, and
+  says how many it left out.
+- `component_controls_set` names the field Framer dropped from an object control, such as `arrows.iconPrev`, instead
+  of the whole control.
+
+### Fixed
+
+- `design_apply` keeps a straight quote in a component control's value when it sets several controls of an instance
+  at once, instead of cutting the value at the quote.
+- `design_apply` sets a text where the same command removes its CMS binding, instead of keeping the value the CMS
+  last showed.
+- `component_controls_set` uploads image URLs in an object control's icon fields, such as a carousel's
+  `arrows.iconPrev`, which Framer dropped.
+- `images_upload` and `image_upload` give a large image the time it needs to reach Framer, instead of timing out
+  after 30 seconds.
+- A refused link control in `design_apply` says how to write a link to a CMS page.
+- `layout_audit` no longer reports an image pinned on all sides inside a stack as collapsed: read through the plugin,
+  such a layer lost its pins.
+- Undoing a change that unbound a text from a CMS field binds it again with its text style and color, instead of
+  leaving it in the default font.
+- `layout_audit` of one layer, `nodes_read` and the other reads through the plugin find a layer on a page the editor
+  does not show, instead of answering that it was not found.
+
 ## 1.2.2 — 2026-10-22
 
 ### Added
