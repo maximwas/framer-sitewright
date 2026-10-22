@@ -18,7 +18,14 @@ How to write this file (people and agents alike):
 
 ## Unreleased
 
+### Added
+
+- `images_upload` uploads up to 20 local images in one call and returns each path with its url; a file that fails is
+  listed with why, and the others still upload.
+
 ### Changed
+
+- `image_upload` and `file_upload` take a path relative to the project folder too, not only an absolute one.
 
 - `framer_guide` says how to show a whole image or a tiled one, which the API cannot set on an image fill, and that a
   text node takes letter spacing in em, as Figma gives it.

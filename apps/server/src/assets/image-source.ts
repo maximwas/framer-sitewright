@@ -1,5 +1,5 @@
 import { readFile, realpath, stat } from "node:fs/promises";
-import { extname, isAbsolute } from "node:path";
+import { extname, resolve } from "node:path";
 import { OperationError, SVG_DATA_URL_PREFIX } from "@sitewright/core";
 import { IMAGE_MIME_TYPES, IMAGE_UPLOAD_MAX_BYTES } from "../constants/assets.ts";
 import type { ImageSource } from "../types/assets.ts";
@@ -29,22 +29,25 @@ export async function imageSourceOf(source: ImageSource): Promise<string> {
 }
 
 /**
- * A local image as a data URL. The upload lands on Framer's public CDN, so only a real image goes: the extension is
- * checked on the file a symlink leads to, and the bytes must start like that type of image.
+ * A local image as a data URL; a relative path is taken from the folder the server runs in (the project's, under an MCP
+ * client). The upload lands on Framer's public CDN, so only a real image goes: the extension is checked on the file a
+ * symlink leads to, and the bytes must start like that type of image.
  */
 async function fileDataUrl(path: string): Promise<string> {
   const notAnImage = () =>
     new OperationError(
       "INVALID_INPUT",
-      `"${path}" is not an absolute path to an image file.`,
-      `Use an absolute path ending in ${Object.keys(IMAGE_MIME_TYPES).join(", ")}.`,
+      `"${path}" is not a path to an image file.`,
+      `Use a path, absolute or relative to ${process.cwd()}, ending in ${Object.keys(IMAGE_MIME_TYPES).join(", ")}.`,
     );
 
-  if (!isAbsolute(path) || IMAGE_MIME_TYPES[extname(path).toLowerCase()] === undefined) {
+  if (IMAGE_MIME_TYPES[extname(path).toLowerCase()] === undefined) {
     throw notAnImage();
   }
 
-  const real = await realpath(path);
+  const real = await realpath(resolve(path)).catch(() => {
+    throw notAnImage();
+  });
   const mimeType = IMAGE_MIME_TYPES[extname(real).toLowerCase()];
 
   if (mimeType === undefined) {

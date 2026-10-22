@@ -1,6 +1,6 @@
 import { mkdtemp, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 import { imageSourceOf } from "../src/assets/image-source.ts";
 
@@ -14,9 +14,11 @@ describe("image_upload sources", () => {
 
     expect(await imageSourceOf({ svg })).toBe(`data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`);
     expect(await imageSourceOf({ path: file })).toBe("data:image/png;base64,iVBORw==");
+    // A relative path is taken from the folder the server runs in.
+    expect(await imageSourceOf({ path: relative(process.cwd(), file) })).toBe("data:image/png;base64,iVBORw==");
     expect(await imageSourceOf({ url: "https://example.com/a.jpg" })).toBe("https://example.com/a.jpg");
     await expect(imageSourceOf({ url: "http://example.com/a.jpg" })).rejects.toThrow(/https/);
-    await expect(imageSourceOf({ path: "logo.png" })).rejects.toThrow(/absolute path/);
+    await expect(imageSourceOf({ path: "missing-logo.png" })).rejects.toThrow(/not a path to an image/);
 
     // Not a picture under a picture's name, nor a link from one to a file that is no image: nothing private goes up.
     const secret = join(directory, "id_rsa");
@@ -27,7 +29,7 @@ describe("image_upload sources", () => {
     await writeFile(disguised, "-----BEGIN OPENSSH PRIVATE KEY-----");
     await symlink(secret, linked);
     await expect(imageSourceOf({ path: disguised })).rejects.toThrow(/does not hold/);
-    await expect(imageSourceOf({ path: linked })).rejects.toThrow(/absolute path/);
+    await expect(imageSourceOf({ path: linked })).rejects.toThrow(/not a path to an image/);
     await expect(imageSourceOf({})).rejects.toThrow(/exactly one/);
   });
 });

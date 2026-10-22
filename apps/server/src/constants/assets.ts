@@ -12,6 +12,9 @@ export const IMAGE_MIME_TYPES: Readonly<Record<string, string>> = {
 /** A bigger local file is refused: it would travel base64-encoded in one message. */
 export const IMAGE_UPLOAD_MAX_BYTES = 10 * 1024 * 1024;
 
+/** How many files one images_upload call takes: each is its own upload, one after another. */
+export const IMAGES_UPLOAD_MAX = 20;
+
 /** Files file_upload reads from disk, by extension: media for code components, documents and fonts. */
 export const FILE_MIME_TYPES: Readonly<Record<string, string>> = {
   ".mp4": "video/mp4",

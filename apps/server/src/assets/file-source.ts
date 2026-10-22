@@ -1,5 +1,5 @@
 import { readFile, realpath, stat } from "node:fs/promises";
-import { extname, isAbsolute } from "node:path";
+import { extname, resolve } from "node:path";
 import { OperationError } from "@sitewright/core";
 import { FILE_MIME_TYPES, FILE_UPLOAD_MAX_BYTES } from "../constants/assets.ts";
 import type { FileSource } from "../types/assets.ts";
@@ -23,22 +23,25 @@ export async function fileSourceOf(source: FileSource): Promise<string> {
 }
 
 /**
- * A local file as a data URL. The upload lands on Framer's public CDN, so only a file of a listed type goes: the
- * extension is checked on the file a symlink leads to, and the bytes must start like that type.
+ * A local file as a data URL; a relative path is taken from the folder the server runs in. The upload lands on Framer's
+ * public CDN, so only a file of a listed type goes: the extension is checked on the file a symlink leads to, and the
+ * bytes must start like that type.
  */
 async function fileDataUrl(path: string): Promise<string> {
   const notAllowed = () =>
     new OperationError(
       "INVALID_INPUT",
-      `"${path}" is not an absolute path to a video, PDF or font file.`,
-      `Use an absolute path ending in ${Object.keys(FILE_MIME_TYPES).join(", ")}.`,
+      `"${path}" is not a path to a video, PDF or font file.`,
+      `Use a path, absolute or relative to ${process.cwd()}, ending in ${Object.keys(FILE_MIME_TYPES).join(", ")}.`,
     );
 
-  if (!isAbsolute(path) || FILE_MIME_TYPES[extname(path).toLowerCase()] === undefined) {
+  if (FILE_MIME_TYPES[extname(path).toLowerCase()] === undefined) {
     throw notAllowed();
   }
 
-  const real = await realpath(path);
+  const real = await realpath(resolve(path)).catch(() => {
+    throw notAllowed();
+  });
   const mimeType = FILE_MIME_TYPES[extname(real).toLowerCase()];
 
   if (mimeType === undefined) {

@@ -1,4 +1,4 @@
-import { mkdtemp } from "node:fs/promises";
+import { mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Client } from "@modelcontextprotocol/client";
@@ -86,6 +86,7 @@ const EXPECTED_TOOLS = [
   "image_compare",
   "image_upload",
   "images_check",
+  "images_upload",
   "layout_audit",
   "link_styles_delete",
   "link_styles_list",
@@ -503,6 +504,27 @@ describe("configured server (fake project)", () => {
       },
       { type: "text" },
     ]);
+  });
+
+  it("images_upload uploads every file it can, names each after its file and lists the ones that failed", async () => {
+    const { runtime, state } = createFakeRuntime();
+    const { client } = await connect(fakeProjectTransports(runtime));
+    const directory = await mkdtemp(join(tmpdir(), "sitewright-images-"));
+    const photo = join(directory, "team-photo.png");
+
+    await writeFile(photo, Buffer.from([0x89, 0x50, 0x4e, 0x47]));
+
+    const result = await client.callTool({
+      name: "images_upload",
+      arguments: { paths: [photo, join(directory, "missing.png")] },
+    });
+
+    expect(result.isError).toBeFalsy();
+    expect(result.structuredContent).toMatchObject({
+      images: [{ path: photo, url: expect.stringContaining("framerusercontent.com") }],
+      failed: [{ path: join(directory, "missing.png"), error: expect.stringContaining("not a path to an image") }],
+    });
+    expect(state.uploadedImages.map((image) => image.name)).toEqual(["team-photo"]);
   });
 });
 

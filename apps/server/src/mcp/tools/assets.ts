@@ -1,7 +1,9 @@
+import { basename, extname } from "node:path";
 import type { McpServer } from "@modelcontextprotocol/server";
 import {
   type ActivityNote,
   ActivityNoteSchema,
+  errorMessage,
   fileUpload,
   iconsSearch,
   imageUpload,
@@ -12,6 +14,7 @@ import {
 import * as z from "zod";
 import { fileSourceOf } from "../../assets/file-source.ts";
 import { imageSourceOf } from "../../assets/image-source.ts";
+import { IMAGES_UPLOAD_MAX } from "../../constants/assets.ts";
 import type { ToolContext } from "../../types/mcp.ts";
 import { addOperationTool, addTool, operationAnnotations, runOperationTool } from "../add-tool.ts";
 
@@ -20,7 +23,7 @@ export function registerAssetTools(server: McpServer, context: ToolContext): voi
     name: "image_upload",
     title: "Upload an image",
     description:
-      "Uploads an image to the project's assets and returns its url, for a fill, a logo or a favicon. Pass exactly one of: url (https), path (absolute path to a local png, jpg, gif, webp, avif or svg), or svg (SVG markup: own icons, logos and illustrations drawn as vectors).",
+      "Uploads an image to the project's assets and returns its url, for a fill, a logo or a favicon. Pass exactly one of: url (https), path (a local png, jpg, gif, webp, avif or svg; absolute, or relative to the project folder the server runs in), or svg (SVG markup: own icons, logos and illustrations drawn as vectors). Several local files at once: images_upload.",
     input: z.strictObject({
       url: z.string().min(1).exactOptional(),
       path: z.string().min(1).exactOptional(),
@@ -49,10 +52,53 @@ export function registerAssetTools(server: McpServer, context: ToolContext): voi
   });
 
   addTool(server, {
+    name: "images_upload",
+    title: "Upload images",
+    description: `Uploads up to ${IMAGES_UPLOAD_MAX} local images in one call (png, jpg, gif, webp, avif or svg; paths absolute or relative to the project folder the server runs in), each named after its file, and returns every path with its url. A file that fails is listed in failed with why; the others still upload.`,
+    input: z.strictObject({
+      paths: z.array(z.string().min(1)).min(1).max(IMAGES_UPLOAD_MAX),
+    }),
+    output: z.object({
+      images: z.array(imageUpload.output.extend({ path: z.string() })),
+      failed: z.array(z.object({ path: z.string(), error: z.string() })),
+      activity: ActivityNoteSchema,
+    }),
+    annotations: operationAnnotations(imageUpload),
+    run: async ({ paths }) => {
+      const images: { path: string; id: string; url: string }[] = [];
+      const failed: { path: string; error: string }[] = [];
+      let activity: ActivityNote | null = null;
+      let firstError: unknown = null;
+
+      // One after another: each file is one upload and one journal entry, like image_upload.
+      for (const path of paths) {
+        try {
+          const uploaded = await runOperationTool(context, "images_upload", imageUpload, {
+            image: await imageSourceOf({ path }),
+            name: basename(path, extname(path)),
+          });
+
+          images.push({ path, id: uploaded.id, url: uploaded.url });
+          activity = uploaded.activity;
+        } catch (error) {
+          firstError ??= error;
+          failed.push({ path, error: errorMessage(error) });
+        }
+      }
+
+      if (activity === null) {
+        throw firstError;
+      }
+
+      return { images, failed, activity };
+    },
+  });
+
+  addTool(server, {
     name: "file_upload",
     title: "Upload a file",
     description:
-      "Puts a file that is not an image into the project's assets — a video for a code component's File control, a PDF, a font — and returns its url. Pass exactly one of: url (https, Framer downloads it) or path (absolute path to a local mp4, m4v, mov, webm, pdf, woff, woff2, ttf or otf). Images go through image_upload.",
+      "Puts a file that is not an image into the project's assets — a video for a code component's File control, a PDF, a font — and returns its url. Pass exactly one of: url (https, Framer downloads it) or path (a local mp4, m4v, mov, webm, pdf, woff, woff2, ttf or otf; absolute, or relative to the project folder the server runs in). Images go through image_upload.",
     input: z.strictObject({
       url: z.string().min(1).exactOptional(),
       path: z.string().min(1).exactOptional(),

@@ -121,6 +121,7 @@ const GROUPS = [
       "icons_search",
       "shaders_read",
       "image_upload",
+      "images_upload",
       "file_upload",
       "svg_add",
     ],
