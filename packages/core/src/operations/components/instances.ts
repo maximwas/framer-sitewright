@@ -124,7 +124,7 @@ async function agentInstances(
     const path = page.path ?? "";
     const breakpoints = (await runtime.port.getChildren(page.id))
       .map(nodeRecord)
-      .filter((node): node is PluginNodeRecord => node !== null && node.isBreakpoint === true);
+      .filter((node): node is PluginNodeRecord => Boolean(node?.isBreakpoint));
     const roots =
       breakpoints.length === 0
         ? [

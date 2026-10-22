@@ -16,7 +16,7 @@ export function registerStatusTools(
   const entry = process.argv[1] ?? null;
   const build = {
     version,
-    source: entry?.includes(`${sep}node_modules${sep}`) === true ? ("npm" as const) : ("local build" as const),
+    source: (entry ?? "").includes(`${sep}node_modules${sep}`) ? ("npm" as const) : ("local build" as const),
     path: entry,
   };
   // Never asks Framer: the status must answer even when Framer does not.

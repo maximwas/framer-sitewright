@@ -47,8 +47,8 @@ export async function svgMarkupOf({ svg, path }: SvgSource): Promise<string> {
  * the drawing (seen 22.10.2026): `width` sets the root's width and a height in the viewBox's ratio; `keepViewBox` adds
  * an unpainted rect over the whole viewBox, so the empty space around the drawing stays part of the layer.
  */
-export function fitSvg(svg: string, { width, keepViewBox }: SvgFit): string {
-  if (width === undefined && keepViewBox !== true) {
+export function fitSvg(svg: string, { width, keepViewBox = false }: SvgFit): string {
+  if (width === undefined && !keepViewBox) {
     return svg;
   }
 
@@ -74,7 +74,7 @@ export function fitSvg(svg: string, { width, keepViewBox }: SvgFit): string {
             element.attributes.height = String(Math.round((width * box.height * 100) / box.width) / 100);
           }
 
-          if (keepViewBox === true) {
+          if (keepViewBox) {
             element.children.unshift({
               type: "element",
               name: "rect",

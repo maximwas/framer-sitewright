@@ -196,7 +196,7 @@ export const localizationGet = defineOperation({
     const wanted = group?.toLowerCase();
     // Framer names a page's group by the page's name, and gives it the page's id: a path finds it by that id.
     const pageIds = new Set(
-      group?.startsWith("/") === true
+      (group ?? "").startsWith("/")
         ? (await runtime.port.getNodesWithType("WebPageNode")).filter(({ path }) => path === group).map(({ id }) => id)
         : [],
     );
