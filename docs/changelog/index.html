@@ -43,6 +43,7 @@
           <summary>Versions</summary>
           <nav>
             <p class="toc-title">1.2</p>
+            <a href="#v1-2-1"><span>1.2.1</span><time datetime="2026-10-22">Oct 22</time></a>
             <a href="#v1-2-0"><span>1.2.0</span><time datetime="2026-10-22">Oct 22</time></a>
             <p class="toc-title">1.1</p>
             <a href="#v1-1-3"><span>1.1.3</span><time datetime="2026-10-22">Oct 22</time></a>
@@ -73,11 +74,23 @@
           <p class="lead">Every release of Sitewright, newest first: the version, the day it was released, and what changed. The npm package and the Framer plugin share one version. Update the MCP server with <code>npx -y sitewright@latest</code>; Framer updates the plugin.</p>
         </section>
         <div class="releases">
+        <section class="release" id="v1-2-1">
+          <div class="release-head">
+            <h2>1.2.1</h2>
+            <time datetime="2026-10-22">October 22, 2026</time>
+            <span class="release-latest">Latest</span>
+          </div>
+          <h3 class="change change-fixed">Fixed</h3>
+          <ul>
+            <li><code>layout_audit</code> and <code>design_apply</code>'s audit no longer call a centered text a mixed edge when they read through the plugin, which does not show a text's own alignment.</li>
+            <li><code>layout_audit</code> no longer reports an image pinned to its parent's top and bottom as collapsed: it takes the parent's height.</li>
+            <li><code>design_apply</code> drops Framer's "too close" lint for layers at a negative spacing, which are hidden or moved away rather than neighbours.</li>
+          </ul>
+        </section>
         <section class="release" id="v1-2-0">
           <div class="release-head">
             <h2>1.2.0</h2>
             <time datetime="2026-10-22">October 22, 2026</time>
-            <span class="release-latest">Latest</span>
           </div>
           <h3 class="change change-added">Added</h3>
           <ul>

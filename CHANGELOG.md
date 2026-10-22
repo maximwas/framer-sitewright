@@ -16,7 +16,7 @@ How to write this file (people and agents alike):
 - After editing, run `pnpm docs:changelog` to rewrite the website's page (docs/changelog/index.html).
 -->
 
-## Unreleased
+## 1.2.1 — 2026-10-22
 
 ### Fixed
 
