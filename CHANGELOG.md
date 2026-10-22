@@ -16,6 +16,13 @@ How to write this file (people and agents alike):
 - After editing, run `pnpm docs:changelog` to rewrite the website's page (docs/changelog/index.html).
 -->
 
+## Unreleased
+
+### Added
+
+- The plugin selects the layers Claude just read, created, moved or changed, so the editor shows where it works; the
+  view stays where you left it.
+
 ## 1.2.1 — 2026-10-22
 
 ### Fixed

@@ -1,6 +1,13 @@
 // Everything that touches the plugin's `framer` object; the rest of the plugin stays free of the Plugin API.
 import { type ColorStop, framer, LinearGradient, type ProtectedMethod } from "@framer/plugin";
-import type { FramerPort, FramerRuntime, PluginInfo, PluginPermission } from "@sitewright/core";
+import {
+  AGENT_CHANGED_EVENT,
+  AgentChangedSchema,
+  type FramerPort,
+  type FramerRuntime,
+  type PluginInfo,
+  type PluginPermission,
+} from "@sitewright/core";
 import { toastStore } from "@sitewright/ui";
 import { version as pluginVersion } from "../../package.json";
 import { NEW_TEXT_PLACEHOLDER, PLUGIN_WINDOW, REVEAL_MAX_ZOOM } from "../constants/ui.ts";
@@ -144,6 +151,18 @@ export function revealOnRequest(name: string, data: unknown): void {
       },
       id,
     );
+  }
+}
+
+/**
+ * Selects the layers Claude just changed or read (`agent.changed`), so the editor shows where it works; the view stays where
+ * the user put it. Layers of another project, or gone since, are Framer's to refuse: nothing is selected then.
+ */
+export function selectChanged(name: string, data: unknown): void {
+  const changed = name === AGENT_CHANGED_EVENT ? AgentChangedSchema.safeParse(data) : null;
+
+  if (changed?.success) {
+    void framer.setSelection(changed.data.nodeIds).catch(() => undefined);
   }
 }
 

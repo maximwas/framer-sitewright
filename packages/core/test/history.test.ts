@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { labelOf, restoreTargets, revertState, revertTitle, summarizeEntry } from "../src/history/activity.ts";
+import {
+  changedLayers,
+  labelOf,
+  restoreTargets,
+  revertState,
+  revertTitle,
+  summarizeEntry,
+} from "../src/history/activity.ts";
 import { applyAliases } from "../src/history/aliases.ts";
 import { categoriesOf } from "../src/history/change-categories.ts";
 import { HistoryRecorder } from "../src/history/recorder.ts";
@@ -563,5 +570,46 @@ describe("activity journal: undo and redo chains", () => {
         categories: ["layout"],
       },
     ]);
+  });
+
+  it("names the layers a call changed: a new section, not its children, and nothing deleted", () => {
+    const state = (parentId: string | null) => ({
+      parentId,
+      index: null,
+      attributes: {},
+      nodes: [],
+      overrides: {},
+    });
+    const step = (id: string, change: "created" | "updated" | "deleted", parentId: string | null) =>
+      ({
+        kind: "node",
+        id,
+        type: "FrameNode",
+        name: null,
+        pagePath: "/",
+        change,
+        before: change === "created" ? null : state(parentId),
+        after: change === "deleted" ? null : state(parentId),
+      }) as const;
+
+    expect(
+      changedLayers([
+        step("section", "created", "page"),
+        step("title", "created", "section"),
+        step("button", "updated", "header"),
+        step("button", "updated", "header"),
+        step("old", "deleted", "page"),
+        {
+          kind: "color-style",
+          id: "tok",
+          before: null,
+          after: {
+            path: "/Brand",
+            light: "rgb(0, 0, 0)",
+            dark: null,
+          },
+        },
+      ]),
+    ).toEqual(["section", "button"]);
   });
 });

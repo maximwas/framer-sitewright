@@ -1,5 +1,6 @@
 import type * as z from "zod";
 import type {
+  AgentChangedSchema,
   BridgeErrorCodeSchema,
   CallResultMessageSchema,
   PluginInfoSchema,
@@ -22,3 +23,5 @@ export type CallResultMessage = z.infer<typeof CallResultMessageSchema>;
 export type PluginToServer = z.infer<typeof PluginToServerSchema>;
 
 export type ServerToPlugin = z.infer<typeof ServerToPluginSchema>;
+
+export type AgentChanged = z.infer<typeof AgentChangedSchema>;

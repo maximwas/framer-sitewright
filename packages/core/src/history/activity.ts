@@ -172,6 +172,35 @@ export function refOf(entry: ActivityEntry): EntryRef {
   };
 }
 
+/**
+ * The layers a call left changed, to show in the editor: created, moved or updated ones, each once, without those
+ * inside another changed layer (a new section, not its every child). Deleted layers are gone, so they are left out.
+ */
+export function changedLayers(steps: readonly UndoStep[]): string[] {
+  const parents = new Map<string, string | null>();
+
+  for (const step of steps) {
+    if (step.kind === "node") {
+      if (step.after === null) {
+        parents.delete(step.id);
+      } else {
+        parents.set(step.id, step.after.parentId);
+      }
+    }
+  }
+
+  return [...parents].filter(([, parentId]) => parentId === null || !parents.has(parentId)).map(([id]) => id);
+}
+
+/** The layers a call of Claude's worked on, to select in the editor: those it changed, or those a read named. */
+export function workedLayers(entry: ActivityEntry): string[] {
+  if (entry.kind !== "operation") {
+    return [];
+  }
+
+  return entry.effect === "read" ? (entry.detail?.nodes ?? []).map(({ id }) => id) : changedLayers(entry.steps);
+}
+
 /** The entries a revert reverts: none when it changed nothing, having failed or found every item changed since. */
 function revertsOf(entry: ActivityEntry): readonly string[] {
   const changedNothing = entry.steps.length === 0 && (entry.outcome === "failed" || entry.conflicts > 0);

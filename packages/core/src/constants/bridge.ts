@@ -20,6 +20,9 @@ export const DEFAULT_PLUGIN_ORIGINS: readonly string[] = [
   "https://5iqjj58d3q5bu5e29j5lpq0po.plugins.framercdn.com",
 ];
 
+/** The server event that hands the plugin the layers a call of Claude's changed or read, to select in the editor. */
+export const AGENT_CHANGED_EVENT = "agent.changed";
+
 /** The bridge window's name, so a second Connect reuses the open window instead of opening another. */
 export const BRIDGE_WINDOW_NAME = "sitewright-bridge";
 
