@@ -8,6 +8,7 @@ import { componentsRead } from "./components/components-read.ts";
 import { componentDetach } from "./components/detach.ts";
 import { componentMakeLocal } from "./components/make-local.ts";
 import { nodesClone } from "./nodes/clone.ts";
+import { nodesFindInTemplates } from "./nodes/find.ts";
 import { PLUGIN_OPERATIONS } from "./plugin-registry.ts";
 import { publishPreview } from "./project/publish-preview.ts";
 import { framerRead } from "./project/read-project.ts";
@@ -19,6 +20,7 @@ import { stylesUsage } from "./styles/usage.ts";
 /** The operations that need framer.agent outright: the server runs them through the Server API, never the plugin. */
 const AGENT_ONLY_OPERATIONS: readonly AnyOperation[] = [
   stylesUsage,
+  nodesFindInTemplates,
   iconsSearch,
   componentsRead,
   componentMakeLocal,

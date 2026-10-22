@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { VIRTUAL_TEXT_ID } from "../../constants/history.ts";
 import {
   FIND_LIMIT,
   FIND_LIMIT_MAX,
@@ -6,7 +7,9 @@ import {
   LAYOUT_TEMPLATE_TYPE,
   WALK_CONCURRENCY,
 } from "../../constants/nodes.ts";
+import { USAGE_LAYER_TYPES } from "../../constants/styles-usage.ts";
 import { OperationError } from "../../errors.ts";
+import { requireAgent } from "../../framer/runtime.ts";
 import { serializedList } from "../../history/dsl/serialized.ts";
 import { fromPluginNode } from "../../plugin-nodes/attributes.ts";
 import { idOf, nameOf, textOf } from "../../plugin-nodes/node-record.ts";
@@ -76,13 +79,85 @@ async function layoutTemplates(runtime: FramerRuntime): Promise<SearchRoot[]> {
   );
 }
 
+/**
+ * Layers in the layout templates (the shared header and footer) by name or text, through the DSL: the Plugin API has
+ * no way to a template, so nodes_find adds these to its pages' matches when the project has a key.
+ */
+export const nodesFindInTemplates = defineOperation({
+  name: "nodes.findInTemplates",
+  effect: "read",
+  idempotent: true,
+  permissions: [],
+  needsAgent: true,
+  input: z.strictObject({
+    query: z.string().min(1).exactOptional(),
+    type: z.string().min(1).exactOptional(),
+  }),
+  output: z.object({ matches: z.array(FoundLayerSchema) }),
+  async run({ runtime }, { query, type }) {
+    const agent = requireAgent(runtime);
+    const wanted = query?.toLowerCase();
+    const matches: FoundLayer[] = [];
+
+    for (const template of serializedList(await agent.getNodesOfTypes({ types: [LAYOUT_TEMPLATE_TYPE] }))) {
+      const nodes = serializedList(
+        await agent.getDescendantsOfTypes({
+          id: template.id,
+          types: [...USAGE_LAYER_TYPES],
+        }),
+      );
+      // A text's words sit in its runs: gathered under the text they belong to.
+      const texts = new Map<string, string>();
+
+      for (const node of nodes) {
+        const owner = VIRTUAL_TEXT_ID.exec(node.id)?.[1];
+        const text = node.attributes?.text;
+
+        if (owner !== undefined && typeof text === "string") {
+          texts.set(owner, `${texts.get(owner) ?? ""}${text}`);
+        }
+      }
+
+      for (const node of nodes) {
+        // Blocks and runs count as their text; a breakpoint's copy as its original.
+        if (node.id.startsWith("v:") || node.$originalId !== undefined || (type !== undefined && node.type !== type)) {
+          continue;
+        }
+
+        const name = node.name ?? null;
+        const text = texts.get(node.id) ?? null;
+
+        if (
+          wanted === undefined ||
+          (name?.toLowerCase().includes(wanted) ?? false) ||
+          (text?.toLowerCase().includes(wanted) ?? false)
+        ) {
+          matches.push({
+            id: node.id,
+            page: `layout ${template.name ?? template.id}`,
+            type: node.type,
+            name,
+            text: text === null ? null : text.slice(0, FIND_TEXT_MAX),
+          });
+        }
+      }
+    }
+
+    return { matches };
+  },
+  describe({ query, type }, { matches }) {
+    return {
+      subject: [query === undefined ? null : `“${query}”`, type ?? null].filter((part) => part !== null).join(" · "),
+      summary: countOf(matches.length, "layer"),
+    };
+  },
+});
+
 export const nodesFind = defineOperation({
   name: "nodes.find",
   effect: "read",
   idempotent: true,
   permissions: [],
-  // A site-wide search reaches the layout templates only through the Server API: the Plugin API has no way to them.
-  needsAgent: ({ pagePath }) => pagePath === undefined,
   input: z
     .strictObject({
       query: z.string().min(1).exactOptional().describe("Part of a layer's name or text, in any case."),

@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { runOperation } from "../src/operations/define.ts";
-import { nodesFind } from "../src/operations/nodes/find.ts";
+import { nodesFind, nodesFindInTemplates } from "../src/operations/nodes/find.ts";
 import { textReplace } from "../src/operations/nodes/text-replace.ts";
 import { pagesCreate, pagesDelete } from "../src/operations/pages/pages.ts";
 import { deploymentsList, publishStatus } from "../src/operations/project/publish-status.ts";
@@ -74,6 +74,66 @@ it("regression: finds layers in a layout template, the shared header and footer 
     {
       id: "announcement",
       page: "layout Main Layout",
+    },
+  ]);
+});
+
+it("finds layers in the layout templates through the DSL, once each, by name or by text", async () => {
+  const { runtime } = createFakeRuntime({
+    layers: {
+      "template-main": [
+        {
+          type: "FrameNode",
+          id: "bar",
+          name: "Announcement Bar",
+        },
+        {
+          type: "FrameNode",
+          id: "tabletbar",
+          name: "Announcement Bar",
+          $originalId: "bar",
+        },
+        {
+          type: "RichTextNode",
+          id: "note",
+        },
+        {
+          type: "TextRun",
+          id: "v:note:0:0",
+          attributes: { text: "Free shipping" },
+        },
+      ],
+    },
+  });
+  const agent = runtime.agent;
+
+  if (agent === null) {
+    throw new Error("The fake runtime has an agent.");
+  }
+
+  const listed = agent.getNodesOfTypes.bind(agent);
+
+  Object.assign(agent, {
+    getNodesOfTypes: async (input: { types: readonly string[] }) =>
+      input.types.includes("LayoutTemplateNode")
+        ? [
+            {
+              type: "LayoutTemplateNode",
+              id: "template-main",
+              name: "Main Layout",
+            },
+          ]
+        : listed(input),
+  });
+
+  const byName = await runOperation(nodesFindInTemplates, { runtime }, { query: "announcement" });
+  const byText = await runOperation(nodesFindInTemplates, { runtime }, { query: "shipping" });
+
+  expect(byName.matches.map(({ id, page }) => [id, page])).toEqual([["bar", "layout Main Layout"]]);
+  expect(byText.matches).toMatchObject([
+    {
+      id: "note",
+      text: "Free shipping",
     },
   ]);
 });

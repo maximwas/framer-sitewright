@@ -63,6 +63,7 @@ export const OPERATION_LABELS: Readonly<Record<string, string>> = {
   "pages.duplicate": "Duplicate page",
   "styles.usage": "Styles in use",
   "tokens.match": "Match to tokens",
+  "nodes.findInTemplates": "Find layers in layouts",
   "shaders.read": "Shaders",
   "project.publishPreview": "Publish preview",
   "pages.create": "New page",

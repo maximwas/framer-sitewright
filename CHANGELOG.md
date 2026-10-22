@@ -22,8 +22,9 @@ How to write this file (people and agents alike):
 
 - `framer_status` and `framer_connect` say which Sitewright answers: its version, and whether it runs from npm or a
   local build, and from where.
-- `nodes_find`, `nodes_query` and `component_instances` search the layout templates too, the shared header and
-  footer, labelled "layout <name>", when no page is named.
+- `nodes_find` and `component_instances` search the layout templates too, the shared header and footer, labelled
+  "layout <name>", when no page is named and the project has a Server API key; pages are still searched through the
+  plugin, as fast as before.
 - `tokens_match` finds the site's nearest color tokens and text styles for colors and fonts taken from a design, with
   the distance or what differs, so every value can be named by a token or a style.
 - `images_upload` uploads up to 20 local images in one call and returns each path with its url; a file that fails is

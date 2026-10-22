@@ -51,8 +51,6 @@ export const nodesQuery = defineOperation({
   effect: "read",
   idempotent: true,
   permissions: [],
-  // A site-wide query reaches the layout templates only through the Server API: the Plugin API has no way to them.
-  needsAgent: ({ pagePath }) => pagePath === undefined,
   input: z.strictObject({
     where: z
       .array(

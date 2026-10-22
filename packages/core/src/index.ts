@@ -92,7 +92,7 @@ export { breakpointsAdd } from "./operations/nodes/breakpoints.ts";
 export { breakpointsSuggest } from "./operations/nodes/breakpoints-suggest.ts";
 export { nodesClone } from "./operations/nodes/clone.ts";
 export { stylesCopy } from "./operations/nodes/copy-styles.ts";
-export { nodesFind } from "./operations/nodes/find.ts";
+export { nodesFind, nodesFindInTemplates } from "./operations/nodes/find.ts";
 export { nodesLock } from "./operations/nodes/lock.ts";
 export { nodesQuery } from "./operations/nodes/query.ts";
 export { nodesRead } from "./operations/nodes/read.ts";
