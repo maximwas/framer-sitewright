@@ -10,7 +10,7 @@ import { isPlainObject } from "../../utils/guards.ts";
 import { meetsCondition } from "../../utils/node-query.ts";
 import { countOf } from "../../utils/text.ts";
 import { defineOperation } from "../define.ts";
-import { pagesToSearch } from "./find.ts";
+import { searchRoots } from "./find.ts";
 
 /** The attributes a query can test: the ones read from the Plugin API, an image fill, and a text's font. */
 const QUERY_READABLE: ReadonlySet<string> = new Set([
@@ -95,7 +95,7 @@ export const nodesQuery = defineOperation({
     const matches: z.output<typeof MatchSchema>[] = [];
     let complete = true;
 
-    for (const page of await pagesToSearch(runtime.port, pagePath)) {
+    for (const page of await searchRoots(runtime, pagePath)) {
       const { layers, complete: seenAll } = await pageLayers(runtime.port, page.id);
 
       complete &&= seenAll;
@@ -116,7 +116,7 @@ export const nodesQuery = defineOperation({
         ) {
           matches.push({
             id: idOf(node),
-            page: page.path ?? "",
+            page: page.path,
             type: read.type,
             name: nameOf(node),
             attributes: Object.fromEntries(

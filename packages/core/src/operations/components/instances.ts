@@ -5,11 +5,11 @@ import { idOf, nameOf, nodeRecord } from "../../plugin-nodes/node-record.ts";
 import { pageLayers } from "../../plugin-nodes/walk.ts";
 import type { SerializedNode } from "../../types/dsl.ts";
 import type { AgentPort, FramerRuntime } from "../../types/framer.ts";
-import type { WebPageData } from "../../types/framer-port.ts";
 import type { PluginNodeRecord } from "../../types/plugin-nodes.ts";
+import type { SearchRoot } from "../../types/site.ts";
 import { countOf } from "../../utils/text.ts";
 import { defineOperation } from "../define.ts";
-import { pagesToSearch } from "../nodes/find.ts";
+import { searchRoots } from "../nodes/find.ts";
 
 const InstanceSchema = z.object({
   id: z.string(),
@@ -76,7 +76,7 @@ export const componentInstances = defineOperation({
     truncated: z.boolean(),
   }),
   async run({ runtime }, { component, pagePath }) {
-    const pages = await pagesToSearch(runtime.port, pagePath);
+    const pages = await searchRoots(runtime, pagePath);
 
     return runtime.agent === null
       ? pluginInstances(runtime, pages, component)
@@ -97,7 +97,7 @@ export const componentInstances = defineOperation({
 async function agentInstances(
   runtime: FramerRuntime,
   agent: AgentPort,
-  pages: readonly WebPageData[],
+  pages: readonly SearchRoot[],
   wanted: string,
 ): Promise<{ instances: Instance[]; truncated: boolean }> {
   const components = serializedList(await agent.getNodesOfTypes({ types: ["ComponentNode"] }));
@@ -121,7 +121,9 @@ async function agentInstances(
   const instances: Instance[] = [];
 
   for (const page of pages) {
-    const path = page.path ?? "";
+    const path = page.path;
+    // A layout template ("layout <name>") is read without a page path.
+    const scope = path.startsWith("/") ? { pagePath: path } : {};
     const breakpoints = (await runtime.port.getChildren(page.id))
       .map(nodeRecord)
       .filter((node): node is PluginNodeRecord => Boolean(node?.isBreakpoint));
@@ -145,7 +147,7 @@ async function agentInstances(
             id: root.id,
             types: ["ComponentInstanceNode"],
           },
-          { pagePath: path },
+          scope,
         ),
       );
 
@@ -179,7 +181,7 @@ async function agentInstances(
 /** Without a Server API key: the Plugin API's walk, every breakpoint's copies included, without variants. */
 async function pluginInstances(
   runtime: FramerRuntime,
-  pages: readonly WebPageData[],
+  pages: readonly SearchRoot[],
   wanted: string,
 ): Promise<{ instances: Instance[]; truncated: boolean }> {
   const instances: Instance[] = [];

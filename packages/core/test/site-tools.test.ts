@@ -46,6 +46,38 @@ it("regression: a site-wide check goes on past a page Framer cannot read and nam
   await expect(runOperation(imagesCheck, { runtime }, { pagePath: "/broken" })).rejects.toThrow(/Page not found/);
 });
 
+it("regression: finds layers in a layout template, the shared header and footer (seen: nodes_find missed them)", async () => {
+  const { runtime, state } = createFakeRuntime({}, pluginOnly);
+  const listed = runtime.port.getNodesWithType.bind(runtime.port) as (type: string) => Promise<readonly unknown[]>;
+
+  Object.assign(runtime.port, {
+    getNodesWithType: async (type: string) =>
+      type === "LayoutTemplateNode"
+        ? [
+            {
+              id: "template-main",
+              name: "Main Layout",
+            },
+          ]
+        : listed(type),
+  });
+  state.canvas.push({
+    id: "announcement",
+    parentId: "template-main",
+    className: "FrameNode",
+    name: "Announcement Bar",
+  });
+
+  const found = await runOperation(nodesFind, { runtime }, { query: "announcement" });
+
+  expect(found.matches).toMatchObject([
+    {
+      id: "announcement",
+      page: "layout Main Layout",
+    },
+  ]);
+});
+
 it("creates a page at a free path and deletes it, never the home page", async () => {
   const { runtime, state } = createFakeRuntime({}, pluginOnly);
   const run = { runtime };

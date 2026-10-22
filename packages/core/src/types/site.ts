@@ -4,6 +4,12 @@ import type { PluginNodeRecord } from "./plugin-nodes.ts";
 
 export type FoundLayer = z.infer<typeof FoundLayerSchema>;
 
+/** What a site-wide search walks: a web page by its path, or a layout template labelled "layout <name>". */
+export interface SearchRoot {
+  readonly id: string;
+  readonly path: string;
+}
+
 export type TextChange = z.infer<typeof TextChangeSchema>;
 
 export type TextFormatting = TextChange["formatting"];

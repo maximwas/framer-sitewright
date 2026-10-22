@@ -57,6 +57,9 @@ export const UNLAID_RECT = {
   height: 200,
 } as const;
 
+/** The node type of a layout template: the shared header and footer that a page's own walk does not reach. */
+export const LAYOUT_TEMPLATE_TYPE = "LayoutTemplateNode";
+
 /** How far up nodes_read climbs from a node to find the page it is on. */
 export const PAGE_CLIMB_MAX = 64;
 
