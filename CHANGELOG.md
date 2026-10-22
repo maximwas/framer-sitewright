@@ -16,13 +16,27 @@ How to write this file (people and agents alike):
 - After editing, run `pnpm docs:changelog` to rewrite the website's page (docs/changelog/index.html).
 -->
 
-## Unreleased
+## 1.1.3 — 2026-10-22
 
 ### Added
 
 - A changelog: this file and its page on the website, with every release, its date and what changed.
 - GitHub Discussions for questions, ideas and showing what you built, linked from the issue chooser, the READMEs and
   the website.
+
+### Changed
+
+- The plugin window resizes only in width by hand; its height follows its content.
+
+### Fixed
+
+- The plugin window shrinks to its bar when you fold it and grows back when you unfold it, instead of keeping its
+  height with empty space below.
+- `design_apply` reads a text run of only a no-break or an em space as it is written, without an added space, so the
+  XML `nodes_read` gives sent back unchanged changes nothing.
+- `design_apply` writes a plain space typed between two text runs as one space, not two.
+- `sitewright logs` shows the lines running servers write while it follows (on macOS it showed only those from
+  before it started), and works before any server has written its log.
 
 ## 1.1.2 — 2026-10-13
 
