@@ -59,6 +59,8 @@ How to write this file (people and agents alike):
 - `fonts_used` names text styles by their full path and leaves out a font Framer reports with no family, instead of an
   empty row.
 - `localization_get` finds a page's texts by the page's path in `group`, as its description says.
+- `locale_add` checks that the project has the new locale and says so when Framer answered it added one but kept
+  nothing, instead of reporting it added.
 - The journal names every action in words, such as "New locale" and "SEO audit", instead of an internal name such as
   localization.addLocale.
 - `effects_set` `hero-sequence` moves the first layer (the heading, the page's largest element) without fading it, so

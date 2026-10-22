@@ -137,6 +137,15 @@ export const localeAdd = defineOperation({
       draft: input.draft,
     });
 
+    // Framer can answer with the new locale and keep nothing (seen 22.10.2026: the editor's Localization was empty).
+    if (!(await port.getLocales()).some(({ id }) => id === created.id)) {
+      throw new OperationError(
+        "WRITE_FAILED",
+        `Framer answered that it added ${created.name} (${created.code}), but the project has no such locale.`,
+        "Ask the user to add it in the editor (Localization): a project whose plan does not include localization may refuse locales without an error.",
+      );
+    }
+
     return {
       id: created.id,
       code: created.code,
