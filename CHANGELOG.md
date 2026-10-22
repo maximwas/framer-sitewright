@@ -29,17 +29,32 @@ How to write this file (people and agents alike):
   the distance or what differs, so every value can be named by a token or a style.
 - `images_upload` uploads up to 20 local images in one call and returns each path with its url; a file that fails is
   listed with why, and the others still upload.
+- `svg_add` takes an .svg file by path, sets the layer's width with `width` (the height follows the viewBox), and with
+  `keepViewBox` keeps the empty space around the drawing, which Framer otherwise crops away.
+- `image_compare` takes `referenceClip` to compare one part of a design (a container) and `referenceFit` `width` to
+  scale a wider design to the capture, and reads a PNG or JPEG reference by a path relative to the project folder too.
+- `reference_screenshot` takes `part` to read a long page in bands at full width, instead of one narrow strip.
+- `components_read` and `code_files_read` take `outline` for a short answer: each control on one line with an enum's
+  first options, and a file's declaring lines with their numbers, instead of tens of thousands of characters.
+- `component_instances` names each instance's breakpoint and variant, lists every breakpoint's copy, and adds the
+  instances of components that hold the one asked for, with `via` naming the holder.
+- `effects_set` takes `trigger`, `opacity` and `transition` in its options to change a preset's trigger, the opacity
+  it starts from and its spring; a transition must be a spring.
+- `live_check` takes `paths` to check pages the sitemap leaves out, such as ones hidden from search.
 
 ### Changed
 
 - `marketplace_item` only reads Marketplace pages and is marked read-only, so an agent limited to reading can use it;
   reading a free component's controls on a temporary page is the new `marketplace_item_inspect` (it was `inspect`).
 - `image_upload` and `file_upload` take a path relative to the project folder too, not only an absolute one.
-- `svg_add` takes an .svg file by path, sets the layer's width with `width` (the height follows the viewBox), and with
-  `keepViewBox` keeps the empty space around the drawing, which Framer otherwise crops away.
-
-- `framer_guide` says how to show a whole image or a tiled one, which the API cannot set on an image fill, and that a
-  text node takes letter spacing in em, as Figma gives it.
+- `framer_guide` says how to show a whole image or a tiled one, which the API cannot set on an image fill, that a text
+  node takes letter spacing in em as Figma gives it, the order a whole site needs, the CMS "Item" choice that the DSL
+  cannot write, and nine Framer pitfalls (a frame's default 100px height, `CREATE_VARIANT` ignoring `name`, a blur lost
+  under a faded parent and more); the `parallax` preset says it moves while its frame enters the window.
+- `framer_docs` `essentials` starts with how Framer's agent tools map to Sitewright's and which of its rules do not
+  apply.
+- The journal names every action in words, such as "New locale" and "SEO audit", instead of an internal name such as
+  localization.addLocale.
 
 ### Fixed
 
@@ -59,32 +74,16 @@ How to write this file (people and agents alike):
   Without a Server API key it gives each node's `$rect` from the editor; its description says the Server API lays out
   only the home page, so `$rect` is missing elsewhere.
 - `live_check` follows a sitemap index (one sitemap per locale) to the pages in its sitemaps, instead of checking the
-  sitemaps as pages, and takes `paths` to check pages the sitemap leaves out, such as ones hidden from search.
-- `reference_screenshot` takes `part` to read a long page in bands at full width, instead of one narrow strip.
-- `image_compare` takes `referenceClip` to compare one part of a design (a container) and `referenceFit` `width` to
-  scale a wider design to the capture, and reads a PNG or JPEG reference by a path relative to the project folder too.
-- `components_read` and `code_files_read` take `outline` for a short answer: each control on one line with an enum's
-  first options, and a file's declaring lines with their numbers, instead of tens of thousands of characters.
-- `component_instances` names each instance's breakpoint and variant, lists every breakpoint's copy, and adds the
-  instances of components that hold the one asked for, with `via` naming the holder.
+  sitemaps as pages.
 - `fonts_used` names text styles by their full path and leaves out a font Framer reports with no family, instead of an
   empty row.
 - `localization_get` finds a page's texts by the page's path in `group`, as its description says.
 - `locale_add` checks that the project has the new locale and says so when Framer answered it added one but kept
   nothing, instead of reporting it added.
-- The journal names every action in words, such as "New locale" and "SEO audit", instead of an internal name such as
-  localization.addLocale.
-- `effects_set` takes `trigger`, `opacity` and `transition` in its options to change a preset's trigger, the opacity
-  it starts from and its spring; a transition must be a spring.
 - `effects_set` `hero-sequence` moves the first layer (the heading, the page's largest element) without fading it, so
   it no longer delays the page's Largest Contentful Paint.
 - `framer_read` points to the section of `framer_docs` that lists its query types, and `component_insert` no longer
   says undo cannot remove what it inserts.
-- `framer_docs` `essentials` starts with how Framer's agent tools map to Sitewright's and which of its rules do not
-  apply.
-- `framer_guide` adds the order a whole site needs, the CMS "Item" choice that the DSL cannot write, and nine Framer
-  pitfalls (a frame's default 100px height, `CREATE_VARIANT` ignoring `name`, a blur lost under a faded parent and
-  more); the `parallax` preset says it moves while its frame enters the window.
 - `node_screenshot` too big at scale 0.5 says to capture it in parts with `clip`, not to use scale 0.5, and says that
   Framer draws a CMS page's Tablet and Phone breakpoints with the components' default content.
 
