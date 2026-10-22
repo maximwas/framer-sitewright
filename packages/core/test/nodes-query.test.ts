@@ -111,6 +111,41 @@ it("regression: finds text by fontName and says which attributes it cannot read 
   );
 
   expect(found.matches.map(({ id }) => id)).toEqual(["headline"]);
+
+  // A text with a text style has no font of its own: its style's counts.
+  state.canvas.push({
+    id: "styled",
+    parentId: "breakpoint-desktop",
+    className: "TextNode",
+    name: null,
+    attributes: {
+      font: null,
+      inlineTextStyle: {
+        id: "style-h1",
+        font: {
+          family: "Inter",
+          weight: 700,
+          style: "normal",
+        },
+      },
+    },
+  });
+
+  const styled = await runOperation(
+    nodesQuery,
+    { runtime },
+    {
+      where: [
+        {
+          attribute: "fontWeight",
+          op: "equals",
+          value: "700",
+        },
+      ],
+    },
+  );
+
+  expect(styled.matches.map(({ id }) => id)).toEqual(["styled"]);
   await expect(
     runOperation(
       nodesQuery,

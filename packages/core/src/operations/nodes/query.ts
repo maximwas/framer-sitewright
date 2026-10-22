@@ -21,9 +21,10 @@ const QUERY_READABLE: ReadonlySet<string> = new Set([
   "fontStyle",
 ]);
 
-/** A text's font as the DSL names it: fontName, fontWeight, fontStyle. */
+/** A text's font as the DSL names it: fontName, fontWeight, fontStyle; a styled text has its style's (font is null). */
 function fontAttributes(node: PluginNodeRecord): Record<string, string> {
-  const font = node["font"];
+  const style = node["inlineTextStyle"];
+  const font = node["font"] ?? (isPlainObject(style) ? style["font"] : undefined);
 
   if (!isPlainObject(font) || typeof font.family !== "string") {
     return {};
