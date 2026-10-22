@@ -291,6 +291,11 @@ describe("unconfigured server", () => {
         },
       ],
       hint: expect.stringContaining("sitewright key"),
+      // Which Sitewright answers, so an agent can tell a local build from the npm package.
+      server: {
+        version: "0.0.0-test",
+        source: expect.stringMatching(/^(npm|local build)$/),
+      },
     });
 
     const tokens = await client.callTool({

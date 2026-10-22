@@ -89,6 +89,13 @@ export const StatusOutputSchema = RouterStatusSchema.extend({
   capabilities: CapabilitiesSchema.nullable().describe(
     "What the project's Framer plan allows, as far as known; null before a project is connected.",
   ),
+  server: z
+    .object({
+      version: z.string(),
+      source: z.enum(["npm", "local build"]),
+      path: z.string().nullable(),
+    })
+    .describe("This Sitewright: its version, and whether it runs from npm or a local build (and where)."),
 });
 
 /** readProject's answer to guide queries: each result has the guide's text, or says why not. */

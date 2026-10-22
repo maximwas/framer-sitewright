@@ -31,7 +31,7 @@ export function createMcpServer(context: ToolContext, version: string): McpServe
     { instructions: SERVER_INSTRUCTIONS },
   );
 
-  registerStatusTools(server, context);
+  registerStatusTools(server, context, version);
   registerProjectTools(server, context);
   registerColorTokenTools(server, context);
   registerTextStyleTools(server, context);

@@ -20,6 +20,8 @@ How to write this file (people and agents alike):
 
 ### Added
 
+- `framer_status` and `framer_connect` say which Sitewright answers: its version, and whether it runs from npm or a
+  local build, and from where.
 - `tokens_match` finds the site's nearest color tokens and text styles for colors and fonts taken from a design, with
   the distance or what differs, so every value can be named by a token or a style.
 - `images_upload` uploads up to 20 local images in one call and returns each path with its url; a file that fails is

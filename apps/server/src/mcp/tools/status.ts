@@ -1,3 +1,4 @@
+import { sep } from "node:path";
 import type { McpServer } from "@modelcontextprotocol/server";
 import { PRODUCT } from "@sitewright/core";
 import * as z from "zod";
@@ -6,11 +7,23 @@ import { TransportModeSchema } from "../../schemas/transports.ts";
 import type { ToolContext } from "../../types/mcp.ts";
 import { addTool } from "../add-tool.ts";
 
-export function registerStatusTools(server: McpServer, { transports, capabilities }: ToolContext): void {
+export function registerStatusTools(
+  server: McpServer,
+  { transports, capabilities }: ToolContext,
+  version: string,
+): void {
+  // Which Sitewright answers: an npm install lives under node_modules; anything else is a build from a checkout.
+  const entry = process.argv[1] ?? null;
+  const build = {
+    version,
+    source: entry?.includes(`${sep}node_modules${sep}`) === true ? ("npm" as const) : ("local build" as const),
+    path: entry,
+  };
   // Never asks Framer: the status must answer even when Framer does not.
   const status = () => ({
     ...transports.status(),
     capabilities: capabilities.known(),
+    server: build,
   });
 
   addTool(server, {
