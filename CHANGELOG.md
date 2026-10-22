@@ -38,6 +38,8 @@ How to write this file (people and agents alike):
 - Tools that read a page through the Server API find a CMS detail page by the path `project_overview` shows
   (`/blog/:slug`): `seo_audit`, `links_check`, `images_check`, `a11y_audit`, `rich_text_audit`, `styles_usage` and the
   site-wide runs no longer stop at "Page not found".
+- A site-wide `seo_audit`, `links_check`, `images_check`, `a11y_audit`, `rich_text_audit` or `template_audit` goes on
+  past a page Framer cannot read and names it in its summary, instead of stopping at it.
 
 ## 1.1.3 — 2026-10-22
 

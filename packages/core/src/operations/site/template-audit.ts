@@ -24,7 +24,7 @@ import type { SiteFinding } from "../../types/site-checks.ts";
 import type { TemplateSectionId } from "../../types/template-audit.ts";
 import { countOf } from "../../utils/text.ts";
 import { defineOperation } from "../define.ts";
-import { readCollections, readSiteMetadata, readSitePages, siteCheckContext } from "./read-site.ts";
+import { readCollections, readSiteMetadata, readSitePages, siteCheckContext, unreadNote } from "./read-site.ts";
 
 /** What the audit cannot see without the Server API. */
 const NO_KEY_NOTE =
@@ -44,7 +44,7 @@ export const templateAudit = defineOperation({
     note: z.string().nullable(),
   }),
   async run({ runtime }) {
-    const [{ pages, rootId }, context, audit, collections] = await Promise.all([
+    const [{ pages, rootId, unread }, context, audit, collections] = await Promise.all([
       readSitePages(runtime),
       siteCheckContext(runtime),
       auditContext(runtime.port),
@@ -82,10 +82,11 @@ export const templateAudit = defineOperation({
     return {
       sections,
       manual: [...TEMPLATE_MANUAL_CHECKS],
-      summary:
+      summary: `${
         all.length === 0
           ? `Nothing found in ${countOf(sections.length, "section")}.`
-          : `${countOf(all.length, "finding")}, ${countOf(all.filter(({ severity }) => severity === "defect").length, "defect")}, in ${failing} of ${countOf(sections.length, "section")}.`,
+          : `${countOf(all.length, "finding")}, ${countOf(all.filter(({ severity }) => severity === "defect").length, "defect")}, in ${failing} of ${countOf(sections.length, "section")}.`
+      }${unreadNote(unread)}`,
       note: complete ? null : NO_KEY_NOTE,
     };
   },

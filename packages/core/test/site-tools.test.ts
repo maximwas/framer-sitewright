@@ -5,12 +5,46 @@ import { textReplace } from "../src/operations/nodes/text-replace.ts";
 import { pagesCreate, pagesDelete } from "../src/operations/pages/pages.ts";
 import { deploymentsList, publishStatus } from "../src/operations/project/publish-status.ts";
 import { redirectsList, redirectsSet } from "../src/operations/redirects/redirects.ts";
+import { imagesCheck } from "../src/operations/site/checks.ts";
 import { createFakeRuntime } from "../src/testing/index.ts";
 
 const pluginOnly = {
   withAgent: false,
   transport: "plugin",
 } as const;
+
+it("regression: a site-wide check goes on past a page Framer cannot read and names it (seen: one CMS page stopped the run)", async () => {
+  const { runtime, state } = createFakeRuntime();
+  const agent = runtime.agent;
+
+  if (agent === null) {
+    throw new Error("The fake runtime has an agent.");
+  }
+
+  state.webPages.push({
+    id: "page-broken",
+    path: "/broken",
+    draft: false,
+    collectionId: null,
+  });
+
+  const serialize = agent.serialize.bind(agent);
+
+  Object.assign(agent, {
+    serialize: async (input: { id: string }, options?: { pagePath?: string }) => {
+      if (input.id === "page-broken") {
+        throw new Error("Page not found: /broken");
+      }
+
+      return serialize(input, options);
+    },
+  });
+
+  const result = await runOperation(imagesCheck, { runtime }, {});
+
+  expect(result.summary).toContain("/broken (Page not found: /broken)");
+  await expect(runOperation(imagesCheck, { runtime }, { pagePath: "/broken" })).rejects.toThrow(/Page not found/);
+});
 
 it("creates a page at a free path and deletes it, never the home page", async () => {
   const { runtime, state } = createFakeRuntime({}, pluginOnly);

@@ -7,16 +7,18 @@ import type { SerializedNode } from "../../types/dsl.ts";
 import type { FramerRuntime } from "../../types/framer.ts";
 import type { FramerPort } from "../../types/framer-port.ts";
 import type { CheckedCollection, CheckedTextStyle, PageTree, SiteCheckContext } from "../../types/site-checks.ts";
+import { errorMessage } from "../../utils/errors.ts";
 import { readNodeTree } from "../nodes/read-tree.ts";
 
 /**
  * The site's web pages (or the one at `pagePath`), each with its own attributes, its primary breakpoint's tree, the
- * whole tree and its layout template.
+ * whole tree and its layout template. A page Framer cannot read is left out of a site-wide read and named in `unread`
+ * with why, so one page never stops the run; asked for by `pagePath`, its error is thrown.
  */
 export async function readSitePages(
   runtime: FramerRuntime,
   pagePath?: string,
-): Promise<{ pages: PageTree[]; rootId: string | null }> {
+): Promise<{ pages: PageTree[]; rootId: string | null; unread: string[] }> {
   const all = (await runtime.port.getNodesWithType("WebPageNode")).filter(
     (page): page is typeof page & { path: string } =>
       page.path !== null && (pagePath === undefined || page.path === pagePath),
@@ -32,9 +34,21 @@ export async function readSitePages(
 
   let rootId: string | null = null;
   const pages: PageTree[] = [];
+  const unread: string[] = [];
 
   for (const page of all) {
-    const tree = await readNodeTree(runtime, page.id, SITE_CHECK_DEPTH, page.path);
+    let tree: SerializedNode | null;
+
+    try {
+      tree = await readNodeTree(runtime, page.id, SITE_CHECK_DEPTH, page.path);
+    } catch (error) {
+      if (pagePath !== undefined) {
+        throw error;
+      }
+
+      unread.push(`${page.path} (${errorMessage(error)})`);
+      continue;
+    }
 
     rootId ??= typeof tree?.$parentId === "string" ? tree.$parentId : null;
     pages.push({
@@ -50,7 +64,13 @@ export async function readSitePages(
   return {
     pages,
     rootId,
+    unread,
   };
+}
+
+/** The pages a check could not read, for the end of its summary; "" when it read them all. */
+export function unreadNote(unread: readonly string[]): string {
+  return unread.length === 0 ? "" : ` Not read, so not checked: ${unread.join("; ")}.`;
 }
 
 /** The site's own metadata on the root node, when the read can see it (the Server API). */

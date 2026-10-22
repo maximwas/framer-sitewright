@@ -10,6 +10,7 @@ import { serializedList } from "../../history/dsl/serialized.ts";
 import { idOf, nameOf } from "../../plugin-nodes/node-record.ts";
 import { pageLayers } from "../../plugin-nodes/walk.ts";
 import { SiteFindingSchema } from "../../schemas/site-checks.ts";
+import type { SerializedNode } from "../../types/dsl.ts";
 import type { SiteFinding } from "../../types/site-checks.ts";
 import { errorMessage } from "../../utils/errors.ts";
 import { rollUp, topRules } from "../../utils/site-audit.ts";
@@ -18,6 +19,7 @@ import { defineOperation } from "../define.ts";
 import { layoutAudit } from "../nodes/audit.ts";
 import { pagesToSearch } from "../nodes/find.ts";
 import { a11yAudit, imagesCheck, linksCheck, seoAudit } from "./checks.ts";
+import { unreadNote } from "./read-site.ts";
 
 const RollUpSchema = z.object({
   check: z.string(),
@@ -215,18 +217,31 @@ export const richTextAudit = defineOperation({
   async run({ runtime }, { pagePath }) {
     const agent = requireAgent(runtime);
     const findings: SiteFinding[] = [];
+    const unread: string[] = [];
 
     for (const page of await pagesToSearch(runtime.port, pagePath)) {
       const path = page.path ?? "/";
-      const texts = serializedList(
-        await agent.getDescendantsOfTypes(
-          {
-            id: page.id,
-            types: ["RichTextNode", "TextBlock", "TextRun"],
-          },
-          { pagePath: path },
-        ),
-      );
+      let texts: SerializedNode[];
+
+      try {
+        texts = serializedList(
+          await agent.getDescendantsOfTypes(
+            {
+              id: page.id,
+              types: ["RichTextNode", "TextBlock", "TextRun"],
+            },
+            { pagePath: path },
+          ),
+        );
+      } catch (error) {
+        // One page Framer cannot read is named, and the others are still checked.
+        if (pagePath !== undefined) {
+          throw error;
+        }
+
+        unread.push(`${path} (${errorMessage(error)})`);
+        continue;
+      }
 
       for (const node of texts) {
         // serialize() keeps the values under attributes.
@@ -262,7 +277,7 @@ export const richTextAudit = defineOperation({
 
     return {
       findings,
-      summary: summaryOf(findings),
+      summary: `${summaryOf(findings)}${unreadNote(unread)}`,
     };
   },
   describe(_input, { summary }) {
