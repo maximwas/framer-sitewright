@@ -16,7 +16,7 @@ export function registerComponentTools(server: McpServer, context: ToolContext):
     name: "component_instances",
     title: "Find a component's instances",
     description:
-      "Lists every instance of one component across the site's pages (or one page), each with its id, name and page: what a change to the component reaches, or which placements to tune with component_controls_set. Pass the component's id from components_read or its name (\"Content/Card\").",
+      "Lists every instance of one component across the site's pages (or one page), each with its id, name, page, breakpoint and variant, and the instances of components that hold it (via names that component): what a change to the component reaches, or which placements to tune with component_controls_set. Pass the component's id from components_read or its name (\"Content/Card\"). Without a Server API key it lists breakpoints but not variants or holders.",
   });
   addOperationTool(server, context, componentsRead, {
     name: "components_read",
