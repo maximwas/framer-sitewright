@@ -73,6 +73,60 @@ it("finds layers whose attributes meet every condition, comparing numbers as num
   expect(found.matches[0]?.attributes).toMatchObject({ opacity: "0.4" });
 });
 
+it("regression: finds text by fontName and says which attributes it cannot read (seen: textColor and fontName found nothing)", async () => {
+  const { runtime, state } = fixture();
+
+  state.canvas.push({
+    id: "headline",
+    parentId: "breakpoint-desktop",
+    className: "TextNode",
+    name: null,
+    attributes: {
+      font: {
+        selector: "Inter-SemiBold",
+        family: "Inter",
+        weight: 600,
+        style: "normal",
+      },
+    },
+  });
+
+  const found = await runOperation(
+    nodesQuery,
+    { runtime },
+    {
+      where: [
+        {
+          attribute: "fontName",
+          op: "equals",
+          value: "Inter",
+        },
+        {
+          attribute: "fontWeight",
+          op: "greaterThan",
+          value: "500",
+        },
+      ],
+    },
+  );
+
+  expect(found.matches.map(({ id }) => id)).toEqual(["headline"]);
+  await expect(
+    runOperation(
+      nodesQuery,
+      { runtime },
+      {
+        where: [
+          {
+            attribute: "textColor",
+            op: "exists",
+          },
+        ],
+      },
+    ),
+  ).rejects.toThrow(/textColor/);
+});
+
 it("lists every instance of a component by its id or name, with the page it is on", async () => {
   const { runtime } = fixture();
 

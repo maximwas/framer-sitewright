@@ -1,12 +1,40 @@
 import * as z from "zod";
 import { FIND_LIMIT, FIND_LIMIT_MAX, QUERY_CONDITIONS_MAX, QUERY_OPERATORS } from "../../constants/nodes.ts";
+import { PLUGIN_ATTRIBUTE_RULES } from "../../constants/plugin-nodes.ts";
+import { OperationError } from "../../errors.ts";
 import { fromPluginNode } from "../../plugin-nodes/attributes.ts";
 import { idOf, nameOf } from "../../plugin-nodes/node-record.ts";
 import { pageLayers } from "../../plugin-nodes/walk.ts";
+import type { PluginNodeRecord } from "../../types/plugin-nodes.ts";
+import { isPlainObject } from "../../utils/guards.ts";
 import { meetsCondition } from "../../utils/node-query.ts";
 import { countOf } from "../../utils/text.ts";
 import { defineOperation } from "../define.ts";
 import { pagesToSearch } from "./find.ts";
+
+/** The attributes a query can test: the ones read from the Plugin API, an image fill, and a text's font. */
+const QUERY_READABLE: ReadonlySet<string> = new Set([
+  ...PLUGIN_ATTRIBUTE_RULES.map(({ dsl }) => dsl),
+  "fill",
+  "fontName",
+  "fontWeight",
+  "fontStyle",
+]);
+
+/** A text's font as the DSL names it: fontName, fontWeight, fontStyle. */
+function fontAttributes(node: PluginNodeRecord): Record<string, string> {
+  const font = node["font"];
+
+  if (!isPlainObject(font) || typeof font.family !== "string") {
+    return {};
+  }
+
+  return {
+    fontName: font.family,
+    ...(typeof font.weight === "number" ? { fontWeight: String(font.weight) } : {}),
+    ...(typeof font.style === "string" ? { fontStyle: font.style } : {}),
+  };
+}
 
 const MatchSchema = z.object({
   id: z.string(),
@@ -50,6 +78,19 @@ export const nodesQuery = defineOperation({
     truncated: z.boolean(),
   }),
   async run({ runtime }, { where, type, pagePath, limit }) {
+    const unreadable = [...new Set(where.map(({ attribute }) => attribute))].filter(
+      (attribute) => !QUERY_READABLE.has(attribute),
+    );
+
+    // A condition on a value the Plugin API does not give would match nothing, and look like an answer.
+    if (unreadable.length > 0) {
+      throw new OperationError(
+        "INVALID_INPUT",
+        `nodes_query reads layers through the Plugin API, which does not give ${unreadable.join(", ")}.`,
+        "For text colors use rich_text_audit (raw colors) or styles_usage (tokens); read any attribute with nodes_read.",
+      );
+    }
+
     const matches: z.output<typeof MatchSchema>[] = [];
     let complete = true;
 
@@ -59,7 +100,14 @@ export const nodesQuery = defineOperation({
       complete &&= seenAll;
 
       for (const { node } of layers) {
-        const read = fromPluginNode(node, null);
+        const plain = fromPluginNode(node, null);
+        const read = {
+          type: plain.type,
+          attributes: {
+            ...plain.attributes,
+            ...fontAttributes(node),
+          },
+        };
 
         if (
           (type === undefined || read.type === type) &&
