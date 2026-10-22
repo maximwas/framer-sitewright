@@ -144,12 +144,18 @@ function boxBorder(border: string | null): boolean {
   return right > 0 && left > 0;
 }
 
-/** Where a fill-width text's lines sit: its own alignment, else its text style's. */
-export function textAnchorOf(node: SerializedNode, context: AuditContext): string {
+/**
+ * Where a fill-width text's lines sit: its own alignment, else its text style's; null when the read cannot show its own
+ * (the Plugin API's), so a centered text over a left-aligned style is not taken for a left one.
+ */
+export function textAnchorOf(node: SerializedNode, context: AuditContext): string | null {
   const own = attr(node, "textAlignment") ?? paragraphAlignment(node);
-  const alignment = own ?? context.textStyle(node.attributes?.["textStylePreset"])?.alignment ?? "left";
 
-  return anchor(alignment);
+  if (own === null && !context.ownTextAlignment) {
+    return null;
+  }
+
+  return anchor(own ?? context.textStyle(node.attributes?.["textStylePreset"])?.alignment ?? "left");
 }
 
 /**

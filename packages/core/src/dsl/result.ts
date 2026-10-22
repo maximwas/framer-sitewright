@@ -1,6 +1,7 @@
-import { DSL_ASSET_FAILURE, DSL_PARTIAL_APPLY_HINT, LOW_CONFIDENCE_LINT } from "../constants/dsl.ts";
+import { DSL_ASSET_FAILURE, DSL_PARTIAL_APPLY_HINT, LOW_CONFIDENCE_LINT, TOO_CLOSE_LINT } from "../constants/dsl.ts";
 import { RawDslResultSchema } from "../schemas/dsl.ts";
 import type { DslIssue, DslLintIssue, DslResult } from "../types/dsl.ts";
+import { isPlainObject } from "../utils/guards.ts";
 
 function toIssues(map: Record<string, unknown[]> | undefined): DslIssue[] {
   return Object.entries(map ?? {}).map(([message, targets]) => ({
@@ -10,8 +11,14 @@ function toIssues(map: Record<string, unknown[]> | undefined): DslIssue[] {
 }
 
 function toLint(map: Record<string, unknown[]> | undefined, severity: "error" | "warning"): DslLintIssue[] {
-  return Object.entries(map ?? {}).map(([message, details]) => {
+  return Object.entries(map ?? {}).flatMap(([message, found]) => {
     const known = LOW_CONFIDENCE_LINT.find(({ pattern }) => pattern.test(message));
+    // Two layers at a negative spacing are no neighbours: one was hidden or moved away (seen: -1852.7).
+    const details = TOO_CLOSE_LINT.test(message) ? found.filter((detail) => !negativeSpacing(detail)) : found;
+
+    if (details.length === 0) {
+      return [];
+    }
 
     return {
       message,
@@ -25,6 +32,10 @@ function toLint(map: Record<string, unknown[]> | undefined, severity: "error" | 
           }),
     };
   });
+}
+
+function negativeSpacing(detail: unknown): boolean {
+  return isPlainObject(detail) && typeof detail.spacing === "number" && detail.spacing < 0;
 }
 
 /** Framer may send an empty `parseErrors` ([], {} or ""); only a non-empty one means the DSL did not parse. */

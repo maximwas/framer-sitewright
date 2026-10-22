@@ -149,6 +149,9 @@ export const STORED_CHECK_MAX_NODES = 40;
  * Framer lint messages known to misfire, and why: design_apply marks them low confidence so real problems stand out
  * (seen 12.10.2026 on a component's canvas).
  */
+/** Framer's lint for siblings it finds too close; a pair at a negative spacing is dropped (one is hidden or moved). */
+export const TOO_CLOSE_LINT = /too close/i;
+
 export const LOW_CONFIDENCE_LINT: readonly { readonly pattern: RegExp; readonly note: string }[] = [
   {
     pattern: /ground nodes overlap/i,

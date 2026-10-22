@@ -33,6 +33,11 @@ export interface AuditContext {
   readonly textStyles: readonly AuditTextStyle[];
   /** Whether the project has color tokens to use instead of raw colors. */
   readonly hasTokens: boolean;
+  /**
+   * Whether the tree carries a text's own alignment: the Server API's read does, the Plugin API's does not, so there a
+   * text without one may still be aligned on its own and its edge is unknown.
+   */
+  readonly ownTextAlignment: boolean;
 }
 
 /** How a size behaves: fills the parent, hugs the content, is fixed, or relative to something else. */

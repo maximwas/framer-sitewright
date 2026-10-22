@@ -44,7 +44,7 @@ export async function auditTouched(
 
   const roots = [...new Set([...whole, ...added.keys()])];
   const [context, trees] = await Promise.all([
-    auditContext(runtime.port),
+    auditContext(runtime.port, runtime.agent !== null),
     Promise.all(roots.map((root) => readNodeTree(runtime, root, LAYOUT_AUDIT_DEPTH, pagePath))),
   ]);
 

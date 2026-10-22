@@ -57,7 +57,7 @@ export function auditTree(root: SerializedNode, context: AuditContext): AuditIss
 }
 
 /** The project facts the audit needs, read once per audit. */
-export async function auditContext(port: FramerPort): Promise<AuditContext> {
+export async function auditContext(port: FramerPort, ownTextAlignment: boolean): Promise<AuditContext> {
   const [styles, colors] = await Promise.all([port.getTextStyles(), port.getColorStyles()]);
   const lookup = new Map<string, AuditTextStyle>();
 
@@ -73,6 +73,7 @@ export async function auditContext(port: FramerPort): Promise<AuditContext> {
     textStyle: (preset) => (typeof preset === "string" ? (lookup.get(preset) ?? null) : null),
     textStyles: styles.map(summarize),
     hasTokens: colors.length > 0,
+    ownTextAlignment,
   };
 }
 

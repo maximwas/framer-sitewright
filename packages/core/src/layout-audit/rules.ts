@@ -421,13 +421,18 @@ const pinnedInstanceAuto: NodeRule = (node) => {
       ];
 };
 
-/** An image frame without children and without a size collapses to nothing. */
+/**
+ * An image frame without children and without a size collapses to nothing; one pinned to its parent's top and bottom
+ * takes the parent's height.
+ */
 const imageCollapse: NodeRule = (node) => {
   const image = attr(node, "backgroundImage") !== null || /^https?:|url\(/i.test(attr(node, "fill") ?? "");
   const height = sizeKind(attr(node, "height"));
+  const pinned = px(attr(node, "top")) !== null && px(attr(node, "bottom")) !== null;
 
   return isFrame(node) &&
     image &&
+    !pinned &&
     childrenOf(node).length === 0 &&
     (height === "fit" || height === "unset") &&
     attr(node, "aspectRatio") === null

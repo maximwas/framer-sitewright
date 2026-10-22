@@ -105,6 +105,48 @@ describe("normalizeDslResult", () => {
   });
 });
 
+it("regression: drops the 'too close' pairs Framer measures at a negative spacing (seen: -1852.7 after hiding a section and a MOVE)", () => {
+  const { lint } = normalizeDslResult({
+    message: "Lint: 2 warnings.",
+    linter: {
+      warnings: {
+        "Visible siblings are too close": [
+          {
+            id: "a",
+            siblingId: "b",
+            spacing: -1852.7,
+          },
+          {
+            id: "c",
+            siblingId: "d",
+            spacing: 4,
+          },
+        ],
+        "Visible siblings are too close together": [
+          {
+            id: "e",
+            siblingId: "f",
+            spacing: -12,
+          },
+        ],
+      },
+    },
+  });
+
+  expect(lint).toEqual([
+    expect.objectContaining({
+      message: "Visible siblings are too close",
+      details: [
+        {
+          id: "c",
+          siblingId: "d",
+          spacing: 4,
+        },
+      ],
+    }),
+  ]);
+});
+
 // Framer's linter misfires on component canvases: variants side by side "overlap", and a hover variant's background
 // drawn by a layer of its own is not the background it checks text against (seen 12.10.2026).
 it("regression: marks Framer's lint messages known to misfire as low confidence, with why", () => {
