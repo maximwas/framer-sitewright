@@ -8,7 +8,7 @@ export function registerNodeTools(server: McpServer, context: ToolContext): void
     name: "nodes_read",
     title: "Read nodes",
     description:
-      'Reads a node (or the page root, or up to 50 nodes at once with nodeIds) with its children to a given depth, as XML by default: tags are node types, attributes are ids, names and DSL attributes, $-attributes are read-only metadata. Blocks and runs of a rich text show no id: theirs follow from position (v:<text id>:<n>, then :<m>). Edit the XML and send it back with design_apply xml. format "json" returns raw serialize(). Keep depth low and filter attributes on big pages. Without a Server API key it reads through the Plugin API: the same XML with fewer attributes, and the plain text of a rich text instead of blocks and runs.',
+      'Reads a node (or the page root, or up to 50 nodes at once with nodeIds) with its children to a given depth, as XML by default: tags are node types, attributes are ids, names and DSL attributes, $-attributes are read-only metadata. Blocks and runs of a rich text show no id: theirs follow from position (v:<text id>:<n>, then :<m>). Edit the XML and send it back with design_apply xml. format "json" returns raw serialize(). Keep depth low and filter attributes on big pages. Without pagePath a node is read on the page it is on. $rect comes from Framer\'s layout: through the Server API only the home page is laid out, so elsewhere read sizes from the attributes or with node_screenshot. Without a Server API key it reads through the Plugin API: the same XML with fewer attributes, and the plain text of a rich text instead of blocks and runs.',
   });
   addOperationTool(server, context, layoutAudit, {
     name: "layout_audit",

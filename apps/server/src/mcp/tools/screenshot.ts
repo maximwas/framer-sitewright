@@ -219,9 +219,10 @@ function registerReferenceScreenshotTool(server: McpServer, { journal }: ToolCon
             },
             {
               type: "text",
-              text: `${referenceLine(output.url, output.viewport.width, image.size, image.shown, output.imageUrl)}${
-                part === undefined ? "" : ` This is the band from ${part.top} px, ${part.height} px tall.`
-              }`,
+              text:
+                part === undefined
+                  ? referenceLine(output.url, output.viewport.width, image.size, image.shown, output.imageUrl)
+                  : `Screenshot of ${output.url} in a ${output.viewport.width} px wide window: the band from ${part.top} px, ${part.height} px tall, of a page ${image.size === null ? "of unknown size" : `${image.size.width}×${image.size.height} px`} (image px). Full size: ${output.imageUrl}`,
             },
           ],
         };

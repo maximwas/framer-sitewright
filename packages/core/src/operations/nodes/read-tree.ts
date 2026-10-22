@@ -1,4 +1,4 @@
-import { PAGE_CLIMB_MAX, RECT_FILL_MAX } from "../../constants/nodes.ts";
+import { PAGE_CLIMB_MAX, RECT_FILL_MAX, UNLAID_RECT } from "../../constants/nodes.ts";
 import { OperationError } from "../../errors.ts";
 import { readPluginTree } from "../../plugin-nodes/read.ts";
 import type { SerializedNode } from "../../types/dsl.ts";
@@ -76,8 +76,14 @@ export async function withRects(port: FramerPort, tree: SerializedNode): Promise
   await Promise.all(
     lacking.map(async (node) => {
       const rect = await getRect(String(node.id)).catch(() => null);
+      const unlaid =
+        rect !== null &&
+        rect.x === UNLAID_RECT.x &&
+        rect.y === UNLAID_RECT.y &&
+        rect.width === UNLAID_RECT.width &&
+        rect.height === UNLAID_RECT.height;
 
-      if (rect !== null) {
+      if (rect !== null && !unlaid) {
         node.$rect = {
           x: rect.x,
           y: rect.y,

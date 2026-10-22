@@ -50,6 +50,27 @@ describe("nodes.read", () => {
 
     expect(read.pagePath).toBe("/about");
     expect(read.xml).toContain('$rect="x:24 y:96 width:320 height:200"');
+
+    // The box a page Framer has not laid out gives every node is no box (seen: -100, -100, 200×200 on a 1200 px frame).
+    Object.assign(runtime.port, {
+      getRect: async () => ({
+        x: -100,
+        y: -100,
+        width: 200,
+        height: 200,
+      }),
+    });
+
+    const unlaid = await runOperation(
+      nodesRead,
+      { runtime },
+      {
+        nodeId: "card",
+        depth: 0,
+      },
+    );
+
+    expect(unlaid.xml).not.toContain("$rect");
   });
 
   it("reads the page root as XML by default, JSON on request, and refuses oversized results with a hint", async () => {

@@ -46,8 +46,9 @@ How to write this file (people and agents alike):
   each check hit, so its layout roll-up names the same rules `layout_audit` does.
 - `nodes_query` finds text by `fontName`, `fontWeight` and `fontStyle` (a styled text by its style's font), and refuses
   an attribute it cannot read, such as `textColor`, naming the tool that reads it, instead of finding nothing.
-- `nodes_read` without `pagePath` reads a node on the page it is on and names that page, instead of answering "/", and
-  gives `$rect` on every page, not only the home page.
+- `nodes_read` without `pagePath` reads a node on the page it is on and names that page, instead of answering "/".
+  Without a Server API key it gives each node's `$rect` from the editor; its description says the Server API lays out
+  only the home page, so `$rect` is missing elsewhere.
 - `live_check` follows a sitemap index (one sitemap per locale) to the pages in its sitemaps, instead of checking the
   sitemaps as pages, and takes `paths` to check pages the sitemap leaves out, such as ones hidden from search.
 - `reference_screenshot` takes `part` to read a long page in bands at full width, instead of one narrow strip.
