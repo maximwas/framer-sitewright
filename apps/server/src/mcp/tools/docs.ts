@@ -106,7 +106,7 @@ export function registerDocsTools(server: McpServer, context: ToolContext): void
     name: "framer_read",
     title: "Query Framer's agent",
     description:
-      "Runs Framer's own readProject queries (font-search, component-definition, icon-set-definition, shader-definition, implementation guides…) and returns their answer as is: for what the other tools do not read. framer_docs section \"essentials\" lists the query types. Needs the project's Server API key.",
+      "Runs Framer's own readProject queries (font-search, component-definition, icon-set-definition, shader-definition, implementation guides…) and returns their answer as is: for what the other tools do not read. framer_docs section \"framer.agent.readProject\" lists the query types. Needs the project's Server API key.",
   });
 }
 

@@ -8,11 +8,12 @@ import {
   requireScreenshot,
   type ScreenshotOptions,
 } from "@sitewright/core";
-import { fetchScreenshotImage } from "../../assets/screenshot-image.ts";
+import * as z from "zod";
+import { fetchScreenshotImage, fetchScreenshotPart } from "../../assets/screenshot-image.ts";
 import { COMPONENT_EXPORT_ERROR, MAX_IMAGE_SIDE_PX } from "../../constants/mcp.ts";
 import { diffEdges, edgesOf } from "../../images/edge-diff.ts";
 import { decodePng } from "../../images/png-decode.ts";
-import { referenceBytes } from "../../images/reference-image.ts";
+import { referenceBytes, referenceImage } from "../../images/reference-image.ts";
 import { ImageCompareInputSchema, ScreenshotInputSchema } from "../../schemas/mcp.ts";
 import type { ImageSize, ToolContext } from "../../types/mcp.ts";
 import { operationAnnotations } from "../add-tool.ts";
@@ -36,7 +37,7 @@ function registerImageCompareTool(server: McpServer, { transports, journal }: To
     {
       title: "Compare a node with a reference image",
       description:
-        "Captures a node like node_screenshot and compares it with a reference PNG (a Figma export, by absolute path or https URL): the y of every horizontal line or edge and the x of every vertical one, paired between the two. The answer lists edges that match, edges off by a few px (where each is, and by how much the node's is off: positive is lower or further right), edges of the reference the node lacks, and edges only the node has. Export the reference at the same scale and size as the capture (clip and scale work as in node_screenshot). Needs the project's Server API key.",
+        "Captures a node like node_screenshot and compares it with a reference PNG (a Figma export, by absolute path or https URL): the y of every horizontal line or edge and the x of every vertical one, paired between the two. The answer lists edges that match, edges off by a few px (where each is, and by how much the node's is off: positive is lower or further right), edges of the reference the node lacks, and edges only the node has. The two must show the same thing at the same size: capture the node (clip and scale as in node_screenshot), cut the matching part of the reference with referenceClip, and pass referenceFit width when the design is wider than the breakpoint (a 1440 design against a 1200 section). Needs the project's Server API key.",
       inputSchema: ImageCompareInputSchema,
       annotations: {
         readOnlyHint: true,
@@ -44,7 +45,7 @@ function registerImageCompareTool(server: McpServer, { transports, journal }: To
         openWorldHint: true,
       },
     },
-    async ({ nodeId, scale, clip, reference }) => {
+    async ({ nodeId, scale, clip, reference, referenceClip, referenceFit }) => {
       const options: ScreenshotOptions = {
         format: "png",
         scale,
@@ -70,7 +71,10 @@ function registerImageCompareTool(server: McpServer, { transports, journal }: To
               async (runtime) => {
                 const { taken } = await capture(runtime, nodeId, options);
                 const node = decodePng(taken.data);
-                const wanted = decodePng(await referenceBytes(reference));
+                const wanted = await referenceImage(await referenceBytes(reference), {
+                  clip: referenceClip,
+                  width: referenceFit === "width" ? node.width : undefined,
+                });
                 const ours = edgesOf(node);
                 const theirs = edgesOf(wanted);
 
@@ -109,7 +113,7 @@ function registerNodeScreenshotTool(server: McpServer, { transports, journal }: 
     {
       title: "Screenshot a node",
       description:
-        "Renders a node (breakpoint, section, component variant) to PNG so you can verify the visual result. Needs the project's Server API key. Images longer than 2000 px on a side are refused: capture a region with clip, or use scale 0.5.",
+        "Renders a node (breakpoint, section, component variant) to PNG so you can verify the visual result. Needs the project's Server API key. Images longer than 2000 px on a side are refused: capture a region with clip, or use scale 0.5. On a CMS detail page Framer draws the Tablet and Phone breakpoints with the components' default content, not the CMS item: check those on the published page (reference_screenshot of its URL).",
       inputSchema: ScreenshotInputSchema,
       annotations: {
         readOnlyHint: true,
@@ -147,7 +151,7 @@ function registerNodeScreenshotTool(server: McpServer, { transports, journal }: 
                 const { taken, capturedId } = await capture(runtime, nodeId, options);
 
                 // Inside the read, so a refused screenshot is journaled as failed.
-                assertFitsModel(taken.data);
+                assertFitsModel(taken.data, scale);
 
                 // The panel names the node; an id alone means nothing to the user.
                 return {
@@ -189,14 +193,25 @@ function registerReferenceScreenshotTool(server: McpServer, { journal }: ToolCon
     "reference_screenshot",
     {
       title: "Screenshot a web page",
-      description: `Screenshots any public web page in Framer's browser: a reference site the user likes, a competitor's, or the published site (its URL is in publish_preview or publish_status). Use it to study a reference's layout, spacing, type and rhythm before designing, or to check the live site after a publish. The capture is the whole page at the window width given (390 for a phone, 810 for a tablet, default 1200), light or dark. A page longer than ${MAX_IMAGE_SIDE_PX} px comes scaled down to fit (a tall page gets narrow), and the text gives the full size and the full-size image's URL to open in a browser. Local, private and login-only pages cannot be captured: ask the user for a screenshot instead. Needs the project's Server API key. Returns the image and a line with its sizes and URL.`,
-      inputSchema: referenceScreenshot.input,
+      description: `Screenshots any public web page in Framer's browser: a reference site the user likes, a competitor's, or the published site (its URL is in publish_preview or publish_status). Use it to study a reference's layout, spacing, type and rhythm before designing, or to check the live site after a publish. The capture is the whole page at the window width given (390 for a phone, 810 for a tablet, default 1200), light or dark. A page longer than ${MAX_IMAGE_SIDE_PX} px comes scaled down to fit (a tall page gets narrow): read it in bands at full width with part { top, height } in the page's px, the text gives the page's full size. Local, private and login-only pages cannot be captured: ask the user for a screenshot instead. Needs the project's Server API key. Returns the image and a line with its sizes and URL.`,
+      inputSchema: referenceScreenshot.input.extend({
+        part: z
+          .strictObject({
+            top: z.number().min(0),
+            height: z.number().positive(),
+          })
+          .exactOptional()
+          .describe("One band of the page, in its CSS px: e.g. { top: 0, height: 1800 }, then top 1800."),
+      }),
       annotations: operationAnnotations(referenceScreenshot),
     },
-    async (args) => {
+    async ({ part, ...args }) => {
       try {
         const { output } = await journal.run("reference_screenshot", referenceScreenshot, args);
-        const image = await fetchScreenshotImage(output.imageUrl);
+        const image =
+          part === undefined
+            ? await fetchScreenshotImage(output.imageUrl)
+            : await fetchScreenshotPart(output.imageUrl, part, output.viewport.width);
 
         return {
           content: [
@@ -207,7 +222,10 @@ function registerReferenceScreenshotTool(server: McpServer, { journal }: ToolCon
             },
             {
               type: "text",
-              text: referenceLine(output.url, output.viewport.width, image.size, image.shown, output.imageUrl),
+              text:
+                part === undefined
+                  ? referenceLine(output.url, output.viewport.width, image.size, image.shown, output.imageUrl)
+                  : `Screenshot of ${output.url} in a ${output.viewport.width} px wide window: the band from ${part.top} px, ${part.height} px tall, of a page ${image.size === null ? "of unknown size" : `${image.size.width}×${image.size.height} px`} (image px). Full size: ${output.imageUrl}`,
             },
           ],
         };
@@ -259,16 +277,19 @@ async function capture(runtime: FramerRuntime, nodeId: string, options: Screensh
   }
 }
 
-function assertFitsModel(png: Uint8Array): void {
+export function assertFitsModel(png: Uint8Array, scale: number): void {
   const size = readPngSize(png);
 
   if (size === null || Math.max(size.width, size.height) <= MAX_IMAGE_SIDE_PX) {
     return;
   }
 
+  // At 0.5 there is no smaller scale to offer: only parts (seen: "use scale 0.5" said at scale 0.5).
+  const band = Math.floor(MAX_IMAGE_SIDE_PX / scale);
+
   throw new OperationError(
     "RESULT_TOO_LARGE",
-    `The screenshot is ${size.width}×${size.height} px; the model takes images up to ${MAX_IMAGE_SIDE_PX} px on the longer side.`,
-    "Capture part of the node with clip { x, y, width, height }, or use scale 0.5.",
+    `The screenshot is ${size.width}×${size.height} px at scale ${scale}; the model takes images up to ${MAX_IMAGE_SIDE_PX} px on the longer side.`,
+    `Capture it in parts with clip { x, y, width, height }, up to ${band} px of the node at a time${scale > 0.5 ? ", or use scale 0.5" : ""}.`,
   );
 }

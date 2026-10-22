@@ -1,10 +1,11 @@
 ---
 name: framer-craft
 description: >
-  Use when building or editing a Framer site with the official Framer agent (npx @framer/agent,
+  Use only when building or editing a Framer site with the official Framer agent (npx @framer/agent,
   framer.agent.applyChanges), together with the `framer` skill: pages, sections, breakpoints, tokens, text styles,
   components, variants, motion, scroll effects, menus, CMS, forms, images, metadata, a Figma import or a Marketplace
-  template, or when Framer accepts a change without an error and it still renders wrong.
+  template, or when Framer accepts a change without an error and it still renders wrong. Not with the Sitewright MCP
+  server (design_apply, nodes_read): there the `sitewright` skill and framer_guide hold the same facts, kept current.
 ---
 
 # Framer craft

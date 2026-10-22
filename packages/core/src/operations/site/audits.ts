@@ -10,6 +10,7 @@ import { serializedList } from "../../history/dsl/serialized.ts";
 import { idOf, nameOf } from "../../plugin-nodes/node-record.ts";
 import { pageLayers } from "../../plugin-nodes/walk.ts";
 import { SiteFindingSchema } from "../../schemas/site-checks.ts";
+import type { SerializedNode } from "../../types/dsl.ts";
 import type { SiteFinding } from "../../types/site-checks.ts";
 import { errorMessage } from "../../utils/errors.ts";
 import { rollUp, topRules } from "../../utils/site-audit.ts";
@@ -18,12 +19,19 @@ import { defineOperation } from "../define.ts";
 import { layoutAudit } from "../nodes/audit.ts";
 import { pagesToSearch } from "../nodes/find.ts";
 import { a11yAudit, imagesCheck, linksCheck, seoAudit } from "./checks.ts";
+import { UNREAD_NOTE, unreadNote } from "./read-site.ts";
 
 const RollUpSchema = z.object({
   check: z.string(),
   defects: z.number().int(),
   likely: z.number().int(),
   taste: z.number().int(),
+  rules: z.array(
+    z.object({
+      rule: z.string(),
+      count: z.number().int(),
+    }),
+  ),
   worstPages: z.array(
     z.object({
       page: z.string(),
@@ -71,10 +79,17 @@ export const siteAudit = defineOperation({
 
     for (const [check, run] of checks) {
       try {
+        const result = await run();
+        const unread = result.summary.split(UNREAD_NOTE)[1];
+
         all.push({
           check,
-          findings: [...(await run()).findings],
+          findings: [...result.findings],
         });
+
+        if (unread !== undefined) {
+          failed.push(`${check}: pages not read: ${unread}`);
+        }
       } catch (error) {
         failed.push(`${check}: ${errorMessage(error)}`);
       }
@@ -113,7 +128,11 @@ export const siteAudit = defineOperation({
       rules: topRules(everything),
       defects: everything.filter(({ severity }) => severity === "defect").slice(0, SITE_AUDIT_FINDINGS_MAX),
       failed,
-      summary: summaryOf(everything),
+      // Failures first: a summary that reads complete must be complete.
+      summary:
+        failed.length === 0
+          ? summaryOf(everything)
+          : `${countOf(failed.length, "check")} failed (${failed.map((entry) => entry.split(":")[0]).join(", ")}; see failed): ${summaryOf(everything)}`,
     };
   },
   describe(_input, { summary }) {
@@ -215,18 +234,31 @@ export const richTextAudit = defineOperation({
   async run({ runtime }, { pagePath }) {
     const agent = requireAgent(runtime);
     const findings: SiteFinding[] = [];
+    const unread: string[] = [];
 
     for (const page of await pagesToSearch(runtime.port, pagePath)) {
       const path = page.path ?? "/";
-      const texts = serializedList(
-        await agent.getDescendantsOfTypes(
-          {
-            id: page.id,
-            types: ["RichTextNode", "TextBlock", "TextRun"],
-          },
-          { pagePath: path },
-        ),
-      );
+      let texts: SerializedNode[];
+
+      try {
+        texts = serializedList(
+          await agent.getDescendantsOfTypes(
+            {
+              id: page.id,
+              types: ["RichTextNode", "TextBlock", "TextRun"],
+            },
+            { pagePath: path },
+          ),
+        );
+      } catch (error) {
+        // One page Framer cannot read is named, and the others are still checked.
+        if (pagePath !== undefined) {
+          throw error;
+        }
+
+        unread.push(`${path} (${errorMessage(error)})`);
+        continue;
+      }
 
       for (const node of texts) {
         // serialize() keeps the values under attributes.
@@ -262,7 +294,7 @@ export const richTextAudit = defineOperation({
 
     return {
       findings,
-      summary: summaryOf(findings),
+      summary: `${summaryOf(findings)}${unreadNote(unread)}`,
     };
   },
   describe(_input, { summary }) {

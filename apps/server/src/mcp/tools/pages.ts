@@ -1,7 +1,9 @@
 import type { McpServer } from "@modelcontextprotocol/server";
 import {
+  ActivityNoteSchema,
   deploymentsList,
   nodesFind,
+  nodesFindInTemplates,
   nodesLock,
   nodesQuery,
   pagesCreate,
@@ -16,7 +18,7 @@ import {
   textReplace,
 } from "@sitewright/core";
 import type { ToolContext } from "../../types/mcp.ts";
-import { addOperationTool } from "../add-tool.ts";
+import { addOperationTool, addTool, operationAnnotations, runOperationTool } from "../add-tool.ts";
 
 /** Pages, finding and replacing across them, site and page settings, redirects, and where the site is published. */
 export function registerPageTools(server: McpServer, context: ToolContext): void {
@@ -41,17 +43,40 @@ export function registerPageTools(server: McpServer, context: ToolContext): void
       'Copies a page with everything on it: a web page (path) to a new path (newPath, e.g. "/about-b"), keeping its breakpoints, their overrides and its settings; or a design page (designPage) under a new name (newName). Use it for a variant of a page (an A/B version, a landing page from an existing one) instead of rebuilding it with design_apply. The new path must be free. A web page copy is a draft by default, which publishing leaves out until the user turns the draft off; draft: false publishes it with the site. Works with or without the Server API key. Returns the copy\'s id, path or name, and whether it is a draft. Undo does not remove the copy: delete it with page_delete.',
   });
 
-  addOperationTool(server, context, nodesFind, {
+  addTool(server, {
     name: "nodes_find",
     title: "Find layers",
     description:
-      "Finds layers across the site's pages (or one page) by part of their name or text, and/or by type, on each page's main breakpoint. Returns their ids for nodes_read and design_apply.",
+      "Finds layers across the site's pages (or one page) by part of their name or text, and/or by type, on each page's main breakpoint, and with no page named also in the layout templates (the shared header and footer, page \"layout <name>\"; needs the project's Server API key). Returns their ids for nodes_read and design_apply.",
+    input: nodesFind.input,
+    output: nodesFind.output.extend({ activity: ActivityNoteSchema }),
+    annotations: operationAnnotations(nodesFind),
+    run: async (args) => {
+      const found = await runOperationTool(context, "nodes_find", nodesFind, args);
+
+      if (args.pagePath !== undefined) {
+        return found;
+      }
+
+      // The plugin's walk cannot reach a layout template: the DSL reads them, when the project has a key.
+      const inLayouts = await runOperationTool(context, "nodes_find", nodesFindInTemplates, {
+        ...(args.query === undefined ? {} : { query: args.query }),
+        ...(args.type === undefined ? {} : { type: args.type }),
+      }).catch(() => null);
+      const matches = [...found.matches, ...(inLayouts?.matches ?? [])];
+
+      return {
+        ...found,
+        matches: matches.slice(0, args.limit),
+        truncated: found.truncated || matches.length > args.limit,
+      };
+    },
   });
   addOperationTool(server, context, nodesQuery, {
     name: "nodes_query",
     title: "Query layers by attributes",
     description:
-      'Finds layers across the site\'s pages (or one page) whose DSL attributes meet every condition, e.g. all text smaller than 14px, every frame with an image fill, links with no link style: [{ attribute: "opacity", op: "lessThan", value: "1" }]. Operators: equals, contains, lessThan, greaterThan (numbers compare as numbers, 16px is 16), exists, notExists. Returns each layer with its page and the attributes the conditions name; change them with design_apply. Attributes are read as the Plugin API gives them, on each page\'s main breakpoint: units can differ from nodes_read, which reads through the Server API (a size in percent here, in px there).',
+      'Finds layers across the site\'s pages (or one page) whose DSL attributes meet every condition, e.g. every frame with an image fill, text in a font, layers with a fixed width: [{ attribute: "opacity", op: "lessThan", value: "1" }]. It tests what the Plugin API gives: name, visibility, position and pins, sizes, overflow, link, fill, radius, border, layout, stack and grid settings, textStylePreset, and a text\'s fontName, fontWeight and fontStyle; it refuses other attributes (textColor, fontSize, linkStylePreset) and names what reads them. Operators: equals, contains, lessThan, greaterThan (numbers compare as numbers, 16px is 16), exists, notExists. Returns each layer with its page and the attributes the conditions name; change them with design_apply. Attributes are read on each page\'s main breakpoint: units can differ from nodes_read, which reads through the Server API (a size in percent here, in px there).',
   });
   addOperationTool(server, context, nodesLock, {
     name: "nodes_lock",

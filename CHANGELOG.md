@@ -16,6 +16,77 @@ How to write this file (people and agents alike):
 - After editing, run `pnpm docs:changelog` to rewrite the website's page (docs/changelog/index.html).
 -->
 
+## 1.2.0 — 2026-10-22
+
+### Added
+
+- `framer_status` and `framer_connect` say which Sitewright answers: its version, and whether it runs from npm or a
+  local build, and from where.
+- `nodes_find` and `component_instances` search the layout templates too, the shared header and footer, labelled
+  "layout <name>", when no page is named and the project has a Server API key; pages are still searched through the
+  plugin, as fast as before.
+- `tokens_match` finds the site's nearest color tokens and text styles for colors and fonts taken from a design, with
+  the distance or what differs, so every value can be named by a token or a style.
+- `images_upload` uploads up to 20 local images in one call and returns each path with its url; a file that fails is
+  listed with why, and the others still upload.
+- `svg_add` takes an .svg file by path, sets the layer's width with `width` (the height follows the viewBox), and with
+  `keepViewBox` keeps the empty space around the drawing, which Framer otherwise crops away.
+- `image_compare` takes `referenceClip` to compare one part of a design (a container) and `referenceFit` `width` to
+  scale a wider design to the capture, and reads a PNG or JPEG reference by a path relative to the project folder too.
+- `reference_screenshot` takes `part` to read a long page in bands at full width, instead of one narrow strip.
+- `components_read` and `code_files_read` take `outline` for a short answer: each control on one line with an enum's
+  first options, and a file's declaring lines with their numbers, instead of tens of thousands of characters.
+- `component_instances` names each instance's breakpoint and variant, lists every breakpoint's copy, and adds the
+  instances of components that hold the one asked for, with `via` naming the holder.
+- `effects_set` takes `trigger`, `opacity` and `transition` in its options to change a preset's trigger, the opacity
+  it starts from and its spring; a transition must be a spring.
+- `live_check` takes `paths` to check pages the sitemap leaves out, such as ones hidden from search.
+
+### Changed
+
+- `marketplace_item` only reads Marketplace pages and is marked read-only, so an agent limited to reading can use it;
+  reading a free component's controls on a temporary page is the new `marketplace_item_inspect` (it was `inspect`).
+- `image_upload` and `file_upload` take a path relative to the project folder too, not only an absolute one.
+- `framer_guide` says how to show a whole image or a tiled one, which the API cannot set on an image fill, that a text
+  node takes letter spacing in em as Figma gives it, the order a whole site needs, the CMS "Item" choice that the DSL
+  cannot write, and nine Framer pitfalls (a frame's default 100px height, `CREATE_VARIANT` ignoring `name`, a blur lost
+  under a faded parent and more); the `parallax` preset says it moves while its frame enters the window.
+- `framer_docs` `essentials` starts with how Framer's agent tools map to Sitewright's and which of its rules do not
+  apply.
+- The journal names every action in words, such as "New locale" and "SEO audit", instead of an internal name such as
+  localization.addLocale.
+
+### Fixed
+
+- `design_apply` no longer warns about a letter spacing in fractional px, such as -0.36px.
+- Tools that read a page through the Server API find a CMS detail page by the path `project_overview` shows
+  (`/blog/:slug`): `seo_audit`, `links_check`, `images_check`, `a11y_audit`, `rich_text_audit`, `styles_usage` and the
+  site-wide runs no longer stop at "Page not found".
+- A site-wide `seo_audit`, `links_check`, `images_check`, `a11y_audit`, `rich_text_audit` or `template_audit` goes on
+  past a page Framer cannot read and names it in its summary, instead of stopping at it.
+- `styles_usage` for one page counts the styles inside the components placed on it, and inside the components those
+  place, so a style used only there no longer shows as unused.
+- `site_audit` starts its summary with the checks that failed and the pages they could not read, and lists the rules
+  each check hit, so its layout roll-up names the same rules `layout_audit` does.
+- `nodes_query` finds text by `fontName`, `fontWeight` and `fontStyle` (a styled text by its style's font), and refuses
+  an attribute it cannot read, such as `textColor`, naming the tool that reads it, instead of finding nothing.
+- `nodes_read` without `pagePath` reads a node on the page it is on and names that page, instead of answering "/".
+  Without a Server API key it gives each node's `$rect` from the editor; its description says the Server API lays out
+  only the home page, so `$rect` is missing elsewhere.
+- `live_check` follows a sitemap index (one sitemap per locale) to the pages in its sitemaps, instead of checking the
+  sitemaps as pages.
+- `fonts_used` names text styles by their full path and leaves out a font Framer reports with no family, instead of an
+  empty row.
+- `localization_get` finds a page's texts by the page's path in `group`, as its description says.
+- `locale_add` checks that the project has the new locale and says so when Framer answered it added one but kept
+  nothing, instead of reporting it added.
+- `effects_set` `hero-sequence` moves the first layer (the heading, the page's largest element) without fading it, so
+  it no longer delays the page's Largest Contentful Paint.
+- `framer_read` points to the section of `framer_docs` that lists its query types, and `component_insert` no longer
+  says undo cannot remove what it inserts.
+- `node_screenshot` too big at scale 0.5 says to capture it in parts with `clip`, not to use scale 0.5, and says that
+  Framer draws a CMS page's Tablet and Phone breakpoints with the components' default content.
+
 ## 1.1.3 — 2026-10-22
 
 ### Added

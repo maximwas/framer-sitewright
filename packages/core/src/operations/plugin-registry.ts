@@ -51,6 +51,7 @@ import { performanceAudit, siteAudit } from "./site/audits.ts";
 import { a11yAudit, contrastCheck, imagesCheck, linksCheck, seoAudit } from "./site/checks.ts";
 import { siteSettingsGet } from "./site/settings.ts";
 import { templateAudit } from "./site/template-audit.ts";
+import { tokensMatch } from "./styles/match.ts";
 import { textStylesDelete } from "./text-styles/delete.ts";
 import { textStylesList } from "./text-styles/list.ts";
 import { textStylesUpsert } from "./text-styles/upsert.ts";
@@ -65,6 +66,7 @@ export const PLUGIN_OPERATIONS: readonly AnyOperation[] = [
   colorTokensUpsert,
   colorTokensDelete,
   textStylesList,
+  tokensMatch,
   textStylesUpsert,
   textStylesDelete,
   linkStylesList,

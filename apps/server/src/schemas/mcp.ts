@@ -63,7 +63,24 @@ export const ImageCompareInputSchema = ScreenshotInputSchema.extend({
     .string()
     .min(1)
     .describe(
-      "The reference image, a PNG: an absolute path on this computer (a Figma export) or an https URL. Export it at the same scale as `scale`, so both images have the same size.",
+      "The reference image, a PNG or JPEG: a path on this computer (absolute, or relative to the project folder; a Figma export) or an https URL.",
+    ),
+  referenceClip: z
+    .strictObject({
+      x: z.number().min(0),
+      y: z.number().min(0),
+      width: z.number().positive(),
+      height: z.number().positive(),
+    })
+    .exactOptional()
+    .describe(
+      "The part of the reference that matches the node, in the reference's px: e.g. one container of the design.",
+    ),
+  referenceFit: z
+    .enum(["none", "width"])
+    .default("none")
+    .describe(
+      "width scales the reference (after referenceClip) to the capture's width: a 1440 design against a 1200 breakpoint.",
     ),
 });
 
@@ -72,6 +89,13 @@ export const StatusOutputSchema = RouterStatusSchema.extend({
   capabilities: CapabilitiesSchema.nullable().describe(
     "What the project's Framer plan allows, as far as known; null before a project is connected.",
   ),
+  server: z
+    .object({
+      version: z.string(),
+      source: z.enum(["npm", "local build"]),
+      path: z.string().nullable(),
+    })
+    .describe("This Sitewright: its version, and whether it runs from npm or a local build (and where)."),
 });
 
 /** readProject's answer to guide queries: each result has the guide's text, or says why not. */

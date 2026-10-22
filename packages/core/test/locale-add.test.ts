@@ -40,6 +40,25 @@ it("adds a regional locale as a draft by default, with its fallback, through the
   expect(history.incomplete).toMatch(/Undo does not remove a locale/);
 });
 
+it("regression: says so when Framer answers it added a locale the project then does not have (seen: Ukrainian added, the editor's Localization empty)", async () => {
+  const { runtime } = createFakeRuntime();
+
+  // Framer answers with the new locale and keeps nothing.
+  Object.assign(runtime.port, {
+    createLocale: async () => ({
+      id: "pmIRHqJio",
+      code: "uk",
+      name: "Ukrainian",
+      slug: "uk",
+      fallbackLocaleId: null,
+    }),
+  });
+
+  await expect(runOperation(localeAdd, { runtime }, { language: "nl" })).rejects.toThrow(
+    /the project has no such locale/,
+  );
+});
+
 it("lists the languages Framer knows when the language is wrong, and refuses a locale the site has", async () => {
   const { runtime, state } = createFakeRuntime();
 

@@ -1,3 +1,4 @@
+import { OUTLINE_OPTIONS_MAX } from "../constants/components.ts";
 import { isPlainObject } from "./guards.ts";
 
 /**
@@ -5,6 +6,27 @@ import { isPlainObject } from "./guards.ts";
  * was created ("Variant 3" for "Slide 3", which $control__variant then refuses), lists an option variable as an enum
  * without its values, and names types the agent cannot use as written; the component node itself has the truth.
  */
+/**
+ * A component's controls in one line each, `$control__name: type`, with an enum's first options and how many more:
+ * the whole list runs to tens of thousands of characters on a site with icon sets (seen: 63k for one read).
+ */
+export function outlineControls(controls: unknown): Record<string, string> | null {
+  if (!isPlainObject(controls) || !isPlainObject(controls.controls)) {
+    return null;
+  }
+
+  return Object.fromEntries(
+    Object.entries(controls.controls).map(([key, control]) => {
+      const type = isPlainObject(control) && typeof control.type === "string" ? control.type : "unknown";
+      const options = isPlainObject(control) && Array.isArray(control.options) ? control.options.map(String) : [];
+      const shown = options.slice(0, OUTLINE_OPTIONS_MAX);
+      const more = options.length - shown.length;
+
+      return [key, options.length === 0 ? type : `${type}: ${shown.join(" | ")}${more > 0 ? ` (+${more} more)` : ""}`];
+    }),
+  );
+}
+
 export function withComponentFacts(controls: unknown, node: unknown): unknown {
   if (!isPlainObject(controls) || !isPlainObject(controls.controls) || !isPlainObject(node)) {
     return controls;

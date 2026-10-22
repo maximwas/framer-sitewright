@@ -16,7 +16,7 @@ export function registerComponentTools(server: McpServer, context: ToolContext):
     name: "component_instances",
     title: "Find a component's instances",
     description:
-      "Lists every instance of one component across the site's pages (or one page), each with its id, name and page: what a change to the component reaches, or which placements to tune with component_controls_set. Pass the component's id from components_read or its name (\"Content/Card\").",
+      "Lists every instance of one component across the site's pages (or one page), each with its id, name, page, breakpoint and variant, and the instances of components that hold it (via names that component): what a change to the component reaches, or which placements to tune with component_controls_set. Pass the component's id from components_read or its name (\"Content/Card\"). Without a Server API key it lists breakpoints but not variants or holders.",
   });
   addOperationTool(server, context, componentsRead, {
     name: "components_read",
@@ -28,7 +28,7 @@ export function registerComponentTools(server: McpServer, context: ToolContext):
     name: "component_insert",
     title: "Insert a component",
     description:
-      "Inserts a component by its module URL (framer.com/m/…): a free Marketplace component (marketplace_item gives its moduleUrl), or a URL the user copied from the Insert menu. design_apply cannot take a URL; Framer's own components (Video, YouTube, Google Maps, Embed, Slideshow, Carousel, Countdown…) it places by the ids components_read lists in framer. Then set its controls with design_apply ($control__…) or component_controls_set. Undo does not remove it.",
+      "Inserts a component by its module URL (framer.com/m/…): a free Marketplace component (marketplace_item gives its moduleUrl), or a URL the user copied from the Insert menu. design_apply cannot take a URL; Framer's own components (Video, YouTube, Google Maps, Embed, Slideshow, Carousel, Countdown…) it places by the ids components_read lists in framer. Then set its controls with design_apply ($control__…) or component_controls_set.",
   });
   addOperationTool(server, context, componentControlsSet, {
     name: "component_controls_set",

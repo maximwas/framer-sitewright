@@ -31,6 +31,7 @@ export { SETTING_ITEMS } from "./constants/settings.ts";
 export { PLUGIN_CHANGED_EVENT, WEB_SOCKET_PATH, WebCloseCode } from "./constants/web.ts";
 export { findSection, searchSections, sliceContent, splitSections } from "./docs/sections.ts";
 export { OperationError } from "./errors.ts";
+export { withDslPagePaths } from "./framer/page-paths.ts";
 export { agentRequiredError, requireAgent, requireScreenshot } from "./framer/runtime.ts";
 export {
   aliasesOf,
@@ -91,7 +92,7 @@ export { breakpointsAdd } from "./operations/nodes/breakpoints.ts";
 export { breakpointsSuggest } from "./operations/nodes/breakpoints-suggest.ts";
 export { nodesClone } from "./operations/nodes/clone.ts";
 export { stylesCopy } from "./operations/nodes/copy-styles.ts";
-export { nodesFind } from "./operations/nodes/find.ts";
+export { nodesFind, nodesFindInTemplates } from "./operations/nodes/find.ts";
 export { nodesLock } from "./operations/nodes/lock.ts";
 export { nodesQuery } from "./operations/nodes/query.ts";
 export { nodesRead } from "./operations/nodes/read.ts";
@@ -116,6 +117,7 @@ export { a11yAudit, contrastCheck, imagesCheck, linksCheck, seoAudit } from "./o
 export { referenceScreenshot } from "./operations/site/reference-screenshot.ts";
 export { siteSettingsGet, siteSettingsSet } from "./operations/site/settings.ts";
 export { templateAudit } from "./operations/site/template-audit.ts";
+export { tokensMatch } from "./operations/styles/match.ts";
 export { stylesUsage } from "./operations/styles/usage.ts";
 export { textStylesDelete } from "./operations/text-styles/delete.ts";
 export { textStylesList } from "./operations/text-styles/list.ts";

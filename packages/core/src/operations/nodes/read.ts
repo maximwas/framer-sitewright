@@ -15,7 +15,7 @@ import { countOf } from "../../utils/text.ts";
 import { nodeToXml } from "../../xml/node-to-xml.ts";
 import { parseXml } from "../../xml/parse-xml.ts";
 import { defineOperation } from "../define.ts";
-import { pageRootId, readNodeTree } from "./read-tree.ts";
+import { pagePathOf, pageRootId, readNodeTree, withRects } from "./read-tree.ts";
 
 export const nodesRead = defineOperation({
   name: "nodes.read",
@@ -33,7 +33,11 @@ export const nodesRead = defineOperation({
       .describe(
         "Several nodes in one call instead of nodeId: their XML one after another; ids not found go to missing.",
       ),
-    pagePath: z.string().startsWith("/").default("/").describe('Page path, e.g. "/" or "/about".'),
+    pagePath: z
+      .string()
+      .startsWith("/")
+      .exactOptional()
+      .describe('Page path, e.g. "/about". Omit for the home page, or with nodeId for the page the node is on.'),
     depth: z.number().int().min(0).max(8).default(2).describe("How many child levels to include."),
     attributes: z
       .array(z.string().min(1))
@@ -52,20 +56,26 @@ export const nodesRead = defineOperation({
     chars: z.number().int(),
     missing: z.array(z.string()).exactOptional(),
   }),
-  async run({ runtime }, { nodeId, nodeIds, pagePath, depth, attributes, format }) {
+  async run({ runtime }, { nodeId, nodeIds, pagePath: asked, depth, attributes, format }) {
+    // A node's own page, when none is named: reading it on another page reports the wrong page and drops its box.
+    const first = nodeId ?? nodeIds?.[0];
+    const pagePath = asked ?? (first === undefined ? null : await pagePathOf(runtime.port, first)) ?? "/";
+    const rects = attributes === undefined || attributes.includes("$rect");
+
     if (nodeIds !== undefined) {
       return readMany(runtime, nodeIds, {
         pagePath,
         depth,
         attributes,
         format,
+        rects,
       });
     }
 
     const id = nodeId ?? (await pageRootId(runtime, pagePath));
-    const node = await readNodeTree(runtime, id, depth, pagePath, attributes);
+    const read = await readNodeTree(runtime, id, depth, pagePath, attributes);
 
-    if (node === null || node === undefined) {
+    if (read === null || read === undefined) {
       throw new OperationError(
         "NOT_FOUND",
         `Node "${id}" was not found on page ${pagePath}.`,
@@ -73,6 +83,7 @@ export const nodesRead = defineOperation({
       );
     }
 
+    const node = rects ? await withRects(runtime.port, read) : read;
     const parsed = format === "xml" ? parseSerializedNode(node) : null;
     const text = parsed === null ? JSON.stringify(node) : nodeToXml(parsed);
     const chars = text.length;
@@ -114,17 +125,20 @@ interface ReadOptions {
   readonly depth: number;
   readonly attributes: readonly string[] | undefined;
   readonly format: (typeof NODE_FORMATS)[number];
+  readonly rects: boolean;
 }
 
 /** Several nodes in one call: XML one after another (or a JSON array), and the ids Framer has no node for. */
 async function readMany(
   runtime: FramerRuntime,
   ids: readonly string[],
-  { pagePath, depth, attributes, format }: ReadOptions,
+  { pagePath, depth, attributes, format, rects }: ReadOptions,
 ) {
-  const nodes = await mapInOrder(ids, NODES_READ_BULK_CONCURRENCY, (id) =>
-    readNodeTree(runtime, id, depth, pagePath, attributes).catch(() => null),
-  );
+  const nodes = await mapInOrder(ids, NODES_READ_BULK_CONCURRENCY, async (id) => {
+    const node = await readNodeTree(runtime, id, depth, pagePath, attributes).catch(() => null);
+
+    return node === null || !rects ? node : withRects(runtime.port, node);
+  });
   const found = nodes.flatMap((node) => (node === null || node === undefined ? [] : [node]));
   const missing = ids.filter((_, index) => nodes[index] === null || nodes[index] === undefined);
   const text =

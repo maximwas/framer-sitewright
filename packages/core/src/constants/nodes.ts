@@ -43,6 +43,26 @@ export const DEPLOYMENTS_LIMIT_MAX = 50;
 /** How many nodes one nodes_read call takes in nodeIds. */
 export const NODES_READ_MAX_IDS = 50;
 
+/** How many nodes of one read get their $rect from getRect when serialize() left it out: one call each. */
+export const RECT_FILL_MAX = 40;
+
+/**
+ * The box the Server API's getRect gives every node of a page it has not laid out (seen 22.10.2026 on a 1200 px wide
+ * frame): no box at all.
+ */
+export const UNLAID_RECT = {
+  x: -100,
+  y: -100,
+  width: 200,
+  height: 200,
+} as const;
+
+/** The node type of a layout template: the shared header and footer that a page's own walk does not reach. */
+export const LAYOUT_TEMPLATE_TYPE = "LayoutTemplateNode";
+
+/** How far up nodes_read climbs from a node to find the page it is on. */
+export const PAGE_CLIMB_MAX = 64;
+
 /** How many of those are read at once. */
 export const NODES_READ_BULK_CONCURRENCY = 8;
 

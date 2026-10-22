@@ -4,6 +4,7 @@
  */
 export const AGENT_ONLY_OPERATION_NAMES: readonly string[] = [
   "styles.usage",
+  "nodes.findInTemplates",
   "icons.search",
   "components.read",
   "components.makeLocal",

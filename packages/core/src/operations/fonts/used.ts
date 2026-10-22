@@ -1,5 +1,6 @@
 import * as z from "zod";
 import { pageLayers } from "../../plugin-nodes/walk.ts";
+import { normalizeAssetPath } from "../../styles/asset-path.ts";
 import type { FontData } from "../../types/framer-port.ts";
 import { type FontUse, fontsInUse } from "../../utils/fonts-used.ts";
 import { countOf } from "../../utils/text.ts";
@@ -10,7 +11,13 @@ import { pagesToSearch } from "../nodes/find.ts";
 const STYLE_VARIANTS = ["font", "boldFont", "italicFont", "boldItalicFont"] as const;
 
 function fontIn(value: unknown): FontUse["font"] | null {
-  if (typeof value !== "object" || value === null || typeof (value as FontData).family !== "string") {
+  // Framer reports some unset fonts with an empty family: no font, and no empty row in the answer.
+  if (
+    typeof value !== "object" ||
+    value === null ||
+    typeof (value as FontData).family !== "string" ||
+    (value as FontData).family.trim() === ""
+  ) {
     return null;
   }
 
@@ -58,7 +65,8 @@ export const fontsUsed = defineOperation({
         if (font !== null) {
           uses.push({
             font,
-            where: style.name,
+            // By its path, as every other tool names a style: the name alone is its last segment.
+            where: normalizeAssetPath(style.path),
           });
         }
       }

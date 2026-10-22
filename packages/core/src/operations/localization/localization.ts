@@ -137,6 +137,15 @@ export const localeAdd = defineOperation({
       draft: input.draft,
     });
 
+    // Framer can answer with the new locale and keep nothing (seen 22.10.2026: the editor's Localization was empty).
+    if (!(await port.getLocales()).some(({ id }) => id === created.id)) {
+      throw new OperationError(
+        "WRITE_FAILED",
+        `Framer answered that it added ${created.name} (${created.code}), but the project has no such locale.`,
+        "Seen once right after a reconnect: ask the user to reconnect the plugin and try again, or to add the locale in the editor (Localization).",
+      );
+    }
+
     return {
       id: created.id,
       code: created.code,
@@ -185,10 +194,16 @@ export const localizationGet = defineOperation({
   async run({ runtime }, { locale: query, type, group, missing, offset, limit }) {
     const locale = findLocale((await siteLocales(runtime.port)).locales, query);
     const wanted = group?.toLowerCase();
+    // Framer names a page's group by the page's name, and gives it the page's id: a path finds it by that id.
+    const pageIds = new Set(
+      (group ?? "").startsWith("/")
+        ? (await runtime.port.getNodesWithType("WebPageNode")).filter(({ path }) => path === group).map(({ id }) => id)
+        : [],
+    );
     const groups = (await localizationGroups(runtime.port)).filter(
       (entry) =>
         (type === undefined || entry.type === type) &&
-        (wanted === undefined || entry.name.toLowerCase().includes(wanted)) &&
+        (wanted === undefined || entry.name.toLowerCase().includes(wanted) || pageIds.has(entry.id)) &&
         !(missing && entry.statusByLocale[locale.id] === "excluded"),
     );
     const sources = groups.flatMap((entry) =>

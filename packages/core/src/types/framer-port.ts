@@ -459,6 +459,8 @@ export interface FramerPort {
   getNode(nodeId: string): Promise<unknown>;
   /** The node's parent, or null. */
   getParent(nodeId: string): Promise<unknown>;
+  /** A node's box on the canvas, or null; serialize() leaves $rect out off the home page (seen 22.10.2026). */
+  getRect?(nodeId: string): Promise<{ x: number; y: number; width: number; height: number } | null>;
   /**
    * Plugin API node writes, which the Server API has too: pages built without framer.agent. Attributes are the Plugin
    * API's (see PLUGIN_ATTRIBUTE_RULES); each returns the node, or null.

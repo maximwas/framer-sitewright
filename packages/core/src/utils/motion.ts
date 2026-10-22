@@ -1,4 +1,4 @@
-import { LAYER_EFFECTS, MOTION_DEFAULTS, SCROLL_SPRING } from "../constants/motion.ts";
+import { LAYER_EFFECTS, MOTION_DEFAULTS, SCROLL_SPRING, START_OPACITY } from "../constants/motion.ts";
 import type { MotionOptions, MotionPreset } from "../types/motion.ts";
 
 /**
@@ -14,10 +14,14 @@ export function presetCommands(preset: MotionPreset, nodeIds: readonly string[],
   return nodeIds.map((id, index) => {
     const at = (stagger: number) => seconds(delay + index * (options.stagger ?? stagger));
     const spring = (time: number, start: string) => `spring-duration ${seconds(duration ?? time)} 0 ${start}`;
-    const pairs = attributesFor(preset, options, {
-      at,
-      spring,
-    });
+    const pairs = withOverrides(
+      attributesFor(preset, options, {
+        at,
+        spring,
+        first: index === 0,
+      }),
+      options,
+    );
 
     return `SET ${id} ${pairs.map(([key, value]) => (typeof value === "number" ? `${key}=${value}` : `${key}="${value}"`)).join(" ")};`;
   });
@@ -25,10 +29,34 @@ export function presetCommands(preset: MotionPreset, nodeIds: readonly string[],
 
 type Pairs = [string, string | number][];
 
+/** A preset's values with the caller's trigger, start opacity and spring in place of its own, where it has them. */
+function withOverrides(pairs: Pairs, { trigger, opacity, transition }: MotionOptions): Pairs {
+  return pairs.map(([key, value]): [string, string | number] => {
+    if (trigger !== undefined && key.endsWith(".trigger")) {
+      return [key, trigger];
+    }
+
+    if (opacity !== undefined && START_OPACITY.test(key)) {
+      // Scroll sections take numbers without quotes, the others text.
+      return [key, typeof value === "number" ? opacity : String(opacity)];
+    }
+
+    if (transition !== undefined && key.endsWith(".transition")) {
+      return [key, transition];
+    }
+
+    return [key, value];
+  });
+}
+
 function attributesFor(
   preset: MotionPreset,
   options: MotionOptions,
-  { at, spring }: { at: (stagger: number) => string; spring: (time: number, start: string) => string },
+  {
+    at,
+    spring,
+    first,
+  }: { at: (stagger: number) => string; spring: (time: number, start: string) => string; first: boolean },
 ): Pairs {
   const distance = options.distance;
 
@@ -45,7 +73,8 @@ function attributesFor(
               ["appearEffect.replay", "false"],
               ["appearEffect.threshold", "0.2"],
             ] as Pairs)),
-        ["appearEffect.enter.opacity", "0"],
+        // The first screen's first layer is its LCP element: Chrome ignores paints at opacity 0, so it only moves.
+        ["appearEffect.enter.opacity", hero && first ? "1" : "0"],
         ["appearEffect.enter.x", "0"],
         ["appearEffect.enter.y", String(distance ?? (hero ? MOTION_DEFAULTS.heroDistance : MOTION_DEFAULTS.distance))],
         ["appearEffect.enter.scale", "1"],

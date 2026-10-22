@@ -22,12 +22,6 @@ export const MarketplaceItemInputSchema = z.strictObject({
     .describe(
       "Marketplace item pages: links the user gave (https://www.framer.com/marketplace/components/<slug>/), or component slugs.",
     ),
-  inspect: z
-    .boolean()
-    .default(false)
-    .describe(
-      "Insert each free component on a temporary design page, read its controls and defaults, then delete the page.",
-    ),
 });
 
 export const MarketplaceItemOutputSchema = z.object({

@@ -15,7 +15,7 @@ import { contrastOf, solidColor } from "../../site-checks/values.ts";
 import type { SiteFinding } from "../../types/site-checks.ts";
 import { countOf } from "../../utils/text.ts";
 import { defineOperation } from "../define.ts";
-import { readSiteMetadata, readSitePages, siteCheckContext } from "./read-site.ts";
+import { readSiteMetadata, readSitePages, siteCheckContext, unreadNote } from "./read-site.ts";
 
 /** Most links and photos a check lists; its findings are never cut. */
 const LIST_MAX = 200;
@@ -45,7 +45,7 @@ export const linksCheck = defineOperation({
     note: z.string().nullable(),
   }),
   async run({ runtime }, { pagePath }) {
-    const { pages } = await readSitePages(runtime);
+    const { pages, unread } = await readSitePages(runtime);
     const checked = pagePath === undefined ? pages : pages.filter((page) => page.path === pagePath);
 
     if (checked.length === 0) {
@@ -62,7 +62,7 @@ export const linksCheck = defineOperation({
     return {
       links: links.slice(0, LIST_MAX),
       findings,
-      summary: `${countOf(links.length, "link")}; ${findingsSummary(findings)}`,
+      summary: `${countOf(links.length, "link")}; ${findingsSummary(findings)}${unreadNote(unread)}`,
       note: runtime.agent === null ? NO_KEY_NOTE : null,
     };
   },
@@ -87,7 +87,7 @@ export const seoAudit = defineOperation({
     note: z.string().nullable(),
   }),
   async run({ runtime }, { pagePath }) {
-    const [{ pages, rootId }, context] = await Promise.all([
+    const [{ pages, rootId, unread }, context] = await Promise.all([
       readSitePages(runtime, pagePath),
       siteCheckContext(runtime),
     ]);
@@ -101,7 +101,7 @@ export const seoAudit = defineOperation({
 
     return {
       findings,
-      summary: findingsSummary(findings),
+      summary: `${findingsSummary(findings)}${unreadNote(unread)}`,
       note: runtime.agent === null ? NO_KEY_NOTE : null,
     };
   },
@@ -127,14 +127,14 @@ export const imagesCheck = defineOperation({
     note: z.string().nullable(),
   }),
   async run({ runtime }, { pagePath }) {
-    const { pages } = await readSitePages(runtime, pagePath);
+    const { pages, unread } = await readSitePages(runtime, pagePath);
     const images = pages.flatMap(imagesOf);
     const findings = imageFindings(images, runtime.agent !== null);
 
     return {
       images: images.slice(0, LIST_MAX),
       findings,
-      summary: `${countOf(images.length, "image")}; ${findingsSummary(findings)}`,
+      summary: `${countOf(images.length, "image")}; ${findingsSummary(findings)}${unreadNote(unread)}`,
       note: runtime.agent === null ? NO_KEY_NOTE : null,
     };
   },
@@ -158,7 +158,10 @@ export const a11yAudit = defineOperation({
     summary: z.string(),
   }),
   async run({ runtime }, { pagePath }) {
-    const [{ pages }, context] = await Promise.all([readSitePages(runtime, pagePath), siteCheckContext(runtime)]);
+    const [{ pages, unread }, context] = await Promise.all([
+      readSitePages(runtime, pagePath),
+      siteCheckContext(runtime),
+    ]);
     const findings = [
       ...pages.flatMap((page) => a11yFindings(page, context)),
       ...pages
@@ -168,7 +171,7 @@ export const a11yAudit = defineOperation({
 
     return {
       findings,
-      summary: findingsSummary(findings),
+      summary: `${findingsSummary(findings)}${unreadNote(unread)}`,
     };
   },
   describe(_input, { findings }) {

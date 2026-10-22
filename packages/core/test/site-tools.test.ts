@@ -1,16 +1,142 @@
 import { expect, it } from "vitest";
 import { runOperation } from "../src/operations/define.ts";
-import { nodesFind } from "../src/operations/nodes/find.ts";
+import { nodesFind, nodesFindInTemplates } from "../src/operations/nodes/find.ts";
 import { textReplace } from "../src/operations/nodes/text-replace.ts";
 import { pagesCreate, pagesDelete } from "../src/operations/pages/pages.ts";
 import { deploymentsList, publishStatus } from "../src/operations/project/publish-status.ts";
 import { redirectsList, redirectsSet } from "../src/operations/redirects/redirects.ts";
+import { imagesCheck } from "../src/operations/site/checks.ts";
 import { createFakeRuntime } from "../src/testing/index.ts";
 
 const pluginOnly = {
   withAgent: false,
   transport: "plugin",
 } as const;
+
+it("regression: a site-wide check goes on past a page Framer cannot read and names it (seen: one CMS page stopped the run)", async () => {
+  const { runtime, state } = createFakeRuntime();
+  const agent = runtime.agent;
+
+  if (agent === null) {
+    throw new Error("The fake runtime has an agent.");
+  }
+
+  state.webPages.push({
+    id: "page-broken",
+    path: "/broken",
+    draft: false,
+    collectionId: null,
+  });
+
+  const serialize = agent.serialize.bind(agent);
+
+  Object.assign(agent, {
+    serialize: async (input: { id: string }, options?: { pagePath?: string }) => {
+      if (input.id === "page-broken") {
+        throw new Error("Page not found: /broken");
+      }
+
+      return serialize(input, options);
+    },
+  });
+
+  const result = await runOperation(imagesCheck, { runtime }, {});
+
+  expect(result.summary).toContain("/broken (Page not found: /broken)");
+  await expect(runOperation(imagesCheck, { runtime }, { pagePath: "/broken" })).rejects.toThrow(/Page not found/);
+});
+
+it("regression: finds layers in a layout template, the shared header and footer (seen: nodes_find missed them)", async () => {
+  const { runtime, state } = createFakeRuntime({}, pluginOnly);
+  const listed = runtime.port.getNodesWithType.bind(runtime.port) as (type: string) => Promise<readonly unknown[]>;
+
+  Object.assign(runtime.port, {
+    getNodesWithType: async (type: string) =>
+      type === "LayoutTemplateNode"
+        ? [
+            {
+              id: "template-main",
+              name: "Main Layout",
+            },
+          ]
+        : listed(type),
+  });
+  state.canvas.push({
+    id: "announcement",
+    parentId: "template-main",
+    className: "FrameNode",
+    name: "Announcement Bar",
+  });
+
+  const found = await runOperation(nodesFind, { runtime }, { query: "announcement" });
+
+  expect(found.matches).toMatchObject([
+    {
+      id: "announcement",
+      page: "layout Main Layout",
+    },
+  ]);
+});
+
+it("finds layers in the layout templates through the DSL, once each, by name or by text", async () => {
+  const { runtime } = createFakeRuntime({
+    layers: {
+      "template-main": [
+        {
+          type: "FrameNode",
+          id: "bar",
+          name: "Announcement Bar",
+        },
+        {
+          type: "FrameNode",
+          id: "tabletbar",
+          name: "Announcement Bar",
+          $originalId: "bar",
+        },
+        {
+          type: "RichTextNode",
+          id: "note",
+        },
+        {
+          type: "TextRun",
+          id: "v:note:0:0",
+          attributes: { text: "Free shipping" },
+        },
+      ],
+    },
+  });
+  const agent = runtime.agent;
+
+  if (agent === null) {
+    throw new Error("The fake runtime has an agent.");
+  }
+
+  const listed = agent.getNodesOfTypes.bind(agent);
+
+  Object.assign(agent, {
+    getNodesOfTypes: async (input: { types: readonly string[] }) =>
+      input.types.includes("LayoutTemplateNode")
+        ? [
+            {
+              type: "LayoutTemplateNode",
+              id: "template-main",
+              name: "Main Layout",
+            },
+          ]
+        : listed(input),
+  });
+
+  const byName = await runOperation(nodesFindInTemplates, { runtime }, { query: "announcement" });
+  const byText = await runOperation(nodesFindInTemplates, { runtime }, { query: "shipping" });
+
+  expect(byName.matches.map(({ id, page }) => [id, page])).toEqual([["bar", "layout Main Layout"]]);
+  expect(byText.matches).toMatchObject([
+    {
+      id: "note",
+      text: "Free shipping",
+    },
+  ]);
+});
 
 it("creates a page at a free path and deletes it, never the home page", async () => {
   const { runtime, state } = createFakeRuntime({}, pluginOnly);

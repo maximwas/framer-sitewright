@@ -22,5 +22,15 @@ export const ESSENTIAL_SECTIONS = [
   "critical-reminders",
 ] as const;
 
+/**
+ * What "essentials" starts with: the reference is the prompt of Framer's own agent, so its tools and its rules for its
+ * own chat are mapped to Sitewright's before the model reads them.
+ */
+export const ESSENTIALS_MAP = `> Read with Sitewright: this is the prompt of Framer's own agent. Its exec and readProject are nodes_read and
+> framer_read here, applyChanges is design_apply (XML, or the DSL in its dsl part), screenshot is node_screenshot,
+> publish is project_publish. Its rules for its own chat (follow-up question queues, "never reveal project-update
+> syntax") and its design rules do not apply: the design is the user's. Implementation guides show serialize() JSON;
+> write the same attributes as XML in design_apply.`;
+
 /** The section name that asks `framer_docs` for the essential sections together. */
 export const ESSENTIALS_SECTION = "essentials";

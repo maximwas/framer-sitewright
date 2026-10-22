@@ -73,6 +73,95 @@ it("finds layers whose attributes meet every condition, comparing numbers as num
   expect(found.matches[0]?.attributes).toMatchObject({ opacity: "0.4" });
 });
 
+it("regression: finds text by fontName and says which attributes it cannot read (seen: textColor and fontName found nothing)", async () => {
+  const { runtime, state } = fixture();
+
+  state.canvas.push({
+    id: "headline",
+    parentId: "breakpoint-desktop",
+    className: "TextNode",
+    name: null,
+    attributes: {
+      font: {
+        selector: "Inter-SemiBold",
+        family: "Inter",
+        weight: 600,
+        style: "normal",
+      },
+    },
+  });
+
+  const found = await runOperation(
+    nodesQuery,
+    { runtime },
+    {
+      where: [
+        {
+          attribute: "fontName",
+          op: "equals",
+          value: "Inter",
+        },
+        {
+          attribute: "fontWeight",
+          op: "greaterThan",
+          value: "500",
+        },
+      ],
+    },
+  );
+
+  expect(found.matches.map(({ id }) => id)).toEqual(["headline"]);
+
+  // A text with a text style has no font of its own: its style's counts.
+  state.canvas.push({
+    id: "styled",
+    parentId: "breakpoint-desktop",
+    className: "TextNode",
+    name: null,
+    attributes: {
+      font: null,
+      inlineTextStyle: {
+        id: "style-h1",
+        font: {
+          family: "Inter",
+          weight: 700,
+          style: "normal",
+        },
+      },
+    },
+  });
+
+  const styled = await runOperation(
+    nodesQuery,
+    { runtime },
+    {
+      where: [
+        {
+          attribute: "fontWeight",
+          op: "equals",
+          value: "700",
+        },
+      ],
+    },
+  );
+
+  expect(styled.matches.map(({ id }) => id)).toEqual(["styled"]);
+  await expect(
+    runOperation(
+      nodesQuery,
+      { runtime },
+      {
+        where: [
+          {
+            attribute: "textColor",
+            op: "exists",
+          },
+        ],
+      },
+    ),
+  ).rejects.toThrow(/textColor/);
+});
+
 it("lists every instance of a component by its id or name, with the page it is on", async () => {
   const { runtime } = fixture();
 
@@ -84,8 +173,79 @@ it("lists every instance of a component by its id or name, with the page it is o
         id: "card-1",
         name: "Card",
         page: "/",
+        breakpoint: "Desktop",
         component: "Content/Card",
+        variant: null,
+        via: null,
       },
     ]);
   }
+});
+
+it("regression: names each instance's breakpoint and variant, and the ones inside another component (seen: too little to judge a change)", async () => {
+  const { runtime } = createFakeRuntime({
+    breakpoints: [
+      {
+        id: "bp-desktop",
+        name: "Desktop",
+        width: 1200,
+      },
+      {
+        id: "bp-phone",
+        name: "Phone",
+        width: 390,
+      },
+    ],
+    components: [
+      {
+        id: "btn",
+        name: "Button",
+        componentName: "Lab/Button",
+      },
+      {
+        id: "card",
+        name: "Card",
+        componentName: "Lab/Card",
+      },
+    ],
+    layers: {
+      "bp-desktop": [
+        {
+          type: "ComponentInstanceNode",
+          id: "b1",
+          name: "CTA",
+          component: "btn",
+          attributes: { $control__variant: "Primary" },
+        },
+        {
+          type: "ComponentInstanceNode",
+          id: "c1",
+          component: "card",
+        },
+      ],
+      "bp-phone": [
+        {
+          type: "ComponentInstanceNode",
+          id: "bp-phoneb1",
+          component: "btn",
+          attributes: { $control__variant: "Secondary" },
+        },
+      ],
+      card: [
+        {
+          type: "ComponentInstanceNode",
+          id: "inner",
+          component: "btn",
+        },
+      ],
+    },
+  });
+
+  const found = await runOperation(componentInstances, { runtime }, { component: "Lab/Button" });
+
+  expect(found.instances.map(({ id, breakpoint, variant, via }) => [id, breakpoint, variant, via])).toEqual([
+    ["b1", "Desktop", "Primary", null],
+    ["c1", "Desktop", null, "Lab/Card"],
+    ["bp-phoneb1", "Phone", "Secondary", null],
+  ]);
 });

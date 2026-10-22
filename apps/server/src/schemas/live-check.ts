@@ -17,6 +17,13 @@ export const LiveCheckInputSchema = z.strictObject({
     .max(LIVE_PAGES_MAX)
     .default(LIVE_PAGES_DEFAULT)
     .describe("Most pages to fetch: every top-level page first, then CMS pages taken evenly from each collection."),
+  paths: z
+    .array(z.string().startsWith("/"))
+    .max(LIVE_PAGES_MAX)
+    .exactOptional()
+    .describe(
+      'Pages to check besides the sitemap\'s, first: a page hidden from search is not in it, e.g. ["/thanks"].',
+    ),
 });
 
 /** One fetched page: what it answered and what it weighs. */
