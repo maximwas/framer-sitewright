@@ -521,8 +521,18 @@ describe("configured server (fake project)", () => {
 
     expect(result.isError).toBeFalsy();
     expect(result.structuredContent).toMatchObject({
-      images: [{ path: photo, url: expect.stringContaining("framerusercontent.com") }],
-      failed: [{ path: join(directory, "missing.png"), error: expect.stringContaining("not a path to an image") }],
+      images: [
+        {
+          path: photo,
+          url: expect.stringContaining("framerusercontent.com"),
+        },
+      ],
+      failed: [
+        {
+          path: join(directory, "missing.png"),
+          error: expect.stringContaining("not a path to an image"),
+        },
+      ],
     });
     expect(state.uploadedImages.map((image) => image.name)).toEqual(["team-photo"]);
   });

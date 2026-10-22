@@ -14,6 +14,7 @@ import {
 import * as z from "zod";
 import { fileSourceOf } from "../../assets/file-source.ts";
 import { imageSourceOf } from "../../assets/image-source.ts";
+import { fitSvg, svgMarkupOf } from "../../assets/svg-source.ts";
 import { IMAGES_UPLOAD_MAX } from "../../constants/assets.ts";
 import type { ToolContext } from "../../types/mcp.ts";
 import { addOperationTool, addTool, operationAnnotations, runOperationTool } from "../add-tool.ts";
@@ -60,7 +61,12 @@ export function registerAssetTools(server: McpServer, context: ToolContext): voi
     }),
     output: z.object({
       images: z.array(imageUpload.output.extend({ path: z.string() })),
-      failed: z.array(z.object({ path: z.string(), error: z.string() })),
+      failed: z.array(
+        z.object({
+          path: z.string(),
+          error: z.string(),
+        }),
+      ),
       activity: ActivityNoteSchema,
     }),
     annotations: operationAnnotations(imageUpload),
@@ -78,11 +84,18 @@ export function registerAssetTools(server: McpServer, context: ToolContext): voi
             name: basename(path, extname(path)),
           });
 
-          images.push({ path, id: uploaded.id, url: uploaded.url });
+          images.push({
+            path,
+            id: uploaded.id,
+            url: uploaded.url,
+          });
           activity = uploaded.activity;
         } catch (error) {
           firstError ??= error;
-          failed.push({ path, error: errorMessage(error) });
+          failed.push({
+            path,
+            error: errorMessage(error),
+          });
         }
       }
 
@@ -90,7 +103,11 @@ export function registerAssetTools(server: McpServer, context: ToolContext): voi
         throw firstError;
       }
 
-      return { images, failed, activity };
+      return {
+        images,
+        failed,
+        activity,
+      };
     },
   });
 
@@ -116,10 +133,40 @@ export function registerAssetTools(server: McpServer, context: ToolContext): voi
       }),
   });
 
-  addOperationTool(server, context, svgAdd, {
+  addTool(server, {
     name: "svg_add",
     title: "Add an SVG layer",
-    description: `Adds SVG markup as an editable vector layer — own icons, logos, illustrations — and returns the new layer's id (nodeIds). Without parentId Framer puts it into the layer selected in the editor; with it, it moves there. Its size cannot be set through the DSL: to reuse a logo or icon across the site, ask the user to add the layer to a project vector set (Vectors panel; the API cannot), then place it as an IconNode of that set. Works through the ${PRODUCT.title} plugin only.`,
+    description: `Adds an SVG as an editable vector layer — own icons, logos, illustrations — from markup (svg) or an .svg file (path, absolute or relative to the project folder), and returns the new layer's id (nodeIds). Framer sizes it by the root's width and height and crops it to the drawing: width sets the layer's width (height follows the viewBox), keepViewBox keeps the empty space around the drawing. Without parentId Framer puts it into the layer selected in the editor; with it, it moves there. To reuse a logo or icon across the site, ask the user to add the layer to a project vector set (Vectors panel; the API cannot), then place it as an IconNode of that set. Works through the ${PRODUCT.title} plugin only.`,
+    input: svgAdd.input.omit({ svg: true }).extend({
+      svg: z.string().min(1).exactOptional().describe("SVG markup with a viewBox."),
+      path: z.string().min(1).exactOptional().describe("An .svg file, instead of svg."),
+      width: z.number().positive().exactOptional().describe("Layer width in px; the height follows the viewBox."),
+      keepViewBox: z
+        .boolean()
+        .exactOptional()
+        .describe("Keep the viewBox's empty space around the drawing, as an icon's padding."),
+    }),
+    output: svgAdd.output.extend({
+      activity: ActivityNoteSchema,
+      support: z.string().exactOptional(),
+    }),
+    annotations: operationAnnotations(svgAdd),
+    run: async ({ svg, path, width, keepViewBox, name, ...placement }) =>
+      runOperationTool(context, "svg_add", svgAdd, {
+        svg: fitSvg(
+          await svgMarkupOf({
+            svg,
+            path,
+          }),
+          {
+            width,
+            keepViewBox,
+          },
+        ),
+        ...placement,
+        ...(name === undefined && path !== undefined ? { name: basename(path, extname(path)) } : {}),
+        ...(name === undefined ? {} : { name }),
+      }),
   });
 
   addOperationTool(server, context, iconsSearch, {

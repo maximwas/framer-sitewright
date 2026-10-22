@@ -26,6 +26,8 @@ How to write this file (people and agents alike):
 ### Changed
 
 - `image_upload` and `file_upload` take a path relative to the project folder too, not only an absolute one.
+- `svg_add` takes an .svg file by path, sets the layer's width with `width` (the height follows the viewBox), and with
+  `keepViewBox` keeps the empty space around the drawing, which Framer otherwise crops away.
 
 - `framer_guide` says how to show a whole image or a tiled one, which the API cannot set on an image fill, and that a
   text node takes letter spacing in em, as Figma gives it.
