@@ -61,6 +61,15 @@ How to write this file (people and agents alike):
 - `localization_get` finds a page's texts by the page's path in `group`, as its description says.
 - The journal names every action in words, such as "New locale" and "SEO audit", instead of an internal name such as
   localization.addLocale.
+- `effects_set` `hero-sequence` moves the first layer (the heading, the page's largest element) without fading it, so
+  it no longer delays the page's Largest Contentful Paint.
+- `framer_read` points to the section of `framer_docs` that lists its query types, and `component_insert` no longer
+  says undo cannot remove what it inserts.
+- `framer_docs` `essentials` starts with how Framer's agent tools map to Sitewright's and which of its rules do not
+  apply.
+- `framer_guide` adds the order a whole site needs, the CMS "Item" choice that the DSL cannot write, and nine Framer
+  pitfalls (a frame's default 100px height, `CREATE_VARIANT` ignoring `name`, a blur lost under a faded parent and
+  more); the `parallax` preset says it moves while its frame enters the window.
 - `node_screenshot` too big at scale 0.5 says to capture it in parts with `clip`, not to use scale 0.5, and says that
   Framer draws a CMS page's Tablet and Phone breakpoints with the components' default content.
 

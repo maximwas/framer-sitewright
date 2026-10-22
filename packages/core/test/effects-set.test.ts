@@ -22,6 +22,13 @@ describe("effects_set", () => {
     expect(presetCommands("float", ["d"], {})[0]).toContain('loopEffect.rotate="0"');
   });
 
+  it("regression: a hero sequence moves its first layer without fading it, for the LCP (seen: the heading started at opacity 0)", () => {
+    const [heading, text] = presetCommands("hero-sequence", ["h1", "p"], {});
+
+    expect(heading).toContain('appearEffect.enter.opacity="1"');
+    expect(text).toContain('appearEffect.enter.opacity="0"');
+  });
+
   it("regression: a text reveal starts sharp: Framer blurs every word by 10px unless told", () => {
     expect(presetCommands("text-reveal", ["t"], {})[0]).toContain('textEffect.style.blur="0px"');
   });

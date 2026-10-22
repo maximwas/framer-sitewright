@@ -17,6 +17,7 @@ export function presetCommands(preset: MotionPreset, nodeIds: readonly string[],
     const pairs = attributesFor(preset, options, {
       at,
       spring,
+      first: index === 0,
     });
 
     return `SET ${id} ${pairs.map(([key, value]) => (typeof value === "number" ? `${key}=${value}` : `${key}="${value}"`)).join(" ")};`;
@@ -28,7 +29,11 @@ type Pairs = [string, string | number][];
 function attributesFor(
   preset: MotionPreset,
   options: MotionOptions,
-  { at, spring }: { at: (stagger: number) => string; spring: (time: number, start: string) => string },
+  {
+    at,
+    spring,
+    first,
+  }: { at: (stagger: number) => string; spring: (time: number, start: string) => string; first: boolean },
 ): Pairs {
   const distance = options.distance;
 
@@ -45,7 +50,8 @@ function attributesFor(
               ["appearEffect.replay", "false"],
               ["appearEffect.threshold", "0.2"],
             ] as Pairs)),
-        ["appearEffect.enter.opacity", "0"],
+        // The first screen's first layer is its LCP element: Chrome ignores paints at opacity 0, so it only moves.
+        ["appearEffect.enter.opacity", hero && first ? "1" : "0"],
         ["appearEffect.enter.x", "0"],
         ["appearEffect.enter.y", String(distance ?? (hero ? MOTION_DEFAULTS.heroDistance : MOTION_DEFAULTS.distance))],
         ["appearEffect.enter.scale", "1"],

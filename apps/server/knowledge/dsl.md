@@ -101,6 +101,19 @@ something else; every rule here was seen on a live project.
 - `metadata.noIndex="true"` also turns `noIndexSite` on (out of the site's own search), and `noIndex="false"` leaves it
   on: set both.
 
+## A whole site: the order Framer needs
+
+Framer accepts these in any order and keeps what a wrong order breaks without an error. Build a site in this order:
+
+1. Breakpoints on every page (`breakpoints_add`), and the layout template's (`layout`, Layout templates), before text
+   styles get breakpoint sizes: a style's slots start at the breakpoints the site has when they are written.
+2. Color tokens and text styles, then the layers that use them.
+3. A section's `elementId` and `scrollTargetEnabled` before any link to `/#id` or scroll effect that targets it.
+4. A CMS collection and its fields, then the collection list on the canvas, then the bindings to its field ids.
+5. A component's primary variant whole, then the other variants and gestures: a variant copies the primary as it is
+   then, and keeps every override it got before.
+6. Content and links last, then `layout_audit` and the checks of `verify`.
+
 ## Breakpoints
 
 - A page is a primary breakpoint frame plus copies (replicas): add them with `breakpoints_add` (Tablet 810, Phone 390;
@@ -158,6 +171,21 @@ something else; every rule here was seen on a live project.
 - Effects and `scale` are refused on a variant or breakpoint root: use a hover or pressed gesture variant, or put them
   on a child.
 - A layer's own rotation adds to the rotate of its `styleTransformEffect` states: subtract it from the states.
+- A frame created without a height gets Framer's default 100px: write `height="auto"` on every new frame with
+  content.
+- `CREATE_VARIANT` ignores `name`: name the variant in a `SET` after it.
+- `MOVE` of a component instance resets its `pointerEvents` and sets `zIndex` to 0, and an instance does not keep a
+  `zIndex`: write `pointerEvents` again after a move, and order layers by their place in the parent.
+- Auto-fit text (`fontSize="auto-fit(…)"`) clips the descenders of its last line (g, y, p): give it bottom padding or
+  use a fixed size.
+- `textStylePreset="null"` with a `fontSize` in the same `SET` keeps the style's old size: clear the style in one
+  `SET`, write the size in the next.
+- A color variable bound only to `borderColor` does not become a control of the component: bind it to a fill or a
+  text color too, or add the border variable with `component_border_variable_add`.
+- What a layout template holds (the shared header and footer) is not searched by `nodes_find`, `nodes_query` or
+  `component_instances`: read the template with `nodes_read` by its id.
+- A background blur disappears while the layer or any of its ancestors has opacity below 1: never fade a parent of a
+  blurred layer (`motion`, Transitions that jump on the site).
 
 ## Components and interactions
 
@@ -258,9 +286,13 @@ something else; every rule here was seen on a live project.
   delays are impossible.
 - A detail page: `page_create` makes a plain page even for a path with `:`. Create it with `design_apply` dsl
   `+WebPageNode <tmp> name="<Name>" path="/<base>/:<Collection name>";`. `project_overview` then lists it as
-  `/<base>/:slug`, but `design_apply` takes `pagePath` `/<base>/:<Collection name>`, and `nodes_read` finds it only by
-  `nodeId`. The canvas shows the collection's first item (`cms_items_order` changes which). Rich text bound to a
-  formatted-text field takes per-tag presets whose text style has that tag: `stylePresetHeading1` takes an h1 style.
+  `/<base>/:slug`, and every tool takes that path (Sitewright gives the DSL its `/<base>/:<Collection name>`). The
+  canvas shows the collection's first item (`cms_items_order` changes which). Rich text bound to a formatted-text
+  field takes per-tag presets whose text style has that tag: `stylePresetHeading1` takes an h1 style.
+- A scroll variant that switches as each CMS item's section passes, and a link from a list item to its own section or
+  page, need the editor's "Item" choice (the target is the current item, not one fixed layer). The DSL neither shows
+  nor writes it: `nodes_read` reads such an effect as if it pointed nowhere. Do not rewrite the effect; ask the user to
+  pick Item in the effect's or the link's panel.
 
 ## Springs: what Framer stores
 

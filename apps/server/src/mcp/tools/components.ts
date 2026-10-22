@@ -28,7 +28,7 @@ export function registerComponentTools(server: McpServer, context: ToolContext):
     name: "component_insert",
     title: "Insert a component",
     description:
-      "Inserts a component by its module URL (framer.com/m/…): a free Marketplace component (marketplace_item gives its moduleUrl), or a URL the user copied from the Insert menu. design_apply cannot take a URL; Framer's own components (Video, YouTube, Google Maps, Embed, Slideshow, Carousel, Countdown…) it places by the ids components_read lists in framer. Then set its controls with design_apply ($control__…) or component_controls_set. Undo does not remove it.",
+      "Inserts a component by its module URL (framer.com/m/…): a free Marketplace component (marketplace_item gives its moduleUrl), or a URL the user copied from the Insert menu. design_apply cannot take a URL; Framer's own components (Video, YouTube, Google Maps, Embed, Slideshow, Carousel, Countdown…) it places by the ids components_read lists in framer. Then set its controls with design_apply ($control__…) or component_controls_set.",
   });
   addOperationTool(server, context, componentControlsSet, {
     name: "component_controls_set",

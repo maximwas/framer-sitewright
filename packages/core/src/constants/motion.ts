@@ -18,7 +18,8 @@ export const MOTION_PRESETS = [
 /** What each preset is for, for the tool's description. */
 export const MOTION_PRESET_NOTES: Readonly<Record<(typeof MOTION_PRESETS)[number], string>> = {
   "fade-up": "cards and blocks below the fold appear on scroll, one after another",
-  "hero-sequence": "the first screen's heading, text and media appear on load, 0.1s apart",
+  "hero-sequence":
+    "the first screen's heading, text and media appear on load, 0.1s apart; the first layer (the heading, the LCP element) only moves, without fading",
   "text-reveal": "a heading appears word by word as it enters",
   "hover-lift": "a card or button rises 4px on hover",
   "hover-fade": "a link or image dims slightly on hover",
@@ -27,7 +28,8 @@ export const MOTION_PRESET_NOTES: Readonly<Record<(typeof MOTION_PRESETS)[number
   pulse: "a dot or badge breathes in scale",
   spin: "a badge or mark turns slowly",
   "scroll-grow": "an image or section grows from 86% as it scrolls in",
-  parallax: "an image moves against the scroll inside a clipped frame (put it on the inner layer)",
+  parallax:
+    "an image moves against the scroll inside a clipped frame (put it on the inner layer), while the frame enters the window (onInView); for a move all the way through, set the trigger to onScrollTarget on the frame with viewport end",
   ticker: "a stack of logos or words runs as a marquee, slower on hover",
   remove: "removes the effects named in options.effects (all of them without it)",
 };
