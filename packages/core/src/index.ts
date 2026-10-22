@@ -31,6 +31,7 @@ export { SETTING_ITEMS } from "./constants/settings.ts";
 export { PLUGIN_CHANGED_EVENT, WEB_SOCKET_PATH, WebCloseCode } from "./constants/web.ts";
 export { findSection, searchSections, sliceContent, splitSections } from "./docs/sections.ts";
 export { OperationError } from "./errors.ts";
+export { withDslPagePaths } from "./framer/page-paths.ts";
 export { agentRequiredError, requireAgent, requireScreenshot } from "./framer/runtime.ts";
 export {
   aliasesOf,

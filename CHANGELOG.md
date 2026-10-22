@@ -35,6 +35,9 @@ How to write this file (people and agents alike):
 ### Fixed
 
 - `design_apply` no longer warns about a letter spacing in fractional px, such as -0.36px.
+- Tools that read a page through the Server API find a CMS detail page by the path `project_overview` shows
+  (`/blog/:slug`): `seo_audit`, `links_check`, `images_check`, `a11y_audit`, `rich_text_audit`, `styles_usage` and the
+  site-wide runs no longer stop at "Page not found".
 
 ## 1.1.3 — 2026-10-22
 

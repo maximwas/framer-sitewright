@@ -1,4 +1,4 @@
-import type { AgentPort, FramerPort, FramerRuntime } from "@sitewright/core";
+import { type AgentPort, type FramerPort, type FramerRuntime, withDslPagePaths } from "@sitewright/core";
 import { type ColorStop, type Framer, LinearGradient } from "framer-api";
 
 export function createServerApiRuntime(framer: Framer): FramerRuntime {
@@ -9,7 +9,7 @@ export function createServerApiRuntime(framer: Framer): FramerRuntime {
   return {
     transport: "server-api",
     port,
-    agent,
+    agent: withDslPagePaths(agent, port),
     screenshot: (nodeId, options) => framer.screenshot(nodeId, options),
     createGradient: ({ angle, stops }) =>
       new LinearGradient({
