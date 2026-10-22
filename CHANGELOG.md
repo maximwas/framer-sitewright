@@ -59,6 +59,8 @@ How to write this file (people and agents alike):
 - `fonts_used` names text styles by their full path and leaves out a font Framer reports with no family, instead of an
   empty row.
 - `localization_get` finds a page's texts by the page's path in `group`, as its description says.
+- The journal names every action in words, such as "New locale" and "SEO audit", instead of an internal name such as
+  localization.addLocale.
 - `node_screenshot` too big at scale 0.5 says to capture it in parts with `clip`, not to use scale 0.5, and says that
   Framer draws a CMS page's Tablet and Phone breakpoints with the components' default content.
 
