@@ -43,6 +43,7 @@
           <summary>Versions</summary>
           <nav>
             <p class="toc-title">1.1</p>
+            <a href="#v1-1-3"><span>1.1.3</span><time datetime="2026-10-22">Oct 22</time></a>
             <a href="#v1-1-2"><span>1.1.2</span><time datetime="2026-10-13">Oct 13</time></a>
             <a href="#v1-1-1"><span>1.1.1</span><time datetime="2026-10-13">Oct 13</time></a>
             <a href="#v1-1-0"><span>1.1.0</span><time datetime="2026-10-12">Oct 12</time></a>
@@ -70,11 +71,33 @@
           <p class="lead">Every release of Sitewright, newest first: the version, the day it was released, and what changed. The npm package and the Framer plugin share one version. Update the MCP server with <code>npx -y sitewright@latest</code>; Framer updates the plugin.</p>
         </section>
         <div class="releases">
+        <section class="release" id="v1-1-3">
+          <div class="release-head">
+            <h2>1.1.3</h2>
+            <time datetime="2026-10-22">October 22, 2026</time>
+            <span class="release-latest">Latest</span>
+          </div>
+          <h3 class="change change-added">Added</h3>
+          <ul>
+            <li>A changelog: this file and its page on the website, with every release, its date and what changed.</li>
+            <li>GitHub Discussions for questions, ideas and showing what you built, linked from the issue chooser, the READMEs and the website.</li>
+          </ul>
+          <h3 class="change change-changed">Changed</h3>
+          <ul>
+            <li>The plugin window resizes only in width by hand; its height follows its content.</li>
+          </ul>
+          <h3 class="change change-fixed">Fixed</h3>
+          <ul>
+            <li>The plugin window shrinks to its bar when you fold it and grows back when you unfold it, instead of keeping its height with empty space below.</li>
+            <li><code>design_apply</code> reads a text run of only a no-break or an em space as it is written, without an added space, so the XML <code>nodes_read</code> gives sent back unchanged changes nothing.</li>
+            <li><code>design_apply</code> writes a plain space typed between two text runs as one space, not two.</li>
+            <li><code>sitewright logs</code> shows the lines running servers write while it follows (on macOS it showed only those from before it started), and works before any server has written its log.</li>
+          </ul>
+        </section>
         <section class="release" id="v1-1-2">
           <div class="release-head">
             <h2>1.1.2</h2>
             <time datetime="2026-10-13">October 13, 2026</time>
-            <span class="release-latest">Latest</span>
           </div>
           <h3 class="change change-added">Added</h3>
           <ul>

@@ -18,6 +18,8 @@ coverage/
 # OS / editor / tool scratch
 .DS_Store
 .playwright-mcp/
+# The code graph graphify builds for agents; Biome reads this file, not the global ignore
+graphify-out/
 
 # Agent worktrees
 .claude/worktrees/
