@@ -5,6 +5,53 @@ import { nodesRead } from "../src/operations/nodes/read.ts";
 import { createFakeRuntime } from "../src/testing/index.ts";
 
 describe("nodes.read", () => {
+  it("regression: names the page a node is on and fills a missing $rect (seen: pagePath / for another page's node, no $rect)", async () => {
+    const pages: Record<string, string> = {
+      card: "section",
+      section: "page-about",
+    };
+    const { runtime, state } = createFakeRuntime({
+      serializedNodes: {
+        card: {
+          type: "FrameNode",
+          id: "card",
+          name: "Card",
+        },
+      },
+    });
+
+    state.webPages.push({
+      id: "page-about",
+      path: "/about",
+      draft: false,
+      collectionId: null,
+    });
+    Object.assign(runtime.port, {
+      getParent: async (id: string) => (pages[id] === undefined ? null : { id: pages[id] }),
+      getRect: async (id: string) =>
+        id === "card"
+          ? {
+              x: 24,
+              y: 96,
+              width: 320,
+              height: 200,
+            }
+          : null,
+    });
+
+    const read = await runOperation(
+      nodesRead,
+      { runtime },
+      {
+        nodeId: "card",
+        depth: 0,
+      },
+    );
+
+    expect(read.pagePath).toBe("/about");
+    expect(read.xml).toContain('$rect="x:24 y:96 width:320 height:200"');
+  });
+
   it("reads the page root as XML by default, JSON on request, and refuses oversized results with a hint", async () => {
     const tree = {
       type: "WebPageNode",

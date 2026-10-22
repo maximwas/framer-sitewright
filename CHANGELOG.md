@@ -44,8 +44,10 @@ How to write this file (people and agents alike):
   place, so a style used only there no longer shows as unused.
 - `site_audit` starts its summary with the checks that failed and the pages they could not read, and lists the rules
   each check hit, so its layout roll-up names the same rules `layout_audit` does.
-- `nodes_query` finds text by `fontName`, `fontWeight` and `fontStyle`, and refuses an attribute it cannot read, such
-  as `textColor`, naming the tool that reads it, instead of finding nothing.
+- `nodes_query` finds text by `fontName`, `fontWeight` and `fontStyle` (a styled text by its style's font), and refuses
+  an attribute it cannot read, such as `textColor`, naming the tool that reads it, instead of finding nothing.
+- `nodes_read` without `pagePath` reads a node on the page it is on and names that page, instead of answering "/", and
+  gives `$rect` on every page, not only the home page.
 
 ## 1.1.3 — 2026-10-22
 
